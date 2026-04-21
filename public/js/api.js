@@ -1,5 +1,5 @@
 /* api.js — Shared API + UI helpers cho tất cả các trang */
-const API = '/api';
+const API = 'https://daotomo-backend.onrender.com/api';
 
 const api = {
   getToken:   () => localStorage.getItem('dtm_token'),
