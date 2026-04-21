@@ -338,8 +338,16 @@ function doLogout() {
 }
 
 /* ── Auto-show profile if already logged in ── */
-document.addEventListener('DOMContentLoaded', () => {
-  if (api.isLoggedIn()) showProfile(api.getUser());
+document.addEventListener('DOMContentLoaded', async () => {
+  if (api.isLoggedIn()) {
+    try {
+      const { user } = await api.getMe();
+      api.setSession(api.getToken(), user);
+      showProfile(user);
+    } catch(e) {
+      api.clearSession();
+    }
+  }
 });
 </script>
 </body>
