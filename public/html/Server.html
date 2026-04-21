@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../css/Server.css">
+	<link rel="icon" type="image/jpg" href="../img/logo.jpg">
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <title>Server Chính thức</title>
+</head>
+<body>
+    <nav>
+		<div class="logo">Đảo Tò Mò</div>
+		<ul>
+			<li><a href="../index.html">Trang chủ</a></li>
+			<li><a href="../html/Server.html">Server</a></li>
+			<li><a href="../html/Map.html">Map</a></li>
+			<li><a href="../html/discord.html">Discord</a></li>
+			<li><a href="../html/Store.html">Cửa hàng</a></li>
+			<li><a href="../html/Account.html">Tài khoản</a></li>
+		</ul>
+	</nav>
+
+    <section class="server-hero">
+	    <h1>Server Minecraft</h1>
+	    <p>Khám phá thế giới sinh tồn cực chill</p>
+    </section>
+
+    <section class="server-info">
+        <div class="server-grid">
+            <div class="server-card">
+                <h2>Thông tin Server</h2>
+                <p class="server-ip">Daotomo.site</p>
+                <p class="server-ip alt-ip">Daotomo.site:25052</p>
+                <p>Loader: Fabric, Forge, Neoforge</p>
+                <p>Version: 1.21.4</p>
+                <button class="copy-btn" onclick="copyIP('Daotomo.site')">Copy IP</button>
+                <button class="copy-btn alt" onclick="copyIP('Daotomo.site:25052')">Copy IP phụ</button>
+            </div>
+            <div class="server-card">
+                <h2>Tải Modpack</h2>
+                <p>Tải modpack để trải nghiệm đầy đủ tính năng server</p>
+                <a href="#" class="download-btn">Tải Modpack</a>
+            </div>
+        </div>
+    </section>
+
+    <section class="modes">
+	    <h2>Chế độ chơi</h2>
+	    <div class="mode-grid">
+            <div class="mode-card">
+                <img src="../img/survival.jpg">
+                <h3>Survival</h3>
+                <p>Khám phá thế giới sinh tồn, xây dựng và phát triển đảo của bạn.</p>
+            </div>
+            <div class="mode-card">
+                <img src="../img/economy.jpg">
+                <h3>Economy</h3>
+                <p>Trao đổi vật phẩm, xây shop và xây dựng nền kinh tế riêng.</p>
+            </div>
+            <div class="mode-card">
+                <img src="../img/event.jpg">
+                <h3>Event</h3>
+                <p>Tham gia sự kiện PvP, minigame và nhận phần thưởng hấp dẫn.</p> 
+            </div>
+        </div>
+    </section>
+
+    <footer>
+	    <div class="footer-wave"></div>
+	    <div class="footer-container">
+		    <div class="footer-col">
+			    <h3>Đảo Tò Mò</h3>
+			    <p>Cộng đồng game thủ nơi mọi người cùng khám phá, sinh tồn và giải trí.</p>
+		    </div>
+		    <div class="footer-col">
+			    <h3>Liên kết</h3>
+			    <a href="#">Trang chủ</a>
+			    <a href="#">Server</a>
+			    <a href="#">Map</a>
+			    <a href="#">Wiki</a>
+		    </div>
+		    <div class="footer-col">
+			    <h3>Cộng đồng</h3>
+			    <div class="socials">
+				    <a href="./html/Discord.html">Discord</a>
+					<a href="https://www.facebook.com/DragonKun1946">Facebook</a>
+			    </div>
+		    </div>
+		    <div class="footer-col">
+			    <h3>Thông tin</h3>
+			    <p>Server Minecraft sinh tồn dành cho cộng đồng Việt.</p>
+		    </div>
+	    </div>
+	    <div class="footer-line"></div>
+	    <div class="footer-bottom">
+		    © 2026 Đảo Tò Mò
+	    </div>
+
+    </footer>
+    <script>
+        function copyIP(){
+            navigator.clipboard.writeText("Daotomo.site");
+            alert("Đã copy IP: Daotomo.site");
+        }
+        function copyIP(ip){
+            navigator.clipboard.writeText(ip);
+            alert("Đã copy IP: " + ip);
+        }
+    </script>
+</body>
+</html>

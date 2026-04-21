@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cửa hàng — Đảo Tò Mò</title>
+  <link rel="icon" type="image/jpg" href="/img/logo.jpg">
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;500;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/global.css">
+  <style>
+    .store-hero {
+      padding: 2.5rem 1.25rem 2rem;
+      text-align: center;
+      background: radial-gradient(ellipse at top, rgba(108,99,255,0.15), transparent 65%);
+      border-bottom: 1px solid var(--border);
+    }
+    .store-hero h1 { font-size: clamp(1.5rem, 5vw, 2.2rem); font-weight: 800; margin-bottom: 0.4rem; }
+    .store-hero p  { color: var(--text-muted); font-size: 0.9rem; max-width: 440px; margin: 0 auto 1.25rem; }
+    .notice {
+      display: flex; gap: 0.6rem; align-items: flex-start;
+      background: rgba(245,158,11,0.1); border: 1px solid rgba(245,158,11,0.25);
+      border-radius: var(--radius); padding: 0.75rem 1rem;
+      font-size: 0.82rem; color: #fcd34d;
+      max-width: 600px; margin: 0 auto; text-align: left;
+    }
+
+    /* Filters */
+    .filters {
+      display: flex; gap: 0.5rem; flex-wrap: wrap;
+      padding: 1.25rem; justify-content: center;
+      max-width: 1100px; margin: 0 auto;
+    }
+    .filter-btn {
+      padding: 0.4rem 0.9rem; border-radius: 999px;
+      font-size: 0.78rem; font-weight: 700;
+      background: rgba(255,255,255,0.05); border: 1.5px solid var(--border);
+      color: var(--text-muted); transition: all var(--ease); min-height: 34px;
+    }
+    .filter-btn.active, .filter-btn:hover { background: var(--primary); border-color: var(--primary); color: #fff; }
+
+    /* Grid */
+    .product-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0.875rem;
+      padding: 0 1rem 2.5rem;
+      max-width: 1100px; margin: 0 auto;
+    }
+    @media (min-width: 560px)  { .product-grid { grid-template-columns: repeat(2,1fr); gap: 1rem; } }
+    @media (min-width: 768px)  { .product-grid { grid-template-columns: repeat(3,1fr); gap: 1.25rem; } }
+    @media (min-width: 1024px) { .product-grid { grid-template-columns: repeat(4,1fr); } }
+
+    .product-card {
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: var(--radius-lg); overflow: hidden;
+      display: flex; flex-direction: column;
+      transition: transform var(--ease), box-shadow var(--ease);
+      cursor: pointer;
+    }
+    .product-card:hover { transform: translateY(-4px); box-shadow: 0 8px 28px rgba(108,99,255,0.2); border-color: rgba(108,99,255,0.3); }
+
+    .product-card .img-wrap {
+      aspect-ratio: 1; background: rgba(255,255,255,0.03);
+      display: flex; align-items: center; justify-content: center;
+      overflow: hidden; padding: 0.75rem;
+    }
+    .product-card .img-wrap img {
+      width: 100%; height: 100%; object-fit: contain;
+      transition: transform 0.35s ease;
+    }
+    .product-card:hover .img-wrap img { transform: scale(1.1); }
+
+    .product-card .info { padding: 0.875rem; display: flex; flex-direction: column; flex: 1; gap: 0.3rem; }
+    .product-card .name { font-size: 0.88rem; font-weight: 700; color: var(--text); line-height: 1.3; }
+    .product-card .desc { font-size: 0.75rem; color: var(--text-muted); flex: 1; line-height: 1.5; }
+    .product-card .price { font-size: 1rem; font-weight: 800; color: var(--accent); margin-top: 0.25rem; }
+
+    .product-card .card-actions { display: flex; gap: 0.5rem; margin-top: 0.6rem; }
+    .product-card .btn-detail {
+      flex: 1; padding: 0.55rem;
+      background: rgba(255,255,255,0.07); color: var(--text-muted);
+      border-radius: 8px; font-size: 0.78rem; font-weight: 600;
+      transition: all var(--ease); min-height: 36px;
+      text-align: center;
+    }
+    .product-card .btn-detail:hover { background: rgba(255,255,255,0.12); color: var(--text); }
+    .product-card .btn-buy {
+      flex: 2; padding: 0.55rem;
+      background: var(--primary); color: #fff;
+      border-radius: 8px; font-size: 0.82rem; font-weight: 700;
+      transition: all var(--ease); min-height: 36px;
+    }
+    .product-card .btn-buy:hover { background: var(--primary-dark); }
+
+    .state-box { text-align: center; padding: 4rem 2rem; color: var(--text-muted); grid-column: 1/-1; }
+
+    /* Modal */
+    .modal-overlay {
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,0.8); z-index: 2000;
+      align-items: flex-end; justify-content: center;
+      padding: 0;
+    }
+    .modal-overlay.open { display: flex; }
+    @media (min-width: 480px) { .modal-overlay { align-items: center; padding: 1rem; } }
+
+    .modal {
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+      padding: 1.5rem 1.25rem;
+      width: 100%; max-width: 400px;
+      text-align: center;
+      animation: slideUp 0.25s ease;
+    }
+    @media (min-width: 480px) { .modal { border-radius: var(--radius-lg); } }
+    @keyframes slideUp { from { transform: translateY(30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+    .modal-handle { width: 36px; height: 4px; background: var(--border); border-radius: 2px; margin: 0 auto 1rem; }
+    @media (min-width: 480px) { .modal-handle { display: none; } }
+
+    .modal h2 { font-size: 1.1rem; font-weight: 800; margin-bottom: 0.3rem; }
+    .modal .qr-box {
+      width: 180px; height: 180px; margin: 1rem auto;
+      background: #fff; border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      border: 3px solid var(--primary); overflow: hidden;
+    }
+    .modal .qr-box img { width: 100%; height: 100%; object-fit: cover; }
+    .modal .order-total { font-size: 1.4rem; font-weight: 800; color: var(--accent); }
+    .modal .order-id    { font-size: 0.75rem; color: var(--text-muted); margin: 0.3rem 0 1rem; }
+    .modal .modal-note  { font-size: 0.8rem; color: var(--text-muted); line-height: 1.6; margin-bottom: 1rem; }
+    .modal-close {
+      width: 100%; padding: 0.7rem;
+      background: rgba(255,255,255,0.07); border-radius: var(--radius);
+      color: var(--text-muted); font-size: 0.875rem; font-weight: 600;
+      transition: background var(--ease);
+    }
+    .modal-close:hover { background: rgba(255,255,255,0.12); }
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo">🏝️ Đảo Tò Mò</div>
+  <button class="hamburger" id="hamburger" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
+  <ul id="nav-list">
+    <li><a href="/index.html">🏠 Trang chủ</a></li>
+    <li><a href="/html/Server.html">⚔️ Server</a></li>
+    <li><a href="/html/Map.html">🗺️ Map</a></li>
+    <li><a href="/html/Discord.html">💬 Discord</a></li>
+    <li><a href="/html/Store.html">🛒 Cửa hàng</a></li>
+    <li><a href="/html/Account.html" id="nav-account-link">🔑 Tài khoản</a></li>
+  </ul>
+</nav>
+
+<div class="page-body">
+  <div class="store-hero">
+    <h1>🎁 Cửa hàng ủng hộ Server</h1>
+    <p>Mua vật phẩm để ủng hộ server và nhận đồ trong Minecraft.</p>
+    <div class="notice">
+      <span>⚠️</span>
+      <span>Tiền ủng hộ sẽ được dùng để nâng cấp server Discord, cập nhật Minecraft và tổ chức sự kiện cộng đồng.</span>
+    </div>
+  </div>
+
+  <div class="filters">
+    <button class="filter-btn active" data-cat="all">🎯 Tất cả</button>
+    <button class="filter-btn" data-cat="crate">📦 Hòm</button>
+    <button class="filter-btn" data-cat="cosmetic">✨ Cosmetic</button>
+    <button class="filter-btn" data-cat="pet">🐾 Pet</button>
+    <button class="filter-btn" data-cat="key">🗝️ Key</button>
+    <button class="filter-btn" data-cat="bundle">🎒 Bundle</button>
+    <button class="filter-btn" data-cat="vip">👑 VIP</button>
+  </div>
+
+  <div class="product-grid" id="grid">
+    <div class="state-box"><div class="spinner"></div></div>
+  </div>
+</div>
+
+<!-- QR Modal -->
+<div class="modal-overlay" id="modal">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <h2>💳 Thanh toán QR</h2>
+    <p style="font-size:0.82rem;color:var(--text-muted)">Quét mã, chuyển khoản đúng số tiền. Admin xác nhận trong 24h.</p>
+    <div class="qr-box">
+      <img src="/img/qr.png" alt="QR" onerror="this.parentElement.innerHTML='<p style=color:#555;font-size:.75rem;padding:.5rem>QR sẽ được<br>cập nhật sớm</p>'">
+    </div>
+    <div class="order-total" id="m-total">0đ</div>
+    <div class="order-id"   id="m-id"></div>
+    <div class="modal-note">Nội dung CK: <strong id="m-note"></strong></div>
+    <button class="modal-close" onclick="closeModal()">Đã hiểu, đóng lại</button>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-grid">
+    <div class="footer-col"><h3>🏝️ Đảo Tò Mò</h3><p>Cộng đồng game thủ Việt chill nhất.</p></div>
+    <div class="footer-col"><h3>Liên kết</h3><a href="/index.html">Trang chủ</a><a href="/html/Store.html">Cửa hàng</a><a href="/html/Server.html">Server</a></div>
+    <div class="footer-col"><h3>Cộng đồng</h3><a href="/html/Discord.html">Discord</a><a href="https://www.facebook.com/DragonKun1946" target="_blank">Facebook</a></div>
+    <div class="footer-col"><h3>Thông tin</h3><p>Server Minecraft sinh tồn dành cho cộng đồng Việt.</p></div>
+  </div>
+  <div class="footer-bottom">© 2026 Đảo Tò Mò</div>
+</footer>
+
+<script src="/js/api.js"></script>
+<script>
+let products = [];
+
+async function loadProducts() {
+  try {
+    const { data } = await api.getProducts();
+    products = data;
+    render(data);
+  } catch (e) {
+    document.getElementById('grid').innerHTML =
+      `<div class="state-box">⚠️ Không tải được sản phẩm: ${e.message}</div>`;
+  }
+}
+
+function render(list) {
+  const grid = document.getElementById('grid');
+  if (!list.length) { grid.innerHTML = '<div class="state-box">Không có sản phẩm nào.</div>'; return; }
+  grid.innerHTML = list.map(p => `
+    <div class="product-card">
+      <div class="img-wrap" onclick="goDetail('${p._id}')">
+        <img src="${p.image}" alt="${p.name}" loading="lazy"
+          onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect fill=%22%23222%22 width=%22100%25%22 height=%22100%25%22/><text x=%2250%25%22 y=%2255%25%22 font-size=%2240%22 text-anchor=%22middle%22>🎁</text></svg>'">
+      </div>
+      <div class="info">
+        <div class="name">${p.name}</div>
+        <div class="desc">${p.description}</div>
+        <div class="price">${p.price.toLocaleString('vi-VN')}đ</div>
+        <div class="card-actions">
+          <button class="btn-detail" onclick="goDetail('${p._id}')">Chi tiết</button>
+          <button class="btn-buy"    onclick="handleBuy('${p._id}',${p.price})">🛒 Mua</button>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function goDetail(id) {
+  location.href = `/html/ProductDetail.html?id=${id}`;
+}
+
+// Filters
+document.querySelectorAll('.filter-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const cat = btn.dataset.cat;
+    render(cat === 'all' ? products : products.filter(p => p.category === cat));
+  });
+});
+
+async function handleBuy(productId, price) {
+  if (!api.isLoggedIn()) {
+    if (confirm('Bạn cần đăng nhập để mua hàng.\nChuyển đến trang đăng nhập?'))
+      location.href = '/html/Account.html';
+    return;
+  }
+  const btn = event.target;
+  btn.disabled = true; btn.textContent = '...';
+  try {
+    const { data: order } = await api.createOrder([{ productId, quantity: 1 }]);
+    document.getElementById('m-total').textContent = order.total.toLocaleString('vi-VN') + 'đ';
+    document.getElementById('m-id').textContent    = 'Mã đơn: #' + order._id.slice(-8).toUpperCase();
+    document.getElementById('m-note').textContent  = 'DTM ' + order._id.slice(-6).toUpperCase();
+    document.getElementById('modal').classList.add('open');
+  } catch (e) {
+    alert('❌ ' + e.message);
+  } finally {
+    btn.disabled = false; btn.textContent = '🛒 Mua';
+  }
+}
+
+function closeModal() {
+  document.getElementById('modal').classList.remove('open');
+}
+document.getElementById('modal').addEventListener('click', e => {
+  if (e.target === e.currentTarget) closeModal();
+});
+
+loadProducts();
+</script>
+</body>
+</html>
