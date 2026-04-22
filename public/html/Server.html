@@ -1,112 +1,182 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="../css/Server.css">
-	<link rel="icon" type="image/jpg" href="../img/logo.jpg">
-    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <title>Server Chính thức</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Server — Đảo Tò Mò</title>
+  <link rel="icon" type="image/jpg" href="/img/logo.jpg">
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;500;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/global.css">
+  <style>
+    .server-hero {
+      min-height: 40vh;
+      display: flex; align-items: center; justify-content: center;
+      text-align: center;
+      padding: calc(var(--nav-h) + 3rem) 1.25rem 3rem;
+      background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(16,185,129,0.15) 0%, transparent 70%),
+                  linear-gradient(180deg, #0a0e1a 0%, #0d1224 100%);
+    }
+    .server-hero h1 {
+      font-size: clamp(2rem, 7vw, 3.5rem); font-weight: 800; margin-bottom: 0.75rem;
+      background: linear-gradient(135deg, #fff 30%, #34d399 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+    .server-hero p { color: var(--text-muted); font-size: clamp(0.95rem, 2vw, 1.1rem); }
+
+    .server-info { padding: 3rem 1.25rem; max-width: 900px; margin: 0 auto; }
+    .server-grid { display: grid; grid-template-columns: 1fr; gap: 1.25rem; }
+    @media (min-width: 640px) { .server-grid { grid-template-columns: 1fr 1fr; } }
+
+    .server-card {
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: var(--radius-lg); padding: 1.75rem;
+      transition: transform var(--ease), box-shadow var(--ease);
+    }
+    .server-card:hover { transform: translateY(-4px); box-shadow: var(--shadow); }
+    .server-card h2 { font-size: 1.1rem; font-weight: 800; margin-bottom: 1rem; color: #34d399; }
+    .server-card p  { font-size: 0.875rem; color: var(--text-muted); margin-bottom: 0.5rem; line-height: 1.7; }
+
+    .ip-box {
+      font-size: 1.2rem; font-weight: 800; color: var(--text);
+      background: rgba(255,255,255,0.05); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 0.6rem 1rem;
+      font-family: monospace; margin: 0.5rem 0;
+    }
+    .copy-btn {
+      display: inline-flex; align-items: center; gap: 0.4rem;
+      padding: 0.6rem 1.1rem; border-radius: var(--radius);
+      font-size: 0.82rem; font-weight: 700; min-height: 40px;
+      background: rgba(16,185,129,0.15); color: #34d399;
+      border: 1px solid rgba(16,185,129,0.3);
+      transition: all var(--ease); margin-right: 0.5rem; margin-top: 0.75rem;
+    }
+    .copy-btn:hover { background: rgba(16,185,129,0.25); }
+    .copy-btn.alt { background: rgba(255,255,255,0.07); color: var(--text-muted); border-color: var(--border); }
+    .copy-btn.alt:hover { background: rgba(255,255,255,0.12); }
+
+    .download-btn {
+      display: inline-flex; align-items: center; gap: 0.4rem;
+      padding: 0.7rem 1.5rem; border-radius: var(--radius);
+      font-size: 0.9rem; font-weight: 700; min-height: 44px;
+      background: var(--primary); color: #fff;
+      transition: all var(--ease); margin-top: 1rem;
+    }
+    .download-btn:hover { background: var(--primary-dark); transform: translateY(-1px); }
+
+    .modes { padding: 0 1.25rem 3rem; max-width: 900px; margin: 0 auto; }
+    .modes h2 { font-size: clamp(1.3rem, 3vw, 1.75rem); font-weight: 800; margin-bottom: 1.5rem; text-align: center; }
+    .mode-grid { display: grid; grid-template-columns: 1fr; gap: 1.25rem; }
+    @media (min-width: 560px) { .mode-grid { grid-template-columns: repeat(3,1fr); } }
+
+    .mode-card {
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: var(--radius-lg); overflow: hidden;
+      transition: transform var(--ease), box-shadow var(--ease);
+    }
+    .mode-card:hover { transform: translateY(-4px); box-shadow: var(--shadow); }
+    .mode-card img { width: 100%; aspect-ratio: 16/9; object-fit: cover; }
+    .mode-card h3 { font-size: 1rem; font-weight: 700; padding: 1rem 1rem 0.3rem; }
+    .mode-card p  { font-size: 0.82rem; color: var(--text-muted); padding: 0 1rem 1rem; line-height: 1.6; }
+
+    .toast {
+      position: fixed; bottom: 1.5rem; left: 50%; transform: translateX(-50%);
+      background: #10b981; color: #fff; padding: 0.65rem 1.5rem;
+      border-radius: 999px; font-size: 0.875rem; font-weight: 700;
+      opacity: 0; transition: opacity 0.3s ease; pointer-events: none; z-index: 9999;
+    }
+    .toast.show { opacity: 1; }
+  </style>
 </head>
 <body>
-    <nav>
-		<div class="logo">Đảo Tò Mò</div>
-		<ul>
-			<li><a href="../index.html">Trang chủ</a></li>
-			<li><a href="../html/Server.html">Server</a></li>
-			<li><a href="../html/Map.html">Map</a></li>
-			<li><a href="../html/discord.html">Discord</a></li>
-			<li><a href="../html/Store.html">Cửa hàng</a></li>
-			<li><a href="../html/Account.html">Tài khoản</a></li>
-		</ul>
-	</nav>
 
-    <section class="server-hero">
-	    <h1>Server Minecraft</h1>
-	    <p>Khám phá thế giới sinh tồn cực chill</p>
-    </section>
+<nav>
+  <div class="nav-logo">🏝️ Đảo Tò Mò</div>
+  <button class="hamburger" id="hamburger" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
+  <ul id="nav-list">
+    <li><a href="/index.html">🏠 Trang chủ</a></li>
+    <li><a href="/html/Server.html">⚔️ Server</a></li>
+    <li><a href="/html/Map.html">🗺️ Map</a></li>
+    <li><a href="/html/Discord.html">💬 Discord</a></li>
+    <li><a href="/html/Store.html">🛒 Cửa hàng</a></li>
+    <li><a href="/html/Account.html" id="nav-account-link">🔑 Tài khoản</a></li>
+  </ul>
+</nav>
 
-    <section class="server-info">
-        <div class="server-grid">
-            <div class="server-card">
-                <h2>Thông tin Server</h2>
-                <p class="server-ip">Daotomo.site</p>
-                <p class="server-ip alt-ip">Daotomo.site:25052</p>
-                <p>Loader: Fabric, Forge, Neoforge</p>
-                <p>Version: 1.21.4</p>
-                <button class="copy-btn" onclick="copyIP('Daotomo.site')">Copy IP</button>
-                <button class="copy-btn alt" onclick="copyIP('Daotomo.site:25052')">Copy IP phụ</button>
-            </div>
-            <div class="server-card">
-                <h2>Tải Modpack</h2>
-                <p>Tải modpack để trải nghiệm đầy đủ tính năng server</p>
-                <a href="#" class="download-btn">Tải Modpack</a>
-            </div>
+<div class="page-body">
+  <section class="server-hero">
+    <div>
+      <h1>⚔️ Server Minecraft</h1>
+      <p>Khám phá thế giới sinh tồn cực chill cùng cộng đồng Đảo Tò Mò</p>
+    </div>
+  </section>
+
+  <section class="server-info">
+    <div class="server-grid">
+      <div class="server-card">
+        <h2>📡 Thông tin Server</h2>
+        <p>IP chính:</p>
+        <div class="ip-box">Daotomo.site</div>
+        <p>IP phụ:</p>
+        <div class="ip-box" style="font-size:0.95rem">Daotomo.site:25052</div>
+        <p>Loader: <strong style="color:var(--text)">Fabric, Forge, Neoforge</strong></p>
+        <p>Version: <strong style="color:var(--text)">1.21.4</strong></p>
+        <div>
+          <button class="copy-btn" onclick="copyIP('Daotomo.site')">📋 Copy IP</button>
+          <button class="copy-btn alt" onclick="copyIP('Daotomo.site:25052')">📋 Copy IP phụ</button>
         </div>
-    </section>
+      </div>
+      <div class="server-card">
+        <h2>📦 Tải Modpack</h2>
+        <p>Tải modpack để trải nghiệm đầy đủ tính năng server. Bao gồm tất cả mod cần thiết được cấu hình sẵn.</p>
+        <a href="#" class="download-btn">⬇️ Tải Modpack</a>
+      </div>
+    </div>
+  </section>
 
-    <section class="modes">
-	    <h2>Chế độ chơi</h2>
-	    <div class="mode-grid">
-            <div class="mode-card">
-                <img src="../img/survival.jpg">
-                <h3>Survival</h3>
-                <p>Khám phá thế giới sinh tồn, xây dựng và phát triển đảo của bạn.</p>
-            </div>
-            <div class="mode-card">
-                <img src="../img/economy.jpg">
-                <h3>Economy</h3>
-                <p>Trao đổi vật phẩm, xây shop và xây dựng nền kinh tế riêng.</p>
-            </div>
-            <div class="mode-card">
-                <img src="../img/event.jpg">
-                <h3>Event</h3>
-                <p>Tham gia sự kiện PvP, minigame và nhận phần thưởng hấp dẫn.</p> 
-            </div>
-        </div>
-    </section>
+  <section class="modes">
+    <h2>🎮 Chế độ chơi</h2>
+    <div class="mode-grid">
+      <div class="mode-card">
+        <img src="/img/survival.jpg" alt="Survival" loading="lazy">
+        <h3>🌲 Survival</h3>
+        <p>Khám phá thế giới sinh tồn, xây dựng và phát triển đảo của bạn.</p>
+      </div>
+      <div class="mode-card">
+        <img src="/img/economy.jpg" alt="Economy" loading="lazy">
+        <h3>💰 Economy</h3>
+        <p>Trao đổi vật phẩm, xây shop và xây dựng nền kinh tế riêng.</p>
+      </div>
+      <div class="mode-card">
+        <img src="/img/event.jpg" alt="Event" loading="lazy">
+        <h3>🎉 Event</h3>
+        <p>Tham gia sự kiện PvP, minigame và nhận phần thưởng hấp dẫn.</p>
+      </div>
+    </div>
+  </section>
+</div>
 
-    <footer>
-	    <div class="footer-wave"></div>
-	    <div class="footer-container">
-		    <div class="footer-col">
-			    <h3>Đảo Tò Mò</h3>
-			    <p>Cộng đồng game thủ nơi mọi người cùng khám phá, sinh tồn và giải trí.</p>
-		    </div>
-		    <div class="footer-col">
-			    <h3>Liên kết</h3>
-			    <a href="#">Trang chủ</a>
-			    <a href="#">Server</a>
-			    <a href="#">Map</a>
-			    <a href="#">Wiki</a>
-		    </div>
-		    <div class="footer-col">
-			    <h3>Cộng đồng</h3>
-			    <div class="socials">
-				    <a href="./html/Discord.html">Discord</a>
-					<a href="https://www.facebook.com/DragonKun1946">Facebook</a>
-			    </div>
-		    </div>
-		    <div class="footer-col">
-			    <h3>Thông tin</h3>
-			    <p>Server Minecraft sinh tồn dành cho cộng đồng Việt.</p>
-		    </div>
-	    </div>
-	    <div class="footer-line"></div>
-	    <div class="footer-bottom">
-		    © 2026 Đảo Tò Mò
-	    </div>
+<footer>
+  <div class="footer-grid">
+    <div class="footer-col"><h3>🏝️ Đảo Tò Mò</h3><p>Cộng đồng game thủ nơi mọi người cùng khám phá, sinh tồn và giải trí.</p></div>
+    <div class="footer-col"><h3>Liên kết</h3><a href="/index.html">Trang chủ</a><a href="/html/Server.html">Server</a><a href="/html/Map.html">Map</a><a href="/html/Store.html">Cửa hàng</a></div>
+    <div class="footer-col"><h3>Cộng đồng</h3><a href="/html/Discord.html">Discord</a><a href="https://www.facebook.com/DragonKun1946" target="_blank">Facebook</a></div>
+    <div class="footer-col"><h3>Thông tin</h3><p>Server Minecraft sinh tồn dành cho cộng đồng Việt.</p></div>
+  </div>
+  <div class="footer-bottom">© 2026 Đảo Tò Mò</div>
+</footer>
 
-    </footer>
-    <script>
-        function copyIP(){
-            navigator.clipboard.writeText("Daotomo.site");
-            alert("Đã copy IP: Daotomo.site");
-        }
-        function copyIP(ip){
-            navigator.clipboard.writeText(ip);
-            alert("Đã copy IP: " + ip);
-        }
-    </script>
+<div class="toast" id="toast"></div>
+<script src="/js/api.js"></script>
+<script>
+function copyIP(ip) {
+  navigator.clipboard.writeText(ip);
+  const t = document.getElementById('toast');
+  t.textContent = '✅ Đã copy: ' + ip;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2000);
+}
+</script>
 </body>
 </html>

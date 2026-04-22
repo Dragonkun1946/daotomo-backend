@@ -1,94 +1,151 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="../css/Discord.css">
-	<link rel="icon" type="image/jpg" href="../img/logo.jpg">
-    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <title>Máy Chủ Discord</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Discord — Đảo Tò Mò</title>
+  <link rel="icon" type="image/jpg" href="/img/logo.jpg">
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;500;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/global.css">
+  <style>
+    .discord-hero {
+      min-height: 45vh;
+      display: flex; align-items: center; justify-content: center;
+      text-align: center;
+      padding: calc(var(--nav-h) + 3rem) 1.25rem 3rem;
+      background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(88,101,242,0.18) 0%, transparent 70%),
+                  linear-gradient(180deg, #0a0e1a 0%, #0d1224 100%);
+    }
+    .discord-hero h1 {
+      font-size: clamp(2rem, 7vw, 3.5rem); font-weight: 800; margin-bottom: 0.75rem;
+      background: linear-gradient(135deg, #fff 30%, #818cf8 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+    .discord-hero p { color: var(--text-muted); font-size: clamp(0.9rem, 2vw, 1.05rem); max-width: 500px; margin: 0 auto; }
+
+    .discord-section { padding: 3rem 1.25rem; max-width: 900px; margin: 0 auto; }
+
+    .discord-box {
+      display: grid; grid-template-columns: 1fr;
+      gap: 1.5rem;
+    }
+    @media (min-width: 640px) { .discord-box { grid-template-columns: 1fr 1fr; } }
+
+    /* Info card */
+    .discord-info {
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: var(--radius-lg); padding: 2rem;
+    }
+    .discord-info h2 { font-size: 1.2rem; font-weight: 800; margin-bottom: 0.5rem; color: #818cf8; }
+    .discord-info > p { font-size: 0.875rem; color: var(--text-muted); margin-bottom: 1.25rem; line-height: 1.7; }
+
+    .discord-info ul { margin-bottom: 1.5rem; display: flex; flex-direction: column; gap: 0.5rem; }
+    .discord-info ul li {
+      display: flex; align-items: center; gap: 0.6rem;
+      font-size: 0.875rem; color: var(--text-muted);
+      padding: 0.5rem 0.75rem;
+      background: rgba(255,255,255,0.03); border-radius: 8px;
+      border: 1px solid var(--border);
+    }
+    .discord-info ul li::before { content: '✅'; flex-shrink: 0; }
+
+    .join-btn {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      padding: 0.875rem 2rem; border-radius: var(--radius);
+      background: #5865F2; color: #fff;
+      font-size: 1rem; font-weight: 800; min-height: 48px;
+      transition: all var(--ease);
+      box-shadow: 0 4px 20px rgba(88,101,242,0.35);
+      width: 100%; justify-content: center;
+    }
+    .join-btn:hover { background: #4752c4; transform: translateY(-2px); box-shadow: 0 8px 28px rgba(88,101,242,0.45); }
+
+    /* Stats card */
+    .discord-stats {
+      display: flex; flex-direction: column; gap: 1rem;
+    }
+    @media (min-width: 640px) { .discord-stats { flex-direction: column; } }
+
+    .stat {
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: var(--radius-lg); padding: 1.5rem;
+      text-align: center; flex: 1;
+      transition: transform var(--ease), box-shadow var(--ease);
+    }
+    .stat:hover { transform: translateY(-3px); box-shadow: var(--shadow); }
+    .stat h3 { font-size: 1.8rem; font-weight: 800; color: #818cf8; margin-bottom: 0.25rem; }
+    .stat p  { font-size: 0.82rem; color: var(--text-muted); font-weight: 600; }
+  </style>
 </head>
 <body>
-    <nav>
-		<div class="logo">Đảo Tò Mò</div>
-		<ul>
-			<li><a href="../index.html">Trang chủ</a></li>
-			<li><a href="../html/Server.html">Server</a></li>
-			<li><a href="../html/Map.html">Map</a></li>
-			<li><a href="../html/Discord.html">Discord</a></li>
-			<li><a href="../html/Store.html">Cửa hàng</a></li>
-			<li><a href="../html/Account.html">Tài khoản</a></li>
-		</ul>
-	</nav>
 
-    <section class="discord-hero">
-    	<div class="discord-content">
-        	<h1>Discord Chính Thức</h1>
-        	<p>Tham gia cộng đồng Đảo Tò Mò để cập nhật server, tham gia event và trò chuyện cùng mọi người.</p>
-        	<div class="discord-box">
-            	<div class="discord-info">
-                	<h2>Server Discord</h2>
-                	<p>Nơi giao lưu của cộng đồng Minecraft Đảo Tò Mò.</p>
-                	<ul>
-                    	<li>Thông báo update server</li>
-                    	<li>Event hàng tuần</li>
-                    	<li>Trao đổi vật phẩm</li>
-                    	<li>Hỗ trợ người chơi</li>
-                	</ul>
-                	<a class="join-btn" href="https://discord.gg/rNQ6ytnSg" target="_blank">
-                    	🚀 Tham gia ngay
-                	</a>
-            	</div>
-            	<div class="discord-stats">
-                	<div class="stat">
-                    	<h3>24/7</h3>
-                    	<p>Hoạt động</p>
-                	</div>
-                	<div class="stat">
-                    	<h3>Event</h3>
-                		<p>Hàng tuần</p>
-                	</div>
-               		 <div class="stat">
-                    	<h3>Trade</h3>
-                    	<p>Cộng đồng</p>
-                	</div>
-            	</div>
+<nav>
+  <div class="nav-logo">🏝️ Đảo Tò Mò</div>
+  <button class="hamburger" id="hamburger" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
+  <ul id="nav-list">
+    <li><a href="/index.html">🏠 Trang chủ</a></li>
+    <li><a href="/html/Server.html">⚔️ Server</a></li>
+    <li><a href="/html/Map.html">🗺️ Map</a></li>
+    <li><a href="/html/Discord.html">💬 Discord</a></li>
+    <li><a href="/html/Store.html">🛒 Cửa hàng</a></li>
+    <li><a href="/html/Account.html" id="nav-account-link">🔑 Tài khoản</a></li>
+  </ul>
+</nav>
 
-        	</div>
-    	</div>
-	</section>
+<div class="page-body">
+  <section class="discord-hero">
+    <div>
+      <h1>💬 Discord Chính Thức</h1>
+      <p>Tham gia cộng đồng Đảo Tò Mò để cập nhật server, tham gia event và trò chuyện cùng mọi người.</p>
+    </div>
+  </section>
 
-    <footer>
-	    <div class="footer-wave"></div>
-	    <div class="footer-container">
-		    <div class="footer-col">
-			    <h3>Đảo Tò Mò</h3>
-			    <p>Cộng đồng game thủ nơi mọi người cùng khám phá, sinh tồn và giải trí.</p>
-		    </div>
-		    <div class="footer-col">
-			    <h3>Liên kết</h3>
-			    <a href="#">Trang chủ</a>
-			    <a href="#">Server</a>
-			    <a href="#">Map</a>
-			    <a href="#">Wiki</a>
-		    </div>
-		    <div class="footer-col">
-			    <h3>Cộng đồng</h3>
-			    <div class="socials">
-				    <a href="./html/Discord.html">Discord</a>
-					<a href="https://www.facebook.com/DragonKun1946">Facebook</a>
-			    </div>
-		    </div>
-		    <div class="footer-col">
-			    <h3>Thông tin</h3>
-			    <p>Server Minecraft sinh tồn dành cho cộng đồng Việt.</p>
-		    </div>
-	    </div>
-	    <div class="footer-line"></div>
-	    <div class="footer-bottom">
-		    © 2026 Đảo Tò Mò
-	    </div>
+  <div class="discord-section">
+    <div class="discord-box">
+      <div class="discord-info">
+        <h2>🏝️ Server Discord</h2>
+        <p>Nơi giao lưu của cộng đồng Minecraft Đảo Tò Mò — luôn sôi động và thân thiện.</p>
+        <ul>
+          <li>Thông báo update server</li>
+          <li>Event hàng tuần</li>
+          <li>Trao đổi vật phẩm</li>
+          <li>Hỗ trợ người chơi</li>
+        </ul>
+        <a class="join-btn" href="https://discord.gg/rNQ6ytnSg" target="_blank">
+          🚀 Tham gia ngay
+        </a>
+      </div>
 
-    </footer>
+      <div class="discord-stats">
+        <div class="stat">
+          <h3>24/7</h3>
+          <p>Hoạt động liên tục</p>
+        </div>
+        <div class="stat">
+          <h3>🎉</h3>
+          <p>Event hàng tuần</p>
+        </div>
+        <div class="stat">
+          <h3>💱</h3>
+          <p>Trade cộng đồng</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-grid">
+    <div class="footer-col"><h3>🏝️ Đảo Tò Mò</h3><p>Cộng đồng game thủ nơi mọi người cùng khám phá, sinh tồn và giải trí.</p></div>
+    <div class="footer-col"><h3>Liên kết</h3><a href="/index.html">Trang chủ</a><a href="/html/Server.html">Server</a><a href="/html/Map.html">Map</a><a href="/html/Store.html">Cửa hàng</a></div>
+    <div class="footer-col"><h3>Cộng đồng</h3><a href="/html/Discord.html">Discord</a><a href="https://www.facebook.com/DragonKun1946" target="_blank">Facebook</a></div>
+    <div class="footer-col"><h3>Thông tin</h3><p>Server Minecraft sinh tồn dành cho cộng đồng Việt.</p></div>
+  </div>
+  <div class="footer-bottom">© 2026 Đảo Tò Mò</div>
+</footer>
+
+<script src="/js/api.js"></script>
 </body>
 </html>
