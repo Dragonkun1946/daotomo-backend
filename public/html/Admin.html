@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin — Đảo Tò Mò</title>
+  <link rel="icon" type="image/x-icon" href="/img/favicon.ico">
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;500;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/global.css">
+  <style>
+    .admin-wrap { max-width: 1000px; margin: 0 auto; padding: 2rem 1.25rem 3rem; }
+    .admin-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem;
+    }
+    .admin-header h1 { font-size: 1.5rem; font-weight: 800; }
+
+    /* ── Tabs ── */
+    .tab-bar {
+      display: flex; gap: 0.5rem; margin-bottom: 2rem;
+      border-bottom: 1px solid var(--border); padding-bottom: 0;
+    }
+    .tab-btn {
+      padding: 0.6rem 1.2rem; border-radius: var(--radius) var(--radius) 0 0;
+      font-size: 0.875rem; font-weight: 700; color: var(--text-muted);
+      background: none; border-bottom: 3px solid transparent;
+      transition: all var(--ease); margin-bottom: -1px;
+    }
+    .tab-btn.active { color: var(--primary); border-bottom-color: var(--primary); }
+
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    /* ── Add product form ── */
+    .form-card {
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: var(--radius-lg); padding: 1.75rem;
+      margin-bottom: 2rem;
+    }
+    .form-card h2 { font-size: 1rem; font-weight: 800; margin-bottom: 1.25rem; color: var(--primary); }
+
+    .form-grid {
+      display: grid; grid-template-columns: 1fr;
+      gap: 0.875rem;
+    }
+    @media (min-width: 600px) { .form-grid { grid-template-columns: 1fr 1fr; } }
+
+    .form-grid .full { grid-column: 1 / -1; }
+
+    select.input {
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2394a3b8' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 1rem center;
+      padding-right: 2.5rem;
+    }
+
+    .img-preview {
+      width: 100%; aspect-ratio: 1; max-width: 120px;
+      border: 2px dashed var(--border); border-radius: var(--radius);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 2rem; color: var(--text-muted);
+      overflow: hidden; margin-top: 0.5rem;
+    }
+    .img-preview img { width: 100%; height: 100%; object-fit: cover; }
+
+    /* ── Product list ── */
+    .product-table { width: 100%; border-collapse: collapse; }
+    .product-table th {
+      text-align: left; font-size: 0.75rem; font-weight: 700;
+      color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px;
+      padding: 0.75rem 1rem; border-bottom: 1px solid var(--border);
+    }
+    .product-table td {
+      padding: 0.875rem 1rem; border-bottom: 1px solid var(--border);
+      font-size: 0.875rem; vertical-align: middle;
+    }
+    .product-table tr:last-child td { border-bottom: none; }
+    .product-table tr:hover td { background: rgba(255,255,255,0.02); }
+
+    .product-table .prod-img {
+      width: 44px; height: 44px; border-radius: 8px;
+      object-fit: contain; background: rgba(255,255,255,0.05);
+      border: 1px solid var(--border); padding: 4px;
+    }
+    .product-table .prod-name { font-weight: 700; }
+    .product-table .prod-price { color: var(--accent); font-weight: 800; }
+
+    .action-btns { display: flex; gap: 0.4rem; }
+    .btn-edit { padding: 0.35rem 0.75rem; border-radius: 6px; font-size: 0.75rem; font-weight: 700; background: rgba(108,99,255,0.15); color: #a78bfa; transition: all var(--ease); }
+    .btn-edit:hover { background: rgba(108,99,255,0.25); }
+    .btn-del  { padding: 0.35rem 0.75rem; border-radius: 6px; font-size: 0.75rem; font-weight: 700; background: rgba(239,68,68,0.12); color: #f87171; transition: all var(--ease); }
+    .btn-del:hover  { background: rgba(239,68,68,0.22); }
+
+    .stock-toggle {
+      display: inline-flex; align-items: center; gap: 0.4rem;
+      font-size: 0.75rem; font-weight: 700;
+      padding: 0.25rem 0.6rem; border-radius: 999px;
+    }
+    .in-stock    { background: rgba(16,185,129,0.15); color: #34d399; }
+    .out-of-stock{ background: rgba(239,68,68,0.15);  color: #f87171; }
+
+    /* Orders table */
+    .orders-table { width: 100%; border-collapse: collapse; }
+    .orders-table th { text-align:left; font-size:0.75rem; font-weight:700; color:var(--text-muted); text-transform:uppercase; padding:0.75rem 1rem; border-bottom:1px solid var(--border); }
+    .orders-table td { padding:0.875rem 1rem; border-bottom:1px solid var(--border); font-size:0.82rem; }
+    .orders-table tr:last-child td { border-bottom:none; }
+
+    .no-data { text-align:center; padding:3rem; color:var(--text-muted); font-size:0.875rem; }
+
+    /* Modal edit */
+    .modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.8); z-index:2000; align-items:center; justify-content:center; padding:1rem; }
+    .modal-overlay.open { display:flex; }
+    .modal { background:var(--bg-card); border:1px solid var(--border); border-radius:var(--radius-lg); padding:1.75rem; width:100%; max-width:500px; animation:slideUp .25s ease; }
+    @keyframes slideUp { from{transform:translateY(20px);opacity:0} to{transform:translateY(0);opacity:1} }
+    .modal h2 { font-size:1.1rem; font-weight:800; margin-bottom:1.25rem; }
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo"><img src="/img/logo.jpg" alt="logo"> Đảo Tò Mò</div>
+  <button class="hamburger" id="hamburger" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
+  <ul id="nav-list">
+    <li><a href="/index.html">🏠 Trang chủ</a></li>
+    <li><a href="/html/Server.html">⚔️ Server</a></li>
+    <li><a href="/html/Map.html">🗺️ Map</a></li>
+    <li><a href="/html/Discord.html">💬 Discord</a></li>
+    <li><a href="/html/Store.html">🛒 Cửa hàng</a></li>
+    <li><a href="/html/Account.html" id="nav-account-link">🔑 Tài khoản</a></li>
+  </ul>
+</nav>
+
+<div class="page-body">
+  <div class="admin-wrap">
+    <div class="admin-header">
+      <div>
+        <h1>⚙️ Trang Admin</h1>
+        <p class="text-muted" style="font-size:.85rem">Quản lý sản phẩm và đơn hàng</p>
+      </div>
+      <a href="/html/Store.html" class="btn btn-ghost" style="font-size:.85rem">← Về cửa hàng</a>
+    </div>
+
+    <div id="auth-check" class="alert alert-error hidden">⛔ Bạn không có quyền truy cập trang này.</div>
+
+    <div id="admin-content" class="hidden">
+      <div class="tab-bar">
+        <button class="tab-btn active" onclick="switchTab('products')">📦 Sản phẩm</button>
+        <button class="tab-btn" onclick="switchTab('orders')">🧾 Đơn hàng</button>
+      </div>
+
+      <!-- PRODUCTS TAB -->
+      <div class="tab-panel active" id="tab-products">
+
+        <!-- Add product form -->
+        <div class="form-card">
+          <h2>➕ Thêm sản phẩm mới</h2>
+          <div id="form-msg"></div>
+          <div class="form-grid">
+            <div class="form-group">
+              <label>Tên sản phẩm *</label>
+              <input class="input" type="text" id="p-name" placeholder="VD: Hòm Epic">
+            </div>
+            <div class="form-group">
+              <label>Giá (VNĐ) *</label>
+              <input class="input" type="number" id="p-price" placeholder="VD: 20000" min="0">
+            </div>
+            <div class="form-group full">
+              <label>Mô tả *</label>
+              <input class="input" type="text" id="p-desc" placeholder="VD: Mở hòm nhận vật phẩm ngẫu nhiên">
+            </div>
+            <div class="form-group">
+              <label>Đường dẫn ảnh *</label>
+              <input class="input" type="text" id="p-img" placeholder="/img/item1.png" oninput="previewImg(this.value)">
+              <div class="img-preview" id="img-preview">🖼️</div>
+            </div>
+            <div class="form-group">
+              <label>Danh mục</label>
+              <select class="input" id="p-cat">
+                <option value="crate">📦 Hòm (Crate)</option>
+                <option value="cosmetic">✨ Cosmetic</option>
+                <option value="pet">🐾 Pet</option>
+                <option value="key">🗝️ Key</option>
+                <option value="bundle">🎒 Bundle</option>
+                <option value="vip">👑 VIP</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Phần thưởng game</label>
+              <input class="input" type="text" id="p-reward" placeholder="VD: epic_crate_x1">
+            </div>
+            <div class="form-group">
+              <label>Nổi bật?</label>
+              <select class="input" id="p-featured">
+                <option value="false">Không</option>
+                <option value="true">Có ⭐</option>
+              </select>
+            </div>
+            <div class="form-group full" style="display:flex;gap:.75rem;margin-top:.25rem">
+              <button class="btn btn-primary" onclick="addProduct()" id="add-btn" style="flex:1">
+                ➕ Thêm sản phẩm
+              </button>
+              <button class="btn btn-ghost" onclick="clearForm()">Xoá form</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Product list -->
+        <div class="form-card" style="padding:0;overflow:hidden">
+          <div style="padding:1.25rem 1.75rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center">
+            <h2 style="margin:0">📋 Danh sách sản phẩm</h2>
+            <button class="btn btn-ghost" style="font-size:.8rem;padding:.4rem .875rem" onclick="loadProducts()">🔄 Tải lại</button>
+          </div>
+          <div style="overflow-x:auto">
+            <table class="product-table">
+              <thead>
+                <tr>
+                  <th>Ảnh</th>
+                  <th>Tên</th>
+                  <th>Giá</th>
+                  <th>Danh mục</th>
+                  <th>Tình trạng</th>
+                  <th>Hành động</th>
+                </tr>
+              </thead>
+              <tbody id="product-tbody">
+                <tr><td colspan="6" class="no-data"><div class="spinner"></div></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ORDERS TAB -->
+      <div class="tab-panel" id="tab-orders">
+        <div class="form-card" style="padding:0;overflow:hidden">
+          <div style="padding:1.25rem 1.75rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center">
+            <h2 style="margin:0">🧾 Tất cả đơn hàng</h2>
+            <button class="btn btn-ghost" style="font-size:.8rem;padding:.4rem .875rem" onclick="loadOrders()">🔄 Tải lại</button>
+          </div>
+          <div style="overflow-x:auto">
+            <table class="orders-table">
+              <thead>
+                <tr>
+                  <th>Mã đơn</th>
+                  <th>Người dùng</th>
+                  <th>Tổng tiền</th>
+                  <th>Trạng thái</th>
+                  <th>Ngày</th>
+                  <th>Cập nhật</th>
+                </tr>
+              </thead>
+              <tbody id="orders-tbody">
+                <tr><td colspan="6" class="no-data"><div class="spinner"></div></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Edit modal -->
+<div class="modal-overlay" id="edit-modal">
+  <div class="modal">
+    <h2>✏️ Sửa sản phẩm</h2>
+    <div id="edit-msg"></div>
+    <input type="hidden" id="edit-id">
+    <div class="form-group"><label>Tên</label><input class="input" type="text" id="edit-name"></div>
+    <div class="form-group"><label>Giá</label><input class="input" type="number" id="edit-price"></div>
+    <div class="form-group"><label>Mô tả</label><input class="input" type="text" id="edit-desc"></div>
+    <div class="form-group"><label>Ảnh URL</label><input class="input" type="text" id="edit-img"></div>
+    <div class="form-group">
+      <label>Tình trạng</label>
+      <select class="input" id="edit-stock">
+        <option value="true">Còn hàng</option>
+        <option value="false">Hết hàng</option>
+      </select>
+    </div>
+    <div style="display:flex;gap:.75rem;margin-top:1rem">
+      <button class="btn btn-primary" style="flex:1" onclick="saveEdit()">💾 Lưu</button>
+      <button class="btn btn-ghost" onclick="closeEdit()">Huỷ</button>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-grid">
+    <div class="footer-col"><h3>🏝️ Đảo Tò Mò</h3><p>Cộng đồng game thủ Việt chill nhất.</p></div>
+    <div class="footer-col"><h3>Liên kết</h3><a href="/index.html">Trang chủ</a><a href="/html/Store.html">Cửa hàng</a></div>
+    <div class="footer-col"><h3>Cộng đồng</h3><a href="/html/Discord.html">Discord</a><a href="https://www.facebook.com/DragonKun1946" target="_blank">Facebook</a></div>
+    <div class="footer-col"><h3>Thông tin</h3><p>Server Minecraft sinh tồn dành cho cộng đồng Việt.</p></div>
+  </div>
+  <div class="footer-bottom">© 2026 Đảo Tò Mò</div>
+</footer>
+
+<script src="/js/api.js"></script>
+<script>
+const API_ADMIN = 'https://daotomo-backend.onrender.com/api';
+const catLabel = { crate:'📦 Hòm', cosmetic:'✨ Cosmetic', pet:'🐾 Pet', key:'🗝️ Key', bundle:'🎒 Bundle', vip:'👑 VIP' };
+const statusLabel = { pending:'⏳ Chờ TT', paid:'✅ Đã TT', delivered:'🎁 Đã giao', cancelled:'❌ Đã huỷ' };
+const statusClass = { pending:'badge-gold', paid:'badge-green', delivered:'badge-purple', cancelled:'badge-red' };
+
+/* ── Auth check ── */
+document.addEventListener('DOMContentLoaded', async () => {
+  if (!api.isLoggedIn()) {
+    document.getElementById('auth-check').classList.remove('hidden');
+    document.getElementById('auth-check').textContent = '⛔ Bạn chưa đăng nhập.';
+    return;
+  }
+  try {
+    const { user } = await api.getMe();
+    if (user.role !== 'admin') {
+      document.getElementById('auth-check').classList.remove('hidden');
+      return;
+    }
+    document.getElementById('admin-content').classList.remove('hidden');
+    loadProducts();
+  } catch(e) {
+    document.getElementById('auth-check').classList.remove('hidden');
+  }
+});
+
+/* ── Tabs ── */
+function switchTab(name) {
+  document.querySelectorAll('.tab-btn').forEach((b,i) => b.classList.toggle('active', ['products','orders'][i] === name));
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  if (name === 'orders') loadOrders();
+}
+
+/* ── Image preview ── */
+function previewImg(url) {
+  const box = document.getElementById('img-preview');
+  if (!url) { box.innerHTML = '🖼️'; return; }
+  box.innerHTML = `<img src="${url}" onerror="this.parentElement.innerHTML='❌'">`;
+}
+
+/* ── Clear form ── */
+function clearForm() {
+  ['p-name','p-price','p-desc','p-img','p-reward'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('p-cat').value = 'crate';
+  document.getElementById('p-featured').value = 'false';
+  document.getElementById('img-preview').innerHTML = '🖼️';
+  document.getElementById('form-msg').innerHTML = '';
+}
+
+/* ── Add product ── */
+async function addProduct() {
+  const name     = document.getElementById('p-name').value.trim();
+  const price    = parseInt(document.getElementById('p-price').value);
+  const desc     = document.getElementById('p-desc').value.trim();
+  const image    = document.getElementById('p-img').value.trim();
+  const category = document.getElementById('p-cat').value;
+  const reward   = document.getElementById('p-reward').value.trim();
+  const featured = document.getElementById('p-featured').value === 'true';
+
+  if (!name || !price || !desc || !image) {
+    document.getElementById('form-msg').innerHTML = '<div class="alert alert-error">Vui lòng điền đầy đủ thông tin bắt buộc (*).</div>';
+    return;
+  }
+
+  const btn = document.getElementById('add-btn');
+  btn.disabled = true; btn.textContent = 'Đang thêm...';
+  document.getElementById('form-msg').innerHTML = '';
+
+  try {
+    const token = api.getToken();
+    const res = await fetch(`${API_ADMIN}/products`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+      body: JSON.stringify({ name, price, description: desc, image, category, gameReward: reward, featured, inStock: true })
+    });
+    const data = await res.json();
+    if (!data.success) throw new Error(data.message);
+    document.getElementById('form-msg').innerHTML = '<div class="alert alert-success">✅ Thêm sản phẩm thành công!</div>';
+    clearForm();
+    loadProducts();
+  } catch(e) {
+    document.getElementById('form-msg').innerHTML = `<div class="alert alert-error">❌ ${e.message}</div>`;
+  } finally {
+    btn.disabled = false; btn.textContent = '➕ Thêm sản phẩm';
+  }
+}
+
+/* ── Load products ── */
+async function loadProducts() {
+  const tbody = document.getElementById('product-tbody');
+  tbody.innerHTML = '<tr><td colspan="6" class="no-data"><div class="spinner"></div></td></tr>';
+  try {
+    const { data } = await api.getProducts();
+    if (!data.length) { tbody.innerHTML = '<tr><td colspan="6" class="no-data">Chưa có sản phẩm nào.</td></tr>'; return; }
+    tbody.innerHTML = data.map(p => `
+      <tr>
+        <td><img class="prod-img" src="${p.image}" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 40 40%22><rect fill=%22%23222%22 width=%2240%22 height=%2240%22/><text x=%2250%25%22 y=%2255%25%22 font-size=%2220%22 text-anchor=%22middle%22>🎁</text></svg>'"></td>
+        <td><div class="prod-name">${p.name}</div><div style="font-size:.72rem;color:var(--text-muted)">${p.gameReward || ''}</div></td>
+        <td class="prod-price">${p.price.toLocaleString('vi-VN')}đ</td>
+        <td>${catLabel[p.category] || p.category}</td>
+        <td><span class="stock-toggle ${p.inStock ? 'in-stock' : 'out-of-stock'}">${p.inStock ? '✅ Còn hàng' : '❌ Hết hàng'}</span></td>
+        <td>
+          <div class="action-btns">
+            <button class="btn-edit" onclick="openEdit('${p._id}','${p.name}',${p.price},'${p.description}','${p.image}',${p.inStock})">✏️ Sửa</button>
+            <button class="btn-del"  onclick="deleteProduct('${p._id}','${p.name}')">🗑️ Xoá</button>
+          </div>
+        </td>
+      </tr>
+    `).join('');
+  } catch(e) {
+    tbody.innerHTML = `<tr><td colspan="6" class="no-data">❌ ${e.message}</td></tr>`;
+  }
+}
+
+/* ── Delete product ── */
+async function deleteProduct(id, name) {
+  if (!confirm(`Xoá sản phẩm "${name}"?\nHành động này không thể hoàn tác!`)) return;
+  try {
+    const token = api.getToken();
+    const res = await fetch(`${API_ADMIN}/products/${id}`, {
+      method: 'DELETE',
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    const data = await res.json();
+    if (!data.success) throw new Error(data.message);
+    loadProducts();
+  } catch(e) { alert('❌ ' + e.message); }
+}
+
+/* ── Edit product ── */
+function openEdit(id, name, price, desc, img, inStock) {
+  document.getElementById('edit-id').value    = id;
+  document.getElementById('edit-name').value  = name;
+  document.getElementById('edit-price').value = price;
+  document.getElementById('edit-desc').value  = desc;
+  document.getElementById('edit-img').value   = img;
+  document.getElementById('edit-stock').value = String(inStock);
+  document.getElementById('edit-modal').classList.add('open');
+}
+function closeEdit() { document.getElementById('edit-modal').classList.remove('open'); }
+
+async function saveEdit() {
+  const id    = document.getElementById('edit-id').value;
+  const body  = {
+    name:        document.getElementById('edit-name').value.trim(),
+    price:       parseInt(document.getElementById('edit-price').value),
+    description: document.getElementById('edit-desc').value.trim(),
+    image:       document.getElementById('edit-img').value.trim(),
+    inStock:     document.getElementById('edit-stock').value === 'true',
+  };
+  try {
+    const token = api.getToken();
+    const res = await fetch(`${API_ADMIN}/products/${id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+      body: JSON.stringify(body)
+    });
+    const data = await res.json();
+    if (!data.success) throw new Error(data.message);
+    closeEdit();
+    loadProducts();
+  } catch(e) {
+    document.getElementById('edit-msg').innerHTML = `<div class="alert alert-error">❌ ${e.message}</div>`;
+  }
+}
+
+/* ── Load orders ── */
+async function loadOrders() {
+  const tbody = document.getElementById('orders-tbody');
+  tbody.innerHTML = '<tr><td colspan="6" class="no-data"><div class="spinner"></div></td></tr>';
+  try {
+    const token = api.getToken();
+    const res = await fetch(`${API_ADMIN}/orders`, { headers: { 'Authorization': `Bearer ${token}` } });
+    const { data } = await res.json();
+    if (!data.length) { tbody.innerHTML = '<tr><td colspan="6" class="no-data">Chưa có đơn hàng nào.</td></tr>'; return; }
+    tbody.innerHTML = data.map(o => `
+      <tr>
+        <td style="font-family:monospace;font-size:.75rem">#${o._id.slice(-8).toUpperCase()}</td>
+        <td>${o.user?.username || '—'}<br><span style="font-size:.72rem;color:var(--text-muted)">${o.user?.email || ''}</span></td>
+        <td style="font-weight:800;color:var(--accent)">${o.total.toLocaleString('vi-VN')}đ</td>
+        <td><span class="badge ${statusClass[o.status]}">${statusLabel[o.status]||o.status}</span></td>
+        <td style="font-size:.78rem;color:var(--text-muted)">${new Date(o.createdAt).toLocaleDateString('vi-VN')}</td>
+        <td>
+          <select onchange="updateStatus('${o._id}',this.value)" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:.3rem .5rem;color:var(--text);font-size:.78rem;font-family:inherit">
+            <option value="pending"   ${o.status==='pending'   ?'selected':''}>⏳ Chờ TT</option>
+            <option value="paid"      ${o.status==='paid'      ?'selected':''}>✅ Đã TT</option>
+            <option value="delivered" ${o.status==='delivered' ?'selected':''}>🎁 Đã giao</option>
+            <option value="cancelled" ${o.status==='cancelled' ?'selected':''}>❌ Đã huỷ</option>
+          </select>
+        </td>
+      </tr>
+    `).join('');
+  } catch(e) {
+    tbody.innerHTML = `<tr><td colspan="6" class="no-data">❌ ${e.message}</td></tr>`;
+  }
+}
+
+/* ── Update order status ── */
+async function updateStatus(id, status) {
+  try {
+    const token = api.getToken();
+    await fetch(`${API_ADMIN}/orders/${id}/status`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+      body: JSON.stringify({ status })
+    });
+  } catch(e) { alert('❌ ' + e.message); }
+}
+
+/* ── Close modals on overlay click ── */
+document.getElementById('edit-modal').addEventListener('click', e => {
+  if (e.target === e.currentTarget) closeEdit();
+});
+</script>
+</body>
+</html>

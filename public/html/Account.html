@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Tài khoản — Đảo Tò Mò</title>
-  <link rel="icon" type="image/jpg" href="/img/logo.jpg">
+  <link rel="icon" type="image/x-icon" href="/img/favicon.ico">
   <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;500;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/css/global.css">
   <style>
@@ -99,7 +99,7 @@
 <body>
 
 <nav>
-  <div class="nav-logo">🏝️ Đảo Tò Mò</div>
+  <div class="nav-logo"><img src="/img/logo.jpg" alt="logo"> Đảo Tò Mò</div>
   <button class="hamburger" id="hamburger" aria-label="Menu">
     <span></span><span></span><span></span>
   </button>
@@ -188,7 +188,13 @@
         <div id="orders-list"><div class="spinner"></div></div>
       </div>
 
-      <button class="btn btn-full mt-3"
+      <div id="admin-link-wrap" class="hidden">
+        <a href="/html/Admin.html" class="btn btn-full mt-2"
+          style="background:rgba(245,158,11,.12);color:#fbbf24;border:1.5px solid rgba(245,158,11,.3)">
+          ⚙️ Trang Admin
+        </a>
+      </div>
+      <button class="btn btn-full mt-2"
         style="border:1.5px solid var(--danger);color:var(--danger);background:rgba(239,68,68,.08)"
         onclick="doLogout()">
         Đăng xuất
@@ -292,6 +298,9 @@ function showProfile(user) {
   const badge = document.getElementById('p-badge');
   badge.textContent = user.role === 'admin' ? '⭐ Admin' : '🎮 Player';
   badge.className = 'badge mb-2 ' + (user.role === 'admin' ? 'badge-gold' : 'badge-purple');
+  // Show admin link if admin
+  const adminWrap = document.getElementById('admin-link-wrap');
+  if (adminWrap && user.role === 'admin') adminWrap.classList.remove('hidden');
   // Update nav
   const nav = document.getElementById('nav-account-link');
   if (nav) nav.textContent = '👤 ' + user.username;

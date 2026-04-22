@@ -56,10 +56,19 @@ nav {
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  height: 36px;
-  width: auto;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.nav-logo img {
+  height: 34px;
+  width: 34px;
   border-radius: 50%;
   object-fit: cover;
+  border: 2px solid rgba(167,139,250,0.5);
+  flex-shrink: 0;
+  -webkit-text-fill-color: initial;
+  background: none;
 }
 .hamburger {
   display: flex;

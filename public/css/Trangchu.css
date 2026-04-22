@@ -9,8 +9,8 @@
   text-align: center;
   padding: calc(var(--nav-h) + 2rem) 1.25rem 3rem;
   background:
-    radial-gradient(ellipse 80% 60% at 50% 0%, rgba(108,99,255,0.18) 0%, transparent 70%),
-    linear-gradient(180deg, #0a0e1a 0%, #0d1224 100%);
+    linear-gradient(180deg, rgba(10,14,26,0.5) 0%, rgba(10,14,26,0.7) 100%),
+    url('/img/bg.jpg') center/cover no-repeat;
   position: relative;
   overflow: hidden;
 }
