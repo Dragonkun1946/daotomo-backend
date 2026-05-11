@@ -1,127 +1,35 @@
-/* global.css - Đảo Tò Mò Peak Version */
+/* global.css cũ - phiên bản trước khi sửa mạnh */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
-:root {
-  --primary: #6366f1;
-  --primary-dark: #4f46e5;
-  --accent: #f59e0b;
-  --bg: #0f172a;
-  --card: #1e2937;
-  --text: #e2e8f0;
-  --muted: #94a3b8;
-}
-
 body {
-  font-family: 'Segoe UI', system-ui, sans-serif;
-  background: var(--bg);
-  color: var(--text);
-  line-height: 1.6;
-  overflow-x: hidden;
+  font-family: 'Be Vietnam Pro', sans-serif;
+  background: #0a0e1a;
+  color: #e2e8f0;
 }
 
-img { max-width: 100%; display: block; }
-
-/* Navbar */
 nav {
   position: fixed;
   top: 0;
   width: 100%;
-  background: rgba(15, 23, 42, 0.95);
-  backdrop-filter: blur(12px);
+  background: rgba(10, 14, 26, 0.95);
   z-index: 1000;
-  padding: 0 5%;
-  height: 70px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  border-bottom: 1px solid rgba(255,255,255,0.08);
 }
 
-.nav-logo {
-  font-size: 1.8rem;
-  font-weight: 700;
-  color: var(--primary);
-  text-shadow: 0 0 15px rgba(99, 102, 241, 0.5);
-}
-
-.nav-links a {
-  margin-left: 25px;
-  color: var(--text);
-  font-weight: 500;
-  transition: 0.3s;
-}
-
-.nav-links a:hover {
-  color: var(--primary);
-  text-shadow: 0 0 10px var(--primary);
-}
-
-/* Hero */
 .hero {
   height: 100vh;
-  background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.8)), url('../img/background.jpg') center/cover no-repeat;
+  background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.7)), url('../img/background.jpg') center/cover;
   display: flex;
   align-items: center;
+  justify-content: center;
   text-align: center;
-  position: relative;
 }
 
-.hero-content {
-  max-width: 900px;
-  margin: 0 auto;
-  padding: 0 20px;
-  animation: fadeInUp 1s ease forwards;
-}
-
-@keyframes fadeInUp {
-  from { opacity: 0; transform: translateY(50px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-.hero h1 {
-  font-size: 3.5rem;
-  margin-bottom: 20px;
-  background: linear-gradient(90deg, #6366f1, #a5b4fc);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
-.main-btn {
-  margin-top: 30px;
-  padding: 14px 40px;
-  background: var(--primary);
-  color: white;
-  font-size: 1.1rem;
-  border-radius: 50px;
-  transition: all 0.4s;
-}
-
-.main-btn:hover {
-  background: #4f46e5;
-  transform: scale(1.08);
-  box-shadow: 0 0 30px rgba(99, 102, 241, 0.6);
-}
-
-/* Card */
-.card {
-  background: var(--card);
-  border-radius: 16px;
-  overflow: hidden;
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  border: 1px solid rgba(255,255,255,0.06);
-}
-
-.card:hover {
-  transform: translateY(-12px);
-  box-shadow: 0 20px 40px rgba(0,0,0,0.4);
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-  .hero h1 { font-size: 2.6rem; }
-  .nav-links { display: none; } /* sẽ thêm mobile menu sau */
+.card, .post {
+  background: #111827;
+  border-radius: 12px;
+  padding: 15px;
 }
