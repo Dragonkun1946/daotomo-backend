@@ -18,21 +18,83 @@ button { cursor: pointer; border: none; font-family: inherit; }
 :root {
   --primary:     #6c63ff;
   --primary-dark:#4f46e5;
+  --primary-glow:rgba(108,99,255,0.45);
   --accent:      #f59e0b;
+  --accent-glow: rgba(245,158,11,0.4);
+  /* Lagoon teal — the island's water, second brand color */
+  --lagoon:      #22d3ee;
+  --lagoon-dark: #0891b2;
+  --lagoon-glow: rgba(34,211,238,0.35);
+
   --bg:          #0a0e1a;
   --bg-card:     #111827;
+  --bg-elevated: #161d2e;
   --bg-nav:      rgba(10,14,26,0.97);
   --border:      rgba(255,255,255,0.08);
+  --border-strong: rgba(255,255,255,0.16);
   --text:        #e2e8f0;
   --text-muted:  #94a3b8;
+  --text-dim:    #64748b;
   --success:     #10b981;
   --danger:      #ef4444;
+
+  --radius-sm:   8px;
   --radius:      12px;
   --radius-lg:   18px;
+  --radius-xl:   24px;
+
+  --shadow-sm:   0 2px 8px rgba(0,0,0,0.3);
   --shadow:      0 8px 32px rgba(0,0,0,0.4);
+  --shadow-lg:   0 20px 60px rgba(0,0,0,0.5);
+
   --nav-h:       60px;
+
+  /* Motion — one shared vocabulary for every page */
   --ease:        0.2s ease;
+  --ease-out:    cubic-bezier(0.16, 1, 0.3, 1);
+  --dur-fast:    150ms;
+  --dur:         250ms;
+  --dur-slow:    450ms;
+
+  /* Spacing rhythm — 4/8px base scale, used by new sections */
+  --sp-1: 0.25rem; --sp-2: 0.5rem;  --sp-3: 0.75rem; --sp-4: 1rem;
+  --sp-6: 1.5rem;  --sp-8: 2rem;    --sp-12: 3rem;   --sp-16: 4rem; --sp-24: 6rem;
+
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
 }
+
+/* Respect reduced-motion preference site-wide */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Visible, on-brand focus ring for keyboard users — every interactive element */
+a:focus-visible, button:focus-visible, input:focus-visible,
+textarea:focus-visible, select:focus-visible, summary:focus-visible,
+.card:focus-visible {
+  outline: 2px solid var(--lagoon);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Scroll-reveal utility — paired with a tiny IntersectionObserver in api.js */
+.reveal { opacity: 0; transform: translateY(18px); transition: opacity var(--dur-slow) var(--ease-out), transform var(--dur-slow) var(--ease-out); }
+.reveal.is-visible { opacity: 1; transform: translateY(0); }
+@media (prefers-reduced-motion: reduce) { .reveal { opacity: 1; transform: none; } }
+
+/* Mono utility for stats, numbers, HUD-style data — gives the gaming/technical feel */
+.mono { font-family: var(--font-mono); font-variant-numeric: tabular-nums; letter-spacing: -0.02em; }
+.eyebrow {
+  font-family: var(--font-mono); font-size: 0.72rem; font-weight: 600;
+  letter-spacing: 0.14em; text-transform: uppercase; color: var(--lagoon);
+  display: inline-flex; align-items: center; gap: 0.5rem;
+}
+.eyebrow::before { content: ''; width: 18px; height: 1.5px; background: var(--lagoon); display: inline-block; }
 
 /* ── Navbar ── */
 nav {
@@ -105,13 +167,16 @@ nav {
 @keyframes slideDown { from { opacity:0; transform:translateY(-8px); } to { opacity:1; transform:translateY(0); } }
 
 #nav-list li a {
-  display: flex; align-items: center;
+  display: flex; align-items: center; gap: 0.65rem;
   padding: 0.85rem 1.25rem;
   font-size: 0.95rem; font-weight: 500;
   color: var(--text-muted);
-  transition: all var(--ease);
+  transition: color var(--dur) var(--ease), background var(--dur) var(--ease), border-color var(--dur) var(--ease);
   border-left: 3px solid transparent;
 }
+#nav-list li a svg { width: 18px; height: 18px; flex-shrink: 0; stroke: currentColor; }
+.nav-icon { display: inline-flex; }
+.nav-icon svg { width: 18px; height: 18px; }
 #nav-list li a:hover, #nav-list li a.active {
   color: var(--primary);
   background: rgba(108,99,255,0.08);
@@ -157,6 +222,17 @@ nav {
 .btn-danger { background: var(--danger); color: #fff; }
 .btn-full { width: 100%; }
 .btn:disabled { opacity: 0.5; pointer-events: none; }
+.btn-lg { padding: 0.9rem 1.75rem; font-size: 1rem; min-height: 52px; }
+.btn.copied { background: var(--success) !important; color: #fff !important; border-color: var(--success) !important; }
+
+/* ── Skip link (keyboard a11y) ── */
+.skip-link {
+  position: absolute; top: -100px; left: 1rem; z-index: 2000;
+  background: var(--primary); color: #fff; padding: 0.75rem 1.25rem;
+  border-radius: var(--radius); font-weight: 700; font-size: 0.9rem;
+  transition: top var(--dur) var(--ease-out);
+}
+.skip-link:focus { top: 1rem; }
 
 /* ── Cards ── */
 .card {
@@ -222,6 +298,44 @@ footer {
 .footer-col p, .footer-col a { display: block; font-size: 0.82rem; color: var(--text-muted); line-height: 2; transition: color var(--ease); }
 .footer-col a:hover { color: var(--primary); }
 .footer-bottom { max-width: 1100px; margin: 1.5rem auto 0; padding-top: 1rem; border-top: 1px solid var(--border); text-align: center; font-size: 0.78rem; color: var(--text-muted); }
+
+/* ── Glass panel (used by HUD cards, floating widgets) ── */
+.glass-panel {
+  background: linear-gradient(160deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-lg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  box-shadow: var(--shadow);
+}
+
+/* ── FAQ accordion — native <details>/<summary>, zero JS, fully accessible ── */
+.faq-item { border-bottom: 1px solid var(--border); }
+.faq-item summary {
+  list-style: none; cursor: pointer;
+  display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+  padding: 1.1rem 0.25rem; font-weight: 700; font-size: 0.98rem; color: var(--text);
+}
+.faq-item summary::-webkit-details-marker { display: none; }
+.faq-item summary::after {
+  content: ''; flex-shrink: 0; width: 20px; height: 20px;
+  background: linear-gradient(45deg, transparent 46%, var(--text-muted) 46% 54%, transparent 54%),
+              linear-gradient(135deg, transparent 46%, var(--text-muted) 46% 54%, transparent 54%);
+  transition: transform var(--dur) var(--ease-out);
+}
+.faq-item[open] summary::after { transform: rotate(180deg); }
+.faq-item p { padding: 0 0.25rem 1.1rem; color: var(--text-muted); font-size: 0.9rem; line-height: 1.7; }
+
+/* ── Social icon buttons (footer) ── */
+.social-row { display: flex; gap: 0.6rem; margin-top: 0.9rem; }
+.social-btn {
+  width: 38px; height: 38px; display: flex; align-items: center; justify-content: center;
+  background: rgba(255,255,255,0.06); border: 1px solid var(--border);
+  border-radius: 10px; color: var(--text-muted);
+  transition: all var(--dur) var(--ease-out);
+}
+.social-btn svg { width: 18px; height: 18px; }
+.social-btn:hover { color: #fff; background: var(--primary); border-color: var(--primary); transform: translateY(-2px); }
 
 /* ── Utilities ── */
 .container { max-width: 1100px; margin: 0 auto; padding: 0 1.25rem; }

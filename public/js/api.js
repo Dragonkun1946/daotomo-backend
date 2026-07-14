@@ -64,6 +64,64 @@ document.addEventListener('DOMContentLoaded', () => {
   const navAcc = document.getElementById('nav-account-link');
   if (navAcc && api.isLoggedIn()) {
     const u = api.getUser();
-    if (u) navAcc.textContent = '👤 ' + u.username;
+    const label = navAcc.querySelector('span:last-child');
+    if (u && label) label.textContent = u.username;
+    else if (u) navAcc.textContent = u.username;
   }
+
+  /* ── Scroll-reveal for any .reveal element on any page ── */
+  const revealEls = document.querySelectorAll('.reveal');
+  if (revealEls.length) {
+    if ('IntersectionObserver' in window) {
+      const io = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-visible');
+            io.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.15, rootMargin: '0px 0px -40px 0px' });
+      revealEls.forEach(el => io.observe(el));
+    } else {
+      revealEls.forEach(el => el.classList.add('is-visible'));
+    }
+  }
+
+  /* ── Animated mono stat counters: <span data-count-to="1200">0</span> ── */
+  const counters = document.querySelectorAll('[data-count-to]');
+  if (counters.length && 'IntersectionObserver' in window) {
+    const runCount = (el) => {
+      const target = parseFloat(el.dataset.countTo);
+      const suffix = el.dataset.countSuffix || '';
+      const duration = 1100;
+      const start = performance.now();
+      const step = (now) => {
+        const p = Math.min((now - start) / duration, 1);
+        const eased = 1 - Math.pow(1 - p, 3);
+        el.textContent = Math.round(eased * target).toLocaleString('vi-VN') + suffix;
+        if (p < 1) requestAnimationFrame(step);
+      };
+      requestAnimationFrame(step);
+    };
+    const ioCount = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) { runCount(entry.target); ioCount.unobserve(entry.target); }
+      });
+    }, { threshold: 0.5 });
+    counters.forEach(el => ioCount.observe(el));
+  }
+
+  /* ── Copy-to-clipboard: <button data-copy="play.daotomo.net"> ── */
+  document.querySelectorAll('[data-copy]').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const val = btn.dataset.copy;
+      const original = btn.innerHTML;
+      try {
+        await navigator.clipboard.writeText(val);
+        btn.classList.add('copied');
+        btn.dataset.copiedLabel && (btn.innerHTML = btn.dataset.copiedLabel);
+        setTimeout(() => { btn.classList.remove('copied'); btn.innerHTML = original; }, 1600);
+      } catch { /* clipboard unavailable — silently ignore */ }
+    });
+  });
 });

@@ -4,12 +4,15 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Đảo Tò Mò — Cộng đồng Game Online</title>
+  <meta name="description" content="Đảo Tò Mò — server Minecraft sinh tồn dành cho cộng đồng Việt. Tham gia, khám phá và xây dựng cùng hàng trăm người chơi mỗi ngày.">
   <link rel="icon" type="image/x-icon" href="./img/favicon.ico">
-  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;500;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;700;800;900&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="./css/global.css">
   <link rel="stylesheet" href="./css/Trangchu.css">
 </head>
 <body>
+
+<a class="skip-link" href="#main">Bỏ qua đến nội dung chính</a>
 
 <nav>
   <div class="nav-logo"><a href="./index.html">🏝️ Đảo Tò Mò</a></div>
@@ -17,58 +20,162 @@
     <span></span><span></span><span></span>
   </button>
   <ul id="nav-list">
-    <li><a href="./index.html">🏠 Trang chủ</a></li>
-    <li><a href="./html/Server.html">⚔️ Server</a></li>
-    <li><a href="./html/Map.html">🗺️ Map</a></li>
-    <li><a href="./html/Discord.html">💬 Discord</a></li>
-    <li><a href="./html/Store.html">🛒 Cửa hàng</a></li>
-    <li><a href="./html/Account.html" id="nav-account-link">🔑 Tài khoản</a></li>
+    <li><a href="./index.html" class="active"><span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 10.5 12 3l8.5 7.5"/><path d="M5.5 9v10.5a1 1 0 0 0 1 1H9.5v-6h5v6h3a1 1 0 0 0 1-1V9"/></svg></span><span>Trang chủ</span></a></li>
+    <li><a href="./html/Server.html"><span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="4" width="17" height="6" rx="1.5"/><rect x="3.5" y="14" width="17" height="6" rx="1.5"/><circle cx="7.5" cy="7" r="0.6" fill="currentColor" stroke="none"/><circle cx="7.5" cy="17" r="0.6" fill="currentColor" stroke="none"/></svg></span><span>Server</span></a></li>
+    <li><a href="./html/Map.html"><span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M9 4 4 6v14l5-2 6 2 5-2V4l-5 2-6-2Z"/><path d="M9 4v14M15 6v14"/></svg></span><span>Map</span></a></li>
+    <li><a href="./html/Discord.html"><span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5.5h16v10H9.5L6 19v-3.5H4Z"/><circle cx="9" cy="10.3" r="0.6" fill="currentColor" stroke="none"/><circle cx="12" cy="10.3" r="0.6" fill="currentColor" stroke="none"/><circle cx="15" cy="10.3" r="0.6" fill="currentColor" stroke="none"/></svg></span><span>Discord</span></a></li>
+    <li><a href="./html/Store.html"><span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8h12l1 12H5L6 8Z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg></span><span>Cửa hàng</span></a></li>
+    <li><a href="./html/Account.html" id="nav-account-link"><span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8.5" r="3.2"/><path d="M5 19.5c1.2-3.3 3.9-5 7-5s5.8 1.7 7 5"/></svg></span><span>Tài khoản</span></a></li>
   </ul>
 </nav>
 
-<section class="hero">
-  <div class="hero-content">
-    <h1>Đảo Tò Mò</h1>
-    <p>Cộng đồng Game Online cực chill — nơi mọi người cùng khám phá, sinh tồn và giải trí.</p>
-    <a class="main-btn" href="#posts">✨ Tìm hiểu thêm</a>
-  </div>
-</section>
+<main id="main">
 
-<section id="posts" class="posts">
-  <h2 class="section-title">Giới thiệu cộng đồng</h2>
-  <div class="post-container">
-    <div class="post">
-      <img src="./img/post1.jpg" alt="Server Minecraft" loading="lazy">
-      <div class="post-body">
-        <h3>⚔️ Server Minecraft</h3>
-        <p>Tham gia server sinh tồn cực chill cùng cộng đồng Đảo Tò Mò.</p>
-        <a href="./html/Server.html">Xem thêm →</a>
+  <!-- ═══ HERO ═══ -->
+  <section class="hero">
+    <div class="hero-inner">
+      <div class="hero-content">
+        <span class="eyebrow">Server Minecraft sinh tồn · Cộng đồng Việt</span>
+        <h1>Đảo Tò Mò</h1>
+        <p>Nơi mọi người cùng khám phá, sinh tồn và xây dựng — một hòn đảo, hàng trăm câu chuyện. Tham gia miễn phí, chơi cùng bạn bè ngay hôm nay.</p>
+        <div class="hero-actions">
+          <button class="btn btn-primary btn-lg" data-copy="play.daotomo.net" data-copied-label="✓ Đã sao chép IP">🎮 Sao chép IP server</button>
+          <a class="btn btn-outline btn-lg" href="./html/Discord.html">💬 Vào Discord</a>
+        </div>
+      </div>
+
+      <!-- Signature element: live server-status HUD, styled like a Minecraft server-browser ping card -->
+      <div class="server-hud glass-panel reveal" aria-label="Trạng thái server trực tiếp">
+        <div class="hud-row hud-head">
+          <span class="hud-dot" aria-hidden="true"></span>
+          <span class="hud-status">Đang hoạt động</span>
+          <span class="hud-version mono">v1.21.4</span>
+        </div>
+        <div class="hud-ip">
+          <span class="mono" id="hud-ip-text">play.daotomo.net</span>
+          <button class="hud-copy" data-copy="play.daotomo.net" data-copied-label="✓" aria-label="Sao chép địa chỉ IP server">Sao chép</button>
+        </div>
+        <div class="hud-metrics">
+          <div class="hud-metric">
+            <span class="mono hud-metric-value" data-count-to="128">0</span>
+            <span class="hud-metric-label">/ 200 người chơi</span>
+          </div>
+          <div class="hud-metric">
+            <span class="mono hud-metric-value" data-count-to="24" data-count-suffix="ms">0ms</span>
+            <span class="hud-metric-label">Ping trung bình</span>
+          </div>
+        </div>
       </div>
     </div>
-    <div class="post">
-      <img src="./img/post2.jpg" alt="Discord Server" loading="lazy">
-      <div class="post-body">
-        <h3>💬 Discord Server</h3>
-        <p>Nơi giao lưu, chat voice và cập nhật thông báo mới nhất.</p>
-        <a href="./html/Discord.html">Xem thêm →</a>
+  </section>
+
+  <!-- ═══ STATS ═══ -->
+  <section class="stats-bar reveal">
+    <div class="stats-grid">
+      <div class="stat"><span class="mono stat-num" data-count-to="1200" data-count-suffix="+">0</span><span class="stat-label">Thành viên</span></div>
+      <div class="stat"><span class="mono stat-num" data-count-to="128">0</span><span class="stat-label">Đang online</span></div>
+      <div class="stat"><span class="mono stat-num" data-count-to="54" data-count-suffix="+">0</span><span class="stat-label">Sự kiện đã tổ chức</span></div>
+      <div class="stat"><span class="mono stat-num" data-count-to="24" data-count-suffix="/7">0</span><span class="stat-label">Uptime server</span></div>
+    </div>
+  </section>
+
+  <!-- ═══ PILLARS ═══ -->
+  <section id="posts" class="pillars">
+    <span class="eyebrow section-eyebrow">Vì sao chọn Đảo Tò Mò</span>
+    <h2 class="section-title">Ba lý do để tham gia</h2>
+    <div class="pillar-grid">
+      <article class="pillar-card card reveal">
+        <img src="./img/post1.jpg" alt="Người chơi xây dựng trên server Minecraft sinh tồn Đảo Tò Mò" loading="lazy">
+        <div class="pillar-body">
+          <span class="pillar-icon">⚔️</span>
+          <h3>Server sinh tồn cực chill</h3>
+          <p>Land bảo vệ tài sản, kinh tế player-driven, và luật chơi rõ ràng — không lag, không cheat, không drama.</p>
+          <a href="./html/Server.html">Xem chi tiết server →</a>
+        </div>
+      </article>
+      <article class="pillar-card card reveal">
+        <img src="./img/post2.jpg" alt="Cộng đồng trò chuyện trên Discord của Đảo Tò Mò" loading="lazy">
+        <div class="pillar-body">
+          <span class="pillar-icon">💬</span>
+          <h3>Cộng đồng Discord sôi nổi</h3>
+          <p>Voice chat mỗi tối, kênh trao đổi mua bán, và đội ngũ admin luôn sẵn sàng hỗ trợ khi bạn cần.</p>
+          <a href="./html/Discord.html">Tham gia Discord →</a>
+        </div>
+      </article>
+      <article class="pillar-card card reveal">
+        <img src="./img/event.jpg" alt="Sự kiện cộng đồng Đảo Tò Mò" loading="lazy">
+        <div class="pillar-body">
+          <span class="pillar-icon">🎉</span>
+          <h3>Sự kiện hàng tuần</h3>
+          <p>Từ build contest đến PvP tournament — luôn có lý do để đăng nhập. Theo dõi fanpage để không bỏ lỡ.</p>
+          <a href="https://www.facebook.com/DragonKun1946" target="_blank" rel="noopener">Xem lịch sự kiện →</a>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <!-- ═══ GALLERY ═══ -->
+  <section class="gallery reveal">
+    <span class="eyebrow section-eyebrow">Trong thế giới đảo</span>
+    <h2 class="section-title">Một góc nhìn từ đảo</h2>
+    <div class="gallery-strip">
+      <figure><img src="./img/survival.jpg" alt="Khu vực sinh tồn hoang dã trên đảo" loading="lazy"><figcaption>Vùng sinh tồn</figcaption></figure>
+      <figure><img src="./img/economy.jpg" alt="Khu chợ kinh tế do người chơi xây dựng" loading="lazy"><figcaption>Kinh tế player-driven</figcaption></figure>
+      <figure><img src="./img/bg-sv.jpg" alt="Toàn cảnh server nhìn từ trên cao" loading="lazy"><figcaption>Toàn cảnh đảo</figcaption></figure>
+    </div>
+  </section>
+
+  <!-- ═══ COMMUNITY CTA ═══ -->
+  <section class="cta-band reveal">
+    <div class="cta-band-inner">
+      <h2>Sẵn sàng khám phá đảo?</h2>
+      <p>Chỉ mất 30 giây để tham gia. Không quảng cáo, không pay-to-win — chỉ có một cộng đồng thật đang chờ bạn.</p>
+      <div class="hero-actions">
+        <a class="btn btn-accent btn-lg" href="./html/Discord.html">💬 Tham gia Discord</a>
+        <a class="btn btn-ghost btn-lg" href="./html/Store.html">🛒 Xem cửa hàng</a>
       </div>
     </div>
-    <div class="post">
-      <img src="./img/event.jpg" alt="Facebook Admin" loading="lazy">
-      <div class="post-body">
-        <h3>📘 Facebook Admin</h3>
-        <p>Theo dõi fanpage để cập nhật event và tin tức mới nhất.</p>
-        <a href="https://www.facebook.com/DragonKun1946" target="_blank">Xem thêm →</a>
-      </div>
+  </section>
+
+  <!-- ═══ FAQ ═══ -->
+  <section class="faq reveal">
+    <span class="eyebrow section-eyebrow">Còn thắc mắc?</span>
+    <h2 class="section-title">Câu hỏi thường gặp</h2>
+    <div class="faq-list">
+      <details class="faq-item">
+        <summary>Tham gia server có mất phí không?</summary>
+        <p>Hoàn toàn miễn phí. Chỉ cần Minecraft Java Edition và địa chỉ IP server ở trên — vào chơi ngay, không cần whitelist.</p>
+      </details>
+      <details class="faq-item">
+        <summary>Server chạy phiên bản Minecraft nào?</summary>
+        <p>Đảo Tò Mò hiện chạy trên phiên bản 1.21.4, hỗ trợ cả người chơi dùng bản gần nhất nhờ tương thích ngược.</p>
+      </details>
+      <details class="faq-item">
+        <summary>Cửa hàng trong game hoạt động như thế nào?</summary>
+        <p>Cửa hàng bán vật phẩm cosmetic và tiện ích hỗ trợ server vận hành — không bán lợi thế PvP hay sức mạnh, giữ đúng tinh thần fair-play.</p>
+      </details>
+      <details class="faq-item">
+        <summary>Tôi có thể báo cáo vi phạm luật chơi ở đâu?</summary>
+        <p>Mở ticket trong kênh #ho-tro trên Discord — đội ngũ admin trực gần như 24/7 và sẽ xử lý trong thời gian sớm nhất.</p>
+      </details>
     </div>
-  </div>
-</section>
+  </section>
+
+</main>
 
 <footer>
   <div class="footer-grid">
     <div class="footer-col">
       <h3>🏝️ Đảo Tò Mò</h3>
       <p>Cộng đồng game thủ nơi mọi người cùng khám phá, sinh tồn và giải trí.</p>
+      <div class="social-row">
+        <a class="social-btn" href="./html/Discord.html" aria-label="Discord">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5.5h16v10H9.5L6 19v-3.5H4Z"/><circle cx="9" cy="10.3" r="0.6" fill="currentColor" stroke="none"/><circle cx="12" cy="10.3" r="0.6" fill="currentColor" stroke="none"/><circle cx="15" cy="10.3" r="0.6" fill="currentColor" stroke="none"/></svg>
+        </a>
+        <a class="social-btn" href="https://www.facebook.com/DragonKun1946" target="_blank" rel="noopener" aria-label="Facebook">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M15 8.5h2V5h-2c-2 0-3.5 1.5-3.5 3.5V11H9.5v3.5H11V21h3v-6.5h2.3l.7-3.5H14V8.9c0-.3.2-.4.4-.4Z"/></svg>
+        </a>
+      </div>
     </div>
     <div class="footer-col">
       <h3>Liên kết</h3>
@@ -80,7 +187,7 @@
     <div class="footer-col">
       <h3>Cộng đồng</h3>
       <a href="./html/Discord.html">Discord</a>
-      <a href="https://www.facebook.com/DragonKun1946" target="_blank">Facebook</a>
+      <a href="https://www.facebook.com/DragonKun1946" target="_blank" rel="noopener">Facebook</a>
     </div>
     <div class="footer-col">
       <h3>Thông tin</h3>
