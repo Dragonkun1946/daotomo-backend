@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const path = require('path');
 require('dotenv').config();
+const passport = require('./config/passport');
 
 const authRoutes = require('./routes/auth');
 const productRoutes = require('./routes/products');
@@ -13,13 +14,14 @@ const app = express();
 // ─── Middleware ───────────────────────────────────────────────────────────────
 app.use(cors({
   origin: process.env.NODE_ENV === 'production'
-    ? ['https://daotomo-backend.vercel.app']
+    ? ['https://daotomo.site', 'https://www.daotomo.site']
     : ['http://localhost:3000', 'http://127.0.0.1:3000'],
   credentials: true
 }));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(passport.initialize()); // no app.use(passport.session()) — we're stateless (JWT only)
 
 // Serve static frontend
 app.use(express.static(path.join(__dirname, 'public')));

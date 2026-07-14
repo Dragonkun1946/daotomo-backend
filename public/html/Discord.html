@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Discord — Đảo Tò Mò</title>
   <link rel="icon" type="image/x-icon" href="/img/favicon.ico">
-  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;500;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;700;800;900&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/css/global.css">
   <style>
     .discord-hero {
@@ -32,10 +32,7 @@
     @media (min-width: 640px) { .discord-box { grid-template-columns: 1fr 1fr; } }
 
     /* Info card */
-    .discord-info {
-      background: var(--bg-card); border: 1px solid var(--border);
-      border-radius: var(--radius-lg); padding: 2rem;
-    }
+    .discord-info { padding: 2rem; }
     .discord-info h2 { font-size: 1.2rem; font-weight: 800; margin-bottom: 0.5rem; color: #818cf8; }
     .discord-info > p { font-size: 0.875rem; color: var(--text-muted); margin-bottom: 1.25rem; line-height: 1.7; }
 
@@ -66,13 +63,7 @@
     }
     @media (min-width: 640px) { .discord-stats { flex-direction: column; } }
 
-    .stat {
-      background: var(--bg-card); border: 1px solid var(--border);
-      border-radius: var(--radius-lg); padding: 1.5rem;
-      text-align: center; flex: 1;
-      transition: transform var(--ease), box-shadow var(--ease);
-    }
-    .stat:hover { transform: translateY(-3px); box-shadow: var(--shadow); }
+    .stat { padding: 1.5rem; text-align: center; flex: 1; }
     .stat h3 { font-size: 1.8rem; font-weight: 800; color: #818cf8; margin-bottom: 0.25rem; }
     .stat p  { font-size: 0.82rem; color: var(--text-muted); font-weight: 600; }
   </style>
@@ -104,7 +95,7 @@
 
   <div class="discord-section">
     <div class="discord-box">
-      <div class="discord-info">
+      <div class="discord-info card reveal">
         <h2>🏝️ Server Discord</h2>
         <p>Nơi giao lưu của cộng đồng Minecraft Đảo Tò Mò — luôn sôi động và thân thiện.</p>
         <ul>
@@ -113,21 +104,21 @@
           <li>Trao đổi vật phẩm</li>
           <li>Hỗ trợ người chơi</li>
         </ul>
-        <a class="join-btn" href="https://discord.gg/rNQ6ytnSg" target="_blank">
+        <a class="join-btn" rel="noopener" href="https://discord.gg/rNQ6ytnSg" target="_blank">
           🚀 Tham gia ngay
         </a>
       </div>
 
       <div class="discord-stats">
-        <div class="stat">
+        <div class="stat card reveal">
           <h3>24/7</h3>
           <p>Hoạt động liên tục</p>
         </div>
-        <div class="stat">
+        <div class="stat card reveal">
           <h3>🎉</h3>
           <p>Event hàng tuần</p>
         </div>
-        <div class="stat">
+        <div class="stat card reveal">
           <h3>💱</h3>
           <p>Trade cộng đồng</p>
         </div>

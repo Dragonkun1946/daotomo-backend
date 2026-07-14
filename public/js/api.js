@@ -27,6 +27,10 @@ const api = {
   login: (email, password) =>
     api.request('/auth/login', { method:'POST', body: JSON.stringify({ email, password }) }),
   getMe: () => api.request('/auth/me'),
+  forgotPassword: (email) =>
+    api.request('/auth/forgot-password', { method: 'POST', body: JSON.stringify({ email }) }),
+  resetPassword: (token, password) =>
+    api.request(`/auth/reset-password/${token}`, { method: 'POST', body: JSON.stringify({ password }) }),
   getProducts: (params={}) => {
     const qs = new URLSearchParams(params).toString();
     return api.request(`/products${qs ? '?'+qs : ''}`);

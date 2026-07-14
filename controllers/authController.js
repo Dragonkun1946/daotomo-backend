@@ -1,5 +1,7 @@
 const jwt = require('jsonwebtoken');
+const crypto = require('crypto');
 const User = require('../models/User');
+const { sendResetPasswordEmail } = require('../utils/sendEmail');
 
 // ─── Helper: generate JWT ─────────────────────────────────────────────────────
 const generateToken = (userId) => {
@@ -85,6 +87,13 @@ const login = async (req, res) => {
       });
     }
 
+    if (!user.password) {
+      return res.status(401).json({
+        success: false,
+        message: 'Tài khoản này đăng nhập bằng Discord/Google. Vui lòng dùng nút đăng nhập tương ứng.',
+      });
+    }
+
     const isMatch = await user.comparePassword(password);
     if (!isMatch) {
       return res.status(401).json({
@@ -143,4 +152,93 @@ const updateMe = async (req, res) => {
   }
 };
 
-module.exports = { register, login, getMe, updateMe };
+// ─── POST /api/auth/forgot-password ──────────────────────────────────────────
+const forgotPassword = async (req, res) => {
+  try {
+    const { email } = req.body;
+    if (!email) {
+      return res.status(400).json({ success: false, message: 'Vui lòng nhập email.' });
+    }
+
+    const user = await User.findOne({ email });
+    // Always respond the same way whether or not the email exists — avoids leaking
+    // which emails are registered.
+    const genericMsg = 'Nếu email tồn tại, một liên kết đặt lại mật khẩu đã được gửi.';
+
+    if (!user) {
+      return res.json({ success: true, message: genericMsg });
+    }
+
+    const rawToken = crypto.randomBytes(32).toString('hex');
+    user.resetPasswordToken = crypto.createHash('sha256').update(rawToken).digest('hex');
+    user.resetPasswordExpires = Date.now() + 60 * 60 * 1000; // 1 hour
+    await user.save({ validateBeforeSave: false });
+
+    const frontendUrl = process.env.FRONTEND_URL || 'https://www.daotomo.site';
+    const resetUrl = `${frontendUrl}/html/Account.html?resetToken=${rawToken}`;
+
+    try {
+      await sendResetPasswordEmail(user.email, resetUrl);
+    } catch (mailErr) {
+      console.error('Send reset email error:', mailErr);
+      // Roll back the token so a broken SMTP config doesn't leave a dangling token
+      user.resetPasswordToken = undefined;
+      user.resetPasswordExpires = undefined;
+      await user.save({ validateBeforeSave: false });
+      return res.status(500).json({ success: false, message: 'Không thể gửi email. Vui lòng thử lại sau.' });
+    }
+
+    res.json({ success: true, message: genericMsg });
+  } catch (error) {
+    console.error('Forgot password error:', error);
+    res.status(500).json({ success: false, message: 'Lỗi server. Vui lòng thử lại.' });
+  }
+};
+
+// ─── POST /api/auth/reset-password/:token ────────────────────────────────────
+const resetPassword = async (req, res) => {
+  try {
+    const { password } = req.body;
+    if (!password || password.length < 6) {
+      return res.status(400).json({ success: false, message: 'Mật khẩu phải có ít nhất 6 ký tự.' });
+    }
+
+    const hashedToken = crypto.createHash('sha256').update(req.params.token).digest('hex');
+    const user = await User.findOne({
+      resetPasswordToken: hashedToken,
+      resetPasswordExpires: { $gt: Date.now() },
+    }).select('+resetPasswordToken +resetPasswordExpires');
+
+    if (!user) {
+      return res.status(400).json({ success: false, message: 'Liên kết không hợp lệ hoặc đã hết hạn.' });
+    }
+
+    user.password = password; // re-hashed by the pre-save hook
+    user.resetPasswordToken = undefined;
+    user.resetPasswordExpires = undefined;
+    await user.save();
+
+    const token = generateToken(user._id);
+    res.json({
+      success: true,
+      message: 'Đặt lại mật khẩu thành công!',
+      token,
+      user: { id: user._id, username: user.username, email: user.email, role: user.role, minecraftUsername: user.minecraftUsername },
+    });
+  } catch (error) {
+    console.error('Reset password error:', error);
+    res.status(500).json({ success: false, message: 'Lỗi server. Vui lòng thử lại.' });
+  }
+};
+
+// ─── GET /api/auth/:provider/callback  (Discord / Google) ────────────────────
+// Passport has already attached req.user by this point. We issue our own JWT
+// and hand off to the frontend via a redirect (avoids exposing the token in
+// server logs the way a JSON response might, and needs no CORS handling).
+const oauthCallback = (req, res) => {
+  const token = generateToken(req.user._id);
+  const frontendUrl = process.env.FRONTEND_URL || 'https://www.daotomo.site';
+  res.redirect(`${frontendUrl}/html/Account.html?oauthToken=${token}`);
+};
+
+module.exports = { register, login, getMe, updateMe, forgotPassword, resetPassword, oauthCallback };

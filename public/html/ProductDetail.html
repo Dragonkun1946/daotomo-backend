@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Chi tiết sản phẩm — Đảo Tò Mò</title>
   <link rel="icon" type="image/x-icon" href="/img/favicon.ico">
-  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;500;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;700;800;900&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/css/global.css">
   <style>
     .detail-wrap {
@@ -55,7 +55,7 @@
     }
     .detail-price {
       font-size: 2rem; font-weight: 800; color: var(--accent);
-      margin-bottom: 1.25rem;
+      margin-bottom: 1.25rem; font-family: var(--font-mono);
     }
     .detail-desc {
       font-size: 0.9rem; color: var(--text-muted); line-height: 1.8;
@@ -125,7 +125,7 @@
     .mini-card img { width: 100%; aspect-ratio: 1; object-fit: contain; padding: 0.5rem; background: rgba(255,255,255,0.02); }
     .mini-card .mini-info { padding: 0.6rem; }
     .mini-card .mini-name  { font-size: 0.78rem; font-weight: 700; margin-bottom: 0.2rem; }
-    .mini-card .mini-price { font-size: 0.82rem; font-weight: 800; color: var(--accent); }
+    .mini-card .mini-price { font-size: 0.82rem; font-weight: 800; color: var(--accent); font-family: var(--font-mono); }
 
     /* QR Modal */
     .modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.8); z-index:2000; align-items:flex-end; justify-content:center; }
@@ -163,7 +163,7 @@
 </nav>
 
 <div class="page-body">
-  <div class="detail-wrap" id="detail-wrap">
+  <div class="detail-wrap reveal" id="detail-wrap">
     <div style="text-align:center;padding:4rem 0"><div class="spinner"></div></div>
   </div>
   <div class="related" id="related" style="display:none">
