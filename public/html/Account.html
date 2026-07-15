@@ -44,7 +44,6 @@
     .btn-oauth svg { width: 19px; height: 19px; flex-shrink: 0; }
     .btn-oauth:hover { background: rgba(255,255,255,0.09); transform: translateY(-1px); }
     .btn-discord:hover { border-color: #5865F2; color: #a5b4fc; }
-    .btn-google:hover  { border-color: #ea4335; color: #fca5a5; }
 
     /* Tabs */
     .tab-bar {
@@ -136,6 +135,7 @@
     <li><a href="/html/Map.html"><span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M9 4 4 6v14l5-2 6 2 5-2V4l-5 2-6-2Z"/><path d="M9 4v14M15 6v14"/></svg></span><span>Map</span></a></li>
     <li><a href="/html/Discord.html"><span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5.5h16v10H9.5L6 19v-3.5H4Z"/><circle cx="9" cy="10.3" r="0.6" fill="currentColor" stroke="none"/><circle cx="12" cy="10.3" r="0.6" fill="currentColor" stroke="none"/><circle cx="15" cy="10.3" r="0.6" fill="currentColor" stroke="none"/></svg></span><span>Discord</span></a></li>
     <li><a href="/html/Store.html"><span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8h12l1 12H5L6 8Z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg></span><span>Cửa hàng</span></a></li>
+    <li><a href="/html/Checkin.html"><span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5" width="17" height="15" rx="2"/><path d="M3.5 9.5h17M8 3v4M16 3v4"/><path d="m8.5 14 2 2 4-4"/></svg></span><span>Điểm danh</span></a></li>
     <li><a href="/html/Account.html" class="active" id="nav-account-link"><span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8.5" r="3.2"/><path d="M5 19.5c1.2-3.3 3.9-5 7-5s5.8 1.7 7 5"/></svg></span><span>Tài khoản</span></a></li>
   </ul>
 </nav>
@@ -155,10 +155,6 @@
       <a class="btn-oauth btn-discord" id="discord-login-btn" href="#">
         <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.3 5.4A17.6 17.6 0 0 0 15.9 4l-.3.6a13 13 0 0 1 3.8 1.5 15.3 15.3 0 0 0-13 0A13 13 0 0 1 10.2 4l-.3-.6a17.6 17.6 0 0 0-4.4 1.4C2.6 9.8 1.8 14 2.2 18.2a17.7 17.7 0 0 0 5.4 2.7l.7-1.1a11 11 0 0 1-1.7-.8l.4-.3a12.7 12.7 0 0 0 10 0l.4.3a11 11 0 0 1-1.7.8l.7 1.1a17.6 17.6 0 0 0 5.4-2.7c.5-4.8-.7-8.9-3.5-12.8ZM9 15.3c-.9 0-1.7-.9-1.7-2s.7-2 1.7-2 1.7.9 1.7 2-.8 2-1.7 2Zm6 0c-.9 0-1.7-.9-1.7-2s.7-2 1.7-2 1.7.9 1.7 2-.8 2-1.7 2Z"/></svg>
         Tiếp tục với Discord
-      </a>
-      <a class="btn-oauth btn-google" id="google-login-btn" href="#">
-        <svg viewBox="0 0 24 24"><path fill="#4285F4" d="M22.5 12.2c0-.7-.06-1.4-.18-2H12v3.8h5.9a5 5 0 0 1-2.2 3.3v2.7h3.5c2-1.9 3.3-4.7 3.3-7.8Z"/><path fill="#34A853" d="M12 23c3 0 5.4-1 7.2-2.7l-3.5-2.7c-1 .7-2.2 1.1-3.7 1.1-2.8 0-5.2-1.9-6-4.5H2.4v2.8A11 11 0 0 0 12 23Z"/><path fill="#FBBC05" d="M6 14.2a6.6 6.6 0 0 1 0-4.4V7H2.4a11 11 0 0 0 0 10l3.6-2.8Z"/><path fill="#EA4335" d="M12 5.4c1.6 0 3 .6 4.2 1.6l3.1-3.1C17.4 2.1 15 1 12 1a11 11 0 0 0-9.6 6l3.6 2.8c.8-2.6 3.2-4.4 6-4.4Z"/></svg>
-        Tiếp tục với Google
       </a>
     </div>
     <div class="divider">hoặc dùng email</div>
@@ -302,7 +298,6 @@ function setBtn(id, loading, label) {
 
 /* ── OAuth links (built once API base is known) ── */
 document.getElementById('discord-login-btn').href = `${API}/auth/discord`;
-document.getElementById('google-login-btn').href = `${API}/auth/google`;
 
 /* ── Login ── */
 async function doLogin() {

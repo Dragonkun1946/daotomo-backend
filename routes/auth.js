@@ -23,11 +23,4 @@ router.get('/discord/callback',
   oauthCallback
 );
 
-// ── OAuth: Google ──
-router.get('/google', passport.authenticate('google', { session: false }));
-router.get('/google/callback',
-  passport.authenticate('google', { session: false, failureRedirect: '/html/Account.html?oauthError=1' }),
-  oauthCallback
-);
-
 module.exports = router;

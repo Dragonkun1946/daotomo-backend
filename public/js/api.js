@@ -39,6 +39,8 @@ const api = {
   createOrder: (items, mc='', note='') =>
     api.request('/orders', { method:'POST', body: JSON.stringify({ items, minecraftUsername: mc, note }) }),
   getMyOrders: () => api.request('/orders/my'),
+  checkinToday: () => api.request('/checkin', { method: 'POST' }),
+  getMyCheckins: () => api.request('/checkin/me'),
 };
 
 /* ── Init navbar on every page ── */

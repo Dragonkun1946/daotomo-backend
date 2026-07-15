@@ -21,13 +21,12 @@ const userSchema = new mongoose.Schema(
     },
     password: {
       type: String,
-      required: [function () { return !this.discordId && !this.googleId; }, 'Mật khẩu là bắt buộc'],
+      required: [function () { return !this.discordId; }, 'Mật khẩu là bắt buộc'],
       minlength: [6, 'Mật khẩu phải có ít nhất 6 ký tự'],
       select: false, // Never return password in queries by default
     },
     // ── OAuth linkage ──
     discordId: { type: String, unique: true, sparse: true },
-    googleId:  { type: String, unique: true, sparse: true },
     // ── Password reset ──
     resetPasswordToken:   { type: String, select: false },
     resetPasswordExpires: { type: Date, select: false },

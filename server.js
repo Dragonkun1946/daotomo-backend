@@ -8,6 +8,7 @@ const passport = require('./config/passport');
 const authRoutes = require('./routes/auth');
 const productRoutes = require('./routes/products');
 const orderRoutes = require('./routes/orders');
+const checkinRoutes = require('./routes/checkin');
 
 const app = express();
 
@@ -30,6 +31,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/api/auth', authRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/orders', orderRoutes);
+app.use('/api/checkin', checkinRoutes);
 
 app.get('/api/health', (req, res) => {
   res.json({ status: 'OK', message: 'Đảo Tò Mò API is running 🏝️' });
