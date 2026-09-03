@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Map — Đảo Tò Mò</title>
+  <link rel="icon" type="image/x-icon" href="/img/favicon.ico">
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;700;800;900&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/global.css">
+  <style>
+    .map-hero {
+      text-align: center;
+      padding: calc(var(--nav-h) + 2.5rem) 1.25rem 2rem;
+      background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(245,158,11,0.12) 0%, transparent 70%);
+    }
+    .map-hero h1 {
+      font-size: clamp(1.8rem, 6vw, 3rem); font-weight: 800; margin-bottom: 0.5rem;
+      background: linear-gradient(135deg, #fff 30%, #fbbf24 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+    .map-hero p { color: var(--text-muted); font-size: 0.95rem; }
+
+    .maintenance-banner {
+      display: flex; align-items: center; gap: 0.75rem; justify-content: center;
+      background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.25);
+      border-radius: var(--radius); padding: 0.875rem 1.25rem;
+      color: #fca5a5; font-size: 0.9rem; font-weight: 600;
+      max-width: 600px; margin: 1rem auto 0;
+    }
+
+    .map-section { padding: 2rem 1.25rem 3rem; max-width: 1000px; margin: 0 auto; }
+
+    .map-frame-wrap {
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: var(--radius-lg); overflow: hidden;
+      aspect-ratio: 16/9; position: relative;
+    }
+    .map-frame-wrap iframe {
+      width: 100%; height: 100%; border: none; display: block;
+    }
+    .map-overlay {
+      position: absolute; inset: 0;
+      background: rgba(10,14,26,0.85);
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      gap: 1rem;
+    }
+    .map-overlay .icon { font-size: 3rem; }
+    .map-overlay h3 { font-size: 1.2rem; font-weight: 800; }
+    .map-overlay p  { font-size: 0.875rem; color: var(--text-muted); }
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo"><img src="/img/logo.jpg" alt="logo"> Đảo Tò Mò</div>
+  <button class="hamburger" id="hamburger" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
+  <ul id="nav-list">
+    <li><a href="/index.html"><span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 10.5 12 3l8.5 7.5"/><path d="M5.5 9v10.5a1 1 0 0 0 1 1H9.5v-6h5v6h3a1 1 0 0 0 1-1V9"/></svg></span><span>Trang chủ</span></a></li>
+    <li><a href="/html/Server.html"><span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="4" width="17" height="6" rx="1.5"/><rect x="3.5" y="14" width="17" height="6" rx="1.5"/><circle cx="7.5" cy="7" r="0.6" fill="currentColor" stroke="none"/><circle cx="7.5" cy="17" r="0.6" fill="currentColor" stroke="none"/></svg></span><span>Server</span></a></li>
+    <li><a href="/html/Map.html"><span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M9 4 4 6v14l5-2 6 2 5-2V4l-5 2-6-2Z"/><path d="M9 4v14M15 6v14"/></svg></span><span>Map</span></a></li>
+    <li><a href="/html/Discord.html"><span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5.5h16v10H9.5L6 19v-3.5H4Z"/><circle cx="9" cy="10.3" r="0.6" fill="currentColor" stroke="none"/><circle cx="12" cy="10.3" r="0.6" fill="currentColor" stroke="none"/><circle cx="15" cy="10.3" r="0.6" fill="currentColor" stroke="none"/></svg></span><span>Discord</span></a></li>
+    <li><a href="/html/Store.html"><span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8h12l1 12H5L6 8Z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg></span><span>Cửa hàng</span></a></li>
+    <li><a href="/html/Checkin.html"><span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5" width="17" height="15" rx="2"/><path d="M3.5 9.5h17M8 3v4M16 3v4"/><path d="m8.5 14 2 2 4-4"/></svg></span><span>Điểm danh</span></a></li>
+    <li><a href="/html/Account.html" id="nav-account-link"><span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8.5" r="3.2"/><path d="M5 19.5c1.2-3.3 3.9-5 7-5s5.8 1.7 7 5"/></svg></span><span>Tài khoản</span></a></li>
+  </ul>
+</nav>
+
+<div class="page-body">
+  <div class="map-hero">
+    <h1>🗺️ Bản đồ thế giới</h1>
+    <p>Khám phá toàn bộ thế giới Đảo Tò Mò trên bản đồ trực tiếp</p>
+    <div class="maintenance-banner">
+      ⚠️ Map hiện đang bảo trì. Vui lòng quay lại sau.
+    </div>
+  </div>
+
+  <div class="map-section reveal">
+    <div class="map-frame-wrap">
+      <iframe src="http://daotomo.site:25054/" loading="lazy"></iframe>
+      <!-- Overlay hiện khi map bảo trì — xoá div này khi map hoạt động lại -->
+      <div class="map-overlay">
+        <div class="icon">🔧</div>
+        <h3>Đang bảo trì</h3>
+        <p>Bản đồ sẽ sớm hoạt động trở lại. Theo dõi Discord để cập nhật!</p>
+        <a href="/html/Discord.html" class="btn btn-primary" style="margin-top:.5rem">💬 Theo dõi Discord</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-grid">
+    <div class="footer-col"><h3>🏝️ Đảo Tò Mò</h3><p>Cộng đồng game thủ nơi mọi người cùng khám phá, sinh tồn và giải trí.</p></div>
+    <div class="footer-col"><h3>Liên kết</h3><a href="/index.html">Trang chủ</a><a href="/html/Server.html">Server</a><a href="/html/Map.html">Map</a><a href="/html/Store.html">Cửa hàng</a></div>
+    <div class="footer-col"><h3>Cộng đồng</h3><a href="/html/Discord.html">Discord</a><a href="https://www.facebook.com/DragonKun1946" target="_blank">Facebook</a></div>
+    <div class="footer-col"><h3>Thông tin</h3><p>Server Minecraft sinh tồn dành cho cộng đồng Việt.</p></div>
+  </div>
+  <div class="footer-bottom">© 2026 Đảo Tò Mò</div>
+</footer>
+
+<script src="/js/api.js"></script>
+</body>
+</html>

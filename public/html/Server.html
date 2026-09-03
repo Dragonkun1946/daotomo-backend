@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Server — Đảo Tò Mò</title>
+  <link rel="icon" type="image/x-icon" href="/img/favicon.ico">
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;700;800;900&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/global.css">
+  <style>
+    .server-hero {
+      min-height: 40vh;
+      display: flex; align-items: center; justify-content: center;
+      text-align: center;
+      padding: calc(var(--nav-h) + 3rem) 1.25rem 3rem;
+      background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(16,185,129,0.15) 0%, transparent 70%),
+                  linear-gradient(180deg, #0a0e1a 0%, #0d1224 100%);
+    }
+    .server-hero h1 {
+      font-size: clamp(2rem, 7vw, 3.5rem); font-weight: 800; margin-bottom: 0.75rem;
+      background: linear-gradient(135deg, #fff 30%, #34d399 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+    .server-hero p { color: var(--text-muted); font-size: clamp(0.95rem, 2vw, 1.1rem); }
+
+    .server-info { padding: 3rem 1.25rem; max-width: 900px; margin: 0 auto; }
+    .server-grid { display: grid; grid-template-columns: 1fr; gap: 1.25rem; }
+    @media (min-width: 640px) { .server-grid { grid-template-columns: 1fr 1fr; } }
+
+    /* Cards reuse the shared .card component — just add padding + heading color here */
+    .server-card { padding: 1.75rem; }
+    .server-card h2 { font-size: 1.1rem; font-weight: 800; margin-bottom: 1rem; color: #34d399; }
+    .server-card p  { font-size: 0.875rem; color: var(--text-muted); margin-bottom: 0.5rem; line-height: 1.7; }
+
+    .ip-box {
+      font-size: 1.2rem; font-weight: 700; color: var(--text);
+      background: rgba(255,255,255,0.05); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 0.6rem 1rem;
+      margin: 0.5rem 0;
+    }
+    .copy-btn {
+      display: inline-flex; align-items: center; gap: 0.4rem;
+      padding: 0.6rem 1.1rem; border-radius: var(--radius);
+      font-size: 0.82rem; font-weight: 700; min-height: 40px;
+      background: rgba(16,185,129,0.15); color: #34d399;
+      border: 1px solid rgba(16,185,129,0.3);
+      transition: all var(--dur) var(--ease-out); margin-right: 0.5rem; margin-top: 0.75rem;
+    }
+    .copy-btn:hover { background: rgba(16,185,129,0.25); }
+    .copy-btn.copied { background: var(--success); color: #fff; border-color: var(--success); }
+    .copy-btn.alt { background: rgba(255,255,255,0.07); color: var(--text-muted); border-color: var(--border); }
+    .copy-btn.alt:hover { background: rgba(255,255,255,0.12); }
+
+    .download-btn {
+      display: inline-flex; align-items: center; gap: 0.4rem;
+      padding: 0.7rem 1.5rem; border-radius: var(--radius);
+      font-size: 0.9rem; font-weight: 700; min-height: 44px;
+      background: var(--primary); color: #fff;
+      transition: all var(--dur) var(--ease-out); margin-top: 1rem;
+    }
+    .download-btn:hover { background: var(--primary-dark); transform: translateY(-1px); }
+
+    .modes { padding: 0 1.25rem 3rem; max-width: 900px; margin: 0 auto; }
+    .modes h2 { font-size: clamp(1.3rem, 3vw, 1.75rem); font-weight: 800; margin-bottom: 1.5rem; text-align: center; }
+    .mode-grid { display: grid; grid-template-columns: 1fr; gap: 1.25rem; }
+    @media (min-width: 560px) { .mode-grid { grid-template-columns: repeat(3,1fr); } }
+
+    .mode-card img { width: 100%; aspect-ratio: 16/9; object-fit: cover; }
+    .mode-card h3 { font-size: 1rem; font-weight: 700; padding: 1rem 1rem 0.3rem; }
+    .mode-card p  { font-size: 0.82rem; color: var(--text-muted); padding: 0 1rem 1rem; line-height: 1.6; }
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo"><img src="/img/logo.jpg" alt="logo"> Đảo Tò Mò</div>
+  <button class="hamburger" id="hamburger" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
+  <ul id="nav-list">
+    <li><a href="/index.html"><span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 10.5 12 3l8.5 7.5"/><path d="M5.5 9v10.5a1 1 0 0 0 1 1H9.5v-6h5v6h3a1 1 0 0 0 1-1V9"/></svg></span><span>Trang chủ</span></a></li>
+    <li><a href="/html/Server.html"><span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="4" width="17" height="6" rx="1.5"/><rect x="3.5" y="14" width="17" height="6" rx="1.5"/><circle cx="7.5" cy="7" r="0.6" fill="currentColor" stroke="none"/><circle cx="7.5" cy="17" r="0.6" fill="currentColor" stroke="none"/></svg></span><span>Server</span></a></li>
+    <li><a href="/html/Map.html"><span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M9 4 4 6v14l5-2 6 2 5-2V4l-5 2-6-2Z"/><path d="M9 4v14M15 6v14"/></svg></span><span>Map</span></a></li>
+    <li><a href="/html/Discord.html"><span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5.5h16v10H9.5L6 19v-3.5H4Z"/><circle cx="9" cy="10.3" r="0.6" fill="currentColor" stroke="none"/><circle cx="12" cy="10.3" r="0.6" fill="currentColor" stroke="none"/><circle cx="15" cy="10.3" r="0.6" fill="currentColor" stroke="none"/></svg></span><span>Discord</span></a></li>
+    <li><a href="/html/Store.html"><span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8h12l1 12H5L6 8Z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg></span><span>Cửa hàng</span></a></li>
+    <li><a href="/html/Checkin.html"><span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5" width="17" height="15" rx="2"/><path d="M3.5 9.5h17M8 3v4M16 3v4"/><path d="m8.5 14 2 2 4-4"/></svg></span><span>Điểm danh</span></a></li>
+    <li><a href="/html/Account.html" id="nav-account-link"><span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8.5" r="3.2"/><path d="M5 19.5c1.2-3.3 3.9-5 7-5s5.8 1.7 7 5"/></svg></span><span>Tài khoản</span></a></li>
+  </ul>
+</nav>
+
+<div class="page-body">
+  <section class="server-hero">
+    <div>
+      <h1>⚔️ Server Minecraft</h1>
+      <p>Khám phá thế giới sinh tồn cực chill cùng cộng đồng Đảo Tò Mò</p>
+    </div>
+  </section>
+
+  <section class="server-info">
+    <div class="server-grid">
+      <div class="card server-card reveal">
+        <h2>📡 Thông tin Server</h2>
+        <p>IP chính:</p>
+        <div class="ip-box mono">Daotomo.site</div>
+        <p>IP phụ:</p>
+        <div class="ip-box mono" style="font-size:0.95rem">Daotomo.site:25052</div>
+        <p>Loader: <strong style="color:var(--text)">Fabric, Forge, Neoforge</strong></p>
+        <p>Version: <strong style="color:var(--text)">1.21.4</strong></p>
+        <div>
+          <button class="copy-btn" data-copy="Daotomo.site" data-copied-label="✓ Đã copy">📋 Copy IP</button>
+          <button class="copy-btn alt" data-copy="Daotomo.site:25052" data-copied-label="✓ Đã copy">📋 Copy IP phụ</button>
+        </div>
+      </div>
+      <div class="card server-card reveal">
+        <h2>📦 Tải Modpack</h2>
+        <p>Tải modpack để trải nghiệm đầy đủ tính năng server. Bao gồm tất cả mod cần thiết được cấu hình sẵn.</p>
+        <a href="#" class="download-btn">⬇️ Tải Modpack</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="modes">
+    <h2>🎮 Chế độ chơi</h2>
+    <div class="mode-grid">
+      <div class="card mode-card reveal">
+        <img src="/img/survival.jpg" alt="Survival" loading="lazy">
+        <h3>🌲 Survival</h3>
+        <p>Khám phá thế giới sinh tồn, xây dựng và phát triển đảo của bạn.</p>
+      </div>
+      <div class="card mode-card reveal">
+        <img src="/img/economy.jpg" alt="Economy" loading="lazy">
+        <h3>💰 Economy</h3>
+        <p>Trao đổi vật phẩm, xây shop và xây dựng nền kinh tế riêng.</p>
+      </div>
+      <div class="card mode-card reveal">
+        <img src="/img/event.jpg" alt="Event" loading="lazy">
+        <h3>🎉 Event</h3>
+        <p>Tham gia sự kiện PvP, minigame và nhận phần thưởng hấp dẫn.</p>
+      </div>
+    </div>
+  </section>
+</div>
+
+<footer>
+  <div class="footer-grid">
+    <div class="footer-col"><h3>🏝️ Đảo Tò Mò</h3><p>Cộng đồng game thủ nơi mọi người cùng khám phá, sinh tồn và giải trí.</p></div>
+    <div class="footer-col"><h3>Liên kết</h3><a href="/index.html">Trang chủ</a><a href="/html/Server.html">Server</a><a href="/html/Map.html">Map</a><a href="/html/Store.html">Cửa hàng</a></div>
+    <div class="footer-col"><h3>Cộng đồng</h3><a href="/html/Discord.html">Discord</a><a href="https://www.facebook.com/DragonKun1946" target="_blank">Facebook</a></div>
+    <div class="footer-col"><h3>Thông tin</h3><p>Server Minecraft sinh tồn dành cho cộng đồng Việt.</p></div>
+  </div>
+  <div class="footer-bottom">© 2026 Đảo Tò Mò</div>
+</footer>
+
+<script src="/js/api.js"></script>
+</body>
+</html>

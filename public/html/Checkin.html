@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Điểm danh — Đảo Tò Mò</title>
+  <link rel="icon" type="image/x-icon" href="/img/favicon.ico">
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;700;800;900&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/global.css">
+  <style>
+    .checkin-hero {
+      text-align: center;
+      padding: calc(var(--nav-h) + 2.5rem) 1.25rem 2rem;
+      background: radial-gradient(ellipse 80% 60% at 50% 0%, var(--lagoon-glow) 0%, transparent 70%);
+    }
+    .checkin-hero h1 {
+      font-size: clamp(1.8rem, 6vw, 3rem); font-weight: 800; margin-bottom: 0.5rem;
+      background: linear-gradient(135deg, #fff 30%, var(--lagoon) 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+    .checkin-hero p { color: var(--text-muted); font-size: 0.95rem; }
+
+    .checkin-wrap { max-width: 640px; margin: 0 auto; padding: 1rem 1.25rem 4rem; }
+
+    /* Stats row */
+    .checkin-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem; }
+    .checkin-stat { padding: 1.25rem; text-align: center; }
+    .checkin-stat .num { display: block; font-size: 2rem; font-weight: 700; font-family: var(--font-mono); color: var(--lagoon); }
+    .checkin-stat .lbl { font-size: 0.8rem; color: var(--text-muted); }
+
+    /* Check-in button */
+    .checkin-action { padding: 1.75rem; text-align: center; margin-bottom: 1.5rem; }
+    .btn-checkin {
+      width: 100%; padding: 1rem; border-radius: var(--radius);
+      background: linear-gradient(135deg, var(--primary), var(--lagoon-dark));
+      color: #fff; font-size: 1.05rem; font-weight: 800; min-height: 54px;
+      transition: all var(--dur) var(--ease-out);
+      box-shadow: 0 4px 24px var(--primary-glow);
+    }
+    .btn-checkin:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 8px 30px var(--primary-glow); }
+    .btn-checkin:disabled { background: rgba(255,255,255,0.06); color: var(--text-muted); box-shadow: none; cursor: default; }
+    .checkin-action p { font-size: 0.82rem; color: var(--text-muted); margin-top: 0.75rem; }
+
+    /* Calendar */
+    .calendar-card { padding: 1.5rem; }
+    .calendar-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; }
+    .calendar-head h3 { font-size: 1rem; font-weight: 700; }
+    .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 0.4rem; }
+    .calendar-grid .dow { text-align: center; font-size: 0.7rem; color: var(--text-dim); font-weight: 700; padding-bottom: 0.4rem; }
+    .calendar-day {
+      aspect-ratio: 1; display: flex; align-items: center; justify-content: center;
+      border-radius: 8px; font-size: 0.8rem; font-family: var(--font-mono); color: var(--text-muted);
+      background: rgba(255,255,255,0.02);
+    }
+    .calendar-day.empty { background: none; }
+    .calendar-day.today { border: 1.5px solid var(--lagoon); color: var(--text); }
+    .calendar-day.checked { background: rgba(16,185,129,0.18); color: #34d399; font-weight: 700; }
+
+    /* Auth prompt */
+    .auth-prompt { padding: 2.5rem 1.5rem; text-align: center; }
+    .auth-prompt p { color: var(--text-muted); margin-bottom: 1.25rem; font-size: 0.9rem; }
+  </style>
+</head>
+<body>
+
+<a class="skip-link" href="#main">Bỏ qua đến nội dung chính</a>
+
+<nav>
+  <div class="nav-logo"><img src="/img/logo.jpg" alt="logo"> Đảo Tò Mò</div>
+  <button class="hamburger" id="hamburger" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
+  <ul id="nav-list">
+    <li><a href="/index.html"><span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 10.5 12 3l8.5 7.5"/><path d="M5.5 9v10.5a1 1 0 0 0 1 1H9.5v-6h5v6h3a1 1 0 0 0 1-1V9"/></svg></span><span>Trang chủ</span></a></li>
+    <li><a href="/html/Server.html"><span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="4" width="17" height="6" rx="1.5"/><rect x="3.5" y="14" width="17" height="6" rx="1.5"/><circle cx="7.5" cy="7" r="0.6" fill="currentColor" stroke="none"/><circle cx="7.5" cy="17" r="0.6" fill="currentColor" stroke="none"/></svg></span><span>Server</span></a></li>
+    <li><a href="/html/Map.html"><span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M9 4 4 6v14l5-2 6 2 5-2V4l-5 2-6-2Z"/><path d="M9 4v14M15 6v14"/></svg></span><span>Map</span></a></li>
+    <li><a href="/html/Discord.html"><span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5.5h16v10H9.5L6 19v-3.5H4Z"/><circle cx="9" cy="10.3" r="0.6" fill="currentColor" stroke="none"/><circle cx="12" cy="10.3" r="0.6" fill="currentColor" stroke="none"/><circle cx="15" cy="10.3" r="0.6" fill="currentColor" stroke="none"/></svg></span><span>Discord</span></a></li>
+    <li><a href="/html/Store.html"><span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8h12l1 12H5L6 8Z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg></span><span>Cửa hàng</span></a></li>
+    <li><a href="/html/Checkin.html" class="active"><span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5" width="17" height="15" rx="2"/><path d="M3.5 9.5h17M8 3v4M16 3v4"/><path d="m8.5 14 2 2 4-4"/></svg></span><span>Điểm danh</span></a></li>
+    <li><a href="/html/Account.html" id="nav-account-link"><span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8.5" r="3.2"/><path d="M5 19.5c1.2-3.3 3.9-5 7-5s5.8 1.7 7 5"/></svg></span><span>Tài khoản</span></a></li>
+  </ul>
+</nav>
+
+<main id="main" class="page-body">
+  <div class="checkin-hero reveal">
+    <h1>📅 Điểm danh hằng ngày</h1>
+    <p>Ghé server mỗi ngày, giữ chuỗi điểm danh và nhận phần thưởng từ admin.</p>
+  </div>
+
+  <div class="checkin-wrap">
+    <!-- Shown when logged out -->
+    <div class="card auth-prompt reveal hidden" id="logged-out-box">
+      <p>Bạn cần đăng nhập để điểm danh và theo dõi chuỗi ngày của mình.</p>
+      <a href="/html/Account.html" class="btn btn-primary">Đăng nhập ngay</a>
+    </div>
+
+    <!-- Shown when logged in -->
+    <div id="logged-in-box" class="hidden">
+      <div class="checkin-stats reveal">
+        <div class="card checkin-stat">
+          <span class="num" id="stat-streak">0</span>
+          <span class="lbl">🔥 Ngày liên tiếp</span>
+        </div>
+        <div class="card checkin-stat">
+          <span class="num" id="stat-total">0</span>
+          <span class="lbl">Tổng số lần điểm danh</span>
+        </div>
+      </div>
+
+      <div class="card checkin-action reveal">
+        <button class="btn-checkin" id="checkin-btn" onclick="doCheckin()">Điểm danh hôm nay</button>
+        <p id="checkin-note">Điểm danh mỗi ngày để giữ chuỗi và nhận thưởng từ admin.</p>
+      </div>
+
+      <div class="card calendar-card reveal">
+        <div class="calendar-head">
+          <h3 id="calendar-title">Tháng —</h3>
+        </div>
+        <div class="calendar-grid" id="calendar-grid"></div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer>
+  <div class="footer-grid">
+    <div class="footer-col"><h3>🏝️ Đảo Tò Mò</h3><p>Cộng đồng game thủ Việt chill nhất.</p></div>
+    <div class="footer-col"><h3>Liên kết</h3><a href="/index.html">Trang chủ</a><a href="/html/Store.html">Cửa hàng</a></div>
+    <div class="footer-col"><h3>Cộng đồng</h3><a href="/html/Discord.html">Discord</a><a href="https://www.facebook.com/DragonKun1946" target="_blank">Facebook</a></div>
+    <div class="footer-col"><h3>Thông tin</h3><p>Server Minecraft sinh tồn dành cho cộng đồng Việt.</p></div>
+  </div>
+  <div class="footer-bottom">© 2026 Đảo Tò Mò</div>
+</footer>
+
+<script src="/js/api.js"></script>
+<script>
+const DOW = ['CN','T2','T3','T4','T5','T6','T7'];
+
+function renderCalendar(dates) {
+  const dateSet = new Set(dates);
+  const now = new Date();
+  const year = now.getUTCFullYear();
+  const month = now.getUTCMonth(); // 0-based
+  const todayStr = now.toISOString().slice(0, 10);
+
+  document.getElementById('calendar-title').textContent = `Tháng ${month + 1}/${year}`;
+
+  const firstDow = new Date(Date.UTC(year, month, 1)).getUTCDay();
+  const daysInMonth = new Date(Date.UTC(year, month + 1, 0)).getUTCDate();
+
+  let html = DOW.map(d => `<div class="dow">${d}</div>`).join('');
+  for (let i = 0; i < firstDow; i++) html += '<div class="calendar-day empty"></div>';
+  for (let d = 1; d <= daysInMonth; d++) {
+    const key = `${year}-${String(month + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+    const classes = ['calendar-day'];
+    if (key === todayStr) classes.push('today');
+    if (dateSet.has(key)) classes.push('checked');
+    html += `<div class="${classes.join(' ')}">${d}</div>`;
+  }
+  document.getElementById('calendar-grid').innerHTML = html;
+}
+
+async function loadCheckinState() {
+  try {
+    const { data } = await api.getMyCheckins();
+    document.getElementById('stat-streak').textContent = data.streak;
+    document.getElementById('stat-total').textContent = data.totalDays;
+    renderCalendar(data.dates);
+
+    const btn = document.getElementById('checkin-btn');
+    const note = document.getElementById('checkin-note');
+    if (data.checkedInToday) {
+      btn.disabled = true;
+      btn.textContent = '✅ Đã điểm danh hôm nay';
+      note.textContent = 'Quay lại vào ngày mai để tiếp tục giữ chuỗi nhé!';
+    } else {
+      btn.disabled = false;
+      btn.textContent = 'Điểm danh hôm nay';
+      note.textContent = 'Điểm danh mỗi ngày để giữ chuỗi và nhận thưởng từ admin.';
+    }
+  } catch (e) {
+    document.getElementById('checkin-note').textContent = 'Không thể tải dữ liệu điểm danh.';
+  }
+}
+
+async function doCheckin() {
+  const btn = document.getElementById('checkin-btn');
+  btn.disabled = true;
+  const original = btn.textContent;
+  btn.textContent = 'Đang xử lý...';
+  try {
+    await api.checkinToday();
+    await loadCheckinState();
+  } catch (e) {
+    document.getElementById('checkin-note').textContent = e.message;
+    btn.disabled = false;
+    btn.textContent = original;
+  }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  if (api.isLoggedIn()) {
+    document.getElementById('logged-in-box').classList.remove('hidden');
+    loadCheckinState();
+  } else {
+    document.getElementById('logged-out-box').classList.remove('hidden');
+  }
+});
+</script>
+</body>
+</html>
