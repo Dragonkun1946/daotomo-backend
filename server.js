@@ -42,6 +42,10 @@ app.get('*', (req, res) => {
   if (req.url.startsWith('/api/')) {
     return res.status(404).json({ success: false, message: 'API route not found' });
   }
+  // If a file with an extension was requested but not found in public/, return 404 instead of HTML
+  if (/\.(png|jpe?g|gif|svg|webp|ico|css|js|map|json|woff2?|ttf|eot)$/i.test(req.path)) {
+    return res.status(404).send('File not found');
+  }
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 

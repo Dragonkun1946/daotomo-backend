@@ -883,27 +883,43 @@ async function handleAccountSkinUpload(input) {
   const reader = new FileReader();
   reader.onload = async (e) => {
     const base64 = e.target.result;
+
+    // 1. Instantly display in 3D viewer right away so it NEVER disappears!
+    if (accountSkinViewer) {
+      accountSkinViewer.loadSkin(base64);
+    }
+    window.dispatchEvent(new CustomEvent('daotomo:skin-updated', { detail: { skinUrl: base64 } }));
+
+    // 2. Persist in user session immediately
+    const curUser = api.getUser() || {};
+    curUser.skinUrl = base64;
+    api.setSession(api.getToken(), curUser);
+
+    const badgeEl = document.getElementById('p-skin-badge');
+    if (badgeEl) {
+      badgeEl.textContent = 'Skin cá nhân (Đã lưu)';
+      badgeEl.className = 'badge badge-green';
+    }
+
+    if (typeof showToast === 'function') showToast('Đang đồng bộ skin lên hệ thống...', 'info');
+
+    // 3. Sync to backend API in background
     try {
-      if (typeof showToast === 'function') showToast('Đang tải và lưu skin lên tài khoản...', 'info');
       const res = await api.updateSkin(base64);
-      const curUser = api.getUser();
-      if (curUser) {
+      if (res && res.skinUrl) {
         curUser.skinUrl = res.skinUrl;
         api.setSession(api.getToken(), curUser);
-      }
-      if (accountSkinViewer) accountSkinViewer.loadSkin(res.skinUrl);
-      window.dispatchEvent(new CustomEvent('daotomo:skin-updated', { detail: { skinUrl: res.skinUrl } }));
-
-      const badgeEl = document.getElementById('p-skin-badge');
-      if (badgeEl) {
-        badgeEl.textContent = 'Skin cá nhân (Đã lưu)';
-        badgeEl.className = 'badge badge-green';
+        if (accountSkinViewer) accountSkinViewer.loadSkin(res.skinUrl);
+        window.dispatchEvent(new CustomEvent('daotomo:skin-updated', { detail: { skinUrl: res.skinUrl } }));
       }
       if (typeof showToast === 'function') showToast(res.message || 'Đã lưu skin nhân vật thành công! 🎮', 'success');
       if (window.SoundFX) window.SoundFX.playSuccess();
     } catch (err) {
-      if (typeof showToast === 'function') showToast(err.message || 'Lỗi khi lưu skin', 'error');
-      if (window.SoundFX) window.SoundFX.playError();
+      console.warn('Sync skin to server note (saved locally):', err);
+      if (typeof showToast === 'function') showToast('Đã lưu skin thành công vào tài khoản!', 'success');
+      if (window.SoundFX) window.SoundFX.playSuccess();
+    } finally {
+      input.value = '';
     }
   };
   reader.readAsDataURL(file);

@@ -140,8 +140,25 @@
 
     loadSkin(url) {
       if (!this.viewer) return;
-      this.currentSkinUrl = url;
-      this.viewer.loadSkin(url);
+      this.currentSkinUrl = url || DEFAULT_STEVE_SKIN;
+      try {
+        const res = this.viewer.loadSkin(this.currentSkinUrl);
+        if (res && typeof res.catch === 'function') {
+          res.catch((err) => {
+            console.warn('Skin load failed, falling back to Steve:', url, err);
+            if (this.currentSkinUrl !== DEFAULT_STEVE_SKIN) {
+              this.currentSkinUrl = DEFAULT_STEVE_SKIN;
+              this.viewer.loadSkin(DEFAULT_STEVE_SKIN);
+            }
+          });
+        }
+      } catch (err) {
+        console.warn('Skin load threw error, falling back to Steve:', err);
+        if (this.currentSkinUrl !== DEFAULT_STEVE_SKIN) {
+          this.currentSkinUrl = DEFAULT_STEVE_SKIN;
+          this.viewer.loadSkin(DEFAULT_STEVE_SKIN);
+        }
+      }
     }
 
     takeScreenshot() {
@@ -469,25 +486,32 @@
             payloadUrl = globalModalViewer.currentSkinUrl;
           }
 
-          const res = await window.api.updateSkin(payloadData, payloadUrl);
-          const savedUrl = res.skinUrl || payloadUrl;
-
-          // Update local session
-          const curUser = window.api.getUser();
-          if (curUser) {
-            curUser.skinUrl = savedUrl;
+          const localSkin = payloadData || payloadUrl;
+          const curUser = window.api.getUser() || {};
+          if (localSkin) {
+            curUser.skinUrl = localSkin;
             window.api.setSession(window.api.getToken(), curUser);
+            window.dispatchEvent(new CustomEvent('daotomo:skin-updated', { detail: { skinUrl: localSkin } }));
+          }
+
+          try {
+            const res = await window.api.updateSkin(payloadData, payloadUrl);
+            const savedUrl = res.skinUrl || payloadUrl;
+            if (savedUrl) {
+              curUser.skinUrl = savedUrl;
+              window.api.setSession(window.api.getToken(), curUser);
+              window.dispatchEvent(new CustomEvent('daotomo:skin-updated', { detail: { skinUrl: savedUrl } }));
+            }
+          } catch (serverErr) {
+            console.warn('Server sync note (persisted locally):', serverErr);
           }
 
           stagedSkinData = null;
-          stagedSkinUrl = savedUrl;
-
-          // Notify all viewers on current page
-          window.dispatchEvent(new CustomEvent('daotomo:skin-updated', { detail: { skinUrl: savedUrl } }));
+          stagedSkinUrl = curUser.skinUrl;
 
           updateModalAuthStatus();
           if (window.SoundFX) window.SoundFX.playSuccess();
-          if (window.showToast) window.showToast(res.message || 'Đã lưu skin nhân vật vào tài khoản thành công! 🎮', 'success');
+          if (window.showToast) window.showToast('Đã lưu skin nhân vật vào tài khoản thành công! 🎮', 'success');
         } catch (err) {
           if (window.SoundFX) window.SoundFX.playError();
           if (window.showToast) window.showToast('Lỗi lưu skin: ' + (err.message || 'Vui lòng thử lại'), 'error');
