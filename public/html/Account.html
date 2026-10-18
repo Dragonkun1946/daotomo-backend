@@ -13,23 +13,27 @@
       display: flex; align-items: center; justify-content: center;
       padding: 2.5rem 1rem 3.5rem;
       background:
-        radial-gradient(ellipse 800px 500px at 20% 0%, var(--primary-glow), transparent 60%),
-        radial-gradient(ellipse 700px 500px at 90% 10%, var(--lagoon-glow), transparent 55%);
+        radial-gradient(ellipse 900px 600px at 20% 0%, var(--primary-glow), transparent 60%),
+        radial-gradient(ellipse 800px 600px at 90% 10%, var(--lagoon-glow), transparent 55%);
     }
 
     /* ── Auth card ── */
     .auth-card {
-      padding: 2rem 1.75rem;
-      width: 100%; max-width: 420px;
+      padding: 2.2rem 2rem;
+      width: 100%;
+      max-width: 440px;
+      margin: 1.5rem auto;
+      box-shadow: 0 16px 48px rgba(0,0,0,0.5), 0 0 24px rgba(124,58,237,0.18);
     }
     .auth-logo {
-      width: 52px; height: 52px; margin: 0 auto 1rem; font-size: 1.6rem;
+      width: 56px; height: 56px; margin: 0 auto 1.2rem; font-size: 1.8rem;
       display: flex; align-items: center; justify-content: center;
       border-radius: var(--radius-lg);
       background: linear-gradient(135deg, var(--primary), var(--lagoon));
+      box-shadow: 0 6px 20px rgba(124,58,237,0.35);
     }
-    .auth-card h1 { font-size: 1.4rem; font-weight: 800; text-align: center; margin-bottom: 0.3rem; }
-    .auth-subtitle { text-align: center; font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1.6rem; }
+    .auth-card h1 { font-size: 1.5rem; font-weight: 800; text-align: center; margin-bottom: 0.35rem; }
+    .auth-subtitle { text-align: center; font-size: 0.88rem; color: var(--text-muted); margin-bottom: 1.6rem; }
 
     /* OAuth buttons */
     .oauth-row { display: flex; flex-direction: column; gap: 0.6rem; margin-bottom: 1.4rem; }
@@ -67,50 +71,266 @@
     .back-link { display: inline-flex; align-items: center; gap: 0.35rem; font-size: 0.82rem; color: var(--text-muted); margin-bottom: 1rem; }
     .back-link:hover { color: var(--text); }
 
-    /* ── Profile card ── */
-    .profile-card { width: 100%; max-width: 480px; overflow: hidden; }
-    .profile-banner {
-      height: 96px;
-      background:
-        radial-gradient(ellipse 300px 150px at 20% 0%, rgba(255,255,255,0.15), transparent 70%),
-        linear-gradient(135deg, var(--primary-dark), var(--primary), var(--lagoon-dark));
+    /* ── Wide Profile Dashboard ── */
+    .profile-dashboard {
+      width: 100%;
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+      animation: fadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
     }
-    .profile-body { padding: 0 1.5rem 1.5rem; }
-    .profile-avatar {
-      width: 72px; height: 72px;
-      border-radius: 50%; border: 4px solid var(--bg-card);
-      background: linear-gradient(135deg, var(--primary), var(--accent));
-      display: flex; align-items: center; justify-content: center;
-      font-size: 1.8rem; margin-top: -36px; margin-bottom: 0.8rem;
+
+    /* Profile Header Card */
+    .profile-header-card {
+      position: relative;
       overflow: hidden;
+      background: linear-gradient(145deg, rgba(23, 29, 50, 0.95), rgba(15, 20, 36, 0.98));
+      border: 1px solid rgba(34, 211, 238, 0.25);
+      border-radius: var(--radius-lg);
+      box-shadow: 0 12px 36px rgba(0, 0, 0, 0.45);
+    }
+    .profile-banner {
+      height: 120px;
+      background:
+        radial-gradient(ellipse 600px 220px at 20% 0%, rgba(34, 211, 238, 0.3), transparent 70%),
+        linear-gradient(135deg, #4338ca, #6d28d9, #0891b2);
+    }
+    .profile-header-body {
+      padding: 0 2rem 1.6rem;
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1.25rem;
+    }
+    .profile-header-main {
+      display: flex;
+      align-items: flex-end;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+      margin-top: -46px;
+    }
+    .profile-avatar {
+      width: 92px; height: 92px;
+      border-radius: 50%;
+      border: 4px solid #101528;
+      background: linear-gradient(135deg, var(--primary), var(--lagoon));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 2.2rem;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5), 0 0 20px rgba(34, 211, 238, 0.3);
+      overflow: hidden;
+      flex-shrink: 0;
     }
     .profile-avatar img { width: 100%; height: 100%; object-fit: cover; }
-    .profile-username { font-size: 1.25rem; font-weight: 800; line-height: 1.2; }
-    .profile-email    { font-size: 0.82rem; color: var(--text-muted); margin-bottom: 0.75rem; }
-
-    .info-row {
-      display: flex; align-items: flex-start; gap: 0.75rem;
-      padding: 0.7rem 0; border-bottom: 1px solid var(--border);
+    .profile-info-block {
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+    }
+    .profile-name-row {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+    }
+    .profile-username {
+      font-size: 1.6rem;
+      font-weight: 900;
+      font-family: var(--font-display);
+      color: #ffffff;
+      line-height: 1.2;
+    }
+    .profile-email {
+      font-size: 0.88rem;
+      color: var(--text-muted);
+    }
+    .profile-meta-chips {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+      margin-top: 0.25rem;
+    }
+    .meta-chip {
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 0.25rem 0.65rem;
+      border-radius: var(--radius-sm);
+      color: var(--text);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    .meta-chip .chip-label {
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+    .profile-header-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+      padding-bottom: 0.25rem;
+    }
+    .btn-admin-header {
+      background: rgba(245, 158, 11, 0.14);
+      color: #fbbf24;
+      border: 1.5px solid rgba(245, 158, 11, 0.35);
       font-size: 0.85rem;
+      padding: 0.55rem 1rem;
+      min-height: 40px;
     }
-    .info-row:last-of-type { border: none; }
-    .info-row .lbl { color: var(--text-muted); min-width: 90px; font-size: 0.78rem; font-weight: 600; padding-top: 1px; }
-    .info-row .val { color: var(--text); word-break: break-all; }
+    .btn-admin-header:hover {
+      background: rgba(245, 158, 11, 0.24);
+      border-color: #fbbf24;
+      transform: translateY(-1px);
+    }
+    .btn-logout-header {
+      background: rgba(239, 68, 68, 0.08);
+      color: #f87171;
+      border: 1.5px solid rgba(239, 68, 68, 0.3);
+      font-size: 0.85rem;
+      padding: 0.55rem 1rem;
+      min-height: 40px;
+    }
+    .btn-logout-header:hover {
+      background: rgba(239, 68, 68, 0.2);
+      border-color: #ef4444;
+      color: #ffffff;
+      transform: translateY(-1px);
+    }
 
-    /* Orders */
-    .orders-section { margin-top: 1.25rem; }
-    .orders-section h3 { font-size: 0.95rem; font-weight: 700; margin-bottom: 0.875rem; display: flex; align-items: center; gap: 0.5rem; }
-    .order-item {
-      background: rgba(255,255,255,0.03); border: 1px solid var(--border);
-      border-radius: var(--radius); padding: 0.875rem; margin-bottom: 0.6rem;
-      cursor: pointer; transition: all var(--ease);
+    /* ── Dashboard 2-Column Grid ── */
+    .profile-grid {
+      display: grid;
+      grid-template-columns: 410px 1fr;
+      gap: 1.5rem;
+      align-items: flex-start;
     }
-    .order-item:hover { border-color: rgba(108,99,255,0.4); transform: translateY(-1px); background: rgba(255,255,255,0.05); }
-    .order-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.4rem; flex-wrap: wrap; gap: 0.4rem; }
-    .order-ref  { font-size: 0.78rem; font-weight: 700; color: var(--text); font-family: var(--font-mono); }
-    .order-date { font-size: 0.75rem; color: var(--text-muted); margin-bottom: 0.3rem; }
-    .order-total{ font-size: 0.95rem; font-weight: 800; color: var(--accent); font-family: var(--font-mono); }
-    .badge-wrap { display: flex; gap: 0.35rem; align-items: center; }
+    @media (max-width: 980px) {
+      .profile-grid {
+        grid-template-columns: 1fr;
+      }
+      .profile-header-body {
+        padding: 0 1.25rem 1.4rem;
+      }
+      .profile-header-main {
+        align-items: center;
+      }
+      .profile-header-actions {
+        width: 100%;
+        justify-content: flex-start;
+      }
+    }
+
+    /* Orders Card */
+    .orders-card {
+      background: linear-gradient(145deg, rgba(23, 29, 50, 0.95), rgba(15, 20, 36, 0.98));
+      border: 1px solid rgba(34, 211, 238, 0.25);
+      border-radius: var(--radius-lg);
+      padding: 1.6rem;
+      box-shadow: 0 12px 36px rgba(0, 0, 0, 0.45);
+    }
+    .orders-card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-bottom: 1.25rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .orders-header-title {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      font-family: var(--font-display);
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: #ffffff;
+    }
+    .orders-filter-bar {
+      display: flex;
+      gap: 0.4rem;
+      flex-wrap: wrap;
+    }
+    .orders-list-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      min-height: 240px;
+    }
+
+    .order-item {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1rem 1.25rem;
+      cursor: pointer;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: center;
+      gap: 1rem;
+    }
+    .order-item:hover {
+      border-color: rgba(34, 211, 238, 0.4);
+      transform: translateY(-2px);
+      background: rgba(255, 255, 255, 0.06);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+    }
+    .order-left {
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+    }
+    .order-head {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+    }
+    .order-ref {
+      font-size: 0.95rem;
+      font-weight: 800;
+      color: #ffffff;
+      font-family: var(--font-mono);
+      letter-spacing: 0.5px;
+    }
+    .order-meta-sub {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+    .order-right {
+      text-align: right;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 0.35rem;
+    }
+    .order-total {
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: var(--accent);
+      font-family: var(--font-mono);
+    }
+    .order-view-btn {
+      font-size: 0.75rem;
+      color: var(--lagoon);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
+    .badge-wrap { display: flex; gap: 0.35rem; align-items: center; flex-wrap: wrap; }
 
     .s-pending   { background:rgba(245,158,11,.15); color:#fbbf24; }
     .s-proc      { background:rgba(59,130,246,.15); color:#60a5fa; }
@@ -119,14 +339,14 @@
     .s-cancelled { background:rgba(239,68,68,.15);  color:#f87171; }
 
     /* Modal */
-    .modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.8); z-index:2000; align-items:center; justify-content:center; padding:1rem; }
+    .modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.85); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); z-index:2000; align-items:center; justify-content:center; padding:1rem; }
     .modal-overlay.open { display:flex; }
-    .modal { background:var(--bg-card); border:1px solid var(--border); border-radius:var(--radius-lg); padding:1.5rem; width:100%; max-width:480px; max-height:90vh; overflow-y:auto; animation:slideUp .25s ease; }
+    .modal { background:linear-gradient(145deg, #13182e 0%, #0c1020 100%); border:1px solid rgba(34,211,238,0.3); border-radius:var(--radius-lg); padding:1.75rem; width:100%; max-width:620px; max-height:90vh; overflow-y:auto; animation:slideUp .25s cubic-bezier(0.16,1,0.3,1); box-shadow:0 25px 70px rgba(0,0,0,0.8); }
     @keyframes slideUp { from{transform:translateY(20px);opacity:0} to{transform:translateY(0);opacity:1} }
-    .modal h2 { font-size:1.15rem; font-weight:800; margin-bottom:0.75rem; }
-    .order-detail-item { display:flex; align-items:center; gap:0.75rem; padding:0.5rem 0; border-bottom:1px solid var(--border); font-size:0.82rem; }
+    .modal h2 { font-size:1.2rem; font-weight:800; margin-bottom:0.75rem; }
+    .order-detail-item { display:flex; align-items:center; gap:0.75rem; padding:0.6rem 0; border-bottom:1px solid var(--border); font-size:0.85rem; }
     .order-detail-item:last-child { border-bottom:none; }
-    .order-detail-thumb { width:36px; height:36px; border-radius:6px; object-fit:contain; background:rgba(255,255,255,0.05); }
+    .order-detail-thumb { width:42px; height:42px; border-radius:8px; object-fit:contain; background:rgba(255,255,255,0.05); border:1px solid var(--border); }
 
     .divider {
       display: flex; align-items: center; gap: 0.75rem;
@@ -241,88 +461,116 @@
     </div>
   </div>
 
-  <!-- PROFILE CARD -->
-  <div class="profile-card card hidden" id="profile-section">
-    <div class="profile-banner"></div>
-    <div class="profile-body">
-      <div class="profile-avatar" id="p-avatar">👤</div>
-      <div class="profile-username" id="p-name">—</div>
-      <div class="profile-email"    id="p-email">—</div>
-      <span class="badge mb-2" id="p-badge" style="margin-bottom:.875rem">user</span>
-
-      <div class="info-row"><span class="lbl">Minecraft</span><span class="val" id="p-mc">—</span></div>
-      <div class="info-row mb-2"><span class="lbl">Tham gia</span><span class="val" id="p-joined">—</span></div>
-
-      <!-- ═══ 3D MINECRAFT SKIN SHOWCASE ═══ -->
-      <div class="skin-profile-card">
-        <div class="skin-card-header">
-          <div class="skin-card-title">
-            <span class="hero-icon">🧍</span>
-            <span>Mô Hình Skin 3D</span>
+  <!-- PROFILE DASHBOARD -->
+  <div class="profile-dashboard hidden" id="profile-section">
+    <!-- Top Header Banner Card -->
+    <div class="profile-header-card">
+      <div class="profile-banner"></div>
+      <div class="profile-header-body">
+        <div class="profile-header-main">
+          <div class="profile-avatar" id="p-avatar">👤</div>
+          <div class="profile-info-block">
+            <div class="profile-name-row">
+              <h1 class="profile-username" id="p-name">—</h1>
+              <span class="badge" id="p-badge">user</span>
+            </div>
+            <div class="profile-email" id="p-email">—</div>
+            <div class="profile-meta-chips">
+              <span class="meta-chip">
+                <span class="chip-label">Minecraft:</span>
+                <strong id="p-mc">—</strong>
+              </span>
+              <span class="meta-chip">
+                <span class="chip-label">Tham gia:</span>
+                <span id="p-joined">—</span>
+              </span>
+            </div>
           </div>
-          <span class="badge badge-purple" id="p-skin-badge">Skin mặc định (Steve)</span>
         </div>
 
-        <div class="skin-interactive-stage">
-          <canvas id="account-skin-canvas"></canvas>
-          <div class="skin-pedestal-glow"></div>
-          <div class="skin-hint-badge">💡 Kéo chuột để xoay 360° • Cuộn để phóng to</div>
-        </div>
-
-        <div class="skin-btn-group skin-grid-2" style="margin-bottom:0.75rem;">
-          <button class="skin-control-btn active" id="acc-skin-walk-btn" onclick="setAccountSkinAnim('walk')">🚶 Đi bộ</button>
-          <button class="skin-control-btn" id="acc-skin-idle-btn" onclick="setAccountSkinAnim('idle')">🧍 Đứng yên</button>
-          <button class="skin-control-btn" id="acc-skin-run-btn" onclick="setAccountSkinAnim('run')">🏃 Chạy nhanh</button>
-          <button class="skin-control-btn active" id="acc-skin-rot-btn" onclick="toggleAccountSkinRotate()">🔄 Tự xoay: BẬT</button>
-        </div>
-
-        <div class="skin-btn-group skin-grid-2" style="margin-bottom:0.5rem;">
-          <label class="btn btn-outline" style="font-size:0.82rem; padding:0.5rem 0.65rem; min-height:36px; cursor:pointer; justify-content:center;">
-            📁 Đổi Skin .PNG
-            <input type="file" id="acc-skin-file-input" accept="image/png" style="display:none;" onchange="handleAccountSkinUpload(this)">
-          </label>
-          <button class="btn btn-ghost" style="font-size:0.82rem; padding:0.5rem 0.65rem; min-height:36px; justify-content:center;" onclick="resetAccountSkinToSteve()">
-            🔄 Về Steve
-          </button>
-        </div>
-
-        <div style="display:flex; gap:0.5rem;">
-          <button class="btn btn-primary btn-full" style="font-size:0.82rem; padding:0.5rem 0.65rem; min-height:36px;" onclick="openSkinModal()">
-            🔍 Phóng To & Tùy Chỉnh 3D
-          </button>
-          <button class="btn btn-ghost" style="font-size:0.82rem; padding:0.5rem 0.75rem; min-height:36px;" onclick="captureAccountSkin()" title="Lưu ảnh 3D">
-            📸 Chụp
+        <div class="profile-header-actions">
+          <div id="admin-link-wrap" class="hidden">
+            <a href="/html/Admin.html" class="btn btn-admin-header">
+              ⚙️ Quản Trị Admin
+            </a>
+          </div>
+          <button class="btn btn-logout-header" onclick="doLogout()">
+            Đăng xuất
           </button>
         </div>
       </div>
+    </div>
 
-      <div class="orders-section">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.75rem">
-          <h3 style="margin:0">📦 Đơn hàng của tôi</h3>
-          <span id="orders-count-badge" class="badge badge-purple">0 đơn</span>
-        </div>
-        
-        <div style="display:flex;gap:0.35rem;overflow-x:auto;padding-bottom:0.5rem;margin-bottom:0.75rem" id="order-filter-pills">
-          <button class="filter-btn active" style="font-size:0.72rem;padding:0.25rem 0.65rem;min-height:28px" onclick="filterMyOrders('all')">Tất cả</button>
-          <button class="filter-btn" style="font-size:0.72rem;padding:0.25rem 0.65rem;min-height:28px" onclick="filterMyOrders('pending')">Chờ xử lý</button>
-          <button class="filter-btn" style="font-size:0.72rem;padding:0.25rem 0.65rem;min-height:28px" onclick="filterMyOrders('delivered')">Đã nhận</button>
-          <button class="filter-btn" style="font-size:0.72rem;padding:0.25rem 0.65rem;min-height:28px" onclick="filterMyOrders('cancelled')">Đã huỷ</button>
-        </div>
+    <!-- 2-Column Dashboard Grid -->
+    <div class="profile-grid">
+      <!-- Left Column: 3D Skin Showcase -->
+      <div class="profile-grid-col-skin">
+        <div class="skin-profile-card">
+          <div class="skin-card-header">
+            <div class="skin-card-title">
+              <span class="hero-icon">🧍</span>
+              <span>Mô Hình Skin 3D</span>
+            </div>
+            <span class="badge badge-purple" id="p-skin-badge">Skin mặc định (Steve)</span>
+          </div>
 
-        <div id="orders-list"><div class="spinner"></div></div>
+          <div class="skin-interactive-stage">
+            <canvas id="account-skin-canvas"></canvas>
+            <div class="skin-pedestal-glow"></div>
+            <div class="skin-hint-badge">💡 Kéo chuột để xoay 360° • Cuộn để phóng to</div>
+          </div>
+
+          <div class="skin-btn-group skin-grid-2" style="margin-bottom:0.75rem;">
+            <button class="skin-control-btn active" id="acc-skin-walk-btn" onclick="setAccountSkinAnim('walk')">🚶 Đi bộ</button>
+            <button class="skin-control-btn" id="acc-skin-idle-btn" onclick="setAccountSkinAnim('idle')">🧍 Đứng yên</button>
+            <button class="skin-control-btn" id="acc-skin-run-btn" onclick="setAccountSkinAnim('run')">🏃 Chạy nhanh</button>
+            <button class="skin-control-btn active" id="acc-skin-rot-btn" onclick="toggleAccountSkinRotate()">🔄 Tự xoay: BẬT</button>
+          </div>
+
+          <div class="skin-btn-group skin-grid-2" style="margin-bottom:0.5rem;">
+            <label class="btn btn-outline" style="font-size:0.82rem; padding:0.5rem 0.65rem; min-height:36px; cursor:pointer; justify-content:center;">
+              📁 Đổi Skin .PNG
+              <input type="file" id="acc-skin-file-input" accept="image/png" style="display:none;" onchange="handleAccountSkinUpload(this)">
+            </label>
+            <button class="btn btn-ghost" style="font-size:0.82rem; padding:0.5rem 0.65rem; min-height:36px; justify-content:center;" onclick="resetAccountSkinToSteve()">
+              🔄 Về Steve
+            </button>
+          </div>
+
+          <div style="display:flex; gap:0.5rem;">
+            <button class="btn btn-primary btn-full" style="font-size:0.82rem; padding:0.5rem 0.65rem; min-height:36px;" onclick="openSkinModal()">
+              🔍 Phóng To & Tùy Chỉnh 3D
+            </button>
+            <button class="btn btn-ghost" style="font-size:0.82rem; padding:0.5rem 0.75rem; min-height:36px;" onclick="captureAccountSkin()" title="Lưu ảnh 3D">
+              📸 Chụp
+            </button>
+          </div>
+        </div>
       </div>
 
-      <div id="admin-link-wrap" class="hidden">
-        <a href="/html/Admin.html" class="btn btn-full mt-2"
-          style="background:rgba(245,158,11,.12);color:#fbbf24;border:1.5px solid rgba(245,158,11,.3)">
-          ⚙️ Trang Quản Trị Admin
-        </a>
+      <!-- Right Column: Orders & History -->
+      <div class="profile-grid-col-orders">
+        <div class="orders-card">
+          <div class="orders-card-header">
+            <div class="orders-header-title">
+              <span class="hero-icon">📦</span>
+              <span>Đơn Hàng Của Tôi</span>
+              <span id="orders-count-badge" class="badge badge-purple">0 đơn</span>
+            </div>
+            
+            <div class="orders-filter-bar" id="order-filter-pills">
+              <button class="filter-btn active" style="font-size:0.75rem;padding:0.3rem 0.75rem;min-height:30px" onclick="filterMyOrders('all')">Tất cả</button>
+              <button class="filter-btn" style="font-size:0.75rem;padding:0.3rem 0.75rem;min-height:30px" onclick="filterMyOrders('pending')">Chờ xử lý</button>
+              <button class="filter-btn" style="font-size:0.75rem;padding:0.3rem 0.75rem;min-height:30px" onclick="filterMyOrders('delivered')">Đã nhận</button>
+              <button class="filter-btn" style="font-size:0.75rem;padding:0.3rem 0.75rem;min-height:30px" onclick="filterMyOrders('cancelled')">Đã huỷ</button>
+            </div>
+          </div>
+
+          <div id="orders-list" class="orders-list-wrap">
+            <div class="spinner"></div>
+          </div>
+        </div>
       </div>
-      <button class="btn btn-full mt-2"
-        style="border:1.5px solid var(--danger);color:var(--danger);background:rgba(239,68,68,.08)"
-        onclick="doLogout()">
-        Đăng xuất
-      </button>
     </div>
   </div>
 
@@ -614,8 +862,8 @@ function initAccountSkin(user) {
   if (!accountSkinViewer) {
     accountSkinViewer = new MinecraftSkinViewer(canvas, {
       skin: activeSkin,
-      width: canvas.parentElement ? canvas.parentElement.clientWidth - 32 : 280,
-      height: 320,
+      width: canvas.parentElement ? Math.min(canvas.parentElement.clientWidth, 320) : 320,
+      height: 380,
       autoRotate: true,
       animation: 'walk'
     });
@@ -792,17 +1040,30 @@ function renderUserOrders() {
     const code = o.orderCode || '#' + o._id.slice(-8).toUpperCase();
     const oStat = o.orderStatus || (o.status === 'cancelled' ? 'cancelled' : o.status === 'delivered' ? 'delivered' : 'pending');
     const pStat = o.paymentStatus || (o.status === 'paid' ? 'paid' : 'pending');
+    const itemCount = o.items ? o.items.length : 0;
+    const itemsPreview = (o.items && o.items.length > 0)
+      ? o.items.map(i => i.product ? i.product.name : 'Vật phẩm').slice(0, 2).join(', ') + (o.items.length > 2 ? '...' : '')
+      : 'Vật phẩm máy chủ';
     return `
-      <div class="order-item" onclick="openOrderDetail('${o._id}')">
-        <div class="order-head">
-          <span class="order-ref">${code}</span>
-          <div class="badge-wrap">
-            <span class="badge ${orderStatusClass[oStat] || 's-pending'}">${orderStatusLabel[oStat] || oStat}</span>
-            <span class="badge ${paymentStatusClass[pStat] || 's-pending'}">${paymentStatusLabel[pStat] || pStat}</span>
+      <div class="order-item" onclick="openOrderDetail('${o._id}')" title="Nhấp để xem chi tiết đơn hàng">
+        <div class="order-left">
+          <div class="order-head">
+            <span class="order-ref">${code}</span>
+            <div class="badge-wrap">
+              <span class="badge ${orderStatusClass[oStat] || 's-pending'}">${orderStatusLabel[oStat] || oStat}</span>
+              <span class="badge ${paymentStatusClass[pStat] || 's-pending'}">${paymentStatusLabel[pStat] || pStat}</span>
+            </div>
+          </div>
+          <div class="order-meta-sub">
+            <span>📅 ${new Date(o.createdAt).toLocaleString('vi-VN')}</span>
+            <span>·</span>
+            <span>📦 ${itemCount} món (${itemsPreview})</span>
           </div>
         </div>
-        <div class="order-date">${new Date(o.createdAt).toLocaleDateString('vi-VN')} · ${o.items.length} món</div>
-        <div class="order-total">${o.total.toLocaleString('vi-VN')}đ</div>
+        <div class="order-right">
+          <div class="order-total">${o.total.toLocaleString('vi-VN')}đ</div>
+          <span class="order-view-btn">Chi tiết ➔</span>
+        </div>
       </div>
     `;
   }).join('');

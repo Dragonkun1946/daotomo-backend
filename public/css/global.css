@@ -1184,12 +1184,18 @@ footer {
 }
 .skin-interactive-stage canvas {
   width: 100% !important;
-  max-width: 260px;
-  height: 320px !important;
+  max-width: 320px;
+  height: 380px !important;
   cursor: grab;
 }
 .skin-interactive-stage canvas:active {
   cursor: grabbing;
+}
+@media (max-width: 480px) {
+  .skin-interactive-stage canvas {
+    max-width: 260px;
+    height: 320px !important;
+  }
 }
 
 
