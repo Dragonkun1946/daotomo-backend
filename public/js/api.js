@@ -245,16 +245,23 @@ const api = {
   getUser:    () => JSON.parse(localStorage.getItem('dtm_user') || 'null'),
   isLoggedIn: () => !!localStorage.getItem('dtm_token'),
   setSession(token, user) {
-    localStorage.setItem('dtm_token', token);
-    localStorage.setItem('dtm_user', JSON.stringify(user));
+    if (token) localStorage.setItem('dtm_token', token);
+    if (user) {
+      const customSkin = localStorage.getItem('dtm_custom_skin');
+      if (customSkin && !user.skinUrl) {
+        user.skinUrl = customSkin;
+      }
+      localStorage.setItem('dtm_user', JSON.stringify(user));
+    }
     try {
-      const skinUrl = (user && user.skinUrl) ? user.skinUrl : '/img/steve.png';
+      const skinUrl = (user && user.skinUrl) || localStorage.getItem('dtm_custom_skin') || '/img/steve.png';
       window.dispatchEvent(new CustomEvent('daotomo:skin-updated', { detail: { skinUrl } }));
     } catch (e) {}
   },
   clearSession() {
     localStorage.removeItem('dtm_token');
     localStorage.removeItem('dtm_user');
+    localStorage.removeItem('dtm_custom_skin');
     try {
       window.dispatchEvent(new CustomEvent('daotomo:skin-updated', { detail: { skinUrl: '/img/steve.png' } }));
     } catch (e) {}
@@ -316,6 +323,8 @@ const api = {
   updateSkin: (skinData, skinUrl) =>
     api.request('/auth/skin', { method: 'POST', body: JSON.stringify({ skinData, skinUrl }) }),
   getActiveSkinUrl: () => {
+    const customSkin = localStorage.getItem('dtm_custom_skin');
+    if (customSkin) return customSkin;
     const user = api.getUser();
     if (api.isLoggedIn() && user && user.skinUrl) {
       return user.skinUrl;

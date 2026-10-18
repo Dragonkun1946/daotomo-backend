@@ -845,12 +845,13 @@ function initAccountSkin(user) {
   const canvas = document.getElementById('account-skin-canvas');
   if (!canvas || !window.MinecraftSkinViewer) return;
 
+  const savedCustomSkin = localStorage.getItem('dtm_custom_skin');
+  const activeSkin = savedCustomSkin || (user && user.skinUrl) || '/img/steve.png';
   const nameTag = (user && (user.minecraftUsername || user.username)) || 'Đảo Viên';
   const badgeEl = document.getElementById('p-skin-badge');
-  const activeSkin = (user && user.skinUrl) ? user.skinUrl : '/img/steve.png';
 
   if (badgeEl) {
-    if (user && user.skinUrl) {
+    if (activeSkin && activeSkin !== '/img/steve.png') {
       badgeEl.textContent = 'Skin cá nhân (Đã lưu)';
       badgeEl.className = 'badge badge-green';
     } else {
@@ -890,7 +891,8 @@ async function handleAccountSkinUpload(input) {
     }
     window.dispatchEvent(new CustomEvent('daotomo:skin-updated', { detail: { skinUrl: base64 } }));
 
-    // 2. Persist in user session immediately
+    // 2. Persist in user session immediately with robust localStorage backup
+    localStorage.setItem('dtm_custom_skin', base64);
     const curUser = api.getUser() || {};
     curUser.skinUrl = base64;
     api.setSession(api.getToken(), curUser);
@@ -907,10 +909,8 @@ async function handleAccountSkinUpload(input) {
     try {
       const res = await api.updateSkin(base64);
       if (res && res.skinUrl) {
-        curUser.skinUrl = res.skinUrl;
-        api.setSession(api.getToken(), curUser);
-        if (accountSkinViewer) accountSkinViewer.loadSkin(res.skinUrl);
-        window.dispatchEvent(new CustomEvent('daotomo:skin-updated', { detail: { skinUrl: res.skinUrl } }));
+        curUser.serverSkinUrl = res.skinUrl;
+        // Keep base64 rendering in canvas — do NOT reload from network which might flicker
       }
       if (typeof showToast === 'function') showToast(res.message || 'Đã lưu skin nhân vật thành công! 🎮', 'success');
       if (window.SoundFX) window.SoundFX.playSuccess();
@@ -926,11 +926,13 @@ async function handleAccountSkinUpload(input) {
 }
 
 async function resetAccountSkinToSteve() {
+  localStorage.removeItem('dtm_custom_skin');
   try {
     const res = await api.updateSkin(null, '/img/steve.png');
     const curUser = api.getUser();
     if (curUser) {
       curUser.skinUrl = '';
+      delete curUser.serverSkinUrl;
       api.setSession(api.getToken(), curUser);
     }
     if (accountSkinViewer) accountSkinViewer.loadSkin('/img/steve.png');
@@ -1307,13 +1309,25 @@ document.addEventListener('DOMContentLoaded', async () => {
   if (api.isLoggedIn()) {
     try {
       const { user } = await api.getMe();
-      api.setSession(api.getToken(), user);
-      showProfile(user);
+      if (user) {
+        const customSkin = localStorage.getItem('dtm_custom_skin');
+        if (customSkin && !user.skinUrl) {
+          user.skinUrl = customSkin;
+        }
+        api.setSession(api.getToken(), user);
+        showProfile(user);
+      }
       if (params.has('orderId')) {
         setTimeout(() => openOrderDetail(params.get('orderId')), 500);
       }
     } catch(e) {
-      api.clearSession();
+      console.warn('Session verification fallback (offline / network error):', e);
+      const localUser = api.getUser();
+      if (localUser) {
+        showProfile(localUser);
+      } else {
+        api.clearSession();
+      }
     }
   }
 });

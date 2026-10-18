@@ -8,7 +8,8 @@ const { sendResetPasswordEmail } = require('../utils/sendEmail');
 
 // ─── Helper: generate JWT ─────────────────────────────────────────────────────
 const generateToken = (userId) => {
-  return jwt.sign({ id: userId }, process.env.JWT_SECRET, {
+  const secret = process.env.JWT_SECRET || 'daotomo_jwt_secret_key_development_2026';
+  return jwt.sign({ id: userId }, secret, {
     expiresIn: process.env.JWT_EXPIRES_IN || '7d',
   });
 };
@@ -130,7 +131,40 @@ const login = async (req, res) => {
 // ─── GET /api/auth/me  (protected) ───────────────────────────────────────────
 const getMe = async (req, res) => {
   try {
-    const user = await User.findById(req.user._id);
+    let user = null;
+    const userId = req.user && (req.user._id || req.user.id);
+    if (mongoose.connection.readyState === 1 && userId) {
+      user = await User.findById(userId);
+    } else if (userId) {
+      try {
+        user = await Promise.race([
+          User.findById(userId),
+          new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), 300))
+        ]);
+      } catch (_) {}
+    }
+
+    if (!user && req.user) {
+      const userIdStr = (userId || 'guest').toString();
+      const skinFile = `/uploads/skins/${userIdStr}.png`;
+      const skinDiskPath = path.join(__dirname, '..', 'public', 'uploads', 'skins', `${userIdStr}.png`);
+      const hasDiskSkin = fs.existsSync(skinDiskPath);
+
+      user = {
+        _id: userId,
+        id: userId,
+        username: req.user.username || 'Đảo Viên',
+        email: req.user.email || '',
+        role: req.user.role || 'user',
+        minecraftUsername: req.user.minecraftUsername || '',
+        skinUrl: hasDiskSkin ? skinFile : (req.user.skinUrl || ''),
+      };
+    }
+
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'Không tìm thấy người dùng.' });
+    }
+
     res.json({ success: true, user });
   } catch (error) {
     res.status(500).json({ success: false, message: 'Lỗi server.' });

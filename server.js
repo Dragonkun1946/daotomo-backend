@@ -24,8 +24,15 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(passport.initialize()); // no app.use(passport.session()) — we're stateless (JWT only)
 
-// Serve static frontend
-app.use(express.static(path.join(__dirname, 'public')));
+process.env.JWT_SECRET = process.env.JWT_SECRET || 'daotomo_jwt_secret_key_development_2026';
+
+// Serve static frontend with CORS enabled for 3D textures & skin assets
+app.use(express.static(path.join(__dirname, 'public'), {
+  setHeaders: (res) => {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
+  }
+}));
 
 // ─── API Routes (phải để trước fallback) ─────────────────────────────────────
 app.use('/api/auth', authRoutes);

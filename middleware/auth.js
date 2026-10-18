@@ -18,14 +18,24 @@ const protect = async (req, res, next) => {
     });
   }
 
+  const secret = process.env.JWT_SECRET || 'daotomo_jwt_secret_key_development_2026';
+
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const decoded = jwt.verify(token, secret);
     try {
-      req.user = await User.findById(decoded.id);
+      if (mongoose.connection.readyState === 1) {
+        req.user = await User.findById(decoded.id);
+      } else {
+        req.user = await Promise.race([
+          User.findById(decoded.id),
+          new Promise((_, reject) => setTimeout(() => reject(new Error('DB Timeout')), 300))
+        ]);
+      }
     } catch (err) {
       if (mongoose.connection.readyState !== 1) {
         req.user = {
           _id: decoded.id,
+          id: decoded.id,
           role: decoded.role || 'user',
           username: decoded.username || 'user',
         };

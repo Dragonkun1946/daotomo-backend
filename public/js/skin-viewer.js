@@ -14,8 +14,12 @@
    * Otherwise -> returns /img/steve.png
    */
   function resolveActiveSkin() {
+    const customSkin = localStorage.getItem('dtm_custom_skin');
+    if (customSkin) return customSkin;
+
     if (window.api && typeof window.api.getActiveSkinUrl === 'function') {
-      return window.api.getActiveSkinUrl();
+      const u = window.api.getActiveSkinUrl();
+      if (u && u !== DEFAULT_STEVE_SKIN) return u;
     }
     const rawUser = localStorage.getItem('dtm_user');
     const token = localStorage.getItem('dtm_token');
@@ -140,21 +144,30 @@
 
     loadSkin(url) {
       if (!this.viewer) return;
-      this.currentSkinUrl = url || DEFAULT_STEVE_SKIN;
+      const targetUrl = url || resolveActiveSkin() || DEFAULT_STEVE_SKIN;
+      const prevSkin = this.currentSkinUrl;
+      this.currentSkinUrl = targetUrl;
       try {
-        const res = this.viewer.loadSkin(this.currentSkinUrl);
+        const res = this.viewer.loadSkin(targetUrl);
         if (res && typeof res.catch === 'function') {
           res.catch((err) => {
-            console.warn('Skin load failed, falling back to Steve:', url, err);
-            if (this.currentSkinUrl !== DEFAULT_STEVE_SKIN) {
+            console.warn('Skin load failed for:', targetUrl, err);
+            // If previous skin was a valid base64 or custom skin, restore it instead of Steve!
+            if (prevSkin && (prevSkin.startsWith('data:image/') || prevSkin.length > 100)) {
+              this.currentSkinUrl = prevSkin;
+              this.viewer.loadSkin(prevSkin);
+            } else if (this.currentSkinUrl !== DEFAULT_STEVE_SKIN) {
               this.currentSkinUrl = DEFAULT_STEVE_SKIN;
               this.viewer.loadSkin(DEFAULT_STEVE_SKIN);
             }
           });
         }
       } catch (err) {
-        console.warn('Skin load threw error, falling back to Steve:', err);
-        if (this.currentSkinUrl !== DEFAULT_STEVE_SKIN) {
+        console.warn('Skin load threw error for:', targetUrl, err);
+        if (prevSkin && (prevSkin.startsWith('data:image/') || prevSkin.length > 100)) {
+          this.currentSkinUrl = prevSkin;
+          this.viewer.loadSkin(prevSkin);
+        } else if (this.currentSkinUrl !== DEFAULT_STEVE_SKIN) {
           this.currentSkinUrl = DEFAULT_STEVE_SKIN;
           this.viewer.loadSkin(DEFAULT_STEVE_SKIN);
         }
@@ -436,6 +449,7 @@
       // Reset to Steve default
       document.getElementById('skin-modal-steve-btn').addEventListener('click', async () => {
         if (globalModalViewer) {
+          localStorage.removeItem('dtm_custom_skin');
           globalModalViewer.loadSkin(DEFAULT_STEVE_SKIN);
           stagedSkinData = null;
           stagedSkinUrl = DEFAULT_STEVE_SKIN;
@@ -448,6 +462,7 @@
               const curUser = window.api.getUser();
               if (curUser) {
                 curUser.skinUrl = '';
+                delete curUser.serverSkinUrl;
                 window.api.setSession(window.api.getToken(), curUser);
               }
               window.dispatchEvent(new CustomEvent('daotomo:skin-updated', { detail: { skinUrl: DEFAULT_STEVE_SKIN } }));
@@ -489,6 +504,7 @@
           const localSkin = payloadData || payloadUrl;
           const curUser = window.api.getUser() || {};
           if (localSkin) {
+            localStorage.setItem('dtm_custom_skin', localSkin);
             curUser.skinUrl = localSkin;
             window.api.setSession(window.api.getToken(), curUser);
             window.dispatchEvent(new CustomEvent('daotomo:skin-updated', { detail: { skinUrl: localSkin } }));
@@ -496,11 +512,14 @@
 
           try {
             const res = await window.api.updateSkin(payloadData, payloadUrl);
-            const savedUrl = res.skinUrl || payloadUrl;
+            const savedUrl = res && res.skinUrl ? res.skinUrl : payloadUrl;
             if (savedUrl) {
-              curUser.skinUrl = savedUrl;
-              window.api.setSession(window.api.getToken(), curUser);
-              window.dispatchEvent(new CustomEvent('daotomo:skin-updated', { detail: { skinUrl: savedUrl } }));
+              curUser.serverSkinUrl = savedUrl;
+              // If not base64, update skinUrl to URL
+              if (!localSkin || !localSkin.startsWith('data:image/')) {
+                curUser.skinUrl = savedUrl;
+                window.api.setSession(window.api.getToken(), curUser);
+              }
             }
           } catch (serverErr) {
             console.warn('Server sync note (persisted locally):', serverErr);
