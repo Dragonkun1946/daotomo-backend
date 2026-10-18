@@ -102,16 +102,31 @@
     .orders-section h3 { font-size: 0.95rem; font-weight: 700; margin-bottom: 0.875rem; display: flex; align-items: center; gap: 0.5rem; }
     .order-item {
       background: rgba(255,255,255,0.03); border: 1px solid var(--border);
-      border-radius: var(--radius); padding: 0.875rem; margin-bottom: 0.5rem;
+      border-radius: var(--radius); padding: 0.875rem; margin-bottom: 0.6rem;
+      cursor: pointer; transition: all var(--ease);
     }
-    .order-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.3rem; }
-    .order-ref  { font-size: 0.72rem; color: var(--text-muted); font-family: var(--font-mono); }
+    .order-item:hover { border-color: rgba(108,99,255,0.4); transform: translateY(-1px); background: rgba(255,255,255,0.05); }
+    .order-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.4rem; flex-wrap: wrap; gap: 0.4rem; }
+    .order-ref  { font-size: 0.78rem; font-weight: 700; color: var(--text); font-family: var(--font-mono); }
     .order-date { font-size: 0.75rem; color: var(--text-muted); margin-bottom: 0.3rem; }
-    .order-total{ font-size: 0.95rem; font-weight: 800; color: var(--accent); }
+    .order-total{ font-size: 0.95rem; font-weight: 800; color: var(--accent); font-family: var(--font-mono); }
+    .badge-wrap { display: flex; gap: 0.35rem; align-items: center; }
+
     .s-pending   { background:rgba(245,158,11,.15); color:#fbbf24; }
+    .s-proc      { background:rgba(59,130,246,.15); color:#60a5fa; }
     .s-paid      { background:rgba(16,185,129,.15);  color:#34d399; }
     .s-delivered { background:rgba(108,99,255,.15); color:#a78bfa; }
     .s-cancelled { background:rgba(239,68,68,.15);  color:#f87171; }
+
+    /* Modal */
+    .modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.8); z-index:2000; align-items:center; justify-content:center; padding:1rem; }
+    .modal-overlay.open { display:flex; }
+    .modal { background:var(--bg-card); border:1px solid var(--border); border-radius:var(--radius-lg); padding:1.5rem; width:100%; max-width:480px; max-height:90vh; overflow-y:auto; animation:slideUp .25s ease; }
+    @keyframes slideUp { from{transform:translateY(20px);opacity:0} to{transform:translateY(0);opacity:1} }
+    .modal h2 { font-size:1.15rem; font-weight:800; margin-bottom:0.75rem; }
+    .order-detail-item { display:flex; align-items:center; gap:0.75rem; padding:0.5rem 0; border-bottom:1px solid var(--border); font-size:0.82rem; }
+    .order-detail-item:last-child { border-bottom:none; }
+    .order-detail-thumb { width:36px; height:36px; border-radius:6px; object-fit:contain; background:rgba(255,255,255,0.05); }
 
     .divider {
       display: flex; align-items: center; gap: 0.75rem;
@@ -236,17 +251,71 @@
       <span class="badge mb-2" id="p-badge" style="margin-bottom:.875rem">user</span>
 
       <div class="info-row"><span class="lbl">Minecraft</span><span class="val" id="p-mc">—</span></div>
-      <div class="info-row"><span class="lbl">Tham gia</span><span class="val" id="p-joined">—</span></div>
+      <div class="info-row mb-2"><span class="lbl">Tham gia</span><span class="val" id="p-joined">—</span></div>
+
+      <!-- ═══ 3D MINECRAFT SKIN SHOWCASE ═══ -->
+      <div class="skin-profile-card">
+        <div class="skin-card-header">
+          <div class="skin-card-title">
+            <span class="hero-icon">🧍</span>
+            <span>Mô Hình Skin 3D</span>
+          </div>
+          <span class="badge badge-purple" id="p-skin-badge">Skin mặc định (Steve)</span>
+        </div>
+
+        <div class="skin-interactive-stage">
+          <canvas id="account-skin-canvas"></canvas>
+          <div class="skin-pedestal-glow"></div>
+          <div class="skin-hint-badge">💡 Kéo chuột để xoay 360° • Cuộn để phóng to</div>
+        </div>
+
+        <div class="skin-btn-group skin-grid-2" style="margin-bottom:0.75rem;">
+          <button class="skin-control-btn active" id="acc-skin-walk-btn" onclick="setAccountSkinAnim('walk')">🚶 Đi bộ</button>
+          <button class="skin-control-btn" id="acc-skin-idle-btn" onclick="setAccountSkinAnim('idle')">🧍 Đứng yên</button>
+          <button class="skin-control-btn" id="acc-skin-run-btn" onclick="setAccountSkinAnim('run')">🏃 Chạy nhanh</button>
+          <button class="skin-control-btn active" id="acc-skin-rot-btn" onclick="toggleAccountSkinRotate()">🔄 Tự xoay: BẬT</button>
+        </div>
+
+        <div class="skin-btn-group skin-grid-2" style="margin-bottom:0.5rem;">
+          <label class="btn btn-outline" style="font-size:0.82rem; padding:0.5rem 0.65rem; min-height:36px; cursor:pointer; justify-content:center;">
+            📁 Đổi Skin .PNG
+            <input type="file" id="acc-skin-file-input" accept="image/png" style="display:none;" onchange="handleAccountSkinUpload(this)">
+          </label>
+          <button class="btn btn-ghost" style="font-size:0.82rem; padding:0.5rem 0.65rem; min-height:36px; justify-content:center;" onclick="resetAccountSkinToSteve()">
+            🔄 Về Steve
+          </button>
+        </div>
+
+        <div style="display:flex; gap:0.5rem;">
+          <button class="btn btn-primary btn-full" style="font-size:0.82rem; padding:0.5rem 0.65rem; min-height:36px;" onclick="openSkinModal()">
+            🔍 Phóng To & Tùy Chỉnh 3D
+          </button>
+          <button class="btn btn-ghost" style="font-size:0.82rem; padding:0.5rem 0.75rem; min-height:36px;" onclick="captureAccountSkin()" title="Lưu ảnh 3D">
+            📸 Chụp
+          </button>
+        </div>
+      </div>
 
       <div class="orders-section">
-        <h3>📦 Đơn hàng của tôi</h3>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.75rem">
+          <h3 style="margin:0">📦 Đơn hàng của tôi</h3>
+          <span id="orders-count-badge" class="badge badge-purple">0 đơn</span>
+        </div>
+        
+        <div style="display:flex;gap:0.35rem;overflow-x:auto;padding-bottom:0.5rem;margin-bottom:0.75rem" id="order-filter-pills">
+          <button class="filter-btn active" style="font-size:0.72rem;padding:0.25rem 0.65rem;min-height:28px" onclick="filterMyOrders('all')">Tất cả</button>
+          <button class="filter-btn" style="font-size:0.72rem;padding:0.25rem 0.65rem;min-height:28px" onclick="filterMyOrders('pending')">Chờ xử lý</button>
+          <button class="filter-btn" style="font-size:0.72rem;padding:0.25rem 0.65rem;min-height:28px" onclick="filterMyOrders('delivered')">Đã nhận</button>
+          <button class="filter-btn" style="font-size:0.72rem;padding:0.25rem 0.65rem;min-height:28px" onclick="filterMyOrders('cancelled')">Đã huỷ</button>
+        </div>
+
         <div id="orders-list"><div class="spinner"></div></div>
       </div>
 
       <div id="admin-link-wrap" class="hidden">
         <a href="/html/Admin.html" class="btn btn-full mt-2"
           style="background:rgba(245,158,11,.12);color:#fbbf24;border:1.5px solid rgba(245,158,11,.3)">
-          ⚙️ Trang Admin
+          ⚙️ Trang Quản Trị Admin
         </a>
       </div>
       <button class="btn btn-full mt-2"
@@ -259,6 +328,109 @@
 
 </main>
 
+<!-- Order Detail Modal -->
+<div class="modal-overlay" id="order-detail-modal">
+  <div class="modal">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:0.75rem">
+      <div>
+        <h2 id="od-code" style="margin:0;font-size:1.15rem;font-family:var(--font-mono)">#MÃ-ĐƠN</h2>
+        <div id="od-date" style="font-size:0.75rem;color:var(--text-muted);margin-top:2px"></div>
+      </div>
+      <button onclick="closeOrderDetail()" style="background:none;border:none;color:var(--text-muted);font-size:1.3rem;cursor:pointer;padding:0 0.4rem">✕</button>
+    </div>
+
+    <div id="od-msg"></div>
+
+    <!-- ═══ VISUAL ORDER PROGRESS STEPPER ═══ -->
+    <div class="order-stepper" id="od-stepper">
+      <div class="stepper-line"><div class="stepper-fill" id="od-stepper-fill"></div></div>
+      <div class="stepper-step" id="step-1">
+        <div class="step-node" id="step-node-1">1</div>
+        <div class="step-label">Tạo đơn</div>
+      </div>
+      <div class="stepper-step" id="step-2">
+        <div class="step-node" id="step-node-2">2</div>
+        <div class="step-label">Thanh toán</div>
+      </div>
+      <div class="stepper-step" id="step-3">
+        <div class="step-node" id="step-node-3">3</div>
+        <div class="step-label">Xử lý</div>
+      </div>
+      <div class="stepper-step" id="step-4">
+        <div class="step-node" id="step-node-4">4</div>
+        <div class="step-label">Nhận quà</div>
+      </div>
+    </div>
+
+    <div style="display:flex;gap:0.4rem;margin:1rem 0;flex-wrap:wrap">
+      <span class="badge" id="od-order-status">Trạng thái</span>
+      <span class="badge" id="od-payment-status">Thanh toán</span>
+    </div>
+
+    <div style="background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:var(--radius);padding:0.75rem;margin-bottom:1rem;font-size:0.8rem">
+      <div style="display:flex;justify-content:space-between;margin-bottom:0.3rem">
+        <span style="color:var(--text-muted)">Minecraft:</span>
+        <strong id="od-mc" style="color:var(--text)">—</strong>
+      </div>
+      <div style="display:flex;justify-content:space-between;margin-bottom:0.3rem">
+        <span style="color:var(--text-muted)">Phương thức:</span>
+        <span id="od-method" style="text-transform:uppercase;color:var(--text)">QR</span>
+      </div>
+      <div style="display:flex;justify-content:space-between">
+        <span style="color:var(--text-muted)">Ghi chú:</span>
+        <span id="od-note" style="color:var(--text)">—</span>
+      </div>
+    </div>
+
+    <h4 style="font-size:0.85rem;margin-bottom:0.5rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px">Danh sách vật phẩm</h4>
+    <div id="od-items" style="margin-bottom:1rem"></div>
+
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:0.75rem 0;border-top:1px solid var(--border);border-bottom:1px solid var(--border);margin-bottom:1rem">
+      <span style="font-weight:700">Tổng thanh toán:</span>
+      <span id="od-total" style="font-size:1.25rem;font-weight:800;color:var(--accent);font-family:var(--font-mono)">0đ</span>
+    </div>
+
+    <!-- QR payment section if pending -->
+    <div id="od-payment-section" style="display:none;background:rgba(245,158,11,0.06);border:1px solid rgba(245,158,11,0.25);border-radius:var(--radius);padding:1rem;margin-bottom:1rem;text-align:center">
+      <h4 style="color:#fbbf24;margin-bottom:0.5rem;font-size:0.9rem">💳 Thông tin chuyển khoản VietQR</h4>
+      <p style="font-size:0.78rem;color:var(--text-muted);margin-bottom:0.75rem">Quét mã QR và chuyển chính xác số tiền với nội dung dưới đây:</p>
+      <div style="width:160px;height:160px;margin:0 auto 0.75rem;background:#fff;border-radius:12px;padding:6px;overflow:hidden;border:2px solid var(--lagoon)">
+        <img id="od-vietqr-img" src="/img/qr.png" alt="QR" style="width:100%;height:100%;object-fit:contain" onerror="this.parentElement.innerHTML='<div style=color:#333;font-size:.7rem;padding:2rem 0>QR sẽ cập nhật sớm</div>'">
+      </div>
+      <div style="font-size:0.82rem;color:var(--text-muted);display:flex;align-items:center;justify-content:center;gap:0.4rem;flex-wrap:wrap">
+        <span>Nội dung CK: <strong id="od-transfer-content" style="color:var(--lagoon);font-family:var(--font-mono)"></strong></span>
+        <button id="od-copy-note-btn" class="hud-copy" style="padding:0.2rem 0.5rem;font-size:0.72rem;min-height:24px" onclick="copyTransferNote()">Sao chép</button>
+      </div>
+    </div>
+
+    <!-- Proof submission form -->
+    <div id="od-proof-section" style="display:none;margin-bottom:1rem">
+      <label style="font-size:0.8rem;font-weight:700;color:var(--text-muted);display:block;margin-bottom:0.4rem">Gửi ảnh hoặc link minh chứng chuyển khoản:</label>
+      <div style="display:flex;gap:0.4rem">
+        <input class="input" type="text" id="od-proof-input" placeholder="Dán link ảnh chụp chuyển khoản..." style="flex:1;font-size:0.82rem;padding:0.5rem">
+        <button class="btn btn-primary" onclick="submitProof()" style="font-size:0.8rem;padding:0.5rem 0.8rem">Gửi</button>
+      </div>
+    </div>
+
+    <!-- Proof status if already submitted -->
+    <div id="od-proof-display" style="display:none;margin-bottom:1rem;padding:0.6rem 0.75rem;background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:var(--radius);font-size:0.8rem">
+      <span style="color:var(--text-muted)">Minh chứng đã gửi:</span>
+      <a id="od-proof-link" href="#" target="_blank" style="color:var(--primary);margin-left:0.3rem;word-break:break-all">Xem ảnh</a>
+      <span class="badge badge-gold" style="font-size:0.7rem;margin-left:0.4rem">Đang chờ Admin duyệt</span>
+    </div>
+
+    <!-- Actions: Cancel order button if pending -->
+    <div style="display:flex;gap:0.5rem">
+      <button id="od-cancel-btn" onclick="cancelCurrentOrder()" style="display:none;flex:1;padding:0.6rem;background:rgba(239,68,68,0.1);color:#f87171;border:1px solid rgba(239,68,68,0.3);border-radius:var(--radius);font-size:0.82rem;font-weight:700">
+        Huỷ đơn hàng
+      </button>
+      <button onclick="closeOrderDetail()" style="flex:1;padding:0.6rem;background:rgba(255,255,255,0.07);color:var(--text);border-radius:var(--radius);font-size:0.82rem;font-weight:600">
+        Đóng
+      </button>
+    </div>
+  </div>
+</div>
+
 <footer>
   <div class="footer-grid">
     <div class="footer-col"><h3>🏝️ Đảo Tò Mò</h3><p>Cộng đồng game thủ Việt chill nhất.</p></div>
@@ -270,6 +442,8 @@
 </footer>
 
 <script src="/js/api.js"></script>
+<script src="/js/skinview3d.bundle.js"></script>
+<script src="/js/skin-viewer.js"></script>
 <script>
 const TABS = ['login', 'register', 'forgot', 'reset'];
 function switchTab(tab) {
@@ -396,6 +570,8 @@ function showProfile(user) {
   const avatarEl = document.getElementById('p-avatar');
   if (user.avatar) {
     avatarEl.innerHTML = `<img src="${user.avatar}" alt="${user.username}">`;
+  } else if (user.minecraftUsername) {
+    avatarEl.innerHTML = `<img src="https://mc-heads.net/avatar/${encodeURIComponent(user.minecraftUsername)}/128" alt="${user.minecraftUsername}" onerror="this.parentElement.textContent='${EMOJIS[user.username.charCodeAt(0) % EMOJIS.length]}'">`;
   } else {
     avatarEl.textContent = EMOJIS[user.username.charCodeAt(0) % EMOJIS.length];
   }
@@ -411,34 +587,399 @@ function showProfile(user) {
   const navLabel = nav?.querySelector('span:last-child');
   if (navLabel) navLabel.textContent = user.username;
   loadOrders();
+  setTimeout(() => initAccountSkin(user), 120);
 }
 
-/* ── Orders ── */
-const statusLabel = { pending:'⏳ Chờ TT', paid:'✅ Đã TT', delivered:'🎁 Đã giao', cancelled:'❌ Đã huỷ' };
-const statusClass = { pending:'s-pending', paid:'s-paid', delivered:'s-delivered', cancelled:'s-cancelled' };
+/* ── 3D Skin Viewer Controller ── */
+let accountSkinViewer = null;
+
+function initAccountSkin(user) {
+  const canvas = document.getElementById('account-skin-canvas');
+  if (!canvas || !window.MinecraftSkinViewer) return;
+
+  const nameTag = (user && (user.minecraftUsername || user.username)) || 'Đảo Viên';
+  const badgeEl = document.getElementById('p-skin-badge');
+  const activeSkin = (user && user.skinUrl) ? user.skinUrl : '/img/steve.png';
+
+  if (badgeEl) {
+    if (user && user.skinUrl) {
+      badgeEl.textContent = 'Skin cá nhân (Đã lưu)';
+      badgeEl.className = 'badge badge-green';
+    } else {
+      badgeEl.textContent = 'Skin mặc định (Steve)';
+      badgeEl.className = 'badge badge-purple';
+    }
+  }
+
+  if (!accountSkinViewer) {
+    accountSkinViewer = new MinecraftSkinViewer(canvas, {
+      skin: activeSkin,
+      width: canvas.parentElement ? canvas.parentElement.clientWidth - 32 : 280,
+      height: 320,
+      autoRotate: true,
+      animation: 'walk'
+    });
+    if (accountSkinViewer && accountSkinViewer.viewer) {
+      accountSkinViewer.viewer.nameTag = nameTag;
+    }
+  } else if (accountSkinViewer.viewer) {
+    accountSkinViewer.loadSkin(activeSkin);
+    accountSkinViewer.viewer.nameTag = nameTag;
+  }
+}
+
+async function handleAccountSkinUpload(input) {
+  const file = input.files && input.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = async (e) => {
+    const base64 = e.target.result;
+    try {
+      if (typeof showToast === 'function') showToast('Đang tải và lưu skin lên tài khoản...', 'info');
+      const res = await api.updateSkin(base64);
+      const curUser = api.getUser();
+      if (curUser) {
+        curUser.skinUrl = res.skinUrl;
+        api.setSession(api.getToken(), curUser);
+      }
+      if (accountSkinViewer) accountSkinViewer.loadSkin(res.skinUrl);
+      window.dispatchEvent(new CustomEvent('daotomo:skin-updated', { detail: { skinUrl: res.skinUrl } }));
+
+      const badgeEl = document.getElementById('p-skin-badge');
+      if (badgeEl) {
+        badgeEl.textContent = 'Skin cá nhân (Đã lưu)';
+        badgeEl.className = 'badge badge-green';
+      }
+      if (typeof showToast === 'function') showToast(res.message || 'Đã lưu skin nhân vật thành công! 🎮', 'success');
+      if (window.SoundFX) window.SoundFX.playSuccess();
+    } catch (err) {
+      if (typeof showToast === 'function') showToast(err.message || 'Lỗi khi lưu skin', 'error');
+      if (window.SoundFX) window.SoundFX.playError();
+    }
+  };
+  reader.readAsDataURL(file);
+}
+
+async function resetAccountSkinToSteve() {
+  try {
+    const res = await api.updateSkin(null, '/img/steve.png');
+    const curUser = api.getUser();
+    if (curUser) {
+      curUser.skinUrl = '';
+      api.setSession(api.getToken(), curUser);
+    }
+    if (accountSkinViewer) accountSkinViewer.loadSkin('/img/steve.png');
+    window.dispatchEvent(new CustomEvent('daotomo:skin-updated', { detail: { skinUrl: '/img/steve.png' } }));
+
+    const badgeEl = document.getElementById('p-skin-badge');
+    if (badgeEl) {
+      badgeEl.textContent = 'Skin mặc định (Steve)';
+      badgeEl.className = 'badge badge-purple';
+    }
+    if (typeof showToast === 'function') showToast('Đã khôi phục skin Steve mặc định!', 'info');
+  } catch (err) {
+    if (typeof showToast === 'function') showToast(err.message || 'Lỗi khi đặt lại skin', 'error');
+  }
+}
+
+function setAccountSkinAnim(type) {
+  if (accountSkinViewer) accountSkinViewer.setAnimation(type);
+  const btns = {
+    walk: 'acc-skin-walk-btn',
+    idle: 'acc-skin-idle-btn',
+    run: 'acc-skin-run-btn'
+  };
+  Object.keys(btns).forEach(k => {
+    const el = document.getElementById(btns[k]);
+    if (el) el.classList.toggle('active', k === type);
+  });
+  if (window.SoundFX) window.SoundFX.playClick();
+}
+
+function toggleAccountSkinRotate() {
+  if (accountSkinViewer) {
+    const state = accountSkinViewer.toggleAutoRotate();
+    const btn = document.getElementById('acc-skin-rot-btn');
+    if (btn) {
+      btn.classList.toggle('active', state);
+      btn.textContent = state ? '🔄 Xoay' : '⏸️ Dừng';
+    }
+    if (window.SoundFX) window.SoundFX.playClick();
+  }
+}
+
+function captureAccountSkin() {
+  if (accountSkinViewer) {
+    accountSkinViewer.takeScreenshot();
+    if (window.SoundFX) window.SoundFX.playSuccess();
+  }
+}
+
+/* ── Orders Management ── */
+const orderStatusLabel = {
+  pending: '⏳ Chờ xử lý',
+  processing: '⚙️ Đang xử lý',
+  delivered: '🎁 Đã giao quà',
+  cancelled: '❌ Đã huỷ',
+};
+const orderStatusClass = {
+  pending: 's-pending',
+  processing: 's-proc',
+  delivered: 's-delivered',
+  cancelled: 's-cancelled',
+};
+
+const paymentStatusLabel = {
+  pending: '💳 Chờ thanh toán',
+  paid: '✅ Đã thanh toán',
+  failed: '⚠️ Thất bại',
+  refunded: '↩️ Đã hoàn tiền',
+};
+const paymentStatusClass = {
+  pending: 's-pending',
+  paid: 's-paid',
+  failed: 's-cancelled',
+  refunded: 's-proc',
+};
+
+let currentViewingOrderId = null;
+
+let userOrders = [];
+let activeOrderFilter = 'all';
 
 async function loadOrders() {
   const el = document.getElementById('orders-list');
+  const countBadge = document.getElementById('orders-count-badge');
   try {
     const { data } = await api.getMyOrders();
-    if (!data.length) {
-      el.innerHTML = `<p style="font-size:.82rem;color:var(--text-muted)">
-        Bạn chưa có đơn hàng nào.
-        <a href="/html/Store.html" style="color:var(--primary);font-weight:700">Mua ngay →</a>
-      </p>`; return;
-    }
-    el.innerHTML = data.map(o => `
-      <div class="order-item">
+    userOrders = data;
+    if (countBadge) countBadge.textContent = `${data.length} đơn`;
+    renderUserOrders();
+  } catch (e) {
+    el.innerHTML = `<p style="font-size:.82rem;color:var(--text-muted)">Không thể tải đơn hàng: ${e.message}</p>`;
+  }
+}
+
+function filterMyOrders(type) {
+  activeOrderFilter = type;
+  document.querySelectorAll('#order-filter-pills .filter-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.getAttribute('onclick')?.includes(`'${type}'`));
+  });
+  renderUserOrders();
+}
+
+function renderUserOrders() {
+  const el = document.getElementById('orders-list');
+  let filtered = userOrders;
+  if (activeOrderFilter === 'pending') {
+    filtered = userOrders.filter(o => (o.orderStatus || 'pending') === 'pending');
+  } else if (activeOrderFilter === 'delivered') {
+    filtered = userOrders.filter(o => o.orderStatus === 'delivered');
+  } else if (activeOrderFilter === 'cancelled') {
+    filtered = userOrders.filter(o => o.orderStatus === 'cancelled');
+  }
+
+  if (!filtered.length) {
+    el.innerHTML = `<div style="text-align:center;padding:2rem 0;color:var(--text-muted);font-size:0.85rem">
+      ${activeOrderFilter === 'all' ? 'Bạn chưa có đơn hàng nào.' : 'Không có đơn hàng nào trong mục này.'}
+      <div style="margin-top:0.75rem"><a href="/html/Store.html" class="btn btn-outline" style="font-size:0.78rem;padding:0.4rem 0.8rem">Ghé Cửa Hàng →</a></div>
+    </div>`;
+    return;
+  }
+
+  el.innerHTML = filtered.map(o => {
+    const code = o.orderCode || '#' + o._id.slice(-8).toUpperCase();
+    const oStat = o.orderStatus || (o.status === 'cancelled' ? 'cancelled' : o.status === 'delivered' ? 'delivered' : 'pending');
+    const pStat = o.paymentStatus || (o.status === 'paid' ? 'paid' : 'pending');
+    return `
+      <div class="order-item" onclick="openOrderDetail('${o._id}')">
         <div class="order-head">
-          <span class="order-ref">#${o._id.slice(-8).toUpperCase()}</span>
-          <span class="badge ${statusClass[o.status]}">${statusLabel[o.status]||o.status}</span>
+          <span class="order-ref">${code}</span>
+          <div class="badge-wrap">
+            <span class="badge ${orderStatusClass[oStat] || 's-pending'}">${orderStatusLabel[oStat] || oStat}</span>
+            <span class="badge ${paymentStatusClass[pStat] || 's-pending'}">${paymentStatusLabel[pStat] || pStat}</span>
+          </div>
         </div>
-        <div class="order-date">${new Date(o.createdAt).toLocaleDateString('vi-VN')} · ${o.items.length} sản phẩm</div>
+        <div class="order-date">${new Date(o.createdAt).toLocaleDateString('vi-VN')} · ${o.items.length} món</div>
         <div class="order-total">${o.total.toLocaleString('vi-VN')}đ</div>
       </div>
+    `;
+  }).join('');
+}
+
+function copyTransferNote() {
+  const note = document.getElementById('od-transfer-content').textContent;
+  if (!note) return;
+  navigator.clipboard.writeText(note);
+  if (window.SoundFX) SoundFX.playSuccess();
+  if (typeof api.showToast === 'function') api.showToast('Đã sao chép nội dung CK: ' + note, 'success');
+  const btn = document.getElementById('od-copy-note-btn');
+  if (btn) {
+    btn.textContent = '✓ Đã chép';
+    setTimeout(() => { btn.textContent = 'Sao chép'; }, 1500);
+  }
+}
+
+async function openOrderDetail(orderId) {
+  currentViewingOrderId = orderId;
+  const modal = document.getElementById('order-detail-modal');
+  document.getElementById('od-msg').innerHTML = '';
+  modal.classList.add('open');
+
+  try {
+    const { data: o } = await api.getOrder(orderId);
+    const code = o.orderCode || '#' + o._id.slice(-8).toUpperCase();
+    document.getElementById('od-code').textContent = code;
+    document.getElementById('od-date').textContent = new Date(o.createdAt).toLocaleString('vi-VN');
+
+    const oStat = o.orderStatus || 'pending';
+    const pStat = o.paymentStatus || 'pending';
+
+    // Update Stepper
+    const stepperFill = document.getElementById('od-stepper-fill');
+    const n1 = document.getElementById('step-node-1');
+    const n2 = document.getElementById('step-node-2');
+    const n3 = document.getElementById('step-node-3');
+    const n4 = document.getElementById('step-node-4');
+    const s1 = document.getElementById('step-1');
+    const s2 = document.getElementById('step-2');
+    const s3 = document.getElementById('step-3');
+    const s4 = document.getElementById('step-4');
+
+    [n1, n2, n3, n4].forEach((n, i) => { if(n) { n.className = 'step-node'; n.textContent = i + 1; } });
+    [s1, s2, s3, s4].forEach(s => s && s.classList.remove('active'));
+
+    if (oStat === 'cancelled') {
+      if(n1) { n1.className = 'step-node cancelled'; n1.textContent = '✕'; }
+      if(stepperFill) stepperFill.style.width = '0%';
+    } else if (oStat === 'delivered') {
+      [n1, n2, n3, n4].forEach(n => { if(n) { n.className = 'step-node completed'; n.textContent = '✓'; } });
+      if(s4) s4.classList.add('active');
+      if(stepperFill) stepperFill.style.width = '100%';
+    } else if (oStat === 'processing' || pStat === 'paid') {
+      if(n1) { n1.className = 'step-node completed'; n1.textContent = '✓'; }
+      if(n2) { n2.className = 'step-node completed'; n2.textContent = '✓'; }
+      if(n3) { n3.className = 'step-node active'; n3.textContent = '3'; }
+      if(s3) s3.classList.add('active');
+      if(stepperFill) stepperFill.style.width = '66%';
+    } else {
+      // Pending payment
+      if(n1) { n1.className = 'step-node completed'; n1.textContent = '✓'; }
+      if(n2) { n2.className = 'step-node active'; n2.textContent = '2'; }
+      if(s2) s2.classList.add('active');
+      if(stepperFill) stepperFill.style.width = '33%';
+    }
+
+    const oBadge = document.getElementById('od-order-status');
+    oBadge.textContent = 'Đơn: ' + (orderStatusLabel[oStat] || oStat);
+    oBadge.className = 'badge ' + (orderStatusClass[oStat] || 's-pending');
+
+    const pBadge = document.getElementById('od-payment-status');
+    pBadge.textContent = 'Thanh toán: ' + (paymentStatusLabel[pStat] || pStat);
+    pBadge.className = 'badge ' + (paymentStatusClass[pStat] || 's-pending');
+
+    document.getElementById('od-mc').textContent = o.minecraftUsername || '—';
+    document.getElementById('od-method').textContent = o.paymentMethod || 'QR';
+    document.getElementById('od-note').textContent = o.note || '—';
+    document.getElementById('od-total').textContent = o.total.toLocaleString('vi-VN') + 'đ';
+
+    // Items list
+    const itemsEl = document.getElementById('od-items');
+    itemsEl.innerHTML = o.items.map(item => `
+      <div class="order-detail-item">
+        <img class="order-detail-thumb" src="${item.image || (item.product && item.product.image) || '/img/logo.jpg'}" onerror="this.src='/img/logo.jpg'">
+        <div style="flex:1">
+          <div style="font-weight:700;color:var(--text)">${item.name}</div>
+          <div style="color:var(--text-muted);font-size:0.75rem">${item.price.toLocaleString('vi-VN')}đ × ${item.quantity}</div>
+        </div>
+        <div style="font-weight:700;color:var(--accent);font-family:var(--font-mono)">
+          ${(item.price * item.quantity).toLocaleString('vi-VN')}đ
+        </div>
+      </div>
     `).join('');
+
+    // QR Payment section if payment pending and not cancelled
+    const paySec = document.getElementById('od-payment-section');
+    const proofSec = document.getElementById('od-proof-section');
+    const cancelBtn = document.getElementById('od-cancel-btn');
+
+    if (pStat === 'pending' && oStat !== 'cancelled') {
+      paySec.style.display = 'block';
+      const transferContent = o.paymentDetails?.transferContent || code;
+      document.getElementById('od-transfer-content').textContent = transferContent;
+      
+      const vietqrUrl = `https://img.vietqr.io/image/970415-103870631688-compact2.png?amount=${o.total}&addInfo=${encodeURIComponent(transferContent)}&accountName=DAO%20TO%20MO`;
+      const qrImg = document.getElementById('od-vietqr-img');
+      if (qrImg) {
+        qrImg.src = vietqrUrl;
+        qrImg.onerror = () => { qrImg.src = '/img/qr.png'; };
+      }
+      proofSec.style.display = 'block';
+    } else {
+      paySec.style.display = 'none';
+      proofSec.style.display = 'none';
+    }
+
+    // Proof link display
+    const proofDisp = document.getElementById('od-proof-display');
+    if (o.paymentProof) {
+      proofDisp.style.display = 'block';
+      const proofLink = document.getElementById('od-proof-link');
+      proofLink.href = o.paymentProof;
+      proofLink.textContent = o.paymentProof.length > 40 ? o.paymentProof.slice(0, 37) + '...' : o.paymentProof;
+    } else {
+      proofDisp.style.display = 'none';
+    }
+
+    // Cancellation button
+    if (oStat === 'pending' && pStat !== 'paid') {
+      cancelBtn.style.display = 'block';
+    } else {
+      cancelBtn.style.display = 'none';
+    }
+  } catch (err) {
+    document.getElementById('od-msg').innerHTML = `<div class="alert alert-error">❌ ${err.message}</div>`;
+  }
+}
+
+function closeOrderDetail() {
+  document.getElementById('order-detail-modal').classList.remove('open');
+  currentViewingOrderId = null;
+}
+document.getElementById('order-detail-modal').addEventListener('click', e => {
+  if (e.target === e.currentTarget) closeOrderDetail();
+});
+
+async function cancelCurrentOrder() {
+  if (!currentViewingOrderId) return;
+  if (!confirm('Bạn có chắc chắn muốn huỷ đơn hàng này không?')) return;
+  try {
+    await api.cancelOrder(currentViewingOrderId, 'Người dùng chủ động huỷ');
+    document.getElementById('od-msg').innerHTML = '<div class="alert alert-success">✅ Đã huỷ đơn hàng thành công.</div>';
+    loadOrders();
+    setTimeout(() => openOrderDetail(currentViewingOrderId), 400);
   } catch (e) {
-    el.innerHTML = `<p style="font-size:.82rem;color:var(--text-muted)">Không thể tải đơn hàng.</p>`;
+    document.getElementById('od-msg').innerHTML = `<div class="alert alert-error">❌ ${e.message}</div>`;
+  }
+}
+
+async function submitProof() {
+  if (!currentViewingOrderId) return;
+  const inp = document.getElementById('od-proof-input');
+  const val = inp.value.trim();
+  if (!val) {
+    alert('Vui lòng dán link hoặc ghi chú minh chứng thanh toán.');
+    return;
+  }
+  try {
+    await api.submitPaymentProof(currentViewingOrderId, val);
+    inp.value = '';
+    document.getElementById('od-msg').innerHTML = '<div class="alert alert-success">✅ Đã gửi minh chứng thành công! Admin sẽ duyệt trong 24h.</div>';
+    loadOrders();
+    setTimeout(() => openOrderDetail(currentViewingOrderId), 400);
+  } catch (e) {
+    document.getElementById('od-msg').innerHTML = `<div class="alert alert-error">❌ ${e.message}</div>`;
   }
 }
 
@@ -476,6 +1017,9 @@ document.addEventListener('DOMContentLoaded', async () => {
       const { user } = await api.getMe();
       api.setSession(token, user);
       showProfile(user);
+      if (params.has('orderId')) {
+        setTimeout(() => openOrderDetail(params.get('orderId')), 500);
+      }
       return;
     } catch (e) {
       api.clearSession();
@@ -488,6 +1032,9 @@ document.addEventListener('DOMContentLoaded', async () => {
       const { user } = await api.getMe();
       api.setSession(api.getToken(), user);
       showProfile(user);
+      if (params.has('orderId')) {
+        setTimeout(() => openOrderDetail(params.get('orderId')), 500);
+      }
     } catch(e) {
       api.clearSession();
     }

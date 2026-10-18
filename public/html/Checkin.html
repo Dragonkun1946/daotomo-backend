@@ -5,60 +5,321 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Điểm danh — Đảo Tò Mò</title>
   <link rel="icon" type="image/x-icon" href="/img/favicon.ico">
-  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;700;800;900&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700;800;900&family=Chakra+Petch:wght@500;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/css/global.css">
   <style>
     .checkin-hero {
       text-align: center;
-      padding: calc(var(--nav-h) + 2.5rem) 1.25rem 2rem;
-      background: radial-gradient(ellipse 80% 60% at 50% 0%, var(--lagoon-glow) 0%, transparent 70%);
+      padding: calc(var(--nav-h) + 3rem) 1.25rem 2.5rem;
+      background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(34,211,238,0.2) 0%, transparent 70%),
+                  radial-gradient(ellipse 50% 50% at 20% 40%, rgba(124,58,237,0.15) 0%, transparent 60%),
+                  linear-gradient(180deg, #090b14 0%, #0d1224 100%);
+      position: relative;
     }
     .checkin-hero h1 {
-      font-size: clamp(1.8rem, 6vw, 3rem); font-weight: 800; margin-bottom: 0.5rem;
-      background: linear-gradient(135deg, #fff 30%, var(--lagoon) 100%);
-      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+      font-size: clamp(2rem, 6vw, 3.5rem);
+      font-weight: 800;
+      font-family: var(--font-display);
+      margin-bottom: 0.5rem;
+      letter-spacing: -0.02em;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.6rem;
+      flex-wrap: wrap;
     }
-    .checkin-hero p { color: var(--text-muted); font-size: 0.95rem; }
+    .checkin-hero h1 .hero-icon {
+      font-size: 0.9em;
+      display: inline-block;
+      -webkit-text-fill-color: initial !important;
+      -webkit-background-clip: initial !important;
+      background: none !important;
+      filter: drop-shadow(0 4px 12px rgba(34,211,238,0.35));
+    }
+    .checkin-hero h1 .gradient-text {
+      background: linear-gradient(135deg, #ffffff 25%, #67e8f9 70%, #22d3ee 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      display: inline-block;
+    }
+    .checkin-hero p {
+      color: var(--text-muted);
+      font-size: clamp(0.95rem, 2vw, 1.1rem);
+      max-width: 580px;
+      margin: 0 auto;
+      line-height: 1.6;
+    }
 
-    .checkin-wrap { max-width: 640px; margin: 0 auto; padding: 1rem 1.25rem 4rem; }
+    .checkin-wrap {
+      max-width: 820px;
+      margin: 0 auto;
+      padding: 1.5rem 1.25rem 5rem;
+    }
+
+    /* Milestone Rewards Carousel */
+    .milestone-carousel-box {
+      margin-bottom: 2rem;
+    }
+    .milestone-carousel-box .carousel-dots {
+      bottom: 0.65rem;
+    }
+    .milestone-slide-card {
+      padding: 2rem 5rem 2.85rem 5rem;
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+      background: linear-gradient(135deg, rgba(23,30,54,0.85) 0%, rgba(17,22,40,0.95) 100%);
+      border: 1px solid rgba(34,211,238,0.25);
+      border-radius: var(--radius-lg);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+      position: relative;
+    }
+    @media (max-width: 640px) {
+      .milestone-slide-card {
+        padding: 1.75rem 2.85rem 3.25rem 2.85rem;
+        flex-direction: column;
+        text-align: center;
+      }
+    }
+    .milestone-icon-wrap {
+      width: 64px; height: 64px;
+      border-radius: 16px;
+      background: rgba(34,211,238,0.12);
+      border: 1px solid rgba(34,211,238,0.3);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 2rem;
+      flex-shrink: 0;
+      animation: float 4s ease-in-out infinite;
+    }
+    .milestone-info h4 {
+      font-family: var(--font-display);
+      font-size: 1.2rem;
+      font-weight: 800;
+      color: #ffffff;
+      margin-bottom: 0.35rem;
+    }
+    .milestone-info p {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      line-height: 1.5;
+    }
+    .milestone-reward-tag {
+      display: inline-block;
+      margin-top: 0.5rem;
+      padding: 0.25rem 0.65rem;
+      background: rgba(245,158,11,0.15);
+      border: 1px solid rgba(245,158,11,0.35);
+      color: #fbbf24;
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      font-weight: 700;
+      border-radius: 6px;
+    }
 
     /* Stats row */
-    .checkin-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem; }
-    .checkin-stat { padding: 1.25rem; text-align: center; }
-    .checkin-stat .num { display: block; font-size: 2rem; font-weight: 700; font-family: var(--font-mono); color: var(--lagoon); }
-    .checkin-stat .lbl { font-size: 0.8rem; color: var(--text-muted); }
-
-    /* Check-in button */
-    .checkin-action { padding: 1.75rem; text-align: center; margin-bottom: 1.5rem; }
-    .btn-checkin {
-      width: 100%; padding: 1rem; border-radius: var(--radius);
-      background: linear-gradient(135deg, var(--primary), var(--lagoon-dark));
-      color: #fff; font-size: 1.05rem; font-weight: 800; min-height: 54px;
-      transition: all var(--dur) var(--ease-out);
-      box-shadow: 0 4px 24px var(--primary-glow);
+    .checkin-stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.25rem;
+      margin-bottom: 1.75rem;
     }
-    .btn-checkin:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 8px 30px var(--primary-glow); }
-    .btn-checkin:disabled { background: rgba(255,255,255,0.06); color: var(--text-muted); box-shadow: none; cursor: default; }
-    .checkin-action p { font-size: 0.82rem; color: var(--text-muted); margin-top: 0.75rem; }
+    .checkin-stat {
+      padding: 1.5rem;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: var(--bg-card);
+      border-radius: var(--radius);
+      transition: transform 0.25s ease;
+    }
+    .checkin-stat:hover {
+      transform: translateY(-2px);
+      border-color: rgba(34,211,238,0.3);
+    }
+    .checkin-stat .num {
+      display: block;
+      font-size: clamp(2rem, 5vw, 2.75rem);
+      font-weight: 800;
+      font-family: var(--font-display);
+      color: var(--lagoon);
+      line-height: 1.1;
+      margin-bottom: 0.35rem;
+    }
+    .checkin-stat .lbl {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    /* Streak flame animated icon */
+    .flame-icon {
+      display: inline-block;
+      animation: badgePulse 2s infinite ease-in-out;
+    }
+
+    /* Check-in button card */
+    .checkin-action {
+      padding: 2.25rem 2rem;
+      text-align: center;
+      margin-bottom: 2rem;
+      border: 1px solid rgba(124,58,237,0.3);
+      background: linear-gradient(145deg, rgba(17,22,40,0.9) 0%, rgba(13,18,36,0.95) 100%);
+      box-shadow: 0 15px 35px rgba(0,0,0,0.35);
+    }
+    .btn-checkin {
+      width: 100%;
+      padding: 1.15rem 1.5rem;
+      border-radius: var(--radius);
+      background: linear-gradient(135deg, var(--primary) 0%, #2563eb 50%, var(--lagoon-dark) 100%);
+      background-size: 200% auto;
+      color: #fff;
+      font-family: var(--font-display);
+      font-size: 1.15rem;
+      font-weight: 800;
+      letter-spacing: 0.02em;
+      min-height: 58px;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      box-shadow: 0 8px 28px rgba(124,58,237,0.4);
+      border: 1px solid rgba(255,255,255,0.18);
+      cursor: pointer;
+    }
+    .btn-checkin:hover:not(:disabled) {
+      transform: translateY(-3px) scale(1.01);
+      box-shadow: 0 14px 36px rgba(124,58,237,0.55), 0 0 20px rgba(34,211,238,0.3);
+      background-position: right center;
+    }
+    .btn-checkin:disabled {
+      background: rgba(255,255,255,0.06);
+      color: var(--text-muted);
+      box-shadow: none;
+      cursor: not-allowed;
+      border-color: rgba(255,255,255,0.05);
+    }
+    .checkin-action p {
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      margin-top: 1rem;
+      line-height: 1.6;
+    }
+
+    /* Milestone progress bar */
+    .milestone-progress-wrap {
+      margin-top: 1.5rem;
+      padding-top: 1.25rem;
+      border-top: 1px solid var(--border);
+      text-align: left;
+    }
+    .progress-header {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.82rem;
+      margin-bottom: 0.5rem;
+    }
+    .progress-bar-bg {
+      width: 100%;
+      height: 8px;
+      background: rgba(255,255,255,0.06);
+      border-radius: 9999px;
+      overflow: hidden;
+      position: relative;
+    }
+    .progress-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--primary), var(--lagoon));
+      border-radius: 9999px;
+      transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    }
 
     /* Calendar */
-    .calendar-card { padding: 1.5rem; }
-    .calendar-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; }
-    .calendar-head h3 { font-size: 1rem; font-weight: 700; }
-    .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 0.4rem; }
-    .calendar-grid .dow { text-align: center; font-size: 0.7rem; color: var(--text-dim); font-weight: 700; padding-bottom: 0.4rem; }
-    .calendar-day {
-      aspect-ratio: 1; display: flex; align-items: center; justify-content: center;
-      border-radius: 8px; font-size: 0.8rem; font-family: var(--font-mono); color: var(--text-muted);
-      background: rgba(255,255,255,0.02);
+    .calendar-card {
+      padding: 1.75rem 2rem;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
     }
-    .calendar-day.empty { background: none; }
-    .calendar-day.today { border: 1.5px solid var(--lagoon); color: var(--text); }
-    .calendar-day.checked { background: rgba(16,185,129,0.18); color: #34d399; font-weight: 700; }
+    .calendar-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1.25rem;
+    }
+    .calendar-head h3 {
+      font-family: var(--font-display);
+      font-size: 1.2rem;
+      font-weight: 800;
+      color: #ffffff;
+    }
+    .calendar-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 0.5rem;
+    }
+    .calendar-grid .dow {
+      text-align: center;
+      font-size: 0.75rem;
+      font-family: var(--font-display);
+      color: var(--text-muted);
+      font-weight: 700;
+      padding-bottom: 0.6rem;
+    }
+    .calendar-day {
+      aspect-ratio: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: var(--radius-sm);
+      font-size: 0.85rem;
+      font-family: var(--font-mono);
+      color: var(--text-muted);
+      background: rgba(255,255,255,0.02);
+      border: 1px solid rgba(255,255,255,0.04);
+      transition: all 0.2s ease;
+    }
+    .calendar-day.empty {
+      background: none;
+      border: none;
+    }
+    .calendar-day.today {
+      border: 2px solid var(--lagoon);
+      color: #ffffff;
+      font-weight: 800;
+      background: rgba(34,211,238,0.08);
+      box-shadow: 0 0 10px rgba(34,211,238,0.2);
+    }
+    .calendar-day.checked {
+      background: rgba(16,185,129,0.22);
+      border-color: rgba(16,185,129,0.45);
+      color: #34d399;
+      font-weight: 800;
+      box-shadow: 0 0 8px rgba(16,185,129,0.2);
+    }
 
     /* Auth prompt */
-    .auth-prompt { padding: 2.5rem 1.5rem; text-align: center; }
-    .auth-prompt p { color: var(--text-muted); margin-bottom: 1.25rem; font-size: 0.9rem; }
+    .auth-prompt {
+      padding: 3rem 2rem;
+      text-align: center;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+    }
+    .auth-prompt h3 {
+      font-family: var(--font-display);
+      font-size: 1.4rem;
+      font-weight: 800;
+      margin-bottom: 0.75rem;
+      color: #ffffff;
+    }
+    .auth-prompt p {
+      color: var(--text-muted);
+      margin-bottom: 1.5rem;
+      font-size: 0.95rem;
+      max-width: 440px;
+      margin-left: auto;
+      margin-right: auto;
+      line-height: 1.6;
+    }
   </style>
 </head>
 <body>
@@ -83,38 +344,108 @@
 
 <main id="main" class="page-body">
   <div class="checkin-hero reveal">
-    <h1>📅 Điểm danh hằng ngày</h1>
-    <p>Ghé server mỗi ngày, giữ chuỗi điểm danh và nhận phần thưởng từ admin.</p>
+    <h1><span class="hero-icon">📅</span><span class="gradient-text">Điểm Danh Hằng Ngày</span></h1>
+    <p>Ghé đảo mỗi ngày, giữ chuỗi đăng nhập liên tục để nhận thưởng quà tặng ingame & xu mua sắm độc quyền từ Admin.</p>
   </div>
 
   <div class="checkin-wrap">
+    <!-- Rewards Carousel -->
+    <div class="milestone-carousel-box reveal">
+      <div class="carousel-container" data-autoplay="true" data-interval="4000">
+        <div class="carousel-track">
+          <!-- Slide 1 -->
+          <div class="carousel-slide">
+            <div class="milestone-slide-card">
+              <div class="milestone-icon-wrap">🔥</div>
+              <div class="milestone-info">
+                <h4>Chuỗi 3 Ngày — Khởi Động Tân Thủ</h4>
+                <p>Nhận ngay 10.000 Xu Đảo Tò Mò và 10 quả pháo hoa sự kiện rực rỡ.</p>
+                <span class="milestone-reward-tag">+10,000 Xu • 10x Fireworks</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Slide 2 -->
+          <div class="carousel-slide">
+            <div class="milestone-slide-card">
+              <div class="milestone-icon-wrap" style="background:rgba(245,158,11,0.12); border-color:rgba(245,158,11,0.35);">🗝️</div>
+              <div class="milestone-info">
+                <h4>Chuỗi 7 Ngày — Rương Thần Thoại</h4>
+                <p>Mở khóa 01 Mythic Key quay rương bí mật tại khu vực Chợ Trời trung tâm.</p>
+                <span class="milestone-reward-tag">+25,000 Xu • 1x Mythic Crate Key</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Slide 3 -->
+          <div class="carousel-slide">
+            <div class="milestone-slide-card">
+              <div class="milestone-icon-wrap" style="background:rgba(124,58,237,0.15); border-color:rgba(124,58,237,0.35);">💎</div>
+              <div class="milestone-info">
+                <h4>Chuỗi 14 Ngày — Danh Hiệu Độc Quyền</h4>
+                <p>Gắn huy hiệu [Đảo Viên Chăm Chỉ] phát sáng trong khung chat toàn server.</p>
+                <span class="milestone-reward-tag">+50,000 Xu • Exclusive Chat Prefix</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Slide 4 -->
+          <div class="carousel-slide">
+            <div class="milestone-slide-card">
+              <div class="milestone-icon-wrap" style="background:rgba(16,185,129,0.15); border-color:rgba(16,185,129,0.35);">👑</div>
+              <div class="milestone-info">
+                <h4>Chuỗi 30 Ngày — VIP Rank Siêu Cấp</h4>
+                <p>Trải nghiệm 07 ngày gói VIP Vàng máy chủ với quyền bay (/fly) và x2 EXP.</p>
+                <span class="milestone-reward-tag">+100,000 Xu • 7 Days VIP Gold Pass</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- Shown when logged out -->
     <div class="card auth-prompt reveal hidden" id="logged-out-box">
-      <p>Bạn cần đăng nhập để điểm danh và theo dõi chuỗi ngày của mình.</p>
-      <a href="/html/Account.html" class="btn btn-primary">Đăng nhập ngay</a>
+      <h3>🔒 Bạn Chưa Đăng Nhập</h3>
+      <p>Vui lòng đăng nhập tài khoản Đảo Tò Mò để thực hiện điểm danh và lưu lại chuỗi ngày liên tiếp của bạn.</p>
+      <a href="/html/Account.html" class="btn btn-primary" style="min-width: 200px;">Đăng nhập / Đăng ký ngay</a>
     </div>
 
     <!-- Shown when logged in -->
     <div id="logged-in-box" class="hidden">
       <div class="checkin-stats reveal">
         <div class="card checkin-stat">
-          <span class="num" id="stat-streak">0</span>
-          <span class="lbl">🔥 Ngày liên tiếp</span>
+          <span class="num"><span class="flame-icon">🔥</span> <span id="stat-streak">0</span></span>
+          <span class="lbl">Chuỗi Ngày Liên Tiếp</span>
         </div>
         <div class="card checkin-stat">
           <span class="num" id="stat-total">0</span>
-          <span class="lbl">Tổng số lần điểm danh</span>
+          <span class="lbl">Tổng Số Ngày Đã Điểm Danh</span>
         </div>
       </div>
 
       <div class="card checkin-action reveal">
-        <button class="btn-checkin" id="checkin-btn" onclick="doCheckin()">Điểm danh hôm nay</button>
-        <p id="checkin-note">Điểm danh mỗi ngày để giữ chuỗi và nhận thưởng từ admin.</p>
+        <button class="btn-checkin" id="checkin-btn" onclick="doCheckin()">⚡ Điểm Danh Hôm Nay</button>
+        <p id="checkin-note">Điểm danh đều đặn mỗi 24 giờ để không bị gián đoạn chuỗi ngày và nhận tối đa phần thưởng!</p>
+
+        <!-- Progress to next milestone -->
+        <div class="milestone-progress-wrap" id="milestone-progress-wrap">
+          <div class="progress-header">
+            <span style="color:var(--text-muted); font-weight:600;">Tiến độ mốc thưởng tiếp theo</span>
+            <span style="color:var(--lagoon); font-family:var(--font-mono); font-weight:700;" id="milestone-target-text">0 / 7 ngày</span>
+          </div>
+          <div class="progress-bar-bg">
+            <div class="progress-bar-fill" id="milestone-fill" style="width: 0%;"></div>
+          </div>
+        </div>
       </div>
 
       <div class="card calendar-card reveal">
         <div class="calendar-head">
           <h3 id="calendar-title">Tháng —</h3>
+          <span style="font-size:0.8rem; color:var(--text-muted); display:inline-flex; align-items:center; gap:0.4rem;">
+            <span style="display:inline-block; width:10px; height:10px; border-radius:2px; background:#10b981;"></span> Đã điểm danh
+          </span>
         </div>
         <div class="calendar-grid" id="calendar-grid"></div>
       </div>
@@ -124,17 +455,32 @@
 
 <footer>
   <div class="footer-grid">
-    <div class="footer-col"><h3>🏝️ Đảo Tò Mò</h3><p>Cộng đồng game thủ Việt chill nhất.</p></div>
-    <div class="footer-col"><h3>Liên kết</h3><a href="/index.html">Trang chủ</a><a href="/html/Store.html">Cửa hàng</a></div>
+    <div class="footer-col"><h3>🏝️ Đảo Tò Mò</h3><p>Cộng đồng Minecraft sinh tồn & giao lưu trực tuyến số một Việt Nam.</p></div>
+    <div class="footer-col"><h3>Liên kết</h3><a href="/index.html">Trang chủ</a><a href="/html/Server.html">Server</a><a href="/html/Map.html">Map</a><a href="/html/Store.html">Cửa hàng</a></div>
     <div class="footer-col"><h3>Cộng đồng</h3><a href="/html/Discord.html">Discord</a><a href="https://www.facebook.com/DragonKun1946" target="_blank">Facebook</a></div>
     <div class="footer-col"><h3>Thông tin</h3><p>Server Minecraft sinh tồn dành cho cộng đồng Việt.</p></div>
   </div>
-  <div class="footer-bottom">© 2026 Đảo Tò Mò</div>
+  <div class="footer-bottom">© 2026 Đảo Tò Mò • All rights reserved.</div>
 </footer>
 
 <script src="/js/api.js"></script>
+<script src="/js/skinview3d.bundle.js"></script>
+<script src="/js/skin-viewer.js"></script>
 <script>
 const DOW = ['CN','T2','T3','T4','T5','T6','T7'];
+
+function updateMilestoneProgress(streak) {
+  let target = 7;
+  if (streak >= 7 && streak < 14) target = 14;
+  else if (streak >= 14 && streak < 30) target = 30;
+  else if (streak >= 30) target = 30;
+
+  const pct = Math.min(100, Math.round((streak / target) * 100));
+  const fill = document.getElementById('milestone-fill');
+  const txt = document.getElementById('milestone-target-text');
+  if (fill) fill.style.width = pct + '%';
+  if (txt) txt.textContent = `${streak} / ${target} ngày (${pct}%)`;
+}
 
 function renderCalendar(dates) {
   const dateSet = new Set(dates);
@@ -165,21 +511,22 @@ async function loadCheckinState() {
     const { data } = await api.getMyCheckins();
     document.getElementById('stat-streak').textContent = data.streak;
     document.getElementById('stat-total').textContent = data.totalDays;
+    updateMilestoneProgress(data.streak || 0);
     renderCalendar(data.dates);
 
     const btn = document.getElementById('checkin-btn');
     const note = document.getElementById('checkin-note');
     if (data.checkedInToday) {
       btn.disabled = true;
-      btn.textContent = '✅ Đã điểm danh hôm nay';
-      note.textContent = 'Quay lại vào ngày mai để tiếp tục giữ chuỗi nhé!';
+      btn.textContent = '✅ Đã Điểm Danh Hôm Nay';
+      note.textContent = 'Chúc mừng bạn! Hãy quay lại vào ngày mai để tiếp tục giữ vững chuỗi nhé.';
     } else {
       btn.disabled = false;
-      btn.textContent = 'Điểm danh hôm nay';
-      note.textContent = 'Điểm danh mỗi ngày để giữ chuỗi và nhận thưởng từ admin.';
+      btn.textContent = '⚡ Điểm Danh Hôm Nay';
+      note.textContent = 'Điểm danh đều đặn mỗi 24 giờ để không bị gián đoạn chuỗi ngày và nhận tối đa phần thưởng!';
     }
   } catch (e) {
-    document.getElementById('checkin-note').textContent = 'Không thể tải dữ liệu điểm danh.';
+    document.getElementById('checkin-note').textContent = 'Không thể tải dữ liệu điểm danh: ' + (e.message || '');
   }
 }
 
@@ -187,14 +534,20 @@ async function doCheckin() {
   const btn = document.getElementById('checkin-btn');
   btn.disabled = true;
   const original = btn.textContent;
-  btn.textContent = 'Đang xử lý...';
+  btn.textContent = 'Đang ghi nhận...';
   try {
     await api.checkinToday();
     await loadCheckinState();
+    if (typeof api.showToast === 'function') {
+      api.showToast('Điểm danh thành công! +1 chuỗi ngày', 'success');
+    }
   } catch (e) {
     document.getElementById('checkin-note').textContent = e.message;
     btn.disabled = false;
     btn.textContent = original;
+    if (typeof api.showToast === 'function') {
+      api.showToast(e.message || 'Lỗi khi điểm danh', 'error');
+    }
   }
 }
 

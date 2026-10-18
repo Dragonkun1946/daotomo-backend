@@ -5,150 +5,168 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Chi tiết sản phẩm — Đảo Tò Mò</title>
   <link rel="icon" type="image/x-icon" href="/img/favicon.ico">
-  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;700;800;900&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@600;700;800&family=Be+Vietnam+Pro:wght@300;400;500;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/css/global.css">
   <style>
     .detail-wrap {
-      max-width: 900px; margin: 0 auto;
-      padding: 2rem 1.25rem 3rem;
+      max-width: 980px; margin: 0 auto;
+      padding: 2.5rem 1.25rem 3.5rem;
     }
     .breadcrumb {
       display: flex; align-items: center; gap: 0.5rem;
-      font-size: 0.8rem; color: var(--text-muted);
-      margin-bottom: 1.5rem;
+      font-size: 0.85rem; color: var(--text-muted);
+      margin-bottom: 2rem;
     }
-    .breadcrumb a { color: var(--primary); transition: color var(--ease); }
-    .breadcrumb a:hover { color: #fff; }
-    .breadcrumb span { color: var(--border); }
+    .breadcrumb a { color: var(--lagoon); transition: color var(--ease); font-weight: 600; }
+    .breadcrumb a:hover { color: #fff; text-shadow: 0 0 8px var(--lagoon-glow); }
+    .breadcrumb span { color: var(--border-strong); }
 
     .detail-grid {
       display: grid;
       grid-template-columns: 1fr;
-      gap: 2rem;
+      gap: 2.5rem;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      padding: 2rem 1.5rem;
+      box-shadow: var(--shadow);
     }
-    @media (min-width: 640px) {
-      .detail-grid { grid-template-columns: 1fr 1fr; align-items: start; }
+    @media (min-width: 720px) {
+      .detail-grid { grid-template-columns: 1fr 1.15fr; align-items: start; padding: 2.5rem; gap: 3rem; }
     }
 
-    /* Image */
+    /* Image Wrap */
     .detail-img-wrap {
-      background: var(--bg-card); border: 1px solid var(--border);
+      background: radial-gradient(circle, rgba(124,58,237,0.15) 0%, rgba(255,255,255,0.02) 70%);
+      border: 1px solid var(--border-strong);
       border-radius: var(--radius-lg);
       aspect-ratio: 1; display: flex; align-items: center; justify-content: center;
-      padding: 2rem; overflow: hidden;
+      padding: 2.5rem; overflow: hidden; position: relative;
     }
     .detail-img-wrap img {
       width: 100%; height: 100%; object-fit: contain;
-      transition: transform 0.4s ease;
+      transition: transform 0.5s cubic-bezier(0.16,1,0.3,1);
+      filter: drop-shadow(0 12px 24px rgba(0,0,0,0.5));
     }
-    .detail-img-wrap:hover img { transform: scale(1.05); }
+    .detail-img-wrap:hover img { transform: scale(1.1) rotate(2deg); }
 
-    /* Info panel */
-    .detail-info {}
+    /* Info Panel */
     .detail-category {
-      font-size: 0.75rem; font-weight: 700; text-transform: uppercase;
-      letter-spacing: 1px; color: var(--primary); margin-bottom: 0.5rem;
+      display: inline-block;
+      font-size: 0.78rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 1px; color: var(--lagoon); margin-bottom: 0.75rem;
+      background: rgba(34,211,238,0.1); border: 1px solid rgba(34,211,238,0.25);
+      padding: 0.25rem 0.75rem; border-radius: 999px;
     }
     .detail-name {
-      font-size: clamp(1.4rem, 4vw, 2rem);
-      font-weight: 800; line-height: 1.2; margin-bottom: 0.75rem;
+      font-size: clamp(1.6rem, 4vw, 2.4rem);
+      font-weight: 800; line-height: 1.15; margin-bottom: 0.85rem;
+      color: #fff; font-family: var(--font-heading);
     }
     .detail-price {
-      font-size: 2rem; font-weight: 800; color: var(--accent);
+      font-size: 2.2rem; font-weight: 800; color: var(--accent);
       margin-bottom: 1.25rem; font-family: var(--font-mono);
+      text-shadow: 0 0 20px var(--accent-glow);
     }
     .detail-desc {
-      font-size: 0.9rem; color: var(--text-muted); line-height: 1.8;
-      margin-bottom: 1.5rem;
+      font-size: 0.95rem; color: var(--text-muted); line-height: 1.8;
+      margin-bottom: 1.75rem;
       padding-bottom: 1.5rem;
       border-bottom: 1px solid var(--border);
     }
 
-    /* Feature list */
-    .feature-list { margin-bottom: 1.5rem; }
-    .feature-list h4 { font-size: 0.82rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.75rem; }
+    /* Feature List */
+    .feature-list { margin-bottom: 1.75rem; }
+    .feature-list h4 { font-size: 0.82rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.85rem; }
     .feature-item {
       display: flex; align-items: center; gap: 0.75rem;
-      padding: 0.6rem 0; border-bottom: 1px solid var(--border);
-      font-size: 0.875rem;
+      padding: 0.65rem 0; border-bottom: 1px solid var(--border);
+      font-size: 0.9rem;
     }
     .feature-item:last-child { border-bottom: none; }
-    .feature-icon { font-size: 1.1rem; flex-shrink: 0; }
-    .feature-label { color: var(--text-muted); min-width: 90px; font-size: 0.8rem; }
-    .feature-value { font-weight: 600; }
+    .feature-icon { font-size: 1.2rem; flex-shrink: 0; }
+    .feature-label { color: var(--text-muted); min-width: 100px; font-size: 0.82rem; }
+    .feature-value { font-weight: 600; color: #fff; }
 
-    /* Action buttons */
+    /* Quantity & Buy */
+    .qty-row {
+      display: flex; align-items: center; gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    .qty-control {
+      display: flex; align-items: center;
+      background: rgba(255,255,255,0.06); border: 1.5px solid var(--border);
+      border-radius: var(--radius); overflow: hidden;
+    }
+    .qty-btn {
+      width: 40px; height: 40px; background: none; color: #fff;
+      font-size: 1.2rem; font-weight: bold; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.2s ease;
+    }
+    .qty-btn:hover { background: var(--primary); }
+    .qty-val {
+      width: 52px; text-align: center; background: none; border: none;
+      color: #fff; font-weight: 700; font-size: 1.05rem; font-family: var(--font-mono);
+    }
+
     .detail-actions { display: flex; flex-direction: column; gap: 0.75rem; }
-    @media (min-width: 420px) { .detail-actions { flex-direction: row; } }
+    @media (min-width: 440px) { .detail-actions { flex-direction: row; } }
 
     .btn-buy-now {
-      flex: 2; padding: 0.9rem 1.5rem;
+      flex: 2; padding: 0.9rem 1.75rem;
       background: var(--primary); color: #fff;
-      border-radius: var(--radius); font-size: 1rem; font-weight: 800;
-      min-height: 50px; transition: all var(--ease);
-      box-shadow: 0 4px 20px rgba(108,99,255,0.35);
+      border-radius: var(--radius); font-size: 1.05rem; font-weight: 800;
+      min-height: 52px; transition: all var(--dur) var(--ease-out);
+      box-shadow: 0 4px 20px var(--primary-glow);
     }
-    .btn-buy-now:hover { background: var(--primary-dark); transform: translateY(-2px); box-shadow: 0 8px 28px rgba(108,99,255,0.45); }
+    .btn-buy-now:hover { background: var(--primary-dark); transform: translateY(-2px); box-shadow: 0 8px 30px var(--primary-glow); }
+    .btn-buy-now:disabled { opacity: 0.5; pointer-events: none; }
 
     .btn-back {
       flex: 1; padding: 0.9rem;
-      background: rgba(255,255,255,0.07); color: var(--text-muted);
+      background: rgba(255,255,255,0.06); color: var(--text-muted);
+      border: 1px solid var(--border);
       border-radius: var(--radius); font-size: 0.9rem; font-weight: 600;
-      min-height: 50px; transition: all var(--ease); text-align: center;
+      min-height: 52px; transition: all var(--dur) var(--ease-out); text-align: center;
       display: flex; align-items: center; justify-content: center;
     }
-    .btn-back:hover { background: rgba(255,255,255,0.12); color: var(--text); }
+    .btn-back:hover { background: rgba(255,255,255,0.12); color: #fff; }
 
-    /* Notice box */
-    .notice-box {
-      margin-top: 1.25rem;
-      background: rgba(245,158,11,0.08); border: 1px solid rgba(245,158,11,0.2);
-      border-radius: var(--radius); padding: 0.875rem 1rem;
-      font-size: 0.8rem; color: #fcd34d; line-height: 1.7;
-    }
+    /* Related Products Section */
+    .related { max-width: 980px; margin: 3rem auto 4rem; padding: 0 1.25rem; }
+    .related h3 { font-size: 1.3rem; font-weight: 800; margin-bottom: 1.25rem; color: #fff; }
 
-    /* Related products */
-    .related { max-width: 900px; margin: 0 auto; padding: 0 1.25rem 3rem; }
-    .related h3 { font-size: 1.1rem; font-weight: 800; margin-bottom: 1rem; }
-    .related-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 0.875rem;
-    }
-    @media (min-width: 560px) { .related-grid { grid-template-columns: repeat(4,1fr); } }
-    .mini-card {
+    .related-card {
       background: var(--bg-card); border: 1px solid var(--border);
-      border-radius: var(--radius); overflow: hidden; cursor: pointer;
-      transition: all var(--ease);
+      border-radius: var(--radius-lg); overflow: hidden; cursor: pointer;
+      padding: 1.25rem; display: flex; align-items: center; gap: 1rem;
+      transition: all var(--dur) var(--ease-out);
     }
-    .mini-card:hover { border-color: rgba(108,99,255,0.4); transform: translateY(-2px); }
-    .mini-card img { width: 100%; aspect-ratio: 1; object-fit: contain; padding: 0.5rem; background: rgba(255,255,255,0.02); }
-    .mini-card .mini-info { padding: 0.6rem; }
-    .mini-card .mini-name  { font-size: 0.78rem; font-weight: 700; margin-bottom: 0.2rem; }
-    .mini-card .mini-price { font-size: 0.82rem; font-weight: 800; color: var(--accent); font-family: var(--font-mono); }
+    .related-card:hover { border-color: var(--primary); transform: translateY(-3px); box-shadow: 0 8px 24px var(--primary-glow); }
+    .related-card img { width: 64px; height: 64px; object-fit: contain; flex-shrink: 0; }
+    .related-card .rc-info { flex: 1; }
+    .related-card .rc-name { font-weight: 700; font-size: 0.92rem; color: #fff; margin-bottom: 0.25rem; }
+    .related-card .rc-price { font-size: 0.95rem; font-weight: 800; color: var(--accent); font-family: var(--font-mono); }
 
-    /* QR Modal */
-    .modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.8); z-index:2000; align-items:flex-end; justify-content:center; }
+    /* Modal */
+    .modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.85); z-index:2000; align-items:center; justify-content:center; padding:1rem; backdrop-filter:blur(8px); }
     .modal-overlay.open { display:flex; }
-    @media (min-width:480px) { .modal-overlay { align-items:center; padding:1rem; } }
     .modal {
-      background: var(--bg-card); border: 1px solid var(--border);
-      border-radius: var(--radius-lg) var(--radius-lg) 0 0;
-      padding: 1.5rem 1.25rem; width:100%; max-width:380px; text-align:center;
-      animation: slideUp 0.25s ease;
+      background: var(--bg-card); border: 1px solid var(--border-strong);
+      border-radius: var(--radius-xl); padding: 1.75rem 1.5rem;
+      width: 100%; max-width: 420px; text-align: center;
+      animation: zoomIn 0.25s cubic-bezier(0.16,1,0.3,1);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.7);
     }
-    @media (min-width:480px) { .modal { border-radius: var(--radius-lg); } }
-    @keyframes slideUp { from{transform:translateY(30px);opacity:0} to{transform:translateY(0);opacity:1} }
-    .modal-handle { width:36px;height:4px;background:var(--border);border-radius:2px;margin:0 auto 1rem; }
-    @media (min-width:480px) { .modal-handle{display:none;} }
-    .qr-box { width:170px;height:170px;margin:1rem auto;background:#fff;border-radius:12px;display:flex;align-items:center;justify-content:center;border:3px solid var(--primary);overflow:hidden; }
-    .qr-box img { width:100%;height:100%;object-fit:cover; }
+    .qr-box { width: 170px; height: 170px; margin: 1rem auto; background: #fff; border-radius: 12px; display: flex; align-items: center; justify-content: center; border: 3px solid var(--primary); overflow: hidden; padding: 4px; }
+    .qr-box img { width: 100%; height: 100%; object-fit: contain; }
   </style>
 </head>
 <body>
 
 <nav>
-  <div class="nav-logo"><img src="/img/logo.jpg" alt="logo"> Đảo Tò Mò</div>
+  <div class="nav-logo"><a href="/index.html"><img src="/img/logo.jpg" alt="logo"> Đảo Tò Mò</a></div>
   <button class="hamburger" id="hamburger" aria-label="Menu">
     <span></span><span></span><span></span>
   </button>
@@ -165,46 +183,77 @@
 
 <div class="page-body">
   <div class="detail-wrap reveal" id="detail-wrap">
-    <div style="text-align:center;padding:4rem 0"><div class="spinner"></div></div>
+    <div style="text-align:center;padding:5rem 0"><div class="spinner"></div></div>
   </div>
+
   <div class="related" id="related" style="display:none">
-    <h3>🎁 Sản phẩm khác</h3>
-    <div class="related-grid" id="related-grid"></div>
+    <h3>🎁 Sản phẩm cùng danh mục</h3>
+    <div class="carousel-container" data-interval="4500">
+      <div class="carousel-track" id="related-track"></div>
+    </div>
   </div>
 </div>
 
 <!-- QR Modal -->
 <div class="modal-overlay" id="modal">
   <div class="modal">
-    <div class="modal-handle"></div>
-    <h2>💳 Thanh toán QR</h2>
-    <p style="font-size:0.8rem;color:var(--text-muted)">Quét mã, chuyển khoản đúng số tiền. Admin xác nhận trong 24h.</p>
-    <div class="qr-box">
-      <img src="/img/qr.png" alt="QR" onerror="this.parentElement.innerHTML='<p style=color:#555;font-size:.75rem;padding:.5rem>QR sẽ<br>cập nhật sớm</p>'">
+    <div style="font-size:2.5rem;margin-bottom:0.25rem">🎉</div>
+    <h2 style="font-size:1.35rem;font-weight:800;color:#fff;margin-bottom:0.3rem;font-family:var(--font-display)">Đặt Hàng Thành Công!</h2>
+    <div class="countdown-timer-pill" style="display:inline-flex;align-items:center;gap:0.4rem;padding:0.3rem 0.8rem;border-radius:9999px;background:rgba(245,158,11,0.12);border:1px solid rgba(245,158,11,0.35);color:#fbbf24;font-family:var(--font-mono);font-size:0.78rem;font-weight:700;margin-bottom:0.5rem">
+      ⏰ Cửa sổ thanh toán: <span id="m-pay-countdown">15:00</span>
     </div>
-    <div style="font-size:1.4rem;font-weight:800;color:var(--accent)" id="m-total">0đ</div>
-    <div style="font-size:0.75rem;color:var(--text-muted);margin:.3rem 0 .5rem" id="m-id"></div>
-    <div style="font-size:0.8rem;color:var(--text-muted);margin-bottom:1rem">Nội dung CK: <strong id="m-note" style="color:var(--text)"></strong></div>
-    <button onclick="closeModal()" style="width:100%;padding:.7rem;background:rgba(255,255,255,.07);border-radius:var(--radius);color:var(--text-muted);font-size:.875rem;font-weight:600;transition:background var(--ease)">Đã hiểu, đóng lại</button>
+    <p style="font-size:0.85rem;color:var(--text-muted);margin-bottom:0.85rem;line-height:1.5">
+      Quét mã VietQR bên dưới bằng App Ngân hàng hoặc MoMo để đơn hàng được duyệt tự động.
+    </p>
+    
+    <div class="qr-box" style="width:200px;height:200px;margin:0.85rem auto;background:#fff;border-radius:14px;display:flex;align-items:center;justify-content:center;border:3px solid var(--lagoon);overflow:hidden;padding:6px;box-shadow:0 0 20px rgba(34,211,238,0.35)">
+      <img id="m-vietqr-img" src="/img/qr.png" alt="Mã VietQR Chuyển Khoản">
+    </div>
+
+    <div style="font-size:1.6rem;font-weight:800;color:var(--accent);font-family:var(--font-mono);margin-top:0.4rem" id="m-total">0đ</div>
+    <div style="font-size:0.85rem;color:var(--text);font-weight:700;margin:0.3rem 0 0.6rem" id="m-id"></div>
+    
+    <div style="background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:var(--radius);padding:0.85rem 1rem;margin-bottom:1rem;font-size:0.85rem;text-align:left">
+      <div style="margin-bottom:0.45rem;display:flex;align-items:center;justify-content:space-between">
+        <span>STK VietinBank: <strong>103870631688</strong></span>
+        <button class="copy-badge-btn" style="cursor:pointer;padding:0.2rem 0.6rem;border-radius:4px;background:rgba(34,211,238,0.15);border:1px solid rgba(34,211,238,0.3);color:var(--lagoon);font-size:0.75rem;font-family:var(--font-mono)" onclick="copyText('103870631688', 'Đã sao chép STK!')">📋 Chép STK</button>
+      </div>
+      <div style="margin-bottom:0.45rem;display:flex;align-items:center;justify-content:space-between">
+        <span>Nội dung CK: <strong id="m-note" style="color:var(--lagoon);font-family:var(--font-mono)"></strong></span>
+        <button class="copy-badge-btn" style="cursor:pointer;padding:0.2rem 0.6rem;border-radius:4px;background:rgba(34,211,238,0.15);border:1px solid rgba(34,211,238,0.3);color:var(--lagoon);font-size:0.75rem;font-family:var(--font-mono)" onclick="copyTransferNote()">📋 Chép nội dung</button>
+      </div>
+      <div style="font-size:0.75rem;color:var(--text-muted)">⚠️ Vui lòng ghi chính xác nội dung chuyển khoản để hệ thống đối soát tự động.</div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:0.6rem">
+      <a id="m-acc-link" href="/html/Account.html" class="btn btn-primary btn-full">
+        📦 Xem đơn hàng trong Tài khoản
+      </a>
+      <button class="btn btn-ghost btn-full" onclick="closeModal()">Đã hiểu, đóng lại</button>
+    </div>
   </div>
 </div>
 
 <footer>
   <div class="footer-grid">
     <div class="footer-col"><h3>🏝️ Đảo Tò Mò</h3><p>Cộng đồng game thủ Việt chill nhất.</p></div>
-    <div class="footer-col"><h3>Liên kết</h3><a href="/index.html">Trang chủ</a><a href="/html/Store.html">Cửa hàng</a></div>
+    <div class="footer-col"><h3>Liên kết</h3><a href="/index.html">Trang chủ</a><a href="/html/Store.html">Cửa hàng</a><a href="/html/Server.html">Server</a></div>
     <div class="footer-col"><h3>Cộng đồng</h3><a href="/html/Discord.html">Discord</a><a href="https://www.facebook.com/DragonKun1946" target="_blank">Facebook</a></div>
     <div class="footer-col"><h3>Thông tin</h3><p>Server Minecraft sinh tồn dành cho cộng đồng Việt.</p></div>
   </div>
-  <div class="footer-bottom">© 2026 Đảo Tò Mò</div>
+  <div class="footer-bottom">© 2026 Đảo Tò Mò. All rights reserved.</div>
 </footer>
 
 <script src="/js/api.js"></script>
+<script src="/js/skinview3d.bundle.js"></script>
+<script src="/js/skin-viewer.js"></script>
 <script>
 const categoryLabel = {
   crate:'📦 Hòm', cosmetic:'✨ Cosmetic', pet:'🐾 Pet',
   key:'🗝️ Key', bundle:'🎒 Bundle', vip:'👑 VIP'
 };
+
+let currentProduct = null;
 
 async function loadDetail() {
   const id = new URLSearchParams(location.search).get('id');
@@ -212,6 +261,7 @@ async function loadDetail() {
 
   try {
     const { data: p } = await api.getProduct(id);
+    currentProduct = p;
     document.title = p.name + ' — Đảo Tò Mò';
 
     document.getElementById('detail-wrap').innerHTML = `
@@ -223,111 +273,199 @@ async function loadDetail() {
       <div class="detail-grid">
         <div class="detail-img-wrap">
           <img src="${p.image}" alt="${p.name}"
-            onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect fill=%22%23222%22 width=%22100%25%22 height=%22100%25%22/><text x=%2250%25%22 y=%2255%25%22 font-size=%2240%22 text-anchor=%22middle%22>🎁</text></svg>'">
+            onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect fill=%22%23171e36%22 width=%22100%25%22 height=%22100%25%22/><text x=%2250%25%22 y=%2255%25%22 font-size=%2240%22 text-anchor=%22middle%22>🎁</text></svg>'">
         </div>
         <div class="detail-info">
           <div class="detail-category">${categoryLabel[p.category] || p.category}</div>
-          <div class="detail-name">${p.name}</div>
+          <h1 class="detail-name">${p.name}</h1>
           <div class="detail-price">${p.price.toLocaleString('vi-VN')}đ</div>
           <div class="detail-desc">${p.description}</div>
 
           <div class="feature-list">
-            <h4>Thông tin sản phẩm</h4>
+            <h4>Đặc quyền & Quyền lợi</h4>
             <div class="feature-item">
               <span class="feature-icon">🎮</span>
-              <span class="feature-label">Phần thưởng</span>
-              <span class="feature-value">${p.gameReward || 'Nhận trong game'}</span>
+              <span class="feature-label">Phần thưởng:</span>
+              <span class="feature-value">${p.gameReward || 'Nhận trực tiếp trong game'}</span>
             </div>
             <div class="feature-item">
-              <span class="feature-icon">📦</span>
-              <span class="feature-label">Loại</span>
-              <span class="feature-value">${categoryLabel[p.category] || p.category}</span>
-            </div>
-            <div class="feature-item">
-              <span class="feature-icon">✅</span>
-              <span class="feature-label">Tình trạng</span>
+              <span class="feature-icon">🛡️</span>
+              <span class="feature-label">Tình trạng kho:</span>
               <span class="feature-value" style="color:${p.inStock ? 'var(--success)' : 'var(--danger)'}">
-                ${p.inStock ? 'Còn hàng' : 'Hết hàng'}
+                ${p.inStock ? '✓ Còn hàng sẵn sàng' : '✕ Tạm hết hàng'}
               </span>
             </div>
             <div class="feature-item">
               <span class="feature-icon">⚡</span>
-              <span class="feature-label">Giao hàng</span>
-              <span class="feature-value">Trong vòng 24h</span>
+              <span class="feature-label">Thời gian giao:</span>
+              <span class="feature-value">Kích hoạt trong vòng 24h</span>
+            </div>
+          </div>
+
+          <div class="qty-row">
+            <span style="font-size:0.85rem;font-weight:700;color:var(--text-muted)">Số lượng:</span>
+            <div class="qty-control">
+              <button class="qty-btn" type="button" onclick="changeQty(-1)">-</button>
+              <input type="number" id="buy-qty" class="qty-val" value="1" min="1" max="99" onchange="updateQtyPrice()">
+              <button class="qty-btn" type="button" onclick="changeQty(1)">+</button>
             </div>
           </div>
 
           <div class="detail-actions">
-            <a href="/html/Store.html" class="btn-back">← Quay lại</a>
-            <button class="btn-buy-now" id="buy-btn" onclick="handleBuy('${p._id}', ${p.price})" ${!p.inStock ? 'disabled' : ''}>
+            <a href="/html/Store.html" class="btn-back">← Cửa hàng</a>
+            <button class="btn-buy-now" id="buy-btn" onclick="handleBuy()" ${!p.inStock ? 'disabled' : ''}>
               ${p.inStock ? '🛒 Mua ngay — ' + p.price.toLocaleString('vi-VN') + 'đ' : 'Hết hàng'}
             </button>
-          </div>
-
-          <div class="notice-box">
-            ⚠️ Sau khi thanh toán QR, vui lòng nhắn tin Discord hoặc Facebook kèm ảnh chụp màn hình để admin xác nhận và trao vật phẩm.
           </div>
         </div>
       </div>
     `;
 
-    // Load related
     loadRelated(p._id, p.category);
   } catch (e) {
     document.getElementById('detail-wrap').innerHTML =
       `<div style="text-align:center;padding:4rem;color:var(--text-muted)">
-        ⚠️ Không tìm thấy sản phẩm. <a href="/html/Store.html" style="color:var(--primary)">Quay lại cửa hàng</a>
+        ⚠️ Không tìm thấy sản phẩm. <a href="/html/Store.html" style="color:var(--lagoon)">Quay lại cửa hàng</a>
       </div>`;
   }
+}
+
+function changeQty(delta) {
+  const inp = document.getElementById('buy-qty');
+  if (!inp) return;
+  let val = (parseInt(inp.value, 10) || 1) + delta;
+  val = Math.max(1, Math.min(99, val));
+  inp.value = val;
+  updateQtyPrice();
+}
+
+function updateQtyPrice() {
+  if (!currentProduct) return;
+  const inp = document.getElementById('buy-qty');
+  const btn = document.getElementById('buy-btn');
+  if (!inp || !btn) return;
+  const qty = Math.max(1, parseInt(inp.value, 10) || 1);
+  const total = qty * currentProduct.price;
+  btn.textContent = `🛒 Mua ngay (${qty}) — ` + total.toLocaleString('vi-VN') + 'đ';
 }
 
 async function loadRelated(currentId, category) {
   try {
     const { data } = await api.getProducts({ category });
-    const others = data.filter(p => p._id !== currentId).slice(0, 4);
+    const others = data.filter(p => p._id !== currentId);
     if (!others.length) return;
+
     const section = document.getElementById('related');
-    const grid    = document.getElementById('related-grid');
-    grid.innerHTML = others.map(p => `
-      <div class="mini-card" onclick="location.href='/html/ProductDetail.html?id=${p._id}'">
-        <img src="${p.image}" alt="${p.name}" loading="lazy"
-          onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect fill=%22%23222%22 width=%22100%25%22 height=%22100%25%22/><text x=%2250%25%22 y=%2255%25%22 font-size=%2230%22 text-anchor=%22middle%22>🎁</text></svg>'">
-        <div class="mini-info">
-          <div class="mini-name">${p.name}</div>
-          <div class="mini-price">${p.price.toLocaleString('vi-VN')}đ</div>
+    const track   = document.getElementById('related-track');
+    
+    track.innerHTML = others.map(p => `
+      <div class="carousel-slide" style="padding:0.5rem">
+        <div class="related-card" onclick="location.href='/html/ProductDetail.html?id=${p._id}'">
+          <img src="${p.image}" alt="${p.name}" loading="lazy"
+            onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect fill=%22%23171e36%22 width=%22100%25%22 height=%22100%25%22/><text x=%2250%25%22 y=%2255%25%22 font-size=%2230%22 text-anchor=%22middle%22>🎁</text></svg>'">
+          <div class="rc-info">
+            <div class="rc-name">${p.name}</div>
+            <div class="rc-price">${p.price.toLocaleString('vi-VN')}đ</div>
+          </div>
+          <span class="btn btn-ghost" style="padding:0.4rem 0.8rem;font-size:0.78rem">Xem</span>
         </div>
       </div>
     `).join('');
     section.style.display = 'block';
+
+    if (window.initCarousels) {
+      window.initCarousels(section);
+    }
   } catch (e) {}
 }
 
-async function handleBuy(productId, price) {
+let countdownInterval = null;
+
+function startCountdown() {
+  if (countdownInterval) clearInterval(countdownInterval);
+  let seconds = 15 * 60;
+  const label = document.getElementById('m-pay-countdown');
+  countdownInterval = setInterval(() => {
+    seconds--;
+    if (seconds <= 0) {
+      clearInterval(countdownInterval);
+      if (label) label.textContent = 'Hết hạn';
+      return;
+    }
+    const m = Math.floor(seconds / 60);
+    const s = seconds % 60;
+    if (label) label.textContent = `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+  }, 1000);
+}
+
+async function handleBuy() {
+  if (!currentProduct) return;
   if (!api.isLoggedIn()) {
-    if (confirm('Bạn cần đăng nhập để mua hàng.\nChuyển đến trang đăng nhập?'))
+    if (confirm('Bạn cần đăng nhập tài khoản để đặt mua vật phẩm.\nChuyển đến trang Đăng nhập ngay?'))
       location.href = '/html/Account.html';
     return;
   }
+  const qtyInput = document.getElementById('buy-qty');
+  const quantity = Math.max(1, parseInt(qtyInput ? qtyInput.value : 1, 10) || 1);
   const btn = document.getElementById('buy-btn');
-  btn.disabled = true; btn.textContent = 'Đang xử lý...';
+  btn.disabled = true; btn.textContent = 'Đang xử lý đơn...';
+
   try {
-    const { data: order } = await api.createOrder([{ productId, quantity: 1 }]);
+    const u = api.getUser();
+    const mc = (u && u.minecraftUsername) || '';
+    const { data: order } = await api.createOrder([{ productId: currentProduct._id, quantity }], mc, '', 'qr');
+    const code = order.orderCode || '#' + order._id.slice(-8).toUpperCase();
+    const note = order.paymentDetails?.transferContent || code;
+
     document.getElementById('m-total').textContent = order.total.toLocaleString('vi-VN') + 'đ';
-    document.getElementById('m-id').textContent    = 'Mã đơn: #' + order._id.slice(-8).toUpperCase();
-    document.getElementById('m-note').textContent  = 'DTM ' + order._id.slice(-6).toUpperCase();
+    document.getElementById('m-id').textContent    = 'Mã đơn: ' + code;
+    document.getElementById('m-note').textContent  = note;
+    document.getElementById('m-acc-link').href     = `/html/Account.html?orderId=${order._id}`;
+
+    // Dynamic VietQR Generator
+    const vietqrUrl = `https://img.vietqr.io/image/970415-103870631688-compact2.png?amount=${order.total}&addInfo=${encodeURIComponent(note)}&accountName=DAO%20TO%20MO`;
+    const imgEl = document.getElementById('m-vietqr-img');
+    if (imgEl) {
+      imgEl.src = vietqrUrl;
+      imgEl.onerror = () => { imgEl.src = '/img/qr.png'; };
+    }
+
     document.getElementById('modal').classList.add('open');
+    startCountdown();
+
+    if (window.ConfettiFX) ConfettiFX.fire();
+    if (window.SoundFX) SoundFX.playSuccess();
+    if (typeof api.showToast === 'function') api.showToast('Tạo đơn hàng ' + code + ' thành công!', 'success');
   } catch (e) {
-    alert('❌ ' + e.message);
+    if (typeof api.showToast === 'function') api.showToast(e.message, 'error');
+    else alert('❌ ' + e.message);
+    if (window.SoundFX) SoundFX.playError();
   } finally {
     btn.disabled = false;
-    btn.textContent = '🛒 Mua ngay — ' + price.toLocaleString('vi-VN') + 'đ';
+    updateQtyPrice();
   }
 }
 
-function closeModal() { document.getElementById('modal').classList.remove('open'); }
+function copyTransferNote() {
+  const note = document.getElementById('m-note')?.textContent || '';
+  copyText(note, 'Đã sao chép nội dung chuyển khoản!');
+}
+
+function copyText(text, msg) {
+  navigator.clipboard.writeText(text).then(() => {
+    if (typeof api.showToast === 'function') api.showToast(msg, 'success');
+    if (window.SoundFX) SoundFX.playSuccess();
+  }).catch(() => alert(text));
+}
+
+function closeModal() {
+  document.getElementById('modal').classList.remove('open');
+  if (countdownInterval) clearInterval(countdownInterval);
+}
 document.getElementById('modal').addEventListener('click', e => { if (e.target===e.currentTarget) closeModal(); });
 
 loadDetail();
 </script>
 </body>
 </html>
+

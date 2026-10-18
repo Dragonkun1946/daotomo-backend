@@ -16,7 +16,7 @@ const app = express();
 app.use(cors({
   origin: process.env.NODE_ENV === 'production'
     ? ['https://daotomo.site', 'https://www.daotomo.site']
-    : ['http://localhost:3000', 'http://127.0.0.1:3000'],
+    : ['http://localhost:3000', 'http://127.0.0.1:3000', 'http://localhost:5000', 'http://127.0.0.1:5000', 'http://localhost:5500', 'http://127.0.0.1:5500'],
   credentials: true
 }));
 
@@ -56,15 +56,23 @@ app.use((err, req, res, next) => {
 
 // ─── Connect MongoDB & Start Server ───────────────────────────────────────────
 const PORT = process.env.PORT || 5000;
+const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/daotomo';
 
-mongoose.connect(process.env.MONGODB_URI)
-  .then(() => {
-    console.log('✅ Kết nối MongoDB thành công');
-    app.listen(PORT, () => {
-      console.log(`🚀 Server chạy tại port ${PORT}`);
+if (require.main === module) {
+  mongoose.connect(MONGODB_URI, { serverSelectionTimeoutMS: 2500 })
+    .then(() => {
+      console.log('✅ Kết nối MongoDB thành công');
+      app.listen(PORT, () => {
+        console.log(`🚀 Server chạy tại http://localhost:${PORT}`);
+      });
+    })
+    .catch(err => {
+      console.warn('⚠️ Cảnh báo MongoDB:', err.message || err);
+      console.log('💡 Server vẫn khởi động để phục vụ giao diện Web & Static assets.');
+      app.listen(PORT, () => {
+        console.log(`🚀 Server chạy tại http://localhost:${PORT} (Chế độ xem trước giao diện)`);
+      });
     });
-  })
-  .catch(err => {
-    console.error('❌ Lỗi MongoDB:', err);
-    process.exit(1);
-  });
+}
+
+module.exports = app;

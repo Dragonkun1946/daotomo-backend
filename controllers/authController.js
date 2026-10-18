@@ -1,5 +1,7 @@
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
+const fs = require('fs');
+const path = require('path');
 const User = require('../models/User');
 const { sendResetPasswordEmail } = require('../utils/sendEmail');
 
@@ -53,6 +55,7 @@ const register = async (req, res) => {
         email: user.email,
         role: user.role,
         minecraftUsername: user.minecraftUsername,
+        skinUrl: user.skinUrl || '',
       },
     });
   } catch (error) {
@@ -114,6 +117,7 @@ const login = async (req, res) => {
         email: user.email,
         role: user.role,
         minecraftUsername: user.minecraftUsername,
+        skinUrl: user.skinUrl || '',
       },
     });
   } catch (error) {
@@ -135,7 +139,7 @@ const getMe = async (req, res) => {
 // ─── PUT /api/auth/me  (protected) ───────────────────────────────────────────
 const updateMe = async (req, res) => {
   try {
-    const allowed = ['username', 'minecraftUsername', 'avatar'];
+    const allowed = ['username', 'minecraftUsername', 'avatar', 'skinUrl'];
     const updates = {};
     allowed.forEach((field) => {
       if (req.body[field] !== undefined) updates[field] = req.body[field];
@@ -149,6 +153,104 @@ const updateMe = async (req, res) => {
     res.json({ success: true, message: 'Cập nhật thành công.', user });
   } catch (error) {
     res.status(500).json({ success: false, message: 'Lỗi server.' });
+  }
+};
+
+// ─── POST /api/auth/skin  (protected) ─────────────────────────────────────────
+const updateSkin = async (req, res) => {
+  try {
+    const { skinData, skinUrl } = req.body;
+
+    // Reset to default (Steve)
+    if (skinUrl === '' || skinUrl === '/img/steve.png') {
+      const user = await User.findByIdAndUpdate(
+        req.user._id,
+        { skinUrl: '' },
+        { new: true }
+      );
+      return res.json({
+        success: true,
+        message: 'Đã khôi phục skin mặc định (Steve).',
+        skinUrl: '/img/steve.png',
+        user
+      });
+    }
+
+    // Direct URL provided (e.g. from minotar.net or external)
+    if (skinUrl && !skinData) {
+      if (typeof skinUrl !== 'string' || skinUrl.length > 500) {
+        return res.status(400).json({ success: false, message: 'URL skin không hợp lệ.' });
+      }
+      const user = await User.findByIdAndUpdate(
+        req.user._id,
+        { skinUrl },
+        { new: true }
+      );
+      return res.json({
+        success: true,
+        message: 'Đã lưu skin nhân vật thành công! 🎮',
+        skinUrl: user.skinUrl,
+        user
+      });
+    }
+
+    // Base64 file upload
+    if (skinData) {
+      const matches = skinData.match(/^data:image\/([a-zA-Z]+);base64,(.+)$/);
+      const base64Content = matches ? matches[2] : skinData;
+      const buffer = Buffer.from(base64Content, 'base64');
+
+      // Max size: 1MB
+      if (buffer.length > 1024 * 1024) {
+        return res.status(400).json({ success: false, message: 'Kích thước file skin quá lớn (tối đa 1MB).' });
+      }
+
+      // Check PNG magic bytes: 89 50 4E 47 0D 0A 1A 0A
+      if (buffer.length < 8 || buffer[0] !== 0x89 || buffer[1] !== 0x50 || buffer[2] !== 0x4E || buffer[3] !== 0x47) {
+        return res.status(400).json({ success: false, message: 'File phải là định dạng ảnh PNG hợp lệ.' });
+      }
+
+      // Verify dimensions (must be 64x64, 64x32, or 128x128 for Minecraft skins)
+      if (buffer.length >= 24) {
+        const width = buffer.readUInt32BE(16);
+        const height = buffer.readUInt32BE(20);
+        if (!((width === 64 && height === 64) || (width === 64 && height === 32) || (width === 128 && height === 128))) {
+          return res.status(400).json({
+            success: false,
+            message: `Kích thước skin không đúng chuẩn Minecraft (yêu cầu 64x64 hoặc 64x32, phát hiện ${width}x${height}).`
+          });
+        }
+      }
+
+      // Save to public/uploads/skins/<userId>.png
+      const uploadDir = path.join(__dirname, '..', 'public', 'uploads', 'skins');
+      if (!fs.existsSync(uploadDir)) {
+        fs.mkdirSync(uploadDir, { recursive: true });
+      }
+
+      const fileName = `${req.user._id}.png`;
+      const filePath = path.join(uploadDir, fileName);
+      fs.writeFileSync(filePath, buffer);
+
+      const savedUrl = `/uploads/skins/${fileName}?v=${Date.now()}`;
+      const user = await User.findByIdAndUpdate(
+        req.user._id,
+        { skinUrl: savedUrl },
+        { new: true }
+      );
+
+      return res.json({
+        success: true,
+        message: 'Đã lưu skin nhân vật vào tài khoản thành công! 🎮',
+        skinUrl: savedUrl,
+        user
+      });
+    }
+
+    return res.status(400).json({ success: false, message: 'Vui lòng cung cấp dữ liệu skin.' });
+  } catch (error) {
+    console.error('Update skin error:', error);
+    res.status(500).json({ success: false, message: 'Lỗi server khi lưu skin.' });
   }
 };
 
@@ -241,4 +343,4 @@ const oauthCallback = (req, res) => {
   res.redirect(`${frontendUrl}/html/Account.html?oauthToken=${token}`);
 };
 
-module.exports = { register, login, getMe, updateMe, forgotPassword, resetPassword, oauthCallback };
+module.exports = { register, login, getMe, updateMe, updateSkin, forgotPassword, resetPassword, oauthCallback };

@@ -3,146 +3,295 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Cửa hàng — Đảo Tò Mò</title>
+  <title>Cửa hàng Vật phẩm — Đảo Tò Mò</title>
   <link rel="icon" type="image/x-icon" href="/img/favicon.ico">
-  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;700;800;900&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@600;700;800&family=Be+Vietnam+Pro:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/css/global.css">
   <style>
     .store-hero {
-      padding: 2.5rem 1.25rem 2rem;
-      text-align: center;
-      background: radial-gradient(ellipse at top, rgba(108,99,255,0.15), transparent 65%);
-      border-bottom: 1px solid var(--border);
+      padding: calc(var(--nav-h) + 1.5rem) 1.25rem 2rem;
+      max-width: 1200px;
+      margin: 0 auto;
     }
-    .store-hero h1 { font-size: clamp(1.5rem, 5vw, 2.2rem); font-weight: 800; margin-bottom: 0.4rem; }
-    .store-hero p  { color: var(--text-muted); font-size: 0.9rem; max-width: 440px; margin: 0 auto 1.25rem; }
-    .notice {
-      display: flex; gap: 0.6rem; align-items: flex-start;
-      background: rgba(245,158,11,0.1); border: 1px solid rgba(245,158,11,0.25);
-      border-radius: var(--radius); padding: 0.75rem 1rem;
-      font-size: 0.82rem; color: #fcd34d;
-      max-width: 600px; margin: 0 auto; text-align: left;
+    
+    /* Top Banner Carousel */
+    .store-promo-slide {
+      padding: 2.2rem 2rem;
+      min-height: 240px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      background: linear-gradient(135deg, rgba(124,58,237,0.25) 0%, rgba(34,211,238,0.15) 100%), var(--bg-card);
+      position: relative;
+      overflow: hidden;
+      border-radius: var(--radius-lg);
+    }
+    @media (min-width: 768px) {
+      .store-promo-slide { padding: 3rem 3.5rem; min-height: 280px; }
+    }
+    .promo-bg {
+      position: absolute; right: 2rem; top: 50%;
+      transform: translateY(-50%);
+      font-size: 8rem; opacity: 0.15;
+      user-select: none; pointer-events: none;
+    }
+    .store-promo-slide h2 {
+      font-size: clamp(1.4rem, 4vw, 2.2rem);
+      font-family: var(--font-display);
+      font-weight: 800; margin-bottom: 0.5rem;
+      color: #fff;
+    }
+    .store-promo-slide p {
+      font-size: clamp(0.85rem, 2vw, 1rem);
+      color: var(--text-muted); max-width: 50ch; margin-bottom: 1.25rem;
+      line-height: 1.6;
     }
 
-    /* Filters */
+    .notice {
+      display: flex; gap: 0.75rem; align-items: center;
+      background: rgba(245,158,11,0.08); border: 1px solid rgba(245,158,11,0.25);
+      border-radius: var(--radius); padding: 0.85rem 1.25rem;
+      font-size: 0.85rem; color: #fcd34d;
+      max-width: 1200px; margin: 1.5rem auto 0;
+    }
+
+    /* Controls: Search, Sort & Categories */
+    .store-controls-wrap {
+      max-width: 1200px;
+      margin: 1.5rem auto 1rem;
+      padding: 0 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    .search-sort-row {
+      display: flex;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .search-input-wrap {
+      flex: 1;
+      min-width: 260px;
+      position: relative;
+    }
+    .search-input-wrap input {
+      width: 100%;
+      padding: 0.75rem 1rem 0.75rem 2.6rem;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      color: #fff;
+      font-size: 0.9rem;
+      transition: all 0.2s ease;
+    }
+    .search-input-wrap input:focus {
+      border-color: var(--lagoon);
+      box-shadow: 0 0 15px rgba(34,211,238,0.25);
+    }
+    .search-icon-inside {
+      position: absolute;
+      left: 0.9rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+      font-size: 1rem;
+      pointer-events: none;
+    }
+    .sort-select {
+      padding: 0.75rem 1.25rem;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      color: #e2e8f0;
+      font-size: 0.88rem;
+      font-family: var(--font-display);
+      cursor: pointer;
+    }
+    .sort-select:focus {
+      border-color: var(--lagoon);
+      outline: none;
+    }
+
+    /* Filters pills */
     .filters {
       display: flex; gap: 0.5rem; flex-wrap: wrap;
-      padding: 1.25rem; justify-content: center;
-      max-width: 1100px; margin: 0 auto;
+      justify-content: flex-start;
     }
     .filter-btn {
-      padding: 0.4rem 0.9rem; border-radius: 999px;
-      font-size: 0.78rem; font-weight: 700;
-      background: rgba(255,255,255,0.05); border: 1.5px solid var(--border);
-      color: var(--text-muted); transition: all var(--ease); min-height: 34px;
+      padding: 0.5rem 1.15rem; border-radius: 999px;
+      font-family: var(--font-display);
+      font-size: 0.82rem; font-weight: 700;
+      background: rgba(255,255,255,0.04); border: 1.5px solid var(--border);
+      color: var(--text-muted); transition: all var(--dur) var(--ease-out); min-height: 38px;
     }
-    .filter-btn.active, .filter-btn:hover { background: var(--primary); border-color: var(--primary); color: #fff; }
+    .filter-btn.active, .filter-btn:hover {
+      background: var(--primary); border-color: var(--primary); color: #fff;
+      box-shadow: 0 4px 15px var(--primary-glow);
+    }
 
     /* Grid */
     .product-grid {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
-      gap: 0.875rem;
-      padding: 0 1rem 2.5rem;
-      max-width: 1100px; margin: 0 auto;
+      gap: 1.25rem;
+      padding: 1rem 1.25rem 4rem;
+      max-width: 1200px; margin: 0 auto;
     }
-    @media (min-width: 560px)  { .product-grid { grid-template-columns: repeat(2,1fr); gap: 1rem; } }
-    @media (min-width: 768px)  { .product-grid { grid-template-columns: repeat(3,1fr); gap: 1.25rem; } }
-    @media (min-width: 1024px) { .product-grid { grid-template-columns: repeat(4,1fr); } }
+    @media (min-width: 680px)  { .product-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (min-width: 900px)  { .product-grid { grid-template-columns: repeat(3, 1fr); } }
+    @media (min-width: 1140px) { .product-grid { grid-template-columns: repeat(4, 1fr); } }
 
     .product-card {
       position: relative;
       background: var(--bg-card); border: 1px solid var(--border);
       border-radius: var(--radius-lg); overflow: hidden;
       display: flex; flex-direction: column;
-      transition: transform var(--dur) var(--ease-out), box-shadow var(--dur) var(--ease-out);
-      cursor: pointer;
+      transition: transform 0.3s cubic-bezier(0.16,1,0.3,1), border-color 0.3s ease, box-shadow 0.3s ease;
+      box-shadow: var(--shadow-sm);
     }
-    .product-card:hover { transform: translateY(-4px); box-shadow: 0 8px 28px rgba(108,99,255,0.2); border-color: rgba(108,99,255,0.3); }
+    .product-card:hover {
+      border-color: rgba(124,58,237,0.5);
+      box-shadow: 0 16px 36px rgba(0,0,0,0.5), 0 0 20px rgba(124,58,237,0.25);
+    }
 
     .product-card .img-wrap {
-      aspect-ratio: 1; background: rgba(255,255,255,0.03);
+      aspect-ratio: 1; background: radial-gradient(circle, rgba(255,255,255,0.06), rgba(255,255,255,0.01));
       display: flex; align-items: center; justify-content: center;
-      overflow: hidden; padding: 0.75rem;
+      overflow: hidden; padding: 1.25rem; cursor: pointer;
+      position: relative;
     }
     .product-card .img-wrap img {
       width: 100%; height: 100%; object-fit: contain;
-      transition: transform 0.35s ease;
+      transition: transform 0.4s ease;
+      filter: drop-shadow(0 8px 16px rgba(0,0,0,0.5));
     }
-    .product-card:hover .img-wrap img { transform: scale(1.1); }
+    .product-card:hover .img-wrap img { transform: scale(1.12); }
 
-    .product-card .info { padding: 0.875rem; display: flex; flex-direction: column; flex: 1; gap: 0.3rem; }
-    .product-card .name { font-size: 0.88rem; font-weight: 700; color: var(--text); line-height: 1.3; }
-    .product-card .desc { font-size: 0.75rem; color: var(--text-muted); flex: 1; line-height: 1.5; }
-    .product-card .price { font-size: 1rem; font-weight: 800; color: var(--accent); margin-top: 0.25rem; font-family: var(--font-mono); }
+    .product-card .info { padding: 1.1rem 1.25rem 1.35rem; display: flex; flex-direction: column; flex: 1; gap: 0.35rem; }
+    .product-card .name { font-size: 1.05rem; font-weight: 700; color: #fff; line-height: 1.3; font-family: var(--font-display); }
+    .product-card .desc { font-size: 0.82rem; color: var(--text-muted); flex: 1; line-height: 1.5; margin-bottom: 0.4rem; }
+    .product-card .price { font-size: 1.25rem; font-weight: 800; color: var(--accent); font-family: var(--font-mono); }
 
-    .product-card .card-actions { display: flex; gap: 0.5rem; margin-top: 0.6rem; }
+    .product-card .card-actions { display: flex; gap: 0.5rem; margin-top: 0.75rem; }
     .product-card .btn-detail {
-      flex: 1; padding: 0.55rem;
-      background: rgba(255,255,255,0.07); color: var(--text-muted);
-      border-radius: 8px; font-size: 0.78rem; font-weight: 600;
-      transition: all var(--ease); min-height: 36px;
-      text-align: center;
+      flex: 1; padding: 0.65rem;
+      background: rgba(255,255,255,0.06); color: var(--text-muted);
+      border-radius: var(--radius-sm); font-size: 0.82rem; font-weight: 600;
+      transition: all var(--dur) var(--ease-out); min-height: 40px;
+      text-align: center; border: 1px solid var(--border);
     }
-    .product-card .btn-detail:hover { background: rgba(255,255,255,0.12); color: var(--text); }
+    .product-card .btn-detail:hover { background: rgba(255,255,255,0.12); color: #fff; border-color: rgba(255,255,255,0.2); }
     .product-card .btn-buy {
-      flex: 2; padding: 0.55rem;
+      flex: 2; padding: 0.65rem;
       background: var(--primary); color: #fff;
-      border-radius: 8px; font-size: 0.82rem; font-weight: 700;
-      transition: all var(--ease); min-height: 36px;
+      border-radius: var(--radius-sm); font-size: 0.88rem; font-weight: 700;
+      font-family: var(--font-display);
+      transition: all var(--dur) var(--ease-out); min-height: 40px;
+      box-shadow: 0 4px 15px var(--primary-glow);
     }
-    .product-card .btn-buy:hover { background: var(--primary-dark); }
+    .product-card .btn-buy:hover { background: var(--primary-dark); transform: translateY(-1px); }
 
     .state-box { text-align: center; padding: 4rem 2rem; color: var(--text-muted); grid-column: 1/-1; }
 
     /* Modal */
     .modal-overlay {
       display: none; position: fixed; inset: 0;
-      background: rgba(0,0,0,0.8); z-index: 2000;
-      align-items: flex-end; justify-content: center;
-      padding: 0;
+      background: rgba(4,6,14,0.88); z-index: 2000;
+      align-items: center; justify-content: center;
+      padding: 1rem; backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
     }
     .modal-overlay.open { display: flex; }
-    @media (min-width: 480px) { .modal-overlay { align-items: center; padding: 1rem; } }
 
     .modal {
-      background: var(--bg-card); border: 1px solid var(--border);
-      border-radius: var(--radius-lg) var(--radius-lg) 0 0;
-      padding: 1.5rem 1.25rem;
-      width: 100%; max-width: 400px;
-      text-align: center;
-      animation: slideUp 0.25s ease;
+      background: linear-gradient(145deg, #13182e 0%, #0c1020 100%);
+      border: 1px solid rgba(34,211,238,0.3);
+      border-radius: var(--radius-xl);
+      padding: 2rem 1.75rem;
+      width: 100%; max-width: 480px;
+      animation: zoomIn 0.25s cubic-bezier(0.16,1,0.3,1);
+      box-shadow: 0 25px 70px rgba(0,0,0,0.7), 0 0 30px rgba(124,58,237,0.25);
+      max-height: 90vh; overflow-y: auto;
     }
-    @media (min-width: 480px) { .modal { border-radius: var(--radius-lg); } }
-    @keyframes slideUp { from { transform: translateY(30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 
-    .modal-handle { width: 36px; height: 4px; background: var(--border); border-radius: 2px; margin: 0 auto 1rem; }
-    @media (min-width: 480px) { .modal-handle { display: none; } }
-
-    .modal h2 { font-size: 1.1rem; font-weight: 800; margin-bottom: 0.3rem; }
-    .modal .qr-box {
-      width: 180px; height: 180px; margin: 1rem auto;
-      background: #fff; border-radius: 12px;
+    .modal h2 { font-size: 1.35rem; font-family: var(--font-display); font-weight: 800; margin-bottom: 0.4rem; color: #fff; }
+    
+    /* Quantity Selector */
+    .qty-control {
+      display: flex; align-items: center; justify-content: center; gap: 0.75rem;
+      margin: 1rem 0;
+    }
+    .qty-btn {
+      width: 40px; height: 40px; border-radius: var(--radius-sm);
+      background: rgba(255,255,255,0.08); border: 1px solid var(--border);
+      color: #fff; font-size: 1.3rem; font-weight: 700;
       display: flex; align-items: center; justify-content: center;
-      border: 3px solid var(--primary); overflow: hidden;
+      transition: all 0.2s ease;
     }
-    .modal .qr-box img { width: 100%; height: 100%; object-fit: cover; }
-    .modal .order-total { font-size: 1.4rem; font-weight: 800; color: var(--accent); }
-    .modal .order-id    { font-size: 0.75rem; color: var(--text-muted); margin: 0.3rem 0 1rem; }
-    .modal .modal-note  { font-size: 0.8rem; color: var(--text-muted); line-height: 1.6; margin-bottom: 1rem; }
-    .modal-close {
-      width: 100%; padding: 0.7rem;
-      background: rgba(255,255,255,0.07); border-radius: var(--radius);
-      color: var(--text-muted); font-size: 0.875rem; font-weight: 600;
-      transition: background var(--ease);
+    .qty-btn:hover { background: var(--primary); border-color: var(--primary); transform: scale(1.05); }
+    .qty-input {
+      width: 64px; height: 40px; text-align: center;
+      background: rgba(255,255,255,0.05); border: 1px solid var(--border);
+      border-radius: var(--radius-sm); color: #fff; font-family: var(--font-mono); font-weight: 700; font-size: 1.1rem;
     }
-    .modal-close:hover { background: rgba(255,255,255,0.12); }
+
+    /* VietQR Box with scanner frame */
+    .modal .qr-box {
+      width: 210px; height: 210px; margin: 1rem auto;
+      background: #ffffff; border-radius: 14px;
+      display: flex; align-items: center; justify-content: center;
+      border: 3px solid var(--lagoon); overflow: hidden; padding: 8px;
+      position: relative;
+      box-shadow: 0 0 20px rgba(34,211,238,0.35);
+    }
+    .modal .qr-box img { width: 100%; height: 100%; object-fit: contain; }
+
+    .copy-badge-btn {
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      padding: 0.2rem 0.6rem;
+      border-radius: 4px;
+      background: rgba(34,211,238,0.15);
+      border: 1px solid rgba(34,211,238,0.3);
+      color: var(--lagoon);
+      font-size: 0.75rem;
+      font-family: var(--font-mono);
+      transition: all 0.2s ease;
+      margin-left: 0.5rem;
+    }
+    .copy-badge-btn:hover {
+      background: var(--lagoon);
+      color: #090b14;
+    }
+
+    .countdown-timer-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.3rem 0.8rem;
+      border-radius: 9999px;
+      background: rgba(245,158,11,0.12);
+      border: 1px solid rgba(245,158,11,0.35);
+      color: #fbbf24;
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
   </style>
 </head>
 <body>
 
+<a class="skip-link" href="#main">Bỏ qua đến nội dung chính</a>
+
 <nav>
-  <div class="nav-logo"><img src="/img/logo.jpg" alt="logo"> Đảo Tò Mò</div>
+  <div class="nav-logo"><a href="/index.html"><img src="/img/logo.jpg" alt="logo"> Đảo Tò Mò</a></div>
   <button class="hamburger" id="hamburger" aria-label="Menu">
     <span></span><span></span><span></span>
   </button>
@@ -151,50 +300,165 @@
     <li><a href="/html/Server.html"><span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="4" width="17" height="6" rx="1.5"/><rect x="3.5" y="14" width="17" height="6" rx="1.5"/><circle cx="7.5" cy="7" r="0.6" fill="currentColor" stroke="none"/><circle cx="7.5" cy="17" r="0.6" fill="currentColor" stroke="none"/></svg></span><span>Server</span></a></li>
     <li><a href="/html/Map.html"><span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M9 4 4 6v14l5-2 6 2 5-2V4l-5 2-6-2Z"/><path d="M9 4v14M15 6v14"/></svg></span><span>Map</span></a></li>
     <li><a href="/html/Discord.html"><span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5.5h16v10H9.5L6 19v-3.5H4Z"/><circle cx="9" cy="10.3" r="0.6" fill="currentColor" stroke="none"/><circle cx="12" cy="10.3" r="0.6" fill="currentColor" stroke="none"/><circle cx="15" cy="10.3" r="0.6" fill="currentColor" stroke="none"/></svg></span><span>Discord</span></a></li>
-    <li><a href="/html/Store.html"><span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8h12l1 12H5L6 8Z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg></span><span>Cửa hàng</span></a></li>
+    <li><a href="/html/Store.html" class="active"><span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8h12l1 12H5L6 8Z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg></span><span>Cửa hàng</span></a></li>
     <li><a href="/html/Checkin.html"><span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5" width="17" height="15" rx="2"/><path d="M3.5 9.5h17M8 3v4M16 3v4"/><path d="m8.5 14 2 2 4-4"/></svg></span><span>Điểm danh</span></a></li>
     <li><a href="/html/Account.html" id="nav-account-link"><span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8.5" r="3.2"/><path d="M5 19.5c1.2-3.3 3.9-5 7-5s5.8 1.7 7 5"/></svg></span><span>Tài khoản</span></a></li>
   </ul>
 </nav>
 
-<div class="page-body">
+<main id="main" class="page-body">
   <div class="store-hero reveal">
-    <h1>🎁 Cửa hàng ủng hộ Server</h1>
-    <p>Mua vật phẩm để ủng hộ server và nhận đồ trong Minecraft.</p>
+    <!-- Promo Banner Carousel -->
+    <div class="carousel-container" data-interval="5000">
+      <div class="carousel-track">
+        
+        <div class="carousel-slide store-promo-slide">
+          <div class="promo-bg">👑</div>
+          <span class="badge badge-purple" style="align-self:flex-start;margin-bottom:0.5rem">Đặc Quyền Cư Dân</span>
+          <h2>Gói VIP Hoàng Gia Mùa Mới</h2>
+          <p>Mở khoá hào quang aura tím, danh hiệu VIP chat độc quyền, quyền bay (/fly) tại khu vực xây dựng riêng của đảo.</p>
+          <div><a href="#grid" class="btn btn-primary" onclick="setFilter('vip')">Khám Phá Ngay →</a></div>
+        </div>
+
+        <div class="carousel-slide store-promo-slide">
+          <div class="promo-bg">📦</div>
+          <span class="badge badge-gold" style="align-self:flex-start;margin-bottom:0.5rem">Kho Báu Thần Thoại</span>
+          <h2>Hòm Thần Bí & Chìa Khoá Cổ Đại</h2>
+          <p>Nhận ngay trang bị Netherite cường hoá cấp cao, cánh Elytra phát sáng và thú cưng huyền thoại đồng hành.</p>
+          <div><a href="#grid" class="btn btn-primary" onclick="setFilter('crate')">Xem Gói Hòm →</a></div>
+        </div>
+
+        <div class="carousel-slide store-promo-slide">
+          <div class="promo-bg">💎</div>
+          <span class="badge badge-green" style="align-self:flex-start;margin-bottom:0.5rem">Ủng Hộ Server</span>
+          <h2>Thanh Toán VietQR Tiện Lợi 24/7</h2>
+          <p>Chuyển khoản tức thì qua mọi ứng dụng ngân hàng và MoMo. Admin kích hoạt đơn hàng nhanh chóng trong 24h.</p>
+          <div><a href="#grid" class="btn btn-accent" onclick="setFilter('all')">Xem Tất Cả Vật Phẩm</a></div>
+        </div>
+
+      </div>
+    </div>
+
     <div class="notice">
-      <span>⚠️</span>
-      <span>Tiền ủng hộ sẽ được dùng để nâng cấp server Discord, cập nhật Minecraft và tổ chức sự kiện cộng đồng.</span>
+      <span>🛡️</span>
+      <span>100% kinh phí ủng hộ được dùng để duy trì hạ tầng máy chủ Minecraft, chống DDOS, cập nhật phiên bản mới và tổ chức giải đấu.</span>
     </div>
   </div>
 
-  <div class="filters reveal">
-    <button class="filter-btn active" data-cat="all">🎯 Tất cả</button>
-    <button class="filter-btn" data-cat="crate">📦 Hòm</button>
-    <button class="filter-btn" data-cat="cosmetic">✨ Cosmetic</button>
-    <button class="filter-btn" data-cat="pet">🐾 Pet</button>
-    <button class="filter-btn" data-cat="key">🗝️ Key</button>
-    <button class="filter-btn" data-cat="bundle">🎒 Bundle</button>
-    <button class="filter-btn" data-cat="vip">👑 VIP</button>
+  <!-- Search & Category Filters -->
+  <div class="store-controls-wrap reveal">
+    <div class="search-sort-row">
+      <div class="search-input-wrap">
+        <span class="search-icon-inside">🔍</span>
+        <input type="text" id="store-search-input" placeholder="Tìm vật phẩm theo tên (VIP, Rương, Xu...)" oninput="filterAndSortProducts()">
+      </div>
+      <select id="store-sort-select" class="sort-select" onchange="filterAndSortProducts()">
+        <option value="default">Sắp xếp: Mặc định</option>
+        <option value="price-asc">Giá: Thấp đến Cao</option>
+        <option value="price-desc">Giá: Cao đến Thấp</option>
+        <option value="name-asc">Tên: A đến Z</option>
+      </select>
+    </div>
+
+    <div class="filters">
+      <button class="filter-btn active" data-cat="all">🎯 Tất cả</button>
+      <button class="filter-btn" data-cat="vip">👑 VIP</button>
+      <button class="filter-btn" data-cat="crate">📦 Hòm</button>
+      <button class="filter-btn" data-cat="cosmetic">✨ Cosmetic</button>
+      <button class="filter-btn" data-cat="pet">🐾 Pet</button>
+      <button class="filter-btn" data-cat="key">🗝️ Key</button>
+      <button class="filter-btn" data-cat="bundle">🎒 Bundle</button>
+    </div>
   </div>
 
+  <!-- Products Grid -->
   <div class="product-grid reveal" id="grid">
     <div class="state-box"><div class="spinner"></div></div>
   </div>
-</div>
+</main>
 
-<!-- QR Modal -->
+<!-- Purchase Modal -->
 <div class="modal-overlay" id="modal">
   <div class="modal">
-    <div class="modal-handle"></div>
-    <h2>💳 Thanh toán QR</h2>
-    <p style="font-size:0.82rem;color:var(--text-muted)">Quét mã, chuyển khoản đúng số tiền. Admin xác nhận trong 24h.</p>
-    <div class="qr-box">
-      <img src="/img/qr.png" alt="QR" onerror="this.parentElement.innerHTML='<p style=color:#555;font-size:.75rem;padding:.5rem>QR sẽ được<br>cập nhật sớm</p>'">
+    <!-- Step 1: Confirm Details & Quantity -->
+    <div id="modal-step-confirm">
+      <h2>🛒 Mua Vật Phẩm</h2>
+      <p id="m-prod-name" style="color:var(--lagoon);font-weight:700;font-size:1.05rem;margin-bottom:0.6rem;font-family:var(--font-display)"></p>
+      
+      <div style="background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:var(--radius);padding:1rem;margin-bottom:1.25rem;text-align:left">
+        <div style="display:flex;justify-content:space-between;margin-bottom:0.5rem;font-size:0.9rem">
+          <span style="color:var(--text-muted)">Đơn giá niêm yết:</span>
+          <strong id="m-unit-price" style="color:var(--accent);font-family:var(--font-mono);font-size:1.05rem">0đ</strong>
+        </div>
+        
+        <div style="margin:0.85rem 0">
+          <label style="font-size:0.82rem;font-weight:600;color:var(--text-muted);display:block;margin-bottom:0.4rem">Chọn số lượng đặt mua:</label>
+          <div class="qty-control">
+            <button class="qty-btn" type="button" onclick="changeQty(-1)">-</button>
+            <input type="number" id="m-qty" class="qty-input" value="1" min="1" max="99" onchange="updateModalTotal()">
+            <button class="qty-btn" type="button" onclick="changeQty(1)">+</button>
+          </div>
+        </div>
+
+        <div class="form-group" style="margin-bottom:0.75rem">
+          <label style="font-size:0.82rem;font-weight:600;color:var(--text-muted)">Tên tài khoản Minecraft nhận đồ:</label>
+          <input class="input" type="text" id="m-mc" placeholder="Ví dụ: StevePro99" style="font-size:0.9rem;padding:0.7rem">
+        </div>
+
+        <div class="form-group" style="margin-bottom:0">
+          <label style="font-size:0.82rem;font-weight:600;color:var(--text-muted)">Ghi chú đơn hàng (tuỳ chọn):</label>
+          <input class="input" type="text" id="m-client-note" placeholder="Lời nhắn gửi admin..." style="font-size:0.9rem;padding:0.7rem">
+        </div>
+      </div>
+
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:0.85rem 0;border-top:1px solid var(--border);margin-bottom:1.25rem">
+        <span style="font-weight:700;font-size:1rem">Tổng thanh toán:</span>
+        <span id="m-calc-total" style="font-size:1.45rem;font-weight:800;color:var(--accent);font-family:var(--font-mono)">0đ</span>
+      </div>
+
+      <div id="m-error-msg" style="margin-bottom:0.75rem"></div>
+
+      <div style="display:flex;gap:0.75rem">
+        <button class="btn btn-primary" id="m-submit-btn" style="flex:2" onclick="submitCreateOrder()">Xác Nhận Đặt Hàng</button>
+        <button class="btn btn-ghost" style="flex:1" onclick="closeModal()">Đóng</button>
+      </div>
     </div>
-    <div class="order-total" id="m-total">0đ</div>
-    <div class="order-id"   id="m-id"></div>
-    <div class="modal-note">Nội dung CK: <strong id="m-note"></strong></div>
-    <button class="modal-close" onclick="closeModal()">Đã hiểu, đóng lại</button>
+
+    <!-- Step 2: Payment Details (QR & Code) -->
+    <div id="modal-step-paid" style="display:none;text-align:center">
+      <div style="font-size:2.5rem;margin-bottom:0.25rem">🎉</div>
+      <h2>Đặt Hàng Thành Công!</h2>
+      <div class="countdown-timer-pill">⏰ Cửa sổ thanh toán: <span id="m-pay-countdown">15:00</span></div>
+      <p style="font-size:0.88rem;color:var(--text-muted);margin-bottom:0.85rem;line-height:1.5">
+        Quét mã VietQR bên dưới bằng bất kỳ App Ngân hàng hoặc MoMo để thanh toán.
+      </p>
+
+      <div class="qr-box">
+        <img id="m-vietqr-img" src="/img/qr.png" alt="Mã VietQR Chuyển Khoản">
+      </div>
+
+      <div style="font-size:1.6rem;font-weight:800;color:var(--accent);font-family:var(--font-mono);margin-top:0.5rem" id="m-res-total">0đ</div>
+      <div style="font-size:0.88rem;color:var(--text);font-weight:700;margin:0.4rem 0" id="m-res-code">Mã đơn: #DTM-XXXXXX</div>
+      
+      <div style="background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:var(--radius);padding:0.85rem 1rem;margin:1rem 0;font-size:0.85rem;text-align:left">
+        <div style="margin-bottom:0.5rem;display:flex;align-items:center;justify-content:space-between">
+          <span>STK VietinBank: <strong>103870631688</strong></span>
+          <button class="copy-badge-btn" onclick="copyText('103870631688', 'Đã chép STK!')">📋 Chép STK</button>
+        </div>
+        <div style="margin-bottom:0.5rem;display:flex;align-items:center;justify-content:space-between">
+          <span>Nội dung CK: <strong id="m-res-transfer" style="color:var(--lagoon);font-family:var(--font-mono)"></strong></span>
+          <button class="copy-badge-btn" onclick="copyTransferContent()">📋 Chép nội dung</button>
+        </div>
+        <div style="color:var(--text-muted);font-size:0.75rem">⚠️ Vui lòng ghi chính xác nội dung chuyển khoản để hệ thống ghi nhận tự động.</div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:0.6rem">
+        <a id="m-view-order-link" href="/html/Account.html" class="btn btn-primary btn-full">
+          📦 Đến Lịch Sử Đơn Hàng Để Theo Dõi
+        </a>
+        <button class="btn btn-ghost btn-full" onclick="closeModal()">Đã Hiểu, Đóng Lại</button>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -205,85 +469,212 @@
     <div class="footer-col"><h3>Cộng đồng</h3><a href="/html/Discord.html">Discord</a><a href="https://www.facebook.com/DragonKun1946" target="_blank">Facebook</a></div>
     <div class="footer-col"><h3>Thông tin</h3><p>Server Minecraft sinh tồn dành cho cộng đồng Việt.</p></div>
   </div>
-  <div class="footer-bottom">© 2026 Đảo Tò Mò</div>
+  <div class="footer-bottom">© 2026 Đảo Tò Mò. All rights reserved.</div>
 </footer>
 
 <script src="/js/api.js"></script>
+<script src="/js/skinview3d.bundle.js"></script>
+<script src="/js/skin-viewer.js"></script>
 <script>
 let products = [];
+let selectedProduct = null;
+let currentCat = 'all';
+let countdownInterval = null;
 
 async function loadProducts() {
   try {
     const { data } = await api.getProducts();
     products = data;
-    render(data);
+    filterAndSortProducts();
   } catch (e) {
     document.getElementById('grid').innerHTML =
-      `<div class="state-box">⚠️ Không tải được sản phẩm: ${e.message}</div>`;
+      `<div class="state-box">⚠️ Không tải được danh sách sản phẩm: ${e.message}</div>`;
   }
+}
+
+function filterAndSortProducts() {
+  const query = (document.getElementById('store-search-input')?.value || '').trim().toLowerCase();
+  const sort = document.getElementById('store-sort-select')?.value || 'default';
+
+  let list = products.filter(p => {
+    const matchCat = (currentCat === 'all' || p.category === currentCat);
+    const matchQuery = !query || p.name.toLowerCase().includes(query) || (p.description && p.description.toLowerCase().includes(query));
+    return matchCat && matchQuery;
+  });
+
+  if (sort === 'price-asc') list.sort((a,b) => a.price - b.price);
+  else if (sort === 'price-desc') list.sort((a,b) => b.price - a.price);
+  else if (sort === 'name-asc') list.sort((a,b) => a.name.localeCompare(b.name));
+
+  render(list);
 }
 
 function render(list) {
   const grid = document.getElementById('grid');
-  if (!list.length) { grid.innerHTML = '<div class="state-box">Không có sản phẩm nào.</div>'; return; }
+  if (!list.length) {
+    grid.innerHTML = '<div class="state-box">Không tìm thấy sản phẩm nào phù hợp với bộ lọc hiện tại.</div>';
+    return;
+  }
   grid.innerHTML = list.map(p => `
-    <div class="product-card">
-      ${p.featured ? '<span class="badge badge-gold" style="position:absolute;margin:0.6rem;z-index:1">⭐ Nổi bật</span>' : ''}
+    <div class="product-card tilt-card">
+      ${p.featured ? '<span class="badge badge-gold" style="position:absolute;top:0.6rem;left:0.6rem;z-index:2">⭐ Nổi bật</span>' : ''}
       <div class="img-wrap" onclick="goDetail('${p._id}')">
         <img src="${p.image}" alt="${p.name}" loading="lazy"
-          onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect fill=%22%23222%22 width=%22100%25%22 height=%22100%25%22/><text x=%2250%25%22 y=%2255%25%22 font-size=%2240%22 text-anchor=%22middle%22>🎁</text></svg>'">
+          onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect fill=%22%23181f38%22 width=%22100%25%22 height=%22100%25%22/><text x=%2250%25%22 y=%2255%25%22 font-size=%2240%22 text-anchor=%22middle%22>🎁</text></svg>'">
       </div>
       <div class="info">
         <div class="name">${p.name}</div>
-        <div class="desc">${p.description}</div>
+        <div class="desc">${p.description || ''}</div>
         <div class="price">${p.price.toLocaleString('vi-VN')}đ</div>
         <div class="card-actions">
           <button class="btn-detail" onclick="goDetail('${p._id}')">Chi tiết</button>
-          <button class="btn-buy"    onclick="handleBuy('${p._id}',${p.price})">🛒 Mua</button>
+          <button class="btn-buy" onclick="openBuyModal('${p._id}', event)">🛒 Mua ngay</button>
         </div>
       </div>
     </div>
   `).join('');
+
+  if (window.init3DTilt) window.init3DTilt();
 }
 
 function goDetail(id) {
   location.href = `/html/ProductDetail.html?id=${id}`;
 }
 
-// Filters
+function setFilter(cat) {
+  currentCat = cat;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.toggle('active', b.dataset.cat === cat));
+  filterAndSortProducts();
+}
+
+// Filter button clicks
 document.querySelectorAll('.filter-btn').forEach(btn => {
   btn.addEventListener('click', () => {
-    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    const cat = btn.dataset.cat;
-    render(cat === 'all' ? products : products.filter(p => p.category === cat));
+    setFilter(btn.dataset.cat);
   });
 });
 
-async function handleBuy(productId, price) {
+function openBuyModal(productId, evt) {
+  if (evt) evt.stopPropagation();
   if (!api.isLoggedIn()) {
-    if (confirm('Bạn cần đăng nhập để mua hàng.\nChuyển đến trang đăng nhập?'))
+    if (confirm('Bạn cần đăng nhập tài khoản để đặt hàng.\nChuyển đến trang Đăng nhập ngay bây giờ?')) {
       location.href = '/html/Account.html';
+    }
     return;
   }
-  const btn = event.target;
-  btn.disabled = true; btn.textContent = '...';
+  selectedProduct = products.find(p => p._id === productId);
+  if (!selectedProduct) return;
+
+  const u = api.getUser();
+  document.getElementById('m-prod-name').textContent = selectedProduct.name;
+  document.getElementById('m-unit-price').textContent = selectedProduct.price.toLocaleString('vi-VN') + 'đ';
+  document.getElementById('m-qty').value = 1;
+  document.getElementById('m-mc').value = (u && u.minecraftUsername) || '';
+  document.getElementById('m-client-note').value = '';
+  document.getElementById('m-error-msg').innerHTML = '';
+  updateModalTotal();
+
+  document.getElementById('modal-step-confirm').style.display = 'block';
+  document.getElementById('modal-step-paid').style.display = 'none';
+  document.getElementById('modal').classList.add('open');
+  if (window.SoundFX) SoundFX.playClick();
+}
+
+function changeQty(delta) {
+  const input = document.getElementById('m-qty');
+  let val = parseInt(input.value, 10) || 1;
+  val = Math.max(1, Math.min(99, val + delta));
+  input.value = val;
+  updateModalTotal();
+  if (window.SoundFX) SoundFX.playClick();
+}
+
+function updateModalTotal() {
+  if (!selectedProduct) return;
+  const qty = Math.max(1, parseInt(document.getElementById('m-qty').value, 10) || 1);
+  const total = selectedProduct.price * qty;
+  document.getElementById('m-calc-total').textContent = total.toLocaleString('vi-VN') + 'đ';
+}
+
+function startCountdown() {
+  if (countdownInterval) clearInterval(countdownInterval);
+  let seconds = 15 * 60;
+  const label = document.getElementById('m-pay-countdown');
+  countdownInterval = setInterval(() => {
+    seconds--;
+    if (seconds <= 0) {
+      clearInterval(countdownInterval);
+      if (label) label.textContent = 'Hết hạn';
+      return;
+    }
+    const m = Math.floor(seconds / 60);
+    const s = seconds % 60;
+    if (label) label.textContent = `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+  }, 1000);
+}
+
+async function submitCreateOrder() {
+  if (!selectedProduct) return;
+  const qty = Math.max(1, parseInt(document.getElementById('m-qty').value, 10) || 1);
+  const mc = document.getElementById('m-mc').value.trim();
+  const note = document.getElementById('m-client-note').value.trim();
+  const btn = document.getElementById('m-submit-btn');
+
+  btn.disabled = true;
+  btn.textContent = 'Đang xử lý đơn...';
+  document.getElementById('m-error-msg').innerHTML = '';
+
   try {
-    const { data: order } = await api.createOrder([{ productId, quantity: 1 }]);
-    document.getElementById('m-total').textContent = order.total.toLocaleString('vi-VN') + 'đ';
-    document.getElementById('m-id').textContent    = 'Mã đơn: #' + order._id.slice(-8).toUpperCase();
-    document.getElementById('m-note').textContent  = 'DTM ' + order._id.slice(-6).toUpperCase();
-    document.getElementById('modal').classList.add('open');
+    const { data: order } = await api.createOrder([{ productId: selectedProduct._id, quantity: qty }], mc, note, 'qr');
+    const code = order.orderCode || '#' + order._id.slice(-8).toUpperCase();
+    const transfer = order.paymentDetails?.transferContent || code;
+
+    document.getElementById('m-res-total').textContent = order.total.toLocaleString('vi-VN') + 'đ';
+    document.getElementById('m-res-code').textContent = 'Mã đơn: ' + code;
+    document.getElementById('m-res-transfer').textContent = transfer;
+    document.getElementById('m-view-order-link').href = `/html/Account.html?orderId=${order._id}`;
+
+    // Dynamic VietQR generator
+    const vietqrUrl = `https://img.vietqr.io/image/970415-103870631688-compact2.png?amount=${order.total}&addInfo=${encodeURIComponent(transfer)}&accountName=DAO%20TO%20MO`;
+    const imgEl = document.getElementById('m-vietqr-img');
+    if (imgEl) {
+      imgEl.src = vietqrUrl;
+      imgEl.onerror = () => { imgEl.src = '/img/qr.png'; };
+    }
+
+    document.getElementById('modal-step-confirm').style.display = 'none';
+    document.getElementById('modal-step-paid').style.display = 'block';
+
+    startCountdown();
+    if (window.ConfettiFX) ConfettiFX.fire();
+    if (window.SoundFX) SoundFX.playSuccess();
+    if (typeof api.showToast === 'function') api.showToast('Tạo đơn hàng ' + code + ' thành công!', 'success');
   } catch (e) {
-    alert('❌ ' + e.message);
+    document.getElementById('m-error-msg').innerHTML = `<div class="alert alert-error">❌ ${e.message}</div>`;
+    if (window.SoundFX) SoundFX.playError();
   } finally {
-    btn.disabled = false; btn.textContent = '🛒 Mua';
+    btn.disabled = false;
+    btn.textContent = 'Xác Nhận Đặt Hàng';
   }
+}
+
+function copyTransferContent() {
+  const content = document.getElementById('m-res-transfer')?.textContent || '';
+  copyText(content, 'Đã sao chép nội dung chuyển khoản!');
+}
+
+function copyText(text, message) {
+  navigator.clipboard.writeText(text).then(() => {
+    if (typeof api.showToast === 'function') api.showToast(message, 'success');
+    if (window.SoundFX) SoundFX.playSuccess();
+  }).catch(() => alert(text));
 }
 
 function closeModal() {
   document.getElementById('modal').classList.remove('open');
+  if (countdownInterval) clearInterval(countdownInterval);
 }
+
 document.getElementById('modal').addEventListener('click', e => {
   if (e.target === e.currentTarget) closeModal();
 });

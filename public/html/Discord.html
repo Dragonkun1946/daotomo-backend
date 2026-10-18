@@ -5,70 +5,340 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Discord — Đảo Tò Mò</title>
   <link rel="icon" type="image/x-icon" href="/img/favicon.ico">
-  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;700;800;900&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700;800;900&family=Chakra+Petch:wght@500;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/css/global.css">
   <style>
     .discord-hero {
-      min-height: 45vh;
+      min-height: 48vh;
       display: flex; align-items: center; justify-content: center;
       text-align: center;
-      padding: calc(var(--nav-h) + 3rem) 1.25rem 3rem;
-      background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(88,101,242,0.18) 0%, transparent 70%),
-                  linear-gradient(180deg, #0a0e1a 0%, #0d1224 100%);
+      padding: calc(var(--nav-h) + 3.5rem) 1.25rem 3.5rem;
+      background: radial-gradient(ellipse 90% 70% at 50% 0%, rgba(88,101,242,0.28) 0%, transparent 70%),
+                  radial-gradient(ellipse 50% 50% at 85% 20%, rgba(34,211,238,0.12) 0%, transparent 60%),
+                  linear-gradient(180deg, #090b14 0%, #0d1224 100%);
+      position: relative;
+      overflow: hidden;
+    }
+    .discord-hero::before {
+      content: '';
+      position: absolute;
+      width: 480px; height: 480px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(88,101,242,0.15) 0%, transparent 70%);
+      top: -100px; left: 50%;
+      transform: translateX(-50%);
+      pointer-events: none;
+      animation: pulseGlow 4s ease-in-out infinite alternate;
     }
     .discord-hero h1 {
-      font-size: clamp(2rem, 7vw, 3.5rem); font-weight: 800; margin-bottom: 0.75rem;
-      background: linear-gradient(135deg, #fff 30%, #818cf8 100%);
+      font-size: clamp(2.2rem, 6vw, 3.8rem);
+      font-weight: 800;
+      margin-bottom: 0.85rem;
+      font-family: var(--font-display);
+      letter-spacing: -0.02em;
+      background: linear-gradient(135deg, #ffffff 20%, #a5b4fc 60%, #818cf8 100%);
       -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
     }
-    .discord-hero p { color: var(--text-muted); font-size: clamp(0.9rem, 2vw, 1.05rem); max-width: 500px; margin: 0 auto; }
-
-    .discord-section { padding: 3rem 1.25rem; max-width: 900px; margin: 0 auto; }
-
-    .discord-box {
-      display: grid; grid-template-columns: 1fr;
-      gap: 1.5rem;
+    .discord-hero p {
+      color: var(--text-muted);
+      font-size: clamp(0.95rem, 2vw, 1.15rem);
+      max-width: 620px;
+      margin: 0 auto 1.5rem;
+      line-height: 1.6;
     }
-    @media (min-width: 640px) { .discord-box { grid-template-columns: 1fr 1fr; } }
+    .discord-badge-pill {
+      display: inline-flex; align-items: center; gap: 0.6rem;
+      padding: 0.4rem 1.1rem;
+      background: rgba(88,101,242,0.15);
+      border: 1px solid rgba(88,101,242,0.35);
+      border-radius: 9999px;
+      font-family: var(--font-display);
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: #c7d2fe;
+      margin-bottom: 1.25rem;
+      backdrop-filter: blur(8px);
+    }
+    .discord-live-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: #10b981;
+      box-shadow: 0 0 10px #10b981;
+      animation: badgePulse 1.8s infinite;
+    }
 
-    /* Info card */
-    .discord-info { padding: 2rem; }
-    .discord-info h2 { font-size: 1.2rem; font-weight: 800; margin-bottom: 0.5rem; color: #818cf8; }
-    .discord-info > p { font-size: 0.875rem; color: var(--text-muted); margin-bottom: 1.25rem; line-height: 1.7; }
+    .discord-section {
+      padding: 3rem 1.25rem 4rem;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
 
-    .discord-info ul { margin-bottom: 1.5rem; display: flex; flex-direction: column; gap: 0.5rem; }
-    .discord-info ul li {
+    .discord-grid-main {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1.75rem;
+      margin-bottom: 3rem;
+    }
+    @media (min-width: 860px) {
+      .discord-grid-main { grid-template-columns: 1.35fr 1fr; }
+    }
+
+    .discord-main-card {
+      padding: 2.25rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      border: 1px solid rgba(88,101,242,0.25);
+      background: linear-gradient(145deg, rgba(17,22,40,0.85) 0%, rgba(13,18,36,0.95) 100%);
+      box-shadow: 0 20px 45px rgba(0,0,0,0.4), 0 0 25px rgba(88,101,242,0.1);
+      position: relative;
+      overflow: hidden;
+    }
+    .discord-main-card::after {
+      content: '';
+      position: absolute;
+      top: 0; right: 0;
+      width: 180px; height: 180px;
+      background: radial-gradient(circle, rgba(88,101,242,0.18) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .discord-main-card h2 {
+      font-size: 1.6rem;
+      font-family: var(--font-display);
+      font-weight: 800;
+      margin-bottom: 0.75rem;
+      color: #e0e7ff;
       display: flex; align-items: center; gap: 0.6rem;
-      font-size: 0.875rem; color: var(--text-muted);
-      padding: 0.5rem 0.75rem;
-      background: rgba(255,255,255,0.03); border-radius: 8px;
-      border: 1px solid var(--border);
     }
-    .discord-info ul li::before { content: '✅'; flex-shrink: 0; }
+    .discord-main-card > p {
+      font-size: 0.95rem;
+      color: var(--text-muted);
+      margin-bottom: 1.5rem;
+      line-height: 1.7;
+    }
+
+    .perks-list {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 0.75rem;
+      margin-bottom: 2rem;
+    }
+    @media (min-width: 540px) {
+      .perks-list { grid-template-columns: 1fr 1fr; }
+    }
+    .perk-item {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-size: 0.9rem;
+      color: #e2e8f0;
+      padding: 0.75rem 1rem;
+      background: rgba(255,255,255,0.03);
+      border-radius: var(--radius-sm);
+      border: 1px solid rgba(255,255,255,0.06);
+      transition: all 0.25s ease;
+    }
+    .perk-item:hover {
+      background: rgba(88,101,242,0.08);
+      border-color: rgba(88,101,242,0.3);
+      transform: translateX(4px);
+    }
+    .perk-icon {
+      font-size: 1.15rem;
+      flex-shrink: 0;
+    }
 
     .join-btn {
-      display: inline-flex; align-items: center; gap: 0.5rem;
-      padding: 0.875rem 2rem; border-radius: var(--radius);
-      background: #5865F2; color: #fff;
-      font-size: 1rem; font-weight: 800; min-height: 48px;
-      transition: all var(--ease);
-      box-shadow: 0 4px 20px rgba(88,101,242,0.35);
-      width: 100%; justify-content: center;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.75rem;
+      padding: 1rem 2.25rem;
+      border-radius: var(--radius);
+      background: linear-gradient(135deg, #5865F2 0%, #4752c4 100%);
+      color: #ffffff;
+      font-family: var(--font-display);
+      font-size: 1.05rem;
+      font-weight: 800;
+      letter-spacing: 0.02em;
+      min-height: 52px;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      box-shadow: 0 8px 24px rgba(88,101,242,0.35);
+      border: 1px solid rgba(255,255,255,0.15);
+      text-decoration: none;
+      width: 100%;
     }
-    .join-btn:hover { background: #4752c4; transform: translateY(-2px); box-shadow: 0 8px 28px rgba(88,101,242,0.45); }
-
-    /* Stats card */
-    .discord-stats {
-      display: flex; flex-direction: column; gap: 1rem;
+    .join-btn:hover {
+      background: linear-gradient(135deg, #6875f5 0%, #5865F2 100%);
+      transform: translateY(-3px);
+      box-shadow: 0 14px 32px rgba(88,101,242,0.5);
     }
-    @media (min-width: 640px) { .discord-stats { flex-direction: column; } }
 
-    .stat { padding: 1.5rem; text-align: center; flex: 1; }
-    .stat h3 { font-size: 1.8rem; font-weight: 800; color: #818cf8; margin-bottom: 0.25rem; }
-    .stat p  { font-size: 0.82rem; color: var(--text-muted); font-weight: 600; }
+    /* Stats sidebar */
+    .discord-stats-sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+    .stat-card-discord {
+      padding: 1.5rem;
+      border: 1px solid var(--border);
+      background: var(--bg-card);
+      border-radius: var(--radius);
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+      transition: transform 0.25s ease, border-color 0.25s ease;
+    }
+    .stat-card-discord:hover {
+      transform: translateY(-3px);
+      border-color: rgba(88,101,242,0.4);
+    }
+    .stat-icon-wrap {
+      width: 52px; height: 52px;
+      border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.6rem;
+      background: rgba(88,101,242,0.12);
+      border: 1px solid rgba(88,101,242,0.25);
+      color: #818cf8;
+      flex-shrink: 0;
+    }
+    .stat-meta h3 {
+      font-size: 1.75rem;
+      font-weight: 800;
+      font-family: var(--font-mono);
+      color: #ffffff;
+      line-height: 1.1;
+      margin-bottom: 0.2rem;
+    }
+    .stat-meta p {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    /* Channels Carousel Section */
+    .discord-carousel-section {
+      margin-top: 3.5rem;
+    }
+    .section-header-box {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+    .section-header-box h2 {
+      font-size: clamp(1.6rem, 4vw, 2.2rem);
+      font-family: var(--font-display);
+      font-weight: 800;
+      color: #ffffff;
+      margin-bottom: 0.5rem;
+    }
+    .section-header-box p {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+    }
+
+    .channel-slide-content {
+      padding: 2.25rem;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      background: linear-gradient(135deg, rgba(23,30,54,0.9) 0%, rgba(17,22,40,0.95) 100%);
+      border: 1px solid rgba(88,101,242,0.2);
+      border-radius: var(--radius-lg);
+      position: relative;
+    }
+    .channel-badge {
+      display: inline-block;
+      align-self: flex-start;
+      padding: 0.3rem 0.8rem;
+      border-radius: 6px;
+      background: rgba(88,101,242,0.2);
+      border: 1px solid rgba(88,101,242,0.35);
+      color: #c7d2fe;
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+    }
+    .channel-slide-content h3 {
+      font-size: 1.4rem;
+      font-family: var(--font-display);
+      font-weight: 700;
+      color: #ffffff;
+      margin-bottom: 0.75rem;
+      display: flex; align-items: center; gap: 0.5rem;
+    }
+    .channel-slide-content p {
+      color: var(--text-muted);
+      font-size: 0.92rem;
+      line-height: 1.6;
+      margin-bottom: 1.25rem;
+    }
+    .channel-perks-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+    .channel-tag {
+      font-size: 0.78rem;
+      padding: 0.25rem 0.6rem;
+      border-radius: 4px;
+      background: rgba(255,255,255,0.04);
+      color: #94a3b8;
+      border: 1px solid var(--border);
+    }
+
+    /* Roles grid */
+    .roles-section {
+      margin-top: 3.5rem;
+    }
+    .roles-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1rem;
+      margin-top: 1.5rem;
+    }
+    .role-badge-card {
+      padding: 1.25rem;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      background: var(--bg-card);
+      text-align: center;
+      transition: all 0.25s ease;
+    }
+    .role-badge-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+    }
+    .role-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.35rem 0.9rem;
+      border-radius: 9999px;
+      font-family: var(--font-display);
+      font-size: 0.85rem;
+      font-weight: 700;
+      margin-bottom: 0.75rem;
+    }
+    .role-vip { background: rgba(245,158,11,0.15); color: #fbbf24; border: 1px solid rgba(245,158,11,0.35); }
+    .role-mod { background: rgba(34,211,238,0.15); color: #38bdf8; border: 1px solid rgba(34,211,238,0.35); }
+    .role-builder { background: rgba(16,185,129,0.15); color: #34d399; border: 1px solid rgba(16,185,129,0.35); }
+    .role-member { background: rgba(148,163,184,0.15); color: #cbd5e1; border: 1px solid rgba(148,163,184,0.35); }
+    .role-badge-card p {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
   </style>
 </head>
 <body>
+
+<a class="skip-link" href="#main">Bỏ qua đến nội dung chính</a>
 
 <nav>
   <div class="nav-logo"><img src="/img/logo.jpg" alt="logo"> Đảo Tò Mò</div>
@@ -79,65 +349,197 @@
     <li><a href="/index.html"><span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 10.5 12 3l8.5 7.5"/><path d="M5.5 9v10.5a1 1 0 0 0 1 1H9.5v-6h5v6h3a1 1 0 0 0 1-1V9"/></svg></span><span>Trang chủ</span></a></li>
     <li><a href="/html/Server.html"><span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="4" width="17" height="6" rx="1.5"/><rect x="3.5" y="14" width="17" height="6" rx="1.5"/><circle cx="7.5" cy="7" r="0.6" fill="currentColor" stroke="none"/><circle cx="7.5" cy="17" r="0.6" fill="currentColor" stroke="none"/></svg></span><span>Server</span></a></li>
     <li><a href="/html/Map.html"><span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M9 4 4 6v14l5-2 6 2 5-2V4l-5 2-6-2Z"/><path d="M9 4v14M15 6v14"/></svg></span><span>Map</span></a></li>
-    <li><a href="/html/Discord.html"><span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5.5h16v10H9.5L6 19v-3.5H4Z"/><circle cx="9" cy="10.3" r="0.6" fill="currentColor" stroke="none"/><circle cx="12" cy="10.3" r="0.6" fill="currentColor" stroke="none"/><circle cx="15" cy="10.3" r="0.6" fill="currentColor" stroke="none"/></svg></span><span>Discord</span></a></li>
+    <li><a href="/html/Discord.html" class="active"><span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5.5h16v10H9.5L6 19v-3.5H4Z"/><circle cx="9" cy="10.3" r="0.6" fill="currentColor" stroke="none"/><circle cx="12" cy="10.3" r="0.6" fill="currentColor" stroke="none"/><circle cx="15" cy="10.3" r="0.6" fill="currentColor" stroke="none"/></svg></span><span>Discord</span></a></li>
     <li><a href="/html/Store.html"><span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8h12l1 12H5L6 8Z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg></span><span>Cửa hàng</span></a></li>
     <li><a href="/html/Checkin.html"><span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5" width="17" height="15" rx="2"/><path d="M3.5 9.5h17M8 3v4M16 3v4"/><path d="m8.5 14 2 2 4-4"/></svg></span><span>Điểm danh</span></a></li>
     <li><a href="/html/Account.html" id="nav-account-link"><span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8.5" r="3.2"/><path d="M5 19.5c1.2-3.3 3.9-5 7-5s5.8 1.7 7 5"/></svg></span><span>Tài khoản</span></a></li>
   </ul>
 </nav>
 
-<div class="page-body">
+<main id="main" class="page-body">
   <section class="discord-hero">
     <div>
-      <h1>💬 Discord Chính Thức</h1>
-      <p>Tham gia cộng đồng Đảo Tò Mò để cập nhật server, tham gia event và trò chuyện cùng mọi người.</p>
+      <div class="discord-badge-pill">
+        <span class="discord-live-dot"></span>
+        <span>COMMUNITY VOICE & CHAT HUB</span>
+      </div>
+      <h1><span class="hero-icon">💬</span> <span class="gradient-text">Discord Đảo Tò Mò</span></h1>
+      <p>Trạm giao lưu, thông báo bản vá server, tìm đồng đội xây đảo, tham gia sự kiện và nhận giftcode độc quyền mỗi tuần.</p>
     </div>
   </section>
 
   <div class="discord-section">
-    <div class="discord-box">
-      <div class="discord-info card reveal">
-        <h2>🏝️ Server Discord</h2>
-        <p>Nơi giao lưu của cộng đồng Minecraft Đảo Tò Mò — luôn sôi động và thân thiện.</p>
-        <ul>
-          <li>Thông báo update server</li>
-          <li>Event hàng tuần</li>
-          <li>Trao đổi vật phẩm</li>
-          <li>Hỗ trợ người chơi</li>
-        </ul>
+    <!-- Main Info & Stats Row -->
+    <div class="discord-grid-main">
+      <div class="card discord-main-card reveal">
+        <div>
+          <h2>🏝️ Không gian sinh tồn kết nối</h2>
+          <p>Tham gia ngay server Discord chính thức của Đảo Tò Mò để hòa mình vào cộng đồng hơn 1.200 game thủ Việt Nam sôi nổi, văn minh và luôn sẵn sàng hỗ trợ bạn.</p>
+
+          <div class="perks-list">
+            <div class="perk-item">
+              <span class="perk-icon">📢</span>
+              <span>Thông báo bảo trì & update tức thì</span>
+            </div>
+            <div class="perk-item">
+              <span class="perk-icon">🎁</span>
+              <span>Minigame & Giftcode định kỳ</span>
+            </div>
+            <div class="perk-item">
+              <span class="perk-icon">🎙️</span>
+              <span>Kênh đàm thoại Voice 24/7 ổn định</span>
+            </div>
+            <div class="perk-item">
+              <span class="perk-icon">🛡️</span>
+              <span>Ticket hỗ trợ 1:1 từ Đội ngũ BQT</span>
+            </div>
+          </div>
+        </div>
+
         <a class="join-btn" rel="noopener" href="https://discord.gg/rNQ6ytnSg" target="_blank">
-          🚀 Tham gia ngay
+          🚀 Tham gia Discord ngay — discord.gg/rNQ6ytnSg
         </a>
       </div>
 
-      <div class="discord-stats">
-        <div class="stat card reveal">
-          <h3>24/7</h3>
-          <p>Hoạt động liên tục</p>
+      <div class="discord-stats-sidebar">
+        <div class="stat-card-discord reveal">
+          <div class="stat-icon-wrap">👥</div>
+          <div class="stat-meta">
+            <h3>1,250+</h3>
+            <p>Thành viên đã tham gia</p>
+          </div>
         </div>
-        <div class="stat card reveal">
-          <h3>🎉</h3>
-          <p>Event hàng tuần</p>
+        <div class="stat-card-discord reveal">
+          <div class="stat-icon-wrap" style="color:#10b981; background:rgba(16,185,129,0.12); border-color:rgba(16,185,129,0.25);">🟢</div>
+          <div class="stat-meta">
+            <h3>128+</h3>
+            <p>Người chơi đang trực tuyến</p>
+          </div>
         </div>
-        <div class="stat card reveal">
-          <h3>💱</h3>
-          <p>Trade cộng đồng</p>
+        <div class="stat-card-discord reveal">
+          <div class="stat-icon-wrap" style="color:#f59e0b; background:rgba(245,158,11,0.12); border-color:rgba(245,158,11,0.25);">⚡</div>
+          <div class="stat-meta">
+            <h3>24/7</h3>
+            <p>Hỗ trợ kỹ thuật & đàm thoại</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Featured Channels Carousel -->
+    <div class="discord-carousel-section reveal">
+      <div class="section-header-box">
+        <h2>🔥 Tiện ích & Kênh nổi bật</h2>
+        <p>Khám phá hệ sinh thái các kênh tương tác chuyên biệt trong máy chủ</p>
+      </div>
+
+      <div class="carousel-container" data-autoplay="true" data-interval="4500">
+        <div class="carousel-track">
+          <!-- Slide 1 -->
+          <div class="carousel-slide">
+            <div class="channel-slide-content">
+              <span class="channel-badge">#THÔNG-BÁO-CHÍNH-THỨC</span>
+              <h3>📢 Kênh Thông Báo & Cập Nhật</h3>
+              <p>Toàn bộ lộ trình ra mắt tính năng mới, lịch thi đấu giải PvP, bảo trì định kỳ và các đợt phát Giftcode miễn phí được ban quản trị đăng tải tại đây.</p>
+              <div class="channel-perks-row">
+                <span class="channel-tag">Patch Notes</span>
+                <span class="channel-tag">Giftcode Drop</span>
+                <span class="channel-tag">Lịch Sự Kiện</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Slide 2 -->
+          <div class="carousel-slide">
+            <div class="channel-slide-content">
+              <span class="channel-badge">#VOICE-SURVIVAL-LOUNGE</span>
+              <h3>🎙️ Kênh Voice Đàm Thoại Siêu Tốc</h3>
+              <p>Voice channels chất lượng cao (bitrate 128kbps) giúp bạn phối hợp chiến thuật đánh rồng Ender, càn quét di tích Nether hoặc chill cùng bạn bè suốt đêm.</p>
+              <div class="channel-perks-row">
+                <span class="channel-tag">Âm thanh HD</span>
+                <span class="channel-tag">Phòng riêng tự tạo</span>
+                <span class="channel-tag">Bot Nghe Nhạc 24/7</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Slide 3 -->
+          <div class="carousel-slide">
+            <div class="channel-slide-content">
+              <span class="channel-badge">#CHỢ-GIAO-THƯƠNG-MINECRAFT</span>
+              <h3>💱 Sàn Giao Dịch & Đấu Giá Vật Phẩm</h3>
+              <p>Nơi trao đổi quặng kim cương, sách cường hóa hiếm, vũ khí phù phép tối thượng và nguyên liệu xây dựng với các cư dân thương gia tài ba trên server.</p>
+              <div class="channel-perks-row">
+                <span class="channel-tag">Rao bán an toàn</span>
+                <span class="channel-tag">Thẩm định giá</span>
+                <span class="channel-tag">Cảnh báo gian lận</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Slide 4 -->
+          <div class="carousel-slide">
+            <div class="channel-slide-content">
+              <span class="channel-badge">#HỖ-TRỢ-TICKET-1-1</span>
+              <h3>🛠️ Trung Tâm Chăm Sóc Người Chơi</h3>
+              <p>Hệ thống tự động tạo phòng hỗ trợ riêng biệt chỉ sau 1 cú click. Giúp giải quyết nhanh mọi thắc mắc về nạp thẻ, đơn hàng và sự cố game.</p>
+              <div class="channel-perks-row">
+                <span class="channel-tag">Phản hồi < 5 phút</span>
+                <span class="channel-tag">Bảo mật tuyệt đối</span>
+                <span class="channel-tag">Đội ngũ Admin nhiệt tình</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <button class="carousel-nav-btn prev" aria-label="Slide trước">‹</button>
+        <button class="carousel-nav-btn next" aria-label="Slide kế">›</button>
+        <div class="carousel-dots"></div>
+        <div class="carousel-progress"><div class="carousel-progress-bar"></div></div>
+      </div>
+    </div>
+
+    <!-- Server Roles Badges Showcase -->
+    <div class="roles-section reveal">
+      <div class="section-header-box">
+        <h2>🎖️ Hệ Thống Vai Trò & Danh Hiệu</h2>
+        <p>Khẳng định vị thế và quyền lợi của bạn trong cộng đồng</p>
+      </div>
+
+      <div class="roles-grid">
+        <div class="role-badge-card">
+          <div class="role-chip role-vip">👑 VIP Hoàng Gia</div>
+          <p>Dành cho các nhà tài trợ máy chủ, sở hữu quyền đổi màu tên, voice riêng và ưu tiên hỗ trợ cấp cao.</p>
+        </div>
+        <div class="role-badge-card">
+          <div class="role-chip role-mod">🛡️ Quản Trị Viên</div>
+          <p>Đội ngũ giữ gìn trật tự máy chủ, tổ chức mini-events và bảo đảm trải nghiệm sinh tồn công bằng.</p>
+        </div>
+        <div class="role-badge-card">
+          <div class="role-chip role-builder">🎨 Kiến Trúc Sư</div>
+          <p>Những bàn tay tài hoa xây dựng nên kỳ quan Spawn, đấu trường PvP và các công trình cộng đồng lộng lẫy.</p>
+        </div>
+        <div class="role-badge-card">
+          <div class="role-chip role-member">💎 Cư Dân Kỳ Cựu</div>
+          <p>Mở khóa khi tham gia máy chủ trên 30 ngày và đạt chuỗi điểm danh chăm chỉ, nhận danh hiệu độc quyền.</p>
         </div>
       </div>
     </div>
   </div>
-</div>
+</main>
 
 <footer>
   <div class="footer-grid">
-    <div class="footer-col"><h3>🏝️ Đảo Tò Mò</h3><p>Cộng đồng game thủ nơi mọi người cùng khám phá, sinh tồn và giải trí.</p></div>
+    <div class="footer-col"><h3>🏝️ Đảo Tò Mò</h3><p>Cộng đồng Minecraft sinh tồn & giao lưu trực tuyến số một Việt Nam.</p></div>
     <div class="footer-col"><h3>Liên kết</h3><a href="/index.html">Trang chủ</a><a href="/html/Server.html">Server</a><a href="/html/Map.html">Map</a><a href="/html/Store.html">Cửa hàng</a></div>
     <div class="footer-col"><h3>Cộng đồng</h3><a href="/html/Discord.html">Discord</a><a href="https://www.facebook.com/DragonKun1946" target="_blank">Facebook</a></div>
     <div class="footer-col"><h3>Thông tin</h3><p>Server Minecraft sinh tồn dành cho cộng đồng Việt.</p></div>
   </div>
-  <div class="footer-bottom">© 2026 Đảo Tò Mò</div>
+  <div class="footer-bottom">© 2026 Đảo Tò Mò • All rights reserved.</div>
 </footer>
 
 <script src="/js/api.js"></script>
+<script src="/js/skinview3d.bundle.js"></script>
+<script src="/js/skin-viewer.js"></script>
 </body>
 </html>

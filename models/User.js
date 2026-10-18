@@ -44,6 +44,10 @@ const userSchema = new mongoose.Schema(
       type: String,
       default: '',
     },
+    skinUrl: {
+      type: String,
+      default: '',
+    },
   },
   {
     timestamps: true, // adds createdAt and updatedAt

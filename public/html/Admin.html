@@ -5,15 +5,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Admin — Đảo Tò Mò</title>
   <link rel="icon" type="image/x-icon" href="/img/favicon.ico">
-  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;700;800;900&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@600;700;800&family=Be+Vietnam+Pro:wght@300;400;500;700;800;900&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/css/global.css">
   <style>
-    .admin-wrap { max-width: 1000px; margin: 0 auto; padding: 2rem 1.25rem 3rem; }
+    .admin-wrap { max-width: 1050px; margin: 0 auto; padding: 2rem 1.25rem 3rem; }
     .admin-header {
       display: flex; align-items: center; justify-content: space-between;
       margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem;
     }
-    .admin-header h1 { font-size: 1.5rem; font-weight: 800; }
+    .admin-header h1 { font-size: 1.6rem; font-weight: 800; color: #fff; font-family: var(--font-heading); }
 
     /* ── Tabs ── */
     .tab-bar {
@@ -21,12 +21,12 @@
       border-bottom: 1px solid var(--border); padding-bottom: 0;
     }
     .tab-btn {
-      padding: 0.6rem 1.2rem; border-radius: var(--radius) var(--radius) 0 0;
-      font-size: 0.875rem; font-weight: 700; color: var(--text-muted);
+      padding: 0.65rem 1.4rem; border-radius: var(--radius) var(--radius) 0 0;
+      font-size: 0.9rem; font-weight: 700; color: var(--text-muted);
       background: none; border-bottom: 3px solid transparent;
-      transition: all var(--ease); margin-bottom: -1px;
+      transition: all var(--ease); margin-bottom: -1px; font-family: var(--font-heading);
     }
-    .tab-btn.active { color: var(--primary); border-bottom-color: var(--primary); }
+    .tab-btn.active { color: var(--lagoon); border-bottom-color: var(--lagoon); }
 
     .tab-panel { display: none; }
     .tab-panel.active { display: block; }
@@ -37,7 +37,8 @@
       border-radius: var(--radius-lg); padding: 1.75rem;
       margin-bottom: 2rem;
     }
-    .form-card h2 { font-size: 1rem; font-weight: 800; margin-bottom: 1.25rem; color: var(--primary); }
+    .form-card h2 { font-size: 1.05rem; font-weight: 800; margin-bottom: 1.25rem; color: var(--lagoon); font-family: var(--font-heading); }
+
 
     .form-grid {
       display: grid; grid-template-columns: 1fr;
@@ -152,6 +153,26 @@
     <div id="auth-check" class="alert alert-error hidden">⛔ Bạn không có quyền truy cập trang này.</div>
 
     <div id="admin-content" class="hidden">
+      <!-- ═══ KPI METRIC SUMMARY CARDS ═══ -->
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:1rem;margin-bottom:2rem">
+        <div class="card" style="padding:1.25rem 1.4rem;background:var(--bg-card);border:1px solid var(--border)">
+          <div style="font-size:0.75rem;color:var(--text-muted);font-weight:700;text-transform:uppercase;letter-spacing:0.5px">Doanh Thu Tổng</div>
+          <div class="mono" id="kpi-revenue" style="font-size:1.6rem;font-weight:800;color:var(--accent);margin-top:0.3rem">0đ</div>
+        </div>
+        <div class="card" style="padding:1.25rem 1.4rem;background:var(--bg-card);border:1px solid var(--border)">
+          <div style="font-size:0.75rem;color:var(--text-muted);font-weight:700;text-transform:uppercase;letter-spacing:0.5px">Tổng Đơn Hàng</div>
+          <div class="mono" id="kpi-orders" style="font-size:1.6rem;font-weight:800;color:#fff;margin-top:0.3rem">0</div>
+        </div>
+        <div class="card" style="padding:1.25rem 1.4rem;background:var(--bg-card);border:1px solid var(--border)">
+          <div style="font-size:0.75rem;color:var(--text-muted);font-weight:700;text-transform:uppercase;letter-spacing:0.5px">Đơn Chờ Xử Lý</div>
+          <div class="mono" id="kpi-pending" style="font-size:1.6rem;font-weight:800;color:#fbbf24;margin-top:0.3rem">0</div>
+        </div>
+        <div class="card" style="padding:1.25rem 1.4rem;background:var(--bg-card);border:1px solid var(--border)">
+          <div style="font-size:0.75rem;color:var(--text-muted);font-weight:700;text-transform:uppercase;letter-spacing:0.5px">Sản Phẩm Trong Kho</div>
+          <div class="mono" id="kpi-products" style="font-size:1.6rem;font-weight:800;color:var(--lagoon);margin-top:0.3rem">0</div>
+        </div>
+      </div>
+
       <div class="tab-bar">
         <button class="tab-btn active" onclick="switchTab('products')">📦 Sản phẩm</button>
         <button class="tab-btn" onclick="switchTab('orders')">🧾 Đơn hàng</button>
@@ -242,24 +263,39 @@
       <!-- ORDERS TAB -->
       <div class="tab-panel" id="tab-orders">
         <div class="form-card" style="padding:0;overflow:hidden">
-          <div style="padding:1.25rem 1.75rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center">
-            <h2 style="margin:0">🧾 Tất cả đơn hàng</h2>
-            <button class="btn btn-ghost" style="font-size:.8rem;padding:.4rem .875rem" onclick="loadOrders()">🔄 Tải lại</button>
+          <div style="padding:1.25rem 1.75rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.75rem">
+            <div>
+              <h2 style="margin:0">🧾 Tất cả đơn hàng</h2>
+              <div id="admin-order-alert" style="margin-top:0.4rem"></div>
+            </div>
+            <div style="display:flex;gap:0.5rem;align-items:center;flex-wrap:wrap">
+              <input type="text" id="order-search-input" placeholder="Tìm theo mã đơn/user/MC..." class="input" style="padding:0.4rem 0.75rem;font-size:0.8rem;width:200px" onkeydown="if(event.key==='Enter')loadOrders()">
+              <select id="order-filter-status" class="input" style="padding:0.4rem 0.75rem;font-size:0.8rem;width:150px" onchange="loadOrders()">
+                <option value="">🎯 Tất cả trạng thái</option>
+                <option value="pending">⏳ Đơn chờ xử lý</option>
+                <option value="processing">⚙️ Đang xử lý</option>
+                <option value="delivered">🎁 Đã giao</option>
+                <option value="cancelled">❌ Đã huỷ</option>
+                <option value="paid">✅ Đã thanh toán</option>
+              </select>
+              <button class="btn btn-ghost" style="font-size:.8rem;padding:.4rem .875rem" onclick="loadOrders()">🔄 Tải lại</button>
+            </div>
           </div>
           <div style="overflow-x:auto">
             <table class="orders-table">
               <thead>
                 <tr>
                   <th>Mã đơn</th>
-                  <th>Người dùng</th>
+                  <th>Khách hàng</th>
+                  <th>Sản phẩm</th>
                   <th>Tổng tiền</th>
-                  <th>Trạng thái</th>
+                  <th>Trạng thái đơn</th>
+                  <th>Thanh toán</th>
                   <th>Ngày</th>
-                  <th>Cập nhật</th>
                 </tr>
               </thead>
               <tbody id="orders-tbody">
-                <tr><td colspan="6" class="no-data"><div class="spinner"></div></td></tr>
+                <tr><td colspan="7" class="no-data"><div class="spinner"></div></td></tr>
               </tbody>
             </table>
           </div>
@@ -293,6 +329,24 @@
   </div>
 </div>
 
+<!-- Proof Preview Modal -->
+<div class="modal-overlay" id="proof-modal">
+  <div class="modal" style="max-width:540px;text-align:left">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
+      <h2 style="margin:0;font-size:1.15rem;font-family:var(--font-heading)">📸 Minh Chứng Chuyển Khoản</h2>
+      <button onclick="closeProofModal()" style="background:none;border:none;color:var(--text-muted);font-size:1.3rem;cursor:pointer">✕</button>
+    </div>
+    <div style="max-height:360px;overflow:hidden;border-radius:var(--radius);background:#05070e;display:flex;align-items:center;justify-content:center;margin-bottom:1rem;border:1px solid var(--border)">
+      <img id="proof-img" src="" alt="Proof" style="max-width:100%;max-height:360px;object-fit:contain">
+    </div>
+    <div id="proof-order-code" style="font-size:0.85rem;color:var(--text);margin-bottom:1rem"></div>
+    <div style="display:flex;gap:0.75rem">
+      <button class="btn btn-primary" id="proof-approve-btn" style="flex:1" onclick="approveCurrentProof()">✅ Duyệt: Đã Thanh Toán</button>
+      <button class="btn btn-ghost" onclick="closeProofModal()">Đóng</button>
+    </div>
+  </div>
+</div>
+
 <footer>
   <div class="footer-grid">
     <div class="footer-col"><h3>🏝️ Đảo Tò Mò</h3><p>Cộng đồng game thủ Việt chill nhất.</p></div>
@@ -304,8 +358,10 @@
 </footer>
 
 <script src="/js/api.js"></script>
+<script src="/js/skinview3d.bundle.js"></script>
+<script src="/js/skin-viewer.js"></script>
 <script>
-const API_ADMIN = 'https://daotomo-backend.onrender.com/api';
+const API_ADMIN = typeof API !== 'undefined' ? API : '/api';
 const catLabel = { crate:'📦 Hòm', cosmetic:'✨ Cosmetic', pet:'🐾 Pet', key:'🗝️ Key', bundle:'🎒 Bundle', vip:'👑 VIP' };
 const statusLabel = { pending:'⏳ Chờ TT', paid:'✅ Đã TT', delivered:'🎁 Đã giao', cancelled:'❌ Đã huỷ' };
 const statusClass = { pending:'badge-gold', paid:'badge-green', delivered:'badge-purple', cancelled:'badge-red' };
@@ -398,6 +454,9 @@ async function loadProducts() {
   tbody.innerHTML = '<tr><td colspan="6" class="no-data"><div class="spinner"></div></td></tr>';
   try {
     const { data } = await api.getProducts();
+    const kpiProd = document.getElementById('kpi-products');
+    if (kpiProd) kpiProd.textContent = data.length;
+
     if (!data.length) { tbody.innerHTML = '<tr><td colspan="6" class="no-data">Chưa có sản phẩm nào.</td></tr>'; return; }
     tbody.innerHTML = data.map(p => `
       <tr>
@@ -472,51 +531,139 @@ async function saveEdit() {
 }
 
 /* ── Load orders ── */
+const adminOrderStatusLabel = { pending:'⏳ Chờ xử lý', processing:'⚙️ Đang xử lý', delivered:'🎁 Đã giao', cancelled:'❌ Đã huỷ' };
+const adminPaymentStatusLabel = { pending:'💳 Chờ TT', paid:'✅ Đã TT', failed:'⚠️ Thất bại', refunded:'↩️ Đã hoàn tiền' };
+
+let activeProofOrderId = null;
+
+function openProofModal(orderId, code, url) {
+  activeProofOrderId = orderId;
+  document.getElementById('proof-img').src = url;
+  document.getElementById('proof-order-code').textContent = 'Đơn hàng: ' + code;
+  document.getElementById('proof-modal').classList.add('open');
+}
+
+function closeProofModal() {
+  document.getElementById('proof-modal').classList.remove('open');
+  activeProofOrderId = null;
+}
+
+async function approveCurrentProof() {
+  if (!activeProofOrderId) return;
+  await handleAdminStatusChange(activeProofOrderId, 'paymentStatus', 'paid');
+  closeProofModal();
+}
+
 async function loadOrders() {
   const tbody = document.getElementById('orders-tbody');
-  tbody.innerHTML = '<tr><td colspan="6" class="no-data"><div class="spinner"></div></td></tr>';
+  tbody.innerHTML = '<tr><td colspan="7" class="no-data"><div class="spinner"></div></td></tr>';
   try {
-    const token = api.getToken();
-    const res = await fetch(`${API_ADMIN}/orders`, { headers: { 'Authorization': `Bearer ${token}` } });
-    const { data } = await res.json();
-    if (!data.length) { tbody.innerHTML = '<tr><td colspan="6" class="no-data">Chưa có đơn hàng nào.</td></tr>'; return; }
-    tbody.innerHTML = data.map(o => `
-      <tr>
-        <td style="font-family:monospace;font-size:.75rem">#${o._id.slice(-8).toUpperCase()}</td>
-        <td>${o.user?.username || '—'}<br><span style="font-size:.72rem;color:var(--text-muted)">${o.user?.email || ''}</span></td>
-        <td style="font-weight:800;color:var(--accent)">${o.total.toLocaleString('vi-VN')}đ</td>
-        <td><span class="badge ${statusClass[o.status]}">${statusLabel[o.status]||o.status}</span></td>
-        <td style="font-size:.78rem;color:var(--text-muted)">${new Date(o.createdAt).toLocaleDateString('vi-VN')}</td>
-        <td>
-          <select onchange="updateStatus('${o._id}',this.value)" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:.3rem .5rem;color:var(--text);font-size:.78rem;font-family:inherit">
-            <option value="pending"   ${o.status==='pending'   ?'selected':''}>⏳ Chờ TT</option>
-            <option value="paid"      ${o.status==='paid'      ?'selected':''}>✅ Đã TT</option>
-            <option value="delivered" ${o.status==='delivered' ?'selected':''}>🎁 Đã giao</option>
-            <option value="cancelled" ${o.status==='cancelled' ?'selected':''}>❌ Đã huỷ</option>
-          </select>
-        </td>
-      </tr>
-    `).join('');
+    const statusVal = document.getElementById('order-filter-status')?.value || '';
+    const searchVal = document.getElementById('order-search-input')?.value?.trim() || '';
+    const params = {};
+    if (statusVal) params.status = statusVal;
+    if (searchVal) params.search = searchVal;
+
+    const { data } = await api.getAllOrders(params);
+
+    // Compute KPI stats
+    if (data) {
+      const totalRev = data.filter(o => o.paymentStatus === 'paid' || o.status === 'paid').reduce((s, o) => s + (o.total || 0), 0);
+      const pendingCount = data.filter(o => (o.orderStatus || 'pending') === 'pending' || (o.paymentStatus || 'pending') === 'pending').length;
+      
+      const kpiRev = document.getElementById('kpi-revenue');
+      const kpiOrd = document.getElementById('kpi-orders');
+      const kpiPen = document.getElementById('kpi-pending');
+      if (kpiRev) kpiRev.textContent = totalRev.toLocaleString('vi-VN') + 'đ';
+      if (kpiOrd) kpiOrd.textContent = data.length;
+      if (kpiPen) kpiPen.textContent = pendingCount;
+    }
+
+    if (!data || !data.length) {
+      tbody.innerHTML = '<tr><td colspan="7" class="no-data">Không có đơn hàng nào phù hợp.</td></tr>';
+      return;
+    }
+
+    tbody.innerHTML = data.map(o => {
+      const code = o.orderCode || '#' + o._id.slice(-8).toUpperCase();
+      const oStat = o.orderStatus || (o.status === 'cancelled' ? 'cancelled' : o.status === 'delivered' ? 'delivered' : 'pending');
+      const pStat = o.paymentStatus || (o.status === 'paid' ? 'paid' : 'pending');
+      const itemsSummary = o.items.map(it => `${it.name} (x${it.quantity})`).join('<br>');
+      const mc = o.minecraftUsername || o.user?.minecraftUsername || '—';
+
+      return `
+        <tr>
+          <td style="font-family:var(--font-mono);font-size:.78rem;font-weight:700">
+            ${code}
+            <div style="font-size:0.68rem;color:var(--text-muted)">ID: ${o._id.slice(-6)}</div>
+          </td>
+          <td>
+            <strong style="color:#fff">${o.user?.username || '—'}</strong><br>
+            <span style="font-size:.72rem;color:var(--text-muted)">${o.user?.email || ''}</span><br>
+            <span style="font-size:.72rem;color:var(--lagoon);font-weight:600">MC: ${mc}</span>
+          </td>
+          <td style="font-size:.78rem;line-height:1.5">${itemsSummary}</td>
+          <td style="font-weight:800;color:var(--accent);font-family:var(--font-mono);font-size:.95rem">${o.total.toLocaleString('vi-VN')}đ</td>
+          <td>
+            <select onchange="handleAdminStatusChange('${o._id}', 'orderStatus', this.value)" style="background:var(--bg-elevated);border:1px solid var(--border-strong);border-radius:6px;padding:.35rem .5rem;color:var(--text);font-size:.75rem;font-family:inherit">
+              <option value="pending"    ${oStat==='pending'   ?'selected':''}>⏳ Chờ xử lý</option>
+              <option value="processing" ${oStat==='processing'?'selected':''}>⚙️ Đang xử lý</option>
+              <option value="delivered"  ${oStat==='delivered' ?'selected':''}>🎁 Đã giao</option>
+              <option value="cancelled"  ${oStat==='cancelled' ?'selected':''}>❌ Đã huỷ</option>
+            </select>
+          </td>
+          <td>
+            <select onchange="handleAdminStatusChange('${o._id}', 'paymentStatus', this.value)" style="background:var(--bg-elevated);border:1px solid var(--border-strong);border-radius:6px;padding:.35rem .5rem;color:var(--text);font-size:.75rem;font-family:inherit">
+              <option value="pending"  ${pStat==='pending' ?'selected':''}>💳 Chờ TT</option>
+              <option value="paid"     ${pStat==='paid'    ?'selected':''}>✅ Đã TT</option>
+              <option value="failed"   ${pStat==='failed'  ?'selected':''}>⚠️ Thất bại</option>
+              <option value="refunded" ${pStat==='refunded'?'selected':''}>↩️ Hoàn tiền</option>
+            </select>
+            ${o.paymentProof ? `
+              <div style="margin-top:5px">
+                <button type="button" class="btn btn-ghost" style="padding:0.25rem 0.5rem;font-size:0.72rem;border-radius:6px;background:rgba(34,211,238,0.12);color:var(--lagoon);border:1px solid rgba(34,211,238,0.3)" onclick="openProofModal('${o._id}', '${code}', '${o.paymentProof}')">
+                  📸 Xem minh chứng
+                </button>
+              </div>` : ''}
+          </td>
+          <td style="font-size:.75rem;color:var(--text-muted)">${new Date(o.createdAt).toLocaleDateString('vi-VN')}</td>
+        </tr>
+      `;
+    }).join('');
   } catch(e) {
-    tbody.innerHTML = `<tr><td colspan="6" class="no-data">❌ ${e.message}</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="7" class="no-data">❌ ${e.message}</td></tr>`;
   }
 }
 
 /* ── Update order status ── */
-async function updateStatus(id, status) {
+async function handleAdminStatusChange(id, field, value) {
+  const alertEl = document.getElementById('admin-order-alert');
+  if (alertEl) alertEl.innerHTML = '<span style="font-size:0.75rem;color:var(--text-muted)">Đang cập nhật...</span>';
   try {
-    const token = api.getToken();
-    await fetch(`${API_ADMIN}/orders/${id}/status`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-      body: JSON.stringify({ status })
-    });
-  } catch(e) { alert('❌ ' + e.message); }
+    const payload = {};
+    payload[field] = value;
+    const res = await api.updateOrderStatus(id, payload);
+    if (window.SoundFX) SoundFX.playSuccess();
+    if (typeof api.showToast === 'function') api.showToast(res.message || 'Cập nhật thành công!', 'success');
+    if (alertEl) {
+      alertEl.innerHTML = `<span style="font-size:0.78rem;color:#34d399">✅ ${res.message || 'Cập nhật thành công!'}</span>`;
+      setTimeout(() => { if (alertEl) alertEl.innerHTML = ''; }, 3000);
+    }
+    loadOrders();
+  } catch(e) {
+    if (window.SoundFX) SoundFX.playError();
+    if (typeof api.showToast === 'function') api.showToast(e.message, 'error');
+    else alert('❌ Không thể cập nhật: ' + e.message);
+    if (alertEl) alertEl.innerHTML = `<span style="font-size:0.78rem;color:#f87171">❌ ${e.message}</span>`;
+  }
 }
 
 /* ── Close modals on overlay click ── */
 document.getElementById('edit-modal').addEventListener('click', e => {
   if (e.target === e.currentTarget) closeEdit();
+});
+document.getElementById('proof-modal').addEventListener('click', e => {
+  if (e.target === e.currentTarget) closeProofModal();
 });
 </script>
 </body>
