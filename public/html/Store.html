@@ -1103,7 +1103,19 @@ async function submitCreateOrder() {
     if (window.SoundFX) SoundFX.playSuccess();
     if (typeof api.showToast === 'function') api.showToast('Tạo đơn hàng ' + code + ' thành công!', 'success');
   } catch (e) {
-    document.getElementById('m-error-msg').innerHTML = `<div class="alert alert-error">❌ ${e.message}</div>`;
+    const isAuth = e.message.toLowerCase().includes('unauthenticated') || e.message.toLowerCase().includes('đăng nhập');
+    if (isAuth) {
+      document.getElementById('m-error-msg').innerHTML = `
+        <div class="alert alert-error" style="display:flex;flex-direction:column;gap:0.4rem;align-items:center;text-align:center;padding:0.75rem">
+          <span>❌ Phiên đăng nhập đã hết hạn hoặc chưa đăng nhập.</span>
+          <a href="/html/Account.html" class="btn btn-primary" style="padding:0.4rem 1.25rem;font-size:0.85rem;margin-top:0.25rem;text-decoration:none">
+            🔑 Bấm Vào Đây Để Đăng Nhập Lại →
+          </a>
+        </div>
+      `;
+    } else {
+      document.getElementById('m-error-msg').innerHTML = `<div class="alert alert-error">❌ ${e.message}</div>`;
+    }
     if (window.SoundFX) SoundFX.playError();
   } finally {
     btn.disabled = false;

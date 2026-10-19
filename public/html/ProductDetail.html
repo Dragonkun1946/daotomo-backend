@@ -899,8 +899,15 @@ async function handleBuy() {
     if (window.SoundFX) SoundFX.playSuccess();
     if (typeof api.showToast === 'function') api.showToast('Tạo đơn hàng ' + code + ' thành công!', 'success');
   } catch (e) {
-    if (typeof api.showToast === 'function') api.showToast(e.message, 'error');
-    else alert('❌ ' + e.message);
+    const isAuth = e.message.toLowerCase().includes('unauthenticated') || e.message.toLowerCase().includes('đăng nhập');
+    if (isAuth) {
+      if (confirm('Phiên đăng nhập đã hết hạn hoặc chưa đăng nhập.\nChuyển đến trang Đăng nhập ngay bây giờ?')) {
+        location.href = '/html/Account.html';
+      }
+    } else {
+      if (typeof api.showToast === 'function') api.showToast(e.message, 'error');
+      else alert('❌ ' + e.message);
+    }
     if (window.SoundFX) SoundFX.playError();
   } finally {
     btn.disabled = false;

@@ -297,7 +297,13 @@ const api = {
         throw new Error(res.status === 500 ? 'Máy chủ đang khởi động hoặc cấu hình cơ sở dữ liệu (500). Vui lòng thử lại sau giây lát!' : (text.slice(0, 120) || `Lỗi HTTP ${res.status}`));
       }
     }
-    if (!res.ok) throw new Error(data.message || 'Lỗi không xác định');
+    if (!res.ok) {
+      if (res.status === 401) {
+        this.clearSession();
+        throw new Error('Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại tài khoản!');
+      }
+      throw new Error(data.message || 'Lỗi không xác định');
+    }
     return data;
   },
   register: (username, email, password, mc='') =>
