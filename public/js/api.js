@@ -3,8 +3,10 @@ const getApiBase = () => {
   if (typeof window !== 'undefined' && window.location) {
     const { origin, protocol, hostname } = window.location;
     if (protocol === 'http:' || protocol === 'https:') {
-      // Local development or running directly from backend
-      if (hostname === 'localhost' || hostname === '127.0.0.1' || origin.includes(':5000')) {
+      if (origin.includes(':5500') || origin.includes(':3000')) {
+        return 'http://127.0.0.1:8000/api';
+      }
+      if (hostname === 'localhost' || hostname === '127.0.0.1' || origin.includes(':8000') || origin.includes(':5000')) {
         return '/api';
       }
       if (hostname === 'daotomo.site' || hostname.endsWith('.daotomo.site')) {
