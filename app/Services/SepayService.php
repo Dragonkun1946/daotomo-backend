@@ -38,10 +38,37 @@ class SepayService
         }
 
         // Check HMAC-SHA256 signature
-        $signature = $request->header('X-Signature') ?? $request->header('X-Sepay-Signature');
+        $signature = $request->header('X-Sepay-Signature') ?? $request->header('X-Signature');
         if (!empty($configuredSecret) && !empty($signature)) {
-            $computed = hash_hmac('sha256', $request->getContent(), $configuredSecret);
-            if (hash_equals($computed, $signature)) {
+            $cleanSignature = trim($signature);
+            if (str_starts_with(strtolower($cleanSignature), 'sha256=')) {
+                $cleanSignature = substr($cleanSignature, 7);
+            }
+
+            $rawBody = $request->getContent();
+            $timestamp = $request->header('X-Sepay-Timestamp') ?? $request->header('X-Timestamp');
+
+            if (!empty($timestamp) && is_numeric($timestamp)) {
+                // Replay attack protection (within 5 minutes = 300 seconds)
+                if (abs(time() - (int) $timestamp) > 300) {
+                    Log::warning('[SePay Webhook] Rejected: Timestamp drift too high (replay attack protection).', [
+                        'timestamp' => $timestamp,
+                        'current' => time(),
+                    ]);
+                    return false;
+                }
+
+                // Standard SePay format: {timestamp}.{raw_body}
+                $signedPayload = "{$timestamp}.{$rawBody}";
+                $computedWithTs = hash_hmac('sha256', $signedPayload, $configuredSecret);
+                if (hash_equals($computedWithTs, $cleanSignature)) {
+                    return true;
+                }
+            }
+
+            // Fallback: raw body only
+            $computedRaw = hash_hmac('sha256', $rawBody, $configuredSecret);
+            if (hash_equals($computedRaw, $cleanSignature)) {
                 return true;
             }
         }

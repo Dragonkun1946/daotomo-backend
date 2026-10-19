@@ -138,6 +138,84 @@ class SepayWebhookTest extends TestCase
         $this->assertEquals('paid', $order->fresh()->payment_status);
     }
 
+    public function test_sepay_webhook_supports_official_timestamped_hmac_signature(): void
+    {
+        $order = $this->createTestOrder(50000, 'DTM-TSHMAC');
+
+        $payload = [
+            'id' => 1003,
+            'gateway' => 'VietinBank',
+            'transactionDate' => now()->toDateTimeString(),
+            'accountNumber' => '103870631688',
+            'transferType' => 'in',
+            'transferAmount' => 50000,
+            'content' => 'DTM TSHMAC thanh toan',
+        ];
+
+        $rawBody = json_encode($payload);
+        $timestamp = (string) time();
+        $validSignature = hash_hmac('sha256', "{$timestamp}.{$rawBody}", 'test_sepay_secret_456');
+
+        // Test with X-Sepay-Signature header containing "sha256=" prefix and X-Sepay-Timestamp
+        $res = $this->call(
+            'POST',
+            '/api/webhooks/sepay',
+            [],
+            [],
+            [],
+            [
+                'CONTENT_TYPE' => 'application/json',
+                'HTTP_X_SEPAY_SIGNATURE' => 'sha256=' . $validSignature,
+                'HTTP_X_SEPAY_TIMESTAMP' => $timestamp,
+            ],
+            $rawBody
+        );
+
+        $res->assertStatus(200)
+            ->assertJson(['success' => true]);
+
+        $this->assertEquals('paid', $order->fresh()->payment_status);
+    }
+
+    public function test_sepay_webhook_rejects_expired_timestamp_replay_attack(): void
+    {
+        $order = $this->createTestOrder(50000, 'DTM-REPLAY');
+
+        $payload = [
+            'id' => 1004,
+            'gateway' => 'VietinBank',
+            'transactionDate' => now()->toDateTimeString(),
+            'accountNumber' => '103870631688',
+            'transferType' => 'in',
+            'transferAmount' => 50000,
+            'content' => 'DTM REPLAY thanh toan',
+        ];
+
+        $rawBody = json_encode($payload);
+        // Timestamp 6 minutes ago (> 300s)
+        $expiredTimestamp = (string) (time() - 360);
+        $validSignature = hash_hmac('sha256', "{$expiredTimestamp}.{$rawBody}", 'test_sepay_secret_456');
+
+        $res = $this->call(
+            'POST',
+            '/api/webhooks/sepay',
+            [],
+            [],
+            [],
+            [
+                'CONTENT_TYPE' => 'application/json',
+                'HTTP_X_SEPAY_SIGNATURE' => 'sha256=' . $validSignature,
+                'HTTP_X_SEPAY_TIMESTAMP' => $expiredTimestamp,
+            ],
+            $rawBody
+        );
+
+        $res->assertStatus(401)
+            ->assertJson(['success' => false]);
+
+        $this->assertEquals('pending', $order->fresh()->payment_status);
+    }
+
     // ─── 2. Valid Transaction Processing ──────────────────────────────────────
     public function test_sepay_webhook_processes_valid_transaction_successfully(): void
     {

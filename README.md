@@ -42,13 +42,16 @@ Hệ thống tích hợp cổng thanh toán ngân hàng tự động **SePay** t
 - **Content-Type:** `application/json`
 
 ### 2.3. Cấu hình bảo mật Webhook (Authentication)
-Hệ thống hỗ trợ 2 phương thức xác thực:
-1. **API Key qua Header:**
+Hệ thống hỗ trợ 2 phương thức xác thực chuẩn SePay:
+1. **HMAC-SHA256 Signature (Khuyến nghị SePay):**
+   - Header: `X-Sepay-Signature: sha256=<HMAC_HEX>` (hoặc raw hex `<HMAC_HEX>`)
+   - Header: `X-Sepay-Timestamp: <UNIX_TIMESTAMP>`
+   - Secret key: `SEPAY_WEBHOOK_SECRET`
+   - Thuật toán: `HMAC-SHA256("{timestamp}.{raw_body}", secret)`
+   - Cơ chế bảo vệ: Tự động kiểm tra độ lệch thời gian <= 5 phút chống Replay Attack và dùng `hash_equals` chống Timing Attack.
+2. **API Key qua Header:**
    - `Authorization: Apikey <SEPAY_WEBHOOK_API_KEY>` (hoặc `Bearer <SEPAY_WEBHOOK_API_KEY>`)
    - hoặc `X-Api-Key: <SEPAY_WEBHOOK_API_KEY>`
-2. **HMAC-SHA256 Signature:**
-   - Header: `X-Signature: <HMAC_SHA256_HEX>` hoặc `X-Sepay-Signature: <HMAC_SHA256_HEX>`
-   - Secret key: `SEPAY_WEBHOOK_SECRET`
 
 ---
 
@@ -90,7 +93,7 @@ php artisan migrate
 
 ### Chạy kiểm thử tự động (Automated Tests):
 ```bash
-# Chạy toàn bộ 41 tests kiểm thử:
+# Chạy toàn bộ 43 tests kiểm thử:
 php artisan test
 
 # Chỉ chạy bộ test SePay Webhook:
