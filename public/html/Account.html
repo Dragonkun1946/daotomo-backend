@@ -82,20 +82,87 @@
       animation: fadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
+    /* ── Wide Profile Dashboard ── */
+    .profile-dashboard {
+      width: 100%;
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+      animation: fadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
     /* Profile Header Card */
     .profile-header-card {
       position: relative;
       overflow: hidden;
       background: linear-gradient(145deg, rgba(23, 29, 50, 0.95), rgba(15, 20, 36, 0.98));
-      border: 1px solid rgba(34, 211, 238, 0.25);
-      border-radius: var(--radius-lg);
-      box-shadow: 0 12px 36px rgba(0, 0, 0, 0.45);
+      border: 1px solid rgba(34, 211, 238, 0.35);
+      border-top: 1px solid rgba(34, 211, 238, 0.65);
+      border-radius: var(--radius-xl, 24px);
+      box-shadow: 0 16px 48px rgba(0, 0, 0, 0.55), 0 0 35px rgba(34, 211, 238, 0.12);
     }
     .profile-banner {
-      height: 120px;
+      height: 140px;
+      position: relative;
       background:
-        radial-gradient(ellipse 600px 220px at 20% 0%, rgba(34, 211, 238, 0.3), transparent 70%),
-        linear-gradient(135deg, #4338ca, #6d28d9, #0891b2);
+        linear-gradient(rgba(34, 211, 238, 0.08) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(34, 211, 238, 0.08) 1px, transparent 1px),
+        radial-gradient(ellipse 650px 240px at 20% 20%, rgba(34, 211, 238, 0.35), transparent 70%),
+        radial-gradient(ellipse 550px 240px at 85% 30%, rgba(124, 58, 237, 0.4), transparent 70%),
+        linear-gradient(135deg, #0c1026 0%, #1e1346 50%, #082f49 100%);
+      background-size: 28px 28px, 28px 28px, 100% 100%, 100% 100%, 100% 100%;
+      border-bottom: 1px solid rgba(34, 211, 238, 0.25);
+    }
+    .banner-hud-bar {
+      position: absolute;
+      top: 0.85rem;
+      left: 1.5rem;
+      right: 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      pointer-events: none;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+    .banner-sys-tag {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      letter-spacing: 0.08em;
+      color: var(--lagoon);
+      background: rgba(9, 11, 20, 0.75);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      padding: 0.3rem 0.75rem;
+      border-radius: 9999px;
+      border: 1px solid rgba(34, 211, 238, 0.3);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+    }
+    .pulse-beacon {
+      width: 7px;
+      height: 7px;
+      background: var(--lagoon);
+      border-radius: 50%;
+      box-shadow: 0 0 8px var(--lagoon);
+      animation: radarWave 2s infinite;
+    }
+    .banner-stat-tag {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      color: #34d399;
+      background: rgba(9, 11, 20, 0.75);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      padding: 0.3rem 0.75rem;
+      border-radius: 9999px;
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
     }
     .profile-header-body {
       padding: 0 2rem 1.6rem;
@@ -110,20 +177,33 @@
       align-items: flex-end;
       gap: 1.5rem;
       flex-wrap: wrap;
-      margin-top: -46px;
+      margin-top: -50px;
     }
-    .profile-avatar {
-      width: 92px; height: 92px;
-      border-radius: 50%;
-      border: 4px solid #101528;
-      background: linear-gradient(135deg, var(--primary), var(--lagoon));
-      display: flex; align-items: center; justify-content: center;
-      font-size: 2.2rem;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5), 0 0 20px rgba(34, 211, 238, 0.3);
-      overflow: hidden;
+    .profile-avatar-frame {
+      position: relative;
+      width: 104px;
+      height: 104px;
       flex-shrink: 0;
+      border-radius: 50%;
+      padding: 3px;
+      background: conic-gradient(from 0deg, #22d3ee, #7c3aed, #f43f5e, #fbbf24, #22d3ee);
+      box-shadow: 0 0 25px rgba(34, 211, 238, 0.45), 0 8px 24px rgba(0, 0, 0, 0.6);
+      animation: spinConic 8s linear infinite;
     }
-    .profile-avatar img {
+    .profile-avatar-inner {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      background: #090b14;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      border: 2px solid #090b14;
+    }
+    .profile-avatar-inner .minecraft-face-avatar,
+    .profile-avatar-inner img {
       width: 100%;
       height: 100%;
       object-fit: cover;
@@ -131,51 +211,134 @@
       image-rendering: -moz-crisp-edges;
       image-rendering: crisp-edges;
     }
+    .profile-status-beacon {
+      position: absolute;
+      bottom: 2px;
+      right: 2px;
+      width: 18px;
+      height: 18px;
+      background: #10b981;
+      border: 3px solid #090b14;
+      border-radius: 50%;
+      box-shadow: 0 0 10px #10b981;
+      z-index: 5;
+    }
+    .profile-status-beacon::after {
+      content: '';
+      position: absolute;
+      inset: -3px;
+      border-radius: 50%;
+      border: 2px solid #10b981;
+      animation: radarWave 2s cubic-bezier(0, 0.2, 0.8, 1) infinite;
+    }
     .profile-info-block {
       display: flex;
       flex-direction: column;
-      gap: 0.35rem;
+      gap: 0.45rem;
     }
     .profile-name-row {
       display: flex;
       align-items: center;
-      gap: 0.75rem;
+      gap: 0.85rem;
       flex-wrap: wrap;
     }
     .profile-username {
-      font-size: 1.6rem;
+      font-size: 1.75rem;
       font-weight: 900;
-      font-family: var(--font-display);
+      font-family: var(--font-display, 'Chakra Petch', sans-serif);
       color: #ffffff;
-      line-height: 1.2;
+      line-height: 1.15;
+      text-shadow: 0 0 20px rgba(167, 139, 250, 0.4);
+      letter-spacing: -0.01em;
     }
-    .profile-email {
-      font-size: 0.88rem;
+    .profile-email-row {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      font-size: 0.86rem;
       color: var(--text-muted);
+    }
+    .verified-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: #34d399;
+      background: rgba(16, 185, 129, 0.12);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      padding: 0.15rem 0.5rem;
+      border-radius: 9999px;
     }
     .profile-meta-chips {
       display: flex;
       align-items: center;
-      gap: 0.75rem;
+      gap: 0.65rem;
       flex-wrap: wrap;
-      margin-top: 0.25rem;
+      margin-top: 0.35rem;
     }
-    .meta-chip {
-      font-family: var(--font-mono);
-      font-size: 0.78rem;
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      padding: 0.25rem 0.65rem;
+    .hud-chip {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.1);
       border-radius: var(--radius-sm);
-      color: var(--text);
+      padding: 0.35rem 0.75rem;
       display: inline-flex;
       align-items: center;
-      gap: 0.4rem;
+      gap: 0.55rem;
+      transition: all var(--dur) var(--ease-out);
     }
-    .meta-chip .chip-label {
-      color: var(--text-muted);
-      font-weight: 500;
+    .hud-chip:hover {
+      background: rgba(255, 255, 255, 0.07);
+      border-color: rgba(34, 211, 238, 0.35);
+      transform: translateY(-1px);
     }
+    .hud-chip-icon {
+      font-size: 1.15rem;
+      line-height: 1;
+    }
+    .hud-chip-text {
+      display: flex;
+      flex-direction: column;
+      line-height: 1.2;
+    }
+    .hud-chip-label {
+      font-size: 0.68rem;
+      font-family: var(--font-mono);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-dim);
+    }
+    .hud-chip-val {
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: #ffffff;
+    }
+    .hud-chip-link {
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: var(--accent);
+      background: rgba(245, 158, 11, 0.15);
+      border: 1px solid rgba(245, 158, 11, 0.35);
+      padding: 0.15rem 0.45rem;
+      border-radius: 4px;
+      margin-left: 0.2rem;
+    }
+    .hud-chip-link:hover {
+      background: rgba(245, 158, 11, 0.28);
+      color: #fff;
+    }
+    .hud-copy-btn {
+      cursor: pointer;
+      font-size: 0.85rem;
+      color: var(--lagoon);
+      padding: 0.1rem 0.3rem;
+      border-radius: 4px;
+      transition: transform 0.15s ease;
+    }
+    .hud-copy-btn:hover {
+      transform: scale(1.15);
+    }
+
     .profile-header-actions {
       display: flex;
       align-items: center;
@@ -183,32 +346,61 @@
       flex-wrap: wrap;
       padding-bottom: 0.25rem;
     }
+    .btn-action-promax {
+      padding: 0.6rem 1.15rem;
+      border-radius: var(--radius);
+      font-size: 0.86rem;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      min-height: 42px;
+      transition: all var(--dur) var(--ease-out);
+      letter-spacing: 0.01em;
+    }
+    .btn-topup-promax {
+      background: linear-gradient(135deg, #7c3aed 0%, #22d3ee 100%);
+      color: #ffffff;
+      box-shadow: 0 4px 18px rgba(124, 58, 237, 0.4);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    .btn-topup-promax:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(34, 211, 238, 0.5);
+    }
+    .btn-store-promax {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      color: #e2e8f0;
+    }
+    .btn-store-promax:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba(34, 211, 238, 0.4);
+      color: #ffffff;
+      transform: translateY(-2px);
+    }
     .btn-admin-header {
       background: rgba(245, 158, 11, 0.14);
       color: #fbbf24;
-      border: 1.5px solid rgba(245, 158, 11, 0.35);
-      font-size: 0.85rem;
-      padding: 0.55rem 1rem;
-      min-height: 40px;
+      border: 1.5px solid rgba(245, 158, 11, 0.4);
+      box-shadow: 0 0 15px rgba(245, 158, 11, 0.2);
     }
     .btn-admin-header:hover {
-      background: rgba(245, 158, 11, 0.24);
+      background: rgba(245, 158, 11, 0.25);
       border-color: #fbbf24;
-      transform: translateY(-1px);
+      color: #ffffff;
+      transform: translateY(-2px);
     }
     .btn-logout-header {
-      background: rgba(239, 68, 68, 0.08);
+      background: rgba(239, 68, 68, 0.1);
       color: #f87171;
-      border: 1.5px solid rgba(239, 68, 68, 0.3);
-      font-size: 0.85rem;
-      padding: 0.55rem 1rem;
-      min-height: 40px;
+      border: 1.5px solid rgba(239, 68, 68, 0.35);
     }
     .btn-logout-header:hover {
-      background: rgba(239, 68, 68, 0.2);
+      background: rgba(239, 68, 68, 0.25);
       border-color: #ef4444;
       color: #ffffff;
-      transform: translateY(-1px);
+      transform: translateY(-2px);
     }
 
     /* ── Dashboard 2-Column Grid ── */
@@ -234,13 +426,23 @@
       }
     }
 
-    /* Orders Card */
+    /* Orders Card ProMax */
     .orders-card {
       background: linear-gradient(145deg, rgba(23, 29, 50, 0.95), rgba(15, 20, 36, 0.98));
-      border: 1px solid rgba(34, 211, 238, 0.25);
-      border-radius: var(--radius-lg);
+      border: 1px solid rgba(34, 211, 238, 0.3);
+      border-top: 1px solid rgba(34, 211, 238, 0.6);
+      border-radius: var(--radius-xl, 24px);
       padding: 1.6rem;
-      box-shadow: 0 12px 36px rgba(0, 0, 0, 0.45);
+      box-shadow: 0 16px 45px rgba(0, 0, 0, 0.55), 0 0 25px rgba(34, 211, 238, 0.1);
+      position: relative;
+      overflow: hidden;
+    }
+    .orders-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--lagoon), var(--primary), transparent);
     }
     .orders-card-header {
       display: flex;
@@ -248,48 +450,85 @@
       justify-content: space-between;
       flex-wrap: wrap;
       gap: 1rem;
-      margin-bottom: 1.25rem;
-      padding-bottom: 1rem;
-      border-bottom: 1px solid var(--border);
+      margin-bottom: 1.35rem;
+      padding-bottom: 1.1rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
     }
     .orders-header-title {
       display: flex;
       align-items: center;
       gap: 0.65rem;
-      font-family: var(--font-display);
+      font-family: var(--font-display, 'Chakra Petch', sans-serif);
       font-size: 1.15rem;
       font-weight: 800;
       color: #ffffff;
+      letter-spacing: -0.01em;
     }
     .orders-filter-bar {
       display: flex;
-      gap: 0.4rem;
+      gap: 0.45rem;
       flex-wrap: wrap;
+    }
+    .orders-filter-bar .filter-btn {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: var(--text-muted);
+      border-radius: 9999px;
+      padding: 0.35rem 0.85rem;
+      font-size: 0.76rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .orders-filter-bar .filter-btn:hover {
+      background: rgba(255, 255, 255, 0.09);
+      color: #ffffff;
+      border-color: rgba(34, 211, 238, 0.35);
+    }
+    .orders-filter-bar .filter-btn.active {
+      background: rgba(34, 211, 238, 0.15);
+      border-color: var(--lagoon);
+      color: #ffffff;
+      box-shadow: 0 0 14px rgba(34, 211, 238, 0.35);
     }
     .orders-list-wrap {
       display: flex;
       flex-direction: column;
-      gap: 0.75rem;
+      gap: 0.85rem;
       min-height: 240px;
     }
 
     .order-item {
-      background: rgba(255, 255, 255, 0.03);
-      border: 1px solid var(--border);
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.04) 0%, rgba(255, 255, 255, 0.01) 100%);
+      border: 1px solid rgba(255, 255, 255, 0.08);
       border-radius: var(--radius);
-      padding: 1rem 1.25rem;
+      padding: 1.1rem 1.35rem;
       cursor: pointer;
-      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
       display: grid;
       grid-template-columns: 1fr auto;
       align-items: center;
       gap: 1rem;
+      position: relative;
+      overflow: hidden;
+    }
+    .order-item::before {
+      content: '';
+      position: absolute;
+      left: 0; top: 0; bottom: 0;
+      width: 3.5px;
+      background: var(--lagoon);
+      opacity: 0;
+      transition: opacity 0.22s ease;
     }
     .order-item:hover {
-      border-color: rgba(34, 211, 238, 0.4);
+      border-color: rgba(34, 211, 238, 0.45);
       transform: translateY(-2px);
-      background: rgba(255, 255, 255, 0.06);
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+      background: linear-gradient(135deg, rgba(34, 211, 238, 0.08) 0%, rgba(124, 58, 237, 0.04) 100%);
+      box-shadow: 0 10px 28px rgba(0, 0, 0, 0.45), 0 0 20px rgba(34, 211, 238, 0.15);
+    }
+    .order-item:hover::before {
+      opacity: 1;
     }
     .order-left {
       display: flex;
@@ -329,6 +568,7 @@
       font-weight: 800;
       color: var(--accent);
       font-family: var(--font-mono);
+      text-shadow: 0 0 12px rgba(245, 158, 11, 0.35);
     }
     .order-view-btn {
       font-size: 0.75rem;
@@ -336,14 +576,20 @@
       display: inline-flex;
       align-items: center;
       gap: 0.25rem;
+      font-weight: 600;
+      transition: transform 0.2s ease;
+    }
+    .order-item:hover .order-view-btn {
+      transform: translateX(3px);
+      color: #38bdf8;
     }
     .badge-wrap { display: flex; gap: 0.35rem; align-items: center; flex-wrap: wrap; }
 
-    .s-pending   { background:rgba(245,158,11,.15); color:#fbbf24; }
-    .s-proc      { background:rgba(59,130,246,.15); color:#60a5fa; }
-    .s-paid      { background:rgba(16,185,129,.15);  color:#34d399; }
-    .s-delivered { background:rgba(108,99,255,.15); color:#a78bfa; }
-    .s-cancelled { background:rgba(239,68,68,.15);  color:#f87171; }
+    .s-pending   { background:rgba(245,158,11,.16); color:#fbbf24; border:1px solid rgba(245,158,11,.3); }
+    .s-proc      { background:rgba(59,130,246,.16); color:#60a5fa; border:1px solid rgba(59,130,246,.3); }
+    .s-paid      { background:rgba(16,185,129,.16);  color:#34d399; border:1px solid rgba(16,185,129,.3); }
+    .s-delivered { background:rgba(124,58,237,.18); color:#c084fc; border:1px solid rgba(124,58,237,.35); }
+    .s-cancelled { background:rgba(239,68,68,.16);  color:#f87171; border:1px solid rgba(239,68,68,.3); }
 
     /* Modal */
     .modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.85); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); z-index:2000; align-items:center; justify-content:center; padding:1rem; }
@@ -472,37 +718,98 @@
   <div class="profile-dashboard hidden" id="profile-section">
     <!-- Top Header Banner Card -->
     <div class="profile-header-card">
-      <div class="profile-banner"></div>
+      <div class="profile-banner">
+        <div class="banner-hud-bar">
+          <div class="banner-sys-tag">
+            <span class="pulse-beacon"></span>
+            <span>ĐẢO TÒ MÒ PROMAX // PLAYER_HUD</span>
+            <span id="p-sys-id" style="opacity:0.75;margin-left:4px">#DTM-0000</span>
+          </div>
+          <div class="banner-stat-tag">
+            <span>📶 PING: 18ms</span>
+            <span>•</span>
+            <span>🟢 play.daotomo.net</span>
+          </div>
+        </div>
+      </div>
+
       <div class="profile-header-body">
         <div class="profile-header-main">
-          <div class="profile-avatar" id="p-avatar">👤</div>
+          <!-- Holographic Conic Avatar Ring -->
+          <div class="profile-avatar-frame" title="Click để xem & đổi Skin 3D" onclick="openSkinModal()" style="cursor:pointer">
+            <div class="profile-avatar-inner" id="p-avatar">👤</div>
+            <div class="profile-status-beacon" title="Trạng thái: Trực tuyến (Online)"></div>
+          </div>
+
           <div class="profile-info-block">
             <div class="profile-name-row">
               <h1 class="profile-username" id="p-name">—</h1>
-              <span class="badge" id="p-badge">user</span>
+              <span class="badge" id="p-badge">🎮 Player</span>
+              <span class="verified-pill">🛡️ Đã xác thực</span>
             </div>
-            <div class="profile-email" id="p-email">—</div>
+            <div class="profile-email-row">
+              <span id="p-email">—</span>
+            </div>
+
+            <!-- ProMax Interactive HUD Chips -->
             <div class="profile-meta-chips">
-              <span class="meta-chip">
-                <span class="chip-label">Minecraft:</span>
-                <strong id="p-mc">—</strong>
-              </span>
-              <span class="meta-chip">
-                <span class="chip-label">Tham gia:</span>
-                <span id="p-joined">—</span>
-              </span>
+              <!-- Coins Chip -->
+              <div class="hud-chip chip-coins">
+                <span class="hud-chip-icon">🪙</span>
+                <div class="hud-chip-text">
+                  <span class="hud-chip-label">Kho Xu</span>
+                  <strong class="hud-chip-val mono" id="p-coins">0 Xu</strong>
+                </div>
+                <a href="/html/Store.html#topup" class="hud-chip-link" title="Nạp thêm Xu">+ Nạp</a>
+              </div>
+
+              <!-- Minecraft IGN Chip with 1-click copy -->
+              <div class="hud-chip chip-mc" onclick="copyPlayerIGN()" title="Nhấn để sao chép Minecraft IGN" style="cursor:pointer">
+                <span class="hud-chip-icon">🎮</span>
+                <div class="hud-chip-text">
+                  <span class="hud-chip-label">Minecraft IGN</span>
+                  <strong class="hud-chip-val" id="p-mc">—</strong>
+                </div>
+                <span class="hud-copy-btn" id="copy-ign-icon">📋</span>
+              </div>
+
+              <!-- Streak Chip -->
+              <div class="hud-chip chip-streak">
+                <span class="hud-chip-icon">🔥</span>
+                <div class="hud-chip-text">
+                  <span class="hud-chip-label">Điểm Danh</span>
+                  <strong class="hud-chip-val" id="p-streak">Điểm danh</strong>
+                </div>
+                <a href="/html/Checkin.html" class="hud-chip-link">Nhận Quà</a>
+              </div>
+
+              <!-- Join Date Chip -->
+              <div class="hud-chip chip-joined">
+                <span class="hud-chip-icon">📅</span>
+                <div class="hud-chip-text">
+                  <span class="hud-chip-label">Tham gia</span>
+                  <span class="hud-chip-val" id="p-joined">—</span>
+                </div>
+              </div>
             </div>
           </div>
         </div>
 
+        <!-- Quick Actions -->
         <div class="profile-header-actions">
+          <a href="/html/Store.html" class="btn btn-action-promax btn-topup-promax">
+            <span>⚡ Nạp Xu Nhanh</span>
+          </a>
+          <a href="/html/Store.html" class="btn btn-action-promax btn-store-promax">
+            <span>🛒 Cửa Hàng</span>
+          </a>
           <div id="admin-link-wrap" class="hidden">
-            <a href="/html/Admin.html" class="btn btn-admin-header">
-              ⚙️ Quản Trị Admin
+            <a href="/html/Admin.html" class="btn btn-action-promax btn-admin-header">
+              <span>⚙️ Quản Trị Admin</span>
             </a>
           </div>
-          <button class="btn btn-logout-header" onclick="doLogout()">
-            Đăng xuất
+          <button class="btn btn-action-promax btn-logout-header" onclick="doLogout()">
+            <span>🚪 Đăng xuất</span>
           </button>
         </div>
       </div>
@@ -516,17 +823,30 @@
           <div class="skin-card-header">
             <div class="skin-card-title">
               <span class="hero-icon">🧍</span>
-              <span>Mô Hình Skin 3D</span>
+              <span>Mô Hình Skin 3D ProMax</span>
             </div>
             <span class="badge badge-purple" id="p-skin-badge">Skin mặc định (Steve)</span>
           </div>
 
-          <div class="skin-interactive-stage">
+          <!-- Interactive Hologram Stage with Drag & Drop -->
+          <div class="skin-interactive-stage" id="acc-skin-stage">
+            <div class="skin-drop-zone-overlay">
+              <span class="drop-icon">📥</span>
+              <span class="drop-title">THẢ SKIN .PNG VÀO ĐÂY</span>
+              <span class="drop-sub">Hệ thống sẽ cập nhật 3D & Avatar ngay</span>
+            </div>
+
             <canvas id="account-skin-canvas"></canvas>
-            <div class="skin-pedestal-glow"></div>
-            <div class="skin-hint-badge">💡 Kéo chuột để xoay 360° • Cuộn để phóng to</div>
+
+            <div class="skin-pedestal-container">
+              <div class="skin-holo-beam"></div>
+              <div class="skin-pedestal-glow"></div>
+            </div>
+
+            <div class="skin-hint-badge">💡 Kéo để xoay 360° • Cuộn để zoom • Kéo thả file .PNG</div>
           </div>
 
+          <!-- Animation & Rotate HUD Buttons -->
           <div class="skin-btn-group skin-grid-2" style="margin-bottom:0.75rem;">
             <button class="skin-control-btn active" id="acc-skin-walk-btn" onclick="setAccountSkinAnim('walk')">🚶 Đi bộ</button>
             <button class="skin-control-btn" id="acc-skin-idle-btn" onclick="setAccountSkinAnim('idle')">🧍 Đứng yên</button>
@@ -534,22 +854,24 @@
             <button class="skin-control-btn active" id="acc-skin-rot-btn" onclick="toggleAccountSkinRotate()">🔄 Tự xoay: BẬT</button>
           </div>
 
-          <div class="skin-btn-group skin-grid-2" style="margin-bottom:0.5rem;">
-            <label class="btn btn-outline" style="font-size:0.82rem; padding:0.5rem 0.65rem; min-height:36px; cursor:pointer; justify-content:center;">
-              📁 Đổi Skin .PNG
+          <!-- Upload and Reset Buttons -->
+          <div class="skin-btn-group skin-grid-2" style="margin-bottom:0.6rem;">
+            <label class="btn btn-outline" style="font-size:0.82rem; padding:0.55rem 0.65rem; min-height:38px; cursor:pointer; justify-content:center; border-color:rgba(34,211,238,0.4)">
+              📁 Tải Skin .PNG
               <input type="file" id="acc-skin-file-input" accept="image/png" style="display:none;" onchange="handleAccountSkinUpload(this)">
             </label>
-            <button class="btn btn-ghost" style="font-size:0.82rem; padding:0.5rem 0.65rem; min-height:36px; justify-content:center;" onclick="resetAccountSkinToSteve()">
-              🔄 Về Steve
+            <button class="btn btn-ghost" style="font-size:0.82rem; padding:0.55rem 0.65rem; min-height:38px; justify-content:center;" onclick="resetAccountSkinToSteve()">
+              🔄 Về Steve Mặc Định
             </button>
           </div>
 
+          <!-- Modals & Snapshots -->
           <div style="display:flex; gap:0.5rem;">
-            <button class="btn btn-primary btn-full" style="font-size:0.82rem; padding:0.5rem 0.65rem; min-height:36px;" onclick="openSkinModal()">
-              🔍 Phóng To & Tùy Chỉnh 3D
+            <button class="btn btn-primary btn-full" style="font-size:0.82rem; padding:0.55rem 0.65rem; min-height:38px;" onclick="openSkinModal()">
+              🔍 Tùy Chỉnh Toàn Màn Hình
             </button>
-            <button class="btn btn-ghost" style="font-size:0.82rem; padding:0.5rem 0.75rem; min-height:36px;" onclick="captureAccountSkin()" title="Lưu ảnh 3D">
-              📸 Chụp
+            <button class="btn btn-ghost" style="font-size:0.82rem; padding:0.55rem 0.85rem; min-height:38px;" onclick="captureAccountSkin()" title="Lưu ảnh 3D trong suốt">
+              📸 Chụp HD
             </button>
           </div>
         </div>
@@ -889,20 +1211,94 @@ function showProfile(user) {
   document.getElementById('p-name').textContent   = user.username;
   document.getElementById('p-email').textContent  = user.email;
   document.getElementById('p-mc').textContent     = user.minecraftUsername || 'Chưa thiết lập';
+  
+  // ProMax: Coins & System ID
+  const coinsEl = document.getElementById('p-coins');
+  if (coinsEl) {
+    coinsEl.textContent = (user.coins != null ? Number(user.coins).toLocaleString('vi-VN') : '0') + ' Xu';
+  }
+  const sysIdEl = document.getElementById('p-sys-id');
+  if (sysIdEl) {
+    sysIdEl.textContent = `#DTM-${String(user.id || user._id || '101').padStart(4, '0')}`;
+  }
+
+  // Checkin streak query
+  if (window.api && typeof window.api.getCheckinStatus === 'function') {
+    window.api.getCheckinStatus().then(st => {
+      const streakEl = document.getElementById('p-streak');
+      if (streakEl && st && st.streak !== undefined) {
+        streakEl.textContent = `${st.streak} Ngày 🔥`;
+      }
+    }).catch(() => {});
+  }
+
   updateAccountAvatar(user);
   if (user.createdAt) {
     document.getElementById('p-joined').textContent = new Date(user.createdAt).toLocaleDateString('vi-VN');
   }
   const badge = document.getElementById('p-badge');
-  badge.textContent = user.role === 'admin' ? '⭐ Admin' : '🎮 Player';
-  badge.className = 'badge mb-2 ' + (user.role === 'admin' ? 'badge-gold' : 'badge-purple');
+  badge.textContent = user.role === 'admin' ? '⭐ Admin VIP' : '🎮 Player';
+  badge.className = 'badge ' + (user.role === 'admin' ? 'badge-gold' : 'badge-purple');
   const adminWrap = document.getElementById('admin-link-wrap');
   if (adminWrap && user.role === 'admin') adminWrap.classList.remove('hidden');
   const nav = document.getElementById('nav-account-link');
   const navLabel = nav?.querySelector('span:last-child');
   if (navLabel) navLabel.textContent = user.username;
   loadOrders();
-  setTimeout(() => initAccountSkin(user), 120);
+  setTimeout(() => {
+    initAccountSkin(user);
+    initSkinStageDragDrop();
+  }, 120);
+}
+
+function copyPlayerIGN() {
+  const mcEl = document.getElementById('p-mc');
+  const mc = mcEl ? mcEl.textContent.trim() : '';
+  if (!mc || mc === 'Chưa thiết lập' || mc === '—') {
+    if (typeof showToast === 'function') showToast('Chưa thiết lập tên Minecraft IGN trong hồ sơ.', 'info');
+    return;
+  }
+  navigator.clipboard.writeText(mc).then(() => {
+    const copyIcon = document.getElementById('copy-ign-icon');
+    if (copyIcon) {
+      copyIcon.textContent = '✓';
+      setTimeout(() => { copyIcon.textContent = '📋'; }, 2000);
+    }
+    if (typeof showToast === 'function') showToast(`Đã chép IGN: ${mc} vào clipboard! 🎮`, 'success');
+    if (window.SoundFX) window.SoundFX.playClick();
+  }).catch(() => {
+    if (typeof showToast === 'function') showToast(mc, 'info');
+  });
+}
+
+function initSkinStageDragDrop() {
+  const stage = document.getElementById('acc-skin-stage');
+  if (!stage || stage.dataset.dragInit) return;
+  stage.dataset.dragInit = 'true';
+
+  ['dragenter', 'dragover'].forEach(evt => {
+    stage.addEventListener(evt, (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      stage.classList.add('is-dragover');
+    });
+  });
+
+  ['dragleave', 'drop'].forEach(evt => {
+    stage.addEventListener(evt, (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      stage.classList.remove('is-dragover');
+    });
+  });
+
+  stage.addEventListener('drop', (e) => {
+    const dt = e.dataTransfer;
+    const files = dt && dt.files;
+    if (files && files.length > 0) {
+      handleAccountSkinUpload({ files });
+    }
+  });
 }
 
 /* ── 3D Skin Viewer Controller ── */
@@ -948,6 +1344,7 @@ async function handleAccountSkinUpload(input) {
   const file = input.files && input.files[0];
   if (!file) return;
 
+  const curUser = (window.api && window.api.getUser()) || {};
   const reader = new FileReader();
   reader.onload = async (e) => {
     const base64 = e.target.result;
@@ -963,9 +1360,8 @@ async function handleAccountSkinUpload(input) {
 
     // 2. Persist in user session immediately with robust localStorage backup
     localStorage.setItem('dtm_custom_skin', base64);
-    const curUser = api.getUser() || {};
     curUser.skinUrl = base64;
-    api.setSession(api.getToken(), curUser);
+    if (window.api) api.setSession(api.getToken(), curUser);
 
     const badgeEl = document.getElementById('p-skin-badge');
     if (badgeEl) {
@@ -990,7 +1386,7 @@ async function handleAccountSkinUpload(input) {
       if (typeof showToast === 'function') showToast('Đã lưu skin thành công vào tài khoản!', 'success');
       if (window.SoundFX) window.SoundFX.playSuccess();
     } finally {
-      input.value = '';
+      if (input.value !== undefined) input.value = '';
     }
   };
   reader.readAsDataURL(file);
