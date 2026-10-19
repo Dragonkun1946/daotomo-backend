@@ -14,6 +14,12 @@ mkdir -p storage/framework/cache/data \
          public/uploads/skins \
          database
 
+# Ensure .env exists from .env.example
+if [ ! -f .env ]; then
+    echo "==> Creating .env from .env.example..."
+    cp .env.example .env
+fi
+
 # Ensure APP_KEY exists
 if [ -z "$APP_KEY" ]; then
     echo "==> WARNING: APP_KEY not provided in environment! Generating application key..."
