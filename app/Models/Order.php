@@ -36,6 +36,7 @@ class Order extends Model
         'minecraftUsername',
         'paymentMethod',
         'totalAmount',
+        'total',
         'orderStatus',
         'paymentStatus',
         'paymentProof',
@@ -46,6 +47,18 @@ class Order extends Model
         'vietqrUrl',
         'sepayQrUrl',
     ];
+
+    public function toArray()
+    {
+        $array = parent::toArray();
+        $array['_id'] = (string) ($this->attributes['id'] ?? $this->attributes['order_code'] ?? '');
+        return $array;
+    }
+
+    public function getTotalAttribute(): float
+    {
+        return (float) ($this->attributes['total_amount'] ?? 0);
+    }
 
     public function getOrderCodeAttribute(): string
     {

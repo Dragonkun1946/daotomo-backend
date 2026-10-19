@@ -1529,9 +1529,10 @@ async function loadOrders() {
   const el = document.getElementById('orders-list');
   const countBadge = document.getElementById('orders-count-badge');
   try {
-    const { data } = await api.getMyOrders();
-    userOrders = data;
-    if (countBadge) countBadge.textContent = `${data.length} đơn`;
+    const res = await api.getMyOrders();
+    const list = Array.isArray(res) ? res : (res.data || res.orders || []);
+    userOrders = list;
+    if (countBadge) countBadge.textContent = `${list.length} đơn`;
     renderUserOrders();
   } catch (e) {
     el.innerHTML = `<p style="font-size:.82rem;color:var(--text-muted)">Không thể tải đơn hàng: ${e.message}</p>`;
@@ -1550,11 +1551,11 @@ function renderUserOrders() {
   const el = document.getElementById('orders-list');
   let filtered = userOrders;
   if (activeOrderFilter === 'pending') {
-    filtered = userOrders.filter(o => (o.orderStatus || 'pending') === 'pending');
+    filtered = userOrders.filter(o => ((o.orderStatus || o.order_status || 'pending') === 'pending'));
   } else if (activeOrderFilter === 'delivered') {
-    filtered = userOrders.filter(o => o.orderStatus === 'delivered');
+    filtered = userOrders.filter(o => (o.orderStatus === 'delivered' || o.order_status === 'delivered'));
   } else if (activeOrderFilter === 'cancelled') {
-    filtered = userOrders.filter(o => o.orderStatus === 'cancelled');
+    filtered = userOrders.filter(o => (o.orderStatus === 'cancelled' || o.order_status === 'cancelled'));
   }
 
   if (!filtered.length) {
@@ -1566,15 +1567,18 @@ function renderUserOrders() {
   }
 
   el.innerHTML = filtered.map(o => {
-    const code = o.orderCode || '#' + o._id.slice(-8).toUpperCase();
-    const oStat = o.orderStatus || (o.status === 'cancelled' ? 'cancelled' : o.status === 'delivered' ? 'delivered' : 'pending');
-    const pStat = o.paymentStatus || (o.status === 'paid' ? 'paid' : 'pending');
-    const itemCount = o.items ? o.items.length : 0;
-    const itemsPreview = (o.items && o.items.length > 0)
-      ? o.items.map(i => i.product ? i.product.name : 'Vật phẩm').slice(0, 2).join(', ') + (o.items.length > 2 ? '...' : '')
+    const orderId = o.id || o._id || o.order_code || o.orderCode;
+    const code = o.orderCode || o.order_code || '#' + String(orderId).slice(-8).toUpperCase();
+    const oStat = o.orderStatus || o.order_status || (o.status === 'cancelled' ? 'cancelled' : o.status === 'delivered' ? 'delivered' : 'pending');
+    const pStat = o.paymentStatus || o.payment_status || (o.status === 'paid' ? 'paid' : 'pending');
+    const items = o.items || [];
+    const itemCount = items.length;
+    const itemsPreview = (items.length > 0)
+      ? items.map(i => i.name || i.product_name || (i.product ? i.product.name : 'Vật phẩm')).slice(0, 2).join(', ') + (items.length > 2 ? '...' : '')
       : 'Vật phẩm máy chủ';
+    const totalAmount = Number(o.total || o.totalAmount || o.total_amount || 0);
     return `
-      <div class="order-item" onclick="openOrderDetail('${o._id}')" title="Nhấp để xem chi tiết đơn hàng">
+      <div class="order-item" onclick="openOrderDetail('${orderId}')" title="Nhấp để xem chi tiết đơn hàng">
         <div class="order-left">
           <div class="order-head">
             <span class="order-ref">${code}</span>
@@ -1584,13 +1588,13 @@ function renderUserOrders() {
             </div>
           </div>
           <div class="order-meta-sub">
-            <span>📅 ${new Date(o.createdAt).toLocaleString('vi-VN')}</span>
+            <span>📅 ${new Date(o.createdAt || o.created_at || Date.now()).toLocaleString('vi-VN')}</span>
             <span>·</span>
             <span>📦 ${itemCount} món (${itemsPreview})</span>
           </div>
         </div>
         <div class="order-right">
-          <div class="order-total">${o.total.toLocaleString('vi-VN')}đ</div>
+          <div class="order-total">${totalAmount.toLocaleString('vi-VN')}đ</div>
           <span class="order-view-btn">Chi tiết ➔</span>
         </div>
       </div>
@@ -1618,13 +1622,17 @@ async function openOrderDetail(orderId) {
   modal.classList.add('open');
 
   try {
-    const { data: o } = await api.getOrder(orderId);
-    const code = o.orderCode || '#' + o._id.slice(-8).toUpperCase();
-    document.getElementById('od-code').textContent = code;
-    document.getElementById('od-date').textContent = new Date(o.createdAt).toLocaleString('vi-VN');
+    const res = await api.getOrder(orderId);
+    const o = res?.data || res?.order || res;
+    if (!o) throw new Error('Không thể tải thông tin đơn hàng');
 
-    const oStat = o.orderStatus || 'pending';
-    const pStat = o.paymentStatus || 'pending';
+    const orderIdVal = o.id || o._id || o.order_code || o.orderCode || orderId;
+    const code = o.orderCode || o.order_code || '#' + String(orderIdVal).slice(-8).toUpperCase();
+    document.getElementById('od-code').textContent = code;
+    document.getElementById('od-date').textContent = new Date(o.createdAt || o.created_at || Date.now()).toLocaleString('vi-VN');
+
+    const oStat = o.orderStatus || o.order_status || 'pending';
+    const pStat = o.paymentStatus || o.payment_status || 'pending';
 
     // Update Stepper
     const stepperFill = document.getElementById('od-stepper-fill');
@@ -1669,25 +1677,32 @@ async function openOrderDetail(orderId) {
     pBadge.textContent = 'Thanh toán: ' + (paymentStatusLabel[pStat] || pStat);
     pBadge.className = 'badge ' + (paymentStatusClass[pStat] || 's-pending');
 
-    document.getElementById('od-mc').textContent = o.minecraftUsername || '—';
-    document.getElementById('od-method').textContent = o.paymentMethod || 'QR';
+    document.getElementById('od-mc').textContent = o.minecraftUsername || o.minecraft_username || '—';
+    document.getElementById('od-method').textContent = o.paymentMethod || o.payment_method || 'QR';
     document.getElementById('od-note').textContent = o.note || '—';
-    document.getElementById('od-total').textContent = o.total.toLocaleString('vi-VN') + 'đ';
+    const totalVal = Number(o.total || o.totalAmount || o.total_amount || 0);
+    document.getElementById('od-total').textContent = totalVal.toLocaleString('vi-VN') + 'đ';
 
     // Items list
     const itemsEl = document.getElementById('od-items');
-    itemsEl.innerHTML = o.items.map(item => `
+    const itemsList = o.items || [];
+    itemsEl.innerHTML = itemsList.map(item => {
+      const itemName = item.name || item.product_name || (item.product && item.product.name) || 'Vật phẩm';
+      const itemPrice = Number(item.price || 0);
+      const itemQty = Number(item.quantity || 1);
+      return `
       <div class="order-detail-item">
         <img class="order-detail-thumb" src="${item.image || (item.product && item.product.image) || '/img/logo.jpg'}" onerror="this.src='/img/logo.jpg'">
         <div style="flex:1">
-          <div style="font-weight:700;color:var(--text)">${item.name}</div>
-          <div style="color:var(--text-muted);font-size:0.75rem">${item.price.toLocaleString('vi-VN')}đ × ${item.quantity}</div>
+          <div style="font-weight:700;color:var(--text)">${itemName}</div>
+          <div style="color:var(--text-muted);font-size:0.75rem">${itemPrice.toLocaleString('vi-VN')}đ × ${itemQty}</div>
         </div>
         <div style="font-weight:700;color:var(--accent);font-family:var(--font-mono)">
-          ${(item.price * item.quantity).toLocaleString('vi-VN')}đ
+          ${(itemPrice * itemQty).toLocaleString('vi-VN')}đ
         </div>
       </div>
-    `).join('');
+    `;
+    }).join('');
 
     // QR Payment section if payment pending and not cancelled
     const paySec = document.getElementById('od-payment-section');

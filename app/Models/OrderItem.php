@@ -27,6 +27,7 @@ class OrderItem extends Model
     protected $appends = [
         'productId',
         'productName',
+        'name',
     ];
 
     public function getProductIdAttribute()
@@ -35,6 +36,11 @@ class OrderItem extends Model
     }
 
     public function getProductNameAttribute(): string
+    {
+        return $this->attributes['product_name'] ?? '';
+    }
+
+    public function getNameAttribute(): string
     {
         return $this->attributes['product_name'] ?? '';
     }
