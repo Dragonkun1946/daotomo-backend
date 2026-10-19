@@ -4,7 +4,92 @@ Hệ thống Web Portal và RESTful API dành cho máy chủ Minecraft **Đảo 
 
 ---
 
-## 🚀 Tính năng nổi bật
+## ⚠️ Khắc phục lỗi Render: `Cannot find module '/opt/render/project/src/server.js'`
+
+### Nguyên nhân lỗi
+Trước đây repository sử dụng **Node.js (Express)** với file khởi động `server.js`. Render đã tự động gán cấu hình dịch vụ dạng:
+- **Runtime:** `Node`
+- **Build Command:** `npm install`
+- **Start Command:** `node server.js`
+
+Khi dự án được chuyển đổi hoàn toàn sang **PHP & Laravel 11**, file `server.js` đã không còn. Do Render không có môi trường chạy native PHP, tài liệu chuẩn của Render yêu cầu chạy PHP/Laravel thông qua **Docker Container** ([Xem tài liệu chính thức](https://render.com/docs/deploy-php-laravel-docker)).
+
+---
+
+## 🚢 Hướng dẫn triển khai chuẩn hóa trên Render (Docker)
+
+Repository đã được chuẩn hóa với đầy đủ:
+- `Dockerfile` (Dựa trên base image `richarvey/nginx-php-fpm:3.1.6` hỗ trợ PHP 8.2+ & Nginx).
+- `conf/nginx/nginx-site.conf` (Document root trỏ vào `/var/www/html/public/`, chặn truy cập file ẩn và bảo mật).
+- `scripts/00-laravel-deploy.sh` (Script khởi động container, set quyền storage, chạy migration an toàn `php artisan migrate --force`).
+- `.dockerignore` (Loại bỏ cache, file env và sqlite local khỏi image).
+- `render.yaml` (Cấu hình Blueprint chuẩn).
+
+### Các bước sửa cấu hình trên Render Dashboard (Chỉ mất 1 phút)
+
+1. Đăng nhập vào [Render Dashboard](https://dashboard.render.com).
+2. Chọn Web Service **`daotomo-backend`** (hoặc tên dịch vụ của bạn).
+3. Vào tab **Settings**:
+   - Tìm mục **Build & Deploy** -> **Runtime**: Chuyển từ **`Node`** sang **`Docker`**.
+   - Xóa bỏ **Build Command** (`npm install`) và **Start Command** (`node server.js`) nếu còn tồn tại.
+   - Trường **Dockerfile Path** để mặc định là `./Dockerfile`.
+4. Vào tab **Environment** (Biến môi trường) và cấu hình các giá trị cần thiết (xem bảng bên dưới).
+5. Nhấn **Save Changes** và chọn **Manual Deploy** -> **Deploy latest commit**.
+
+---
+
+## 🔐 Bảng biến môi trường Production (Environment Variables)
+
+| Tên biến | Bắt buộc | Ví dụ / Giá trị khuyến nghị | Mục đích |
+|---|---|---|---|
+| `APP_KEY` | **Có** | `base64:...` (chạy `php artisan key:generate --show` để lấy) | Khóa mã hóa session & token của Laravel |
+| `APP_ENV` | **Có** | `production` | Chạy ở chế độ production |
+| `APP_DEBUG` | **Có** | `false` | Tắt debug để không lộ thông tin nhạy cảm |
+| `LOG_CHANNEL` | **Có** | `stderr` | Xuất log ra console Render để xem lỗi thời gian thực |
+| `DB_CONNECTION` | **Có** | `pgsql` *(khi dùng Render Postgres)* hoặc `sqlite` | Driver cơ sở dữ liệu |
+| `DATABASE_URL` | Tùy chọn | `postgres://user:pass@host:5432/db` | Internal Database URL của PostgreSQL trên Render |
+| `FRONTEND_URL` | Khuyến nghị | `https://www.daotomo.site` | Domain frontend để redirect sau OAuth / reset mật khẩu |
+| `CORS_ALLOWED_ORIGINS` | Khuyến nghị | `https://daotomo.site,https://www.daotomo.site` | Danh sách domain được phép gọi API |
+| `DISCORD_CLIENT_ID` | Khi dùng Discord | `123456789012345678` | Client ID ứng dụng Discord |
+| `DISCORD_CLIENT_SECRET` | Khi dùng Discord | *(Secret từ Discord Portal)* | Client Secret ứng dụng Discord |
+| `DISCORD_CALLBACK_URL` | Khi dùng Discord | `https://<tên-app>.onrender.com/api/auth/discord/callback` | URL callback đã khai báo trên Discord Portal |
+
+> 🔒 **Lưu ý an toàn:** Không bao giờ commit các giá trị bí mật (`APP_KEY`, `DISCORD_CLIENT_SECRET`, mật khẩu DB) vào Git. Mọi giá trị bí mật chỉ điền qua tab **Environment** trên Render Dashboard.
+
+---
+
+## 🛡️ Quy trình Migration và Sao lưu Database an toàn
+
+1. **Tuyệt đối không dùng `migrate:fresh`:**
+   - Trong `scripts/00-laravel-deploy.sh`, lệnh chạy là `php artisan migrate --force`.
+   - Lệnh này **chỉ thực thi các migration mới**, giữ nguyên toàn bộ bảng và dữ liệu người dùng hiện có.
+2. **Không tạo lại `APP_KEY` mỗi lần deploy:**
+   - `APP_KEY` được sinh 1 lần và cấu hình cố định trong biến môi trường Render. Việc đổi `APP_KEY` sẽ làm mất hiệu lực các session và token đã cấp.
+3. **Chiến lược Backup:**
+   - **Render PostgreSQL:** Render tự động tạo snapshot hàng ngày. Khi cần can thiệp cấu trúc lớn, có thể chạy lệnh `pg_dump` từ Render Shell.
+   - **SQLite:** Nếu dùng SQLite kèm Render Persistent Disk, backup định kỳ file `database.sqlite`.
+
+---
+
+## 🎮 Luồng Discord OAuth 2.0
+
+Hệ thống hỗ trợ đăng nhập và liên kết tài khoản Discord an toàn:
+1. Người dùng bấm **"Tiếp tục với Discord"** tại trang `/html/Account.html`.
+2. Frontend chuyển hướng tới `/api/auth/discord`.
+3. Backend sinh chuỗi `state` ngẫu nhiên lưu vào Cache (chống tấn công CSRF) và chuyển hướng tới trang xác thực của Discord:
+   `https://discord.com/api/oauth2/authorize?...`
+4. Sau khi người dùng đồng ý, Discord gọi lại callback:
+   `/api/auth/discord/callback?code=...&state=...`
+5. Backend kiểm tra `state`, trao đổi `code` lấy `access_token`, tải hồ sơ người dùng:
+   - Nếu `discord_id` đã có: đăng nhập tài khoản tương ứng.
+   - Nếu email trùng với tài khoản sẵn có: tự động liên kết `discord_id`.
+   - Nếu là người dùng mới: tạo tài khoản mới với username, email và avatar Discord.
+6. Cấp Sanctum Bearer Token và redirect an toàn về frontend:
+   `${FRONTEND_URL}/html/Account.html?oauthToken=${token}`
+
+---
+
+## 🚀 Tính năng nổi bật của hệ thống
 
 ### 1. Giao diện người dùng (Frontend - Giữ nguyên 100%)
 - **Trang chủ & Cửa hàng (`/`, `/html/Shop.html`):** Hiển thị danh mục Rank VIP, Key Crate, Xu Đảo, Vật phẩm đặc biệt; giỏ hàng real-time, bộ lọc danh mục và tìm kiếm.
@@ -21,134 +106,75 @@ Hệ thống Web Portal và RESTful API dành cho máy chủ Minecraft **Đảo 
 ### 2. Backend & Kiến trúc (Laravel 11)
 - **Framework:** Laravel 11 (PHP 8.2+).
 - **Authentication:** Laravel Sanctum (Bearer Token API Auth).
-- **Database Support:**
-  - **SQLite (Mặc định - Zero-config):** Khởi chạy ngay lập tức không cần cài đặt thêm MySQL service.
-  - **MySQL (Sẵn sàng):** Chỉ cần bật MySQL trên XAMPP và đổi cấu hình trong `.env`.
-- **Validation chặt chẽ:**
-  - Kiểm tra kích thước file skin Minecraft bằng PHP GD (`64x64`, `64x32`, `128x128`).
-  - Chống race-condition và bảo vệ giá tiền đơn hàng (tính toán lại từ cơ sở dữ liệu, hỗ trợ `idempotency_key`).
-  - Máy trạng thái đơn hàng (State-machine invariant): Không cho phép thanh toán đơn đã hủy.
-  - Phân quyền RBAC (Role-based access control) qua `AdminMiddleware`.
+- **Cơ sở dữ liệu:** Hỗ trợ SQLite, MySQL (XAMPP) và PostgreSQL (Render).
+- **Bảo mật:**
+  - Validation kích thước skin Minecraft bằng PHP GD (`64x64`, `64x32`, `128x128`).
+  - Chống race-condition và bảo vệ giá tiền đơn hàng (tính toán lại từ DB, hỗ trợ `idempotency_key`).
+  - Máy trạng thái đơn hàng: Ngăn chặn chuyển đổi trạng thái không hợp lệ.
+  - Phân quyền RBAC qua `AdminMiddleware`.
+  - Trust Proxies & Force HTTPS tự động khi chạy trên Render.
 
 ---
 
-## 🛠️ Yêu cầu môi trường
+## 🛠️ Cài đặt & Chạy Local
 
-- **PHP:** >= 8.2 (Khuyến nghị dùng PHP đi kèm XAMPP tại `C:\xampp\php\php.exe`)
-- **PHP Extensions cần thiết:** `pdo_sqlite`, `pdo_mysql`, `gd`, `zip`, `mbstring`, `fileinfo`
-- **Composer:** >= 2.x
-- **Git**
+### Yêu cầu môi trường
+- PHP >= 8.2 (đi kèm XAMPP hoặc cài rời với extension `pdo_sqlite`, `pdo_mysql`, `gd`, `zip`, `mbstring`, `fileinfo`)
+- Composer >= 2.x
+- Git
 
----
-
-## 📦 Hướng dẫn cài đặt & Chạy ứng dụng
-
-### 1. Clone repository
+### Các bước chạy local:
 ```bash
+# 1. Clone repository
 git clone https://github.com/Dragonkun1946/daotomo-backend.git
 cd daotomo-backend
-```
 
-### 2. Cài đặt thư viện PHP
-```bash
+# 2. Cài đặt thư viện
 composer install
-```
 
-### 3. Cấu hình môi trường (.env)
-Tạo file `.env` từ `.env.example`:
-```bash
-cp .env.example .env
+# 3. Tạo file cấu hình và sinh khóa app
+copy .env.example .env
 php artisan key:generate
-```
 
-*(Mặc định `.env` đã được cấu hình sẵn SQLite tại `database/database.sqlite`, không cần cấu hình thêm gì!)*
+# 4. Chạy migration và nạp dữ liệu mẫu
+php artisan migrate --seed
 
-Nếu muốn dùng MySQL qua XAMPP:
-1. Mở XAMPP và khởi động **MySQL**.
-2. Tạo database tên `daotomo` trên phpMyAdmin.
-3. Trong `.env`, đổi `DB_CONNECTION=sqlite` thành `DB_CONNECTION=mysql` và bỏ comment các dòng MySQL:
-   ```env
-   DB_CONNECTION=mysql
-   DB_HOST=127.0.0.1
-   DB_PORT=3306
-   DB_DATABASE=daotomo
-   DB_USERNAME=root
-   DB_PASSWORD=
-   ```
-
-### 4. Chạy Migration và Seed dữ liệu mẫu
-```bash
-php artisan migrate:fresh --seed
-```
-
-Lệnh trên sẽ tự động tạo bảng và nạp sẵn 2 tài khoản cùng 9 sản phẩm Minecraft mẫu.
-
-### 5. Khởi động Web Server
-```bash
+# 5. Khởi chạy server
 php artisan serve --port=8000
 ```
-Truy cập trình duyệt tại: **`http://127.0.0.1:8000`**
+Truy cập: **`http://127.0.0.1:8000`**
+
+### Tài khoản thử nghiệm có sẵn:
+- **Admin:** `admin@daotomo.site` / Mật khẩu: `Admin@123456`
+- **Player:** `player@daotomo.site` / Mật khẩu: `Player@123456`
 
 ---
 
-## 🔑 Tài khoản thử nghiệm có sẵn
+## 🧪 Kiểm thử tự động (Automated Testing)
 
-| Vai trò | Email | Mật khẩu | Chức năng |
-|---|---|---|---|
-| **Admin** | `admin@daotomo.site` | `Admin@123456` | Truy cập trang Quản trị viên (`/html/Admin.html`), CRUD sản phẩm, duyệt đơn hàng |
-| **Player** | `player@daotomo.site` | `Player@123456` | Mua hàng, điểm danh nhận xu, đổi skin Minecraft 3D |
-
----
-
-## 📡 Danh sách RESTful API Endpoints
-
-### 🔐 Authentication (`/api/auth`)
-- `POST /api/auth/register` - Đăng ký tài khoản
-- `POST /api/auth/login` - Đăng nhập (trả về Sanctum Bearer token)
-- `GET /api/auth/me` - Lấy thông tin tài khoản hiện tại (kèm thông tin skin)
-- `PUT /api/auth/me` - Cập nhật thông tin tài khoản
-- `POST /api/auth/skin` - Tải lên skin Minecraft PNG (hỗ trợ 64x64, 64x32, 128x128)
-- `POST /api/auth/forgot-password` - Quên mật khẩu
-- `POST /api/auth/reset-password` - Đặt lại mật khẩu
-
-### 🛒 Sản phẩm (`/api/products`)
-- `GET /api/products` - Danh sách sản phẩm (hỗ trợ filter category, search, featured)
-- `GET /api/products/{id}` - Chi tiết sản phẩm
-- `POST /api/products` *(Admin)* - Tạo sản phẩm mới
-- `PUT /api/products/{id}` *(Admin)* - Chỉnh sửa sản phẩm
-- `DELETE /api/products/{id}` *(Admin)* - Xóa sản phẩm
-
-### 🧾 Đơn hàng (`/api/orders`)
-- `POST /api/orders` - Đặt hàng mới (tính giá chuẩn từ DB, sinh mã `DTM-XXXXXX`)
-- `GET /api/orders/my-orders` - Lịch sử đơn hàng của người dùng đang đăng nhập
-- `GET /api/orders/{id}` - Chi tiết đơn hàng (bảo vệ quyền sở hữu)
-- `POST /api/orders/{id}/cancel` - Hủy đơn hàng
-- `POST /api/orders/{id}/payment-proof` - Gửi ảnh xác nhận thanh toán chuyển khoản
-- `GET /api/orders/admin/all` *(Admin)* - Danh sách toàn bộ đơn hàng
-- `PUT /api/orders/{id}/status` *(Admin)* - Cập nhật trạng thái đơn hàng (tuân thủ state-machine)
-
-### 🎁 Điểm danh (`/api/checkin`)
-- `GET /api/checkin/me` - Lấy lịch sử và trạng thái điểm danh hôm nay
-- `POST /api/checkin` - Điểm danh nhận xu hàng ngày (tính chuỗi streak)
-
----
-
-## 🧪 Kiểm thử tự động (Automated Tests)
-
-Chạy bộ kiểm thử toàn diện 24 feature tests:
+Chạy bộ kiểm thử toàn diện:
 ```bash
 php artisan test
 ```
-**Kết quả:** `24 passed, 0 failed` (59 assertions) bao gồm kiểm thử xác thực, RBAC, kiểm tra kích thước skin PNG, chống mua hàng sai giá và luồng đơn hàng.
+**Kết quả thực tế:**
+- **30 tests passed, 0 failed (75 assertions)**
+- Bao gồm kiểm thử:
+  - Health check (`/api/health`)
+  - Đăng ký, đăng nhập, hồ sơ người dùng
+  - Upload skin Minecraft (kiểm tra định dạng, kích thước 64x64/64x32/128x128)
+  - Khôi phục skin Steve mặc định
+  - Danh sách & Chi tiết sản phẩm
+  - Tạo đơn hàng, tính giá từ DB, chống trùng lặp (Idempotency)
+  - Bảo vệ quyền sở hữu đơn hàng & hủy đơn
+  - Máy trạng thái đơn hàng (State machine)
+  - Phân quyền Admin
+  - Điểm danh nhận quà hàng ngày (Streak)
+  - Toàn bộ luồng Discord OAuth (Authorize, callback, invalid state, token exchange, user creation & linking)
 
 ---
 
-## 📂 Sao lưu phiên bản cũ (Node.js Codebase Backup)
+## 📂 Bản sao lưu Node.js cũ (Backup)
 
-Phiên bản backend cũ sử dụng Node.js/Express/MongoDB đã được sao lưu toàn vẹn:
-- **Git Branch:** `backup-nodejs`
-- **Tập tin nén:** `daotomo-backend-backup.zip` (được tạo trước khi chuyển đổi)
-- Để xem lại phiên bản Node.js cũ trong git:
-  ```bash
-  git checkout backup-nodejs
-  ```
+Bản sao lưu toàn vẹn mã nguồn Node.js/Express cũ:
+- **Tập tin zip:** `daotomo-backend-backup.zip` (4.7 MB)
+- **Nhánh Git:** `backup-nodejs` (đã được đẩy lên GitHub `origin/backup-nodejs`)

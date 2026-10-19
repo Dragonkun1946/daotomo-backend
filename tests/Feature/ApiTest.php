@@ -6,6 +6,9 @@ use App\Models\User;
 use App\Models\Product;
 use App\Models\Order;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Config;
 use Tests\TestCase;
 
 class ApiTest extends TestCase
@@ -337,5 +340,103 @@ class ApiTest extends TestCase
         $res2 = $this->actingAs($user)->postJson('/api/checkin');
         $res2->assertStatus(400)
              ->assertJson(['success' => false]);
+    }
+
+    // ─── 9. Discord OAuth Flow ────────────────────────────────────────────────
+    public function test_discord_oauth_redirect_when_not_configured(): void
+    {
+        Config::set('services.discord.client_id', null);
+        Config::set('services.discord.client_secret', null);
+
+        $response = $this->get('/api/auth/discord');
+        $response->assertRedirect();
+        $this->assertStringContainsString('oauthError=discord_not_configured', $response->headers->get('Location'));
+    }
+
+    public function test_discord_oauth_redirect_success(): void
+    {
+        Config::set('services.discord.client_id', 'mock_client_id');
+        Config::set('services.discord.client_secret', 'mock_client_secret');
+
+        $response = $this->get('/api/auth/discord');
+        $response->assertRedirect();
+        $location = $response->headers->get('Location');
+
+        $this->assertStringContainsString('discord.com/api/oauth2/authorize', $location);
+        $this->assertStringContainsString('client_id=mock_client_id', $location);
+        $this->assertStringContainsString('state=', $location);
+    }
+
+    public function test_discord_oauth_callback_handles_user_cancel_or_error(): void
+    {
+        $response = $this->get('/api/auth/discord/callback?error=access_denied');
+        $response->assertRedirect();
+        $this->assertStringContainsString('oauthError=access_denied', $response->headers->get('Location'));
+    }
+
+    public function test_discord_oauth_callback_rejects_invalid_state(): void
+    {
+        $response = $this->get('/api/auth/discord/callback?code=mock_code&state=fake_state_invalid');
+        $response->assertRedirect();
+        $this->assertStringContainsString('oauthError=invalid_state', $response->headers->get('Location'));
+    }
+
+    public function test_discord_oauth_callback_success_creates_user_and_token(): void
+    {
+        Config::set('services.discord.client_id', 'mock_client_id');
+        Config::set('services.discord.client_secret', 'mock_client_secret');
+
+        $state = 'valid_test_state_123';
+        Cache::put('discord_oauth_state_' . $state, ['created_at' => now()->timestamp], 600);
+
+        Http::fake([
+            'https://discord.com/api/oauth2/token' => Http::response(['access_token' => 'mock_token_abc'], 200),
+            'https://discord.com/api/users/@me' => Http::response([
+                'id' => '9988776655',
+                'username' => 'DiscordGamer',
+                'global_name' => 'Discord Gamer',
+                'email' => 'discordgamer@test.com',
+                'avatar' => 'avatarhash123',
+            ], 200),
+        ]);
+
+        $response = $this->get("/api/auth/discord/callback?code=valid_code&state={$state}");
+        $response->assertRedirect();
+        $location = $response->headers->get('Location');
+
+        $this->assertStringContainsString('oauthToken=', $location);
+        $this->assertDatabaseHas('users', [
+            'discord_id' => '9988776655',
+            'email' => 'discordgamer@test.com',
+        ]);
+    }
+
+    public function test_discord_oauth_callback_success_links_existing_user_by_email(): void
+    {
+        Config::set('services.discord.client_id', 'mock_client_id');
+        Config::set('services.discord.client_secret', 'mock_client_secret');
+
+        $state = 'valid_link_state_456';
+        Cache::put('discord_oauth_state_' . $state, ['created_at' => now()->timestamp], 600);
+
+        Http::fake([
+            'https://discord.com/api/oauth2/token' => Http::response(['access_token' => 'mock_token_xyz'], 200),
+            'https://discord.com/api/users/@me' => Http::response([
+                'id' => '1122334455',
+                'username' => 'ExistingPlayer',
+                'email' => 'player@daotomo.site',
+                'avatar' => null,
+            ], 200),
+        ]);
+
+        $response = $this->get("/api/auth/discord/callback?code=valid_code&state={$state}");
+        $response->assertRedirect();
+        $location = $response->headers->get('Location');
+
+        $this->assertStringContainsString('oauthToken=', $location);
+        $this->assertDatabaseHas('users', [
+            'email' => 'player@daotomo.site',
+            'discord_id' => '1122334455',
+        ]);
     }
 }

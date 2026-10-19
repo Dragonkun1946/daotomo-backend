@@ -16,8 +16,9 @@ return new class extends Migration
             $table->string('username')->unique();
             $table->string('name')->nullable();
             $table->string('email')->unique();
+            $table->string('discord_id')->nullable()->unique();
             $table->timestamp('email_verified_at')->nullable();
-            $table->string('password');
+            $table->string('password')->nullable();
             $table->string('role')->default('user');
             $table->string('minecraft_username')->nullable();
             $table->text('skin_url')->nullable();

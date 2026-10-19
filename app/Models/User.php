@@ -21,6 +21,7 @@ class User extends Authenticatable
         'skin_url',
         'avatar',
         'coins',
+        'discord_id',
         'reset_password_token',
         'reset_password_expire',
     ];
@@ -34,6 +35,7 @@ class User extends Authenticatable
     protected $appends = [
         'minecraftUsername',
         'skinUrl',
+        'discordId',
     ];
 
     protected function casts(): array
@@ -55,6 +57,11 @@ class User extends Authenticatable
     public function getSkinUrlAttribute(): string
     {
         return $this->attributes['skin_url'] ?? '';
+    }
+
+    public function getDiscordIdAttribute(): string
+    {
+        return $this->attributes['discord_id'] ?? '';
     }
 
     public function orders()

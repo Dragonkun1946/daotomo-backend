@@ -1,0 +1,17 @@
+.git
+.github
+.env
+.env.*
+!.env.example
+vendor
+node_modules
+database/*.sqlite
+database/*.sqlite-journal
+*.zip
+.phpunit.cache
+storage/logs/*.log
+storage/framework/cache/data/*
+storage/framework/sessions/*
+storage/framework/views/*
+public/uploads/skins/*
+!public/uploads/skins/.gitkeep
