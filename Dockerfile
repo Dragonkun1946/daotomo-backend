@@ -31,9 +31,9 @@ RUN chmod +x /var/www/html/scripts/00-laravel-deploy.sh \
 # Install production dependencies with optimized autoloader
 RUN composer install --no-dev --optimize-autoloader --no-interaction
 
-# Set correct storage and cache permissions
-RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache /var/www/html/public/uploads \
-    && chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache /var/www/html/public/uploads
+# Set correct storage, database, and cache permissions
+RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache /var/www/html/public/uploads /var/www/html/database \
+    && chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache /var/www/html/public/uploads /var/www/html/database
 
 # Container entrypoint
 CMD ["/start.sh"]

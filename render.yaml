@@ -15,8 +15,6 @@ services:
         value: "false"
       - key: LOG_CHANNEL
         value: stderr
-      - key: DB_CONNECTION
-        value: pgsql
       - key: APP_KEY
         sync: false
       - key: DISCORD_CLIENT_ID

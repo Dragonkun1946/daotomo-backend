@@ -280,10 +280,23 @@ const api = {
   fireConfetti: (x, y, count) => ConfettiFX.fire(x, y, count),
   async request(endpoint, opts = {}) {
     const token = this.getToken();
-    const headers = { 'Content-Type': 'application/json', ...opts.headers };
+    const headers = { 'Content-Type': 'application/json', 'Accept': 'application/json', ...opts.headers };
     if (token) headers['Authorization'] = `Bearer ${token}`;
     const res  = await fetch(`${API}${endpoint}`, { ...opts, headers });
-    const data = await res.json();
+    let data;
+    const contentType = res.headers.get('content-type') || '';
+    if (contentType.includes('application/json')) {
+      data = await res.json();
+    } else {
+      const text = await res.text();
+      let parsed = null;
+      try { parsed = JSON.parse(text); } catch {}
+      if (parsed) {
+        data = parsed;
+      } else {
+        throw new Error(res.status === 500 ? 'Máy chủ đang khởi động hoặc cấu hình cơ sở dữ liệu (500). Vui lòng thử lại sau giây lát!' : (text.slice(0, 120) || `Lỗi HTTP ${res.status}`));
+      }
+    }
     if (!res.ok) throw new Error(data.message || 'Lỗi không xác định');
     return data;
   },
