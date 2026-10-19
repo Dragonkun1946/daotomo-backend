@@ -172,6 +172,35 @@ class ApiTest extends TestCase
         $response->assertStatus(200)
                  ->assertJson(['success' => true])
                  ->assertJsonStructure(['count', 'data']);
+
+        $data = $response->json('data');
+        $this->assertGreaterThanOrEqual(12, count($data));
+
+        $first = $data[0];
+        $this->assertArrayHasKey('_id', $first);
+        $this->assertArrayHasKey('name', $first);
+        $this->assertArrayHasKey('slug', $first);
+        $this->assertArrayHasKey('price', $first);
+        $this->assertArrayHasKey('category', $first);
+        $this->assertArrayHasKey('inStock', $first);
+
+        // Test filtering by category
+        $vipRes = $this->getJson('/api/products?category=vip');
+        $vipRes->assertStatus(200);
+        foreach ($vipRes->json('data') as $p) {
+            $this->assertEquals('vip', $p['category']);
+        }
+
+        // Test show by numeric ID and by slug
+        $showRes = $this->getJson('/api/products/' . $first['id']);
+        $showRes->assertStatus(200)
+                ->assertJson(['success' => true])
+                ->assertJsonPath('data.name', $first['name']);
+
+        $slugRes = $this->getJson('/api/products/' . $first['slug']);
+        $slugRes->assertStatus(200)
+                ->assertJson(['success' => true])
+                ->assertJsonPath('data.slug', $first['slug']);
     }
 
     // ─── 5. Order System & Idempotency ────────────────────────────────────────
