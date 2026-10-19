@@ -89,83 +89,53 @@
       margin: 0 auto;
       display: flex;
       flex-direction: column;
-      gap: 1.5rem;
-      animation: fadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      gap: 1.25rem;
+      animation: fadeIn 0.25s ease-out;
     }
 
-    /* Profile Header Card */
+    /* ── Profile Header Card ── */
     .profile-header-card {
       position: relative;
+      background: #101524;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 18px;
       overflow: hidden;
-      background: linear-gradient(145deg, rgba(23, 29, 50, 0.95), rgba(15, 20, 36, 0.98));
-      border: 1px solid rgba(34, 211, 238, 0.35);
-      border-top: 1px solid rgba(34, 211, 238, 0.65);
-      border-radius: var(--radius-xl, 24px);
-      box-shadow: 0 16px 48px rgba(0, 0, 0, 0.55), 0 0 35px rgba(34, 211, 238, 0.12);
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45);
     }
     .profile-banner {
-      height: 140px;
+      height: 175px;
       position: relative;
       background:
-        linear-gradient(rgba(34, 211, 238, 0.08) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(34, 211, 238, 0.08) 1px, transparent 1px),
-        radial-gradient(ellipse 650px 240px at 20% 20%, rgba(34, 211, 238, 0.35), transparent 70%),
-        radial-gradient(ellipse 550px 240px at 85% 30%, rgba(124, 58, 237, 0.4), transparent 70%),
-        linear-gradient(135deg, #0c1026 0%, #1e1346 50%, #082f49 100%);
-      background-size: 28px 28px, 28px 28px, 100% 100%, 100% 100%, 100% 100%;
-      border-bottom: 1px solid rgba(34, 211, 238, 0.25);
+        linear-gradient(180deg, rgba(12, 16, 28, 0.25) 0%, rgba(12, 16, 28, 0.85) 60%, #101524 100%),
+        url('/img/bg.jpg') center 40% / cover no-repeat;
     }
-    .banner-hud-bar {
+    .profile-banner-badge {
       position: absolute;
-      top: 0.85rem;
-      left: 1.5rem;
-      right: 1.5rem;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      pointer-events: none;
-      flex-wrap: wrap;
-      gap: 0.5rem;
-    }
-    .banner-sys-tag {
-      font-family: var(--font-mono);
-      font-size: 0.72rem;
-      letter-spacing: 0.08em;
-      color: var(--lagoon);
-      background: rgba(9, 11, 20, 0.75);
+      top: 1rem;
+      right: 1.25rem;
+      background: rgba(10, 14, 26, 0.75);
       backdrop-filter: blur(8px);
       -webkit-backdrop-filter: blur(8px);
-      padding: 0.3rem 0.75rem;
+      border: 1px solid rgba(255, 255, 255, 0.1);
       border-radius: 9999px;
-      border: 1px solid rgba(34, 211, 238, 0.3);
+      padding: 0.35rem 0.85rem;
+      font-size: 0.75rem;
+      font-family: var(--font-mono);
+      color: #94a3b8;
       display: inline-flex;
       align-items: center;
       gap: 0.45rem;
     }
-    .pulse-beacon {
+    .profile-banner-badge .status-ping {
       width: 7px;
       height: 7px;
-      background: var(--lagoon);
       border-radius: 50%;
-      box-shadow: 0 0 8px var(--lagoon);
-      animation: radarWave 2s infinite;
+      background: #22c55e;
+      display: inline-block;
     }
-    .banner-stat-tag {
-      font-family: var(--font-mono);
-      font-size: 0.72rem;
-      color: #34d399;
-      background: rgba(9, 11, 20, 0.75);
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
-      padding: 0.3rem 0.75rem;
-      border-radius: 9999px;
-      border: 1px solid rgba(16, 185, 129, 0.3);
-      display: inline-flex;
-      align-items: center;
-      gap: 0.45rem;
-    }
+
     .profile-header-body {
-      padding: 0 2rem 1.6rem;
+      padding: 0 1.75rem 1.5rem;
       display: flex;
       align-items: flex-end;
       justify-content: space-between;
@@ -175,9 +145,9 @@
     .profile-header-main {
       display: flex;
       align-items: flex-end;
-      gap: 1.5rem;
+      gap: 1.35rem;
       flex-wrap: wrap;
-      margin-top: -50px;
+      margin-top: -52px;
     }
     .profile-avatar-frame {
       position: relative;
@@ -185,10 +155,16 @@
       height: 104px;
       flex-shrink: 0;
       border-radius: 50%;
+      background: #101524;
       padding: 3px;
-      background: conic-gradient(from 0deg, #22d3ee, #7c3aed, #f43f5e, #fbbf24, #22d3ee);
-      box-shadow: 0 0 25px rgba(34, 211, 238, 0.45), 0 8px 24px rgba(0, 0, 0, 0.6);
-      animation: spinConic 8s linear infinite;
+      border: 3px solid rgba(255, 255, 255, 0.12);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+      cursor: pointer;
+      transition: transform 0.2s ease, border-color 0.2s ease;
+    }
+    .profile-avatar-frame:hover {
+      transform: scale(1.03);
+      border-color: #38bdf8;
     }
     .profile-avatar-inner {
       width: 100%;
@@ -200,7 +176,6 @@
       align-items: center;
       justify-content: center;
       position: relative;
-      border: 2px solid #090b14;
     }
     .profile-avatar-inner .minecraft-face-avatar,
     .profile-avatar-inner img {
@@ -211,203 +186,225 @@
       image-rendering: -moz-crisp-edges;
       image-rendering: crisp-edges;
     }
-    .profile-status-beacon {
+    .profile-status-dot {
       position: absolute;
-      bottom: 2px;
-      right: 2px;
-      width: 18px;
-      height: 18px;
-      background: #10b981;
-      border: 3px solid #090b14;
+      bottom: 4px;
+      right: 4px;
+      width: 15px;
+      height: 15px;
+      background: #22c55e;
+      border: 2.5px solid #101524;
       border-radius: 50%;
-      box-shadow: 0 0 10px #10b981;
       z-index: 5;
-    }
-    .profile-status-beacon::after {
-      content: '';
-      position: absolute;
-      inset: -3px;
-      border-radius: 50%;
-      border: 2px solid #10b981;
-      animation: radarWave 2s cubic-bezier(0, 0.2, 0.8, 1) infinite;
     }
     .profile-info-block {
       display: flex;
       flex-direction: column;
-      gap: 0.45rem;
+      gap: 0.35rem;
     }
     .profile-name-row {
       display: flex;
       align-items: center;
-      gap: 0.85rem;
+      gap: 0.75rem;
       flex-wrap: wrap;
     }
     .profile-username {
-      font-size: 1.75rem;
-      font-weight: 900;
-      font-family: var(--font-display, 'Chakra Petch', sans-serif);
+      font-size: 1.6rem;
+      font-weight: 800;
+      font-family: var(--font-heading);
       color: #ffffff;
-      line-height: 1.15;
-      text-shadow: 0 0 20px rgba(167, 139, 250, 0.4);
+      line-height: 1.2;
       letter-spacing: -0.01em;
+    }
+    .profile-user-id {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      color: #94a3b8;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 6px;
+      padding: 0.15rem 0.5rem;
     }
     .profile-email-row {
       display: flex;
       align-items: center;
       gap: 0.6rem;
-      font-size: 0.86rem;
-      color: var(--text-muted);
+      font-size: 0.85rem;
+      color: #94a3b8;
     }
-    .verified-pill {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.25rem;
-      font-size: 0.72rem;
-      font-weight: 700;
-      color: #34d399;
-      background: rgba(16, 185, 129, 0.12);
-      border: 1px solid rgba(16, 185, 129, 0.3);
-      padding: 0.15rem 0.5rem;
-      border-radius: 9999px;
-    }
-    .profile-meta-chips {
+
+    /* Actions on top header */
+    .profile-header-actions {
       display: flex;
       align-items: center;
       gap: 0.65rem;
       flex-wrap: wrap;
-      margin-top: 0.35rem;
-    }
-    .hud-chip {
-      background: rgba(255, 255, 255, 0.04);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: var(--radius-sm);
-      padding: 0.35rem 0.75rem;
-      display: inline-flex;
-      align-items: center;
-      gap: 0.55rem;
-      transition: all var(--dur) var(--ease-out);
-    }
-    .hud-chip:hover {
-      background: rgba(255, 255, 255, 0.07);
-      border-color: rgba(34, 211, 238, 0.35);
-      transform: translateY(-1px);
-    }
-    .hud-chip-icon {
-      font-size: 1.15rem;
-      line-height: 1;
-    }
-    .hud-chip-text {
-      display: flex;
-      flex-direction: column;
-      line-height: 1.2;
-    }
-    .hud-chip-label {
-      font-size: 0.68rem;
-      font-family: var(--font-mono);
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-      color: var(--text-dim);
-    }
-    .hud-chip-val {
-      font-size: 0.88rem;
-      font-weight: 700;
-      color: #ffffff;
-    }
-    .hud-chip-link {
-      font-size: 0.72rem;
-      font-weight: 700;
-      color: var(--accent);
-      background: rgba(245, 158, 11, 0.15);
-      border: 1px solid rgba(245, 158, 11, 0.35);
-      padding: 0.15rem 0.45rem;
-      border-radius: 4px;
-      margin-left: 0.2rem;
-    }
-    .hud-chip-link:hover {
-      background: rgba(245, 158, 11, 0.28);
-      color: #fff;
-    }
-    .hud-copy-btn {
-      cursor: pointer;
-      font-size: 0.85rem;
-      color: var(--lagoon);
-      padding: 0.1rem 0.3rem;
-      border-radius: 4px;
-      transition: transform 0.15s ease;
-    }
-    .hud-copy-btn:hover {
-      transform: scale(1.15);
-    }
-
-    .profile-header-actions {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      flex-wrap: wrap;
       padding-bottom: 0.25rem;
     }
-    .btn-action-promax {
-      padding: 0.6rem 1.15rem;
-      border-radius: var(--radius);
-      font-size: 0.86rem;
-      font-weight: 700;
+    .btn-header-action {
+      padding: 0.55rem 1rem;
+      border-radius: 10px;
+      font-size: 0.84rem;
+      font-weight: 600;
       display: inline-flex;
       align-items: center;
-      gap: 0.5rem;
-      min-height: 42px;
-      transition: all var(--dur) var(--ease-out);
-      letter-spacing: 0.01em;
+      gap: 0.45rem;
+      min-height: 40px;
+      transition: all 0.2s ease;
+      cursor: pointer;
     }
-    .btn-topup-promax {
-      background: linear-gradient(135deg, #7c3aed 0%, #22d3ee 100%);
+    .btn-topup-header {
+      background: #3b82f6;
       color: #ffffff;
-      box-shadow: 0 4px 18px rgba(124, 58, 237, 0.4);
-      border: 1px solid rgba(255, 255, 255, 0.2);
+      border: 1px solid #60a5fa;
+      box-shadow: 0 4px 14px rgba(59, 130, 246, 0.3);
     }
-    .btn-topup-promax:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 24px rgba(34, 211, 238, 0.5);
+    .btn-topup-header:hover {
+      background: #2563eb;
+      transform: translateY(-1px);
     }
-    .btn-store-promax {
+    .btn-store-header {
       background: rgba(255, 255, 255, 0.05);
-      border: 1px solid rgba(255, 255, 255, 0.14);
-      color: #e2e8f0;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      color: #cbd5e1;
     }
-    .btn-store-promax:hover {
+    .btn-store-header:hover {
       background: rgba(255, 255, 255, 0.1);
-      border-color: rgba(34, 211, 238, 0.4);
       color: #ffffff;
-      transform: translateY(-2px);
+      transform: translateY(-1px);
     }
     .btn-admin-header {
-      background: rgba(245, 158, 11, 0.14);
+      background: rgba(245, 158, 11, 0.12);
       color: #fbbf24;
-      border: 1.5px solid rgba(245, 158, 11, 0.4);
-      box-shadow: 0 0 15px rgba(245, 158, 11, 0.2);
+      border: 1px solid rgba(245, 158, 11, 0.3);
     }
     .btn-admin-header:hover {
-      background: rgba(245, 158, 11, 0.25);
-      border-color: #fbbf24;
+      background: rgba(245, 158, 11, 0.22);
       color: #ffffff;
-      transform: translateY(-2px);
+      transform: translateY(-1px);
     }
     .btn-logout-header {
-      background: rgba(239, 68, 68, 0.1);
+      background: rgba(239, 68, 68, 0.08);
       color: #f87171;
-      border: 1.5px solid rgba(239, 68, 68, 0.35);
+      border: 1px solid rgba(239, 68, 68, 0.25);
     }
     .btn-logout-header:hover {
-      background: rgba(239, 68, 68, 0.25);
-      border-color: #ef4444;
+      background: rgba(239, 68, 68, 0.18);
       color: #ffffff;
-      transform: translateY(-2px);
+      transform: translateY(-1px);
+    }
+
+    /* ── 4-Tile Metrics Bar ── */
+    .profile-stats-bar {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1rem;
+    }
+    @media (max-width: 900px) {
+      .profile-stats-bar {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+    @media (max-width: 520px) {
+      .profile-stats-bar {
+        grid-template-columns: 1fr;
+      }
+    }
+    .stat-tile {
+      background: #101524;
+      border: 1px solid rgba(255, 255, 255, 0.07);
+      border-radius: 14px;
+      padding: 1.1rem 1.25rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      transition: border-color 0.2s ease, transform 0.2s ease;
+      position: relative;
+    }
+    .stat-tile:hover {
+      border-color: rgba(255, 255, 255, 0.16);
+      transform: translateY(-1px);
+    }
+    .stat-tile-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 11px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.35rem;
+      flex-shrink: 0;
+    }
+    .stat-tile-content {
+      display: flex;
+      flex-direction: column;
+      gap: 0.2rem;
+      flex: 1;
+      min-width: 0;
+    }
+    .stat-tile-label {
+      font-size: 0.74rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #94a3b8;
+    }
+    .stat-tile-val {
+      font-size: 1.08rem;
+      font-weight: 700;
+      color: #ffffff;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .stat-tile-action {
+      margin-left: auto;
+      flex-shrink: 0;
+    }
+    .stat-tile-link {
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: #38bdf8;
+      background: rgba(56, 189, 248, 0.1);
+      border: 1px solid rgba(56, 189, 248, 0.25);
+      border-radius: 6px;
+      padding: 0.25rem 0.55rem;
+      transition: background 0.15s ease;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
+    .stat-tile-link:hover {
+      background: rgba(56, 189, 248, 0.2);
+      color: #ffffff;
+    }
+    .stat-tile-copy {
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: #94a3b8;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 6px;
+      padding: 0.25rem 0.55rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      transition: all 0.15s ease;
+    }
+    .stat-tile-copy:hover {
+      color: #ffffff;
+      border-color: rgba(255, 255, 255, 0.25);
     }
 
     /* ── Dashboard 2-Column Grid ── */
     .profile-grid {
       display: grid;
-      grid-template-columns: 410px 1fr;
-      gap: 1.5rem;
+      grid-template-columns: 390px 1fr;
+      gap: 1.25rem;
       align-items: flex-start;
     }
     @media (max-width: 980px) {
@@ -426,23 +423,14 @@
       }
     }
 
-    /* Orders Card ProMax */
+    /* Orders Card */
     .orders-card {
-      background: linear-gradient(145deg, rgba(23, 29, 50, 0.95), rgba(15, 20, 36, 0.98));
-      border: 1px solid rgba(34, 211, 238, 0.3);
-      border-top: 1px solid rgba(34, 211, 238, 0.6);
-      border-radius: var(--radius-xl, 24px);
-      padding: 1.6rem;
-      box-shadow: 0 16px 45px rgba(0, 0, 0, 0.55), 0 0 25px rgba(34, 211, 238, 0.1);
+      background: #101524;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 16px;
+      padding: 1.5rem;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
       position: relative;
-      overflow: hidden;
-    }
-    .orders-card::before {
-      content: '';
-      position: absolute;
-      top: 0; left: 0; right: 0;
-      height: 2px;
-      background: linear-gradient(90deg, transparent, var(--lagoon), var(--primary), transparent);
     }
     .orders-card-header {
       display: flex;
@@ -450,17 +438,17 @@
       justify-content: space-between;
       flex-wrap: wrap;
       gap: 1rem;
-      margin-bottom: 1.35rem;
-      padding-bottom: 1.1rem;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      margin-bottom: 1.25rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.07);
     }
     .orders-header-title {
       display: flex;
       align-items: center;
       gap: 0.65rem;
-      font-family: var(--font-display, 'Chakra Petch', sans-serif);
+      font-family: var(--font-heading);
       font-size: 1.15rem;
-      font-weight: 800;
+      font-weight: 700;
       color: #ffffff;
       letter-spacing: -0.01em;
     }
@@ -471,64 +459,48 @@
     }
     .orders-filter-bar .filter-btn {
       background: rgba(255, 255, 255, 0.04);
-      border: 1px solid rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.09);
       color: var(--text-muted);
       border-radius: 9999px;
-      padding: 0.35rem 0.85rem;
+      padding: 0.32rem 0.85rem;
       font-size: 0.76rem;
-      font-weight: 700;
+      font-weight: 600;
       cursor: pointer;
-      transition: all 0.2s ease;
+      transition: all 0.15s ease;
     }
     .orders-filter-bar .filter-btn:hover {
-      background: rgba(255, 255, 255, 0.09);
+      background: rgba(255, 255, 255, 0.08);
       color: #ffffff;
-      border-color: rgba(34, 211, 238, 0.35);
     }
     .orders-filter-bar .filter-btn.active {
-      background: rgba(34, 211, 238, 0.15);
-      border-color: var(--lagoon);
+      background: #3b82f6;
+      border-color: #60a5fa;
       color: #ffffff;
-      box-shadow: 0 0 14px rgba(34, 211, 238, 0.35);
     }
     .orders-list-wrap {
       display: flex;
       flex-direction: column;
-      gap: 0.85rem;
+      gap: 0.75rem;
       min-height: 240px;
     }
 
     .order-item {
-      background: linear-gradient(135deg, rgba(255, 255, 255, 0.04) 0%, rgba(255, 255, 255, 0.01) 100%);
-      border: 1px solid rgba(255, 255, 255, 0.08);
+      background: rgba(255, 255, 255, 0.025);
+      border: 1px solid rgba(255, 255, 255, 0.06);
       border-radius: var(--radius);
-      padding: 1.1rem 1.35rem;
+      padding: 1rem 1.25rem;
       cursor: pointer;
-      transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+      transition: all 0.18s ease;
       display: grid;
       grid-template-columns: 1fr auto;
       align-items: center;
       gap: 1rem;
       position: relative;
-      overflow: hidden;
-    }
-    .order-item::before {
-      content: '';
-      position: absolute;
-      left: 0; top: 0; bottom: 0;
-      width: 3.5px;
-      background: var(--lagoon);
-      opacity: 0;
-      transition: opacity 0.22s ease;
     }
     .order-item:hover {
-      border-color: rgba(34, 211, 238, 0.45);
-      transform: translateY(-2px);
-      background: linear-gradient(135deg, rgba(34, 211, 238, 0.08) 0%, rgba(124, 58, 237, 0.04) 100%);
-      box-shadow: 0 10px 28px rgba(0, 0, 0, 0.45), 0 0 20px rgba(34, 211, 238, 0.15);
-    }
-    .order-item:hover::before {
-      opacity: 1;
+      border-color: rgba(255, 255, 255, 0.15);
+      background: rgba(255, 255, 255, 0.04);
+      transform: translateY(-1px);
     }
     .order-left {
       display: flex;
@@ -719,98 +691,99 @@
     <!-- Top Header Banner Card -->
     <div class="profile-header-card">
       <div class="profile-banner">
-        <div class="banner-hud-bar">
-          <div class="banner-sys-tag">
-            <span class="pulse-beacon"></span>
-            <span>ĐẢO TÒ MÒ PROMAX // PLAYER_HUD</span>
-            <span id="p-sys-id" style="opacity:0.75;margin-left:4px">#DTM-0000</span>
-          </div>
-          <div class="banner-stat-tag">
-            <span>📶 PING: 18ms</span>
-            <span>•</span>
-            <span>🟢 play.daotomo.net</span>
-          </div>
+        <div class="profile-banner-badge">
+          <span class="status-ping"></span>
+          <span>play.daotomo.net</span>
         </div>
       </div>
 
       <div class="profile-header-body">
         <div class="profile-header-main">
-          <!-- Holographic Conic Avatar Ring -->
-          <div class="profile-avatar-frame" title="Click để xem & đổi Skin 3D" onclick="openSkinModal()" style="cursor:pointer">
+          <!-- Circular Player Avatar -->
+          <div class="profile-avatar-frame" title="Click để xem & đổi Skin 3D" onclick="openSkinModal()">
             <div class="profile-avatar-inner" id="p-avatar">👤</div>
-            <div class="profile-status-beacon" title="Trạng thái: Trực tuyến (Online)"></div>
+            <div class="profile-status-dot" title="Trạng thái: Trực tuyến (Online)"></div>
           </div>
 
           <div class="profile-info-block">
             <div class="profile-name-row">
               <h1 class="profile-username" id="p-name">—</h1>
               <span class="badge" id="p-badge">🎮 Player</span>
-              <span class="verified-pill">🛡️ Đã xác thực</span>
+              <span class="profile-user-id" id="p-sys-id">#0000</span>
             </div>
             <div class="profile-email-row">
               <span id="p-email">—</span>
-            </div>
-
-            <!-- ProMax Interactive HUD Chips -->
-            <div class="profile-meta-chips">
-              <!-- Coins Chip -->
-              <div class="hud-chip chip-coins">
-                <span class="hud-chip-icon">🪙</span>
-                <div class="hud-chip-text">
-                  <span class="hud-chip-label">Kho Xu</span>
-                  <strong class="hud-chip-val mono" id="p-coins">0 Xu</strong>
-                </div>
-                <a href="/html/Store.html#topup" class="hud-chip-link" title="Nạp thêm Xu">+ Nạp</a>
-              </div>
-
-              <!-- Minecraft IGN Chip with 1-click copy -->
-              <div class="hud-chip chip-mc" onclick="copyPlayerIGN()" title="Nhấn để sao chép Minecraft IGN" style="cursor:pointer">
-                <span class="hud-chip-icon">🎮</span>
-                <div class="hud-chip-text">
-                  <span class="hud-chip-label">Minecraft IGN</span>
-                  <strong class="hud-chip-val" id="p-mc">—</strong>
-                </div>
-                <span class="hud-copy-btn" id="copy-ign-icon">📋</span>
-              </div>
-
-              <!-- Streak Chip -->
-              <div class="hud-chip chip-streak">
-                <span class="hud-chip-icon">🔥</span>
-                <div class="hud-chip-text">
-                  <span class="hud-chip-label">Điểm Danh</span>
-                  <strong class="hud-chip-val" id="p-streak">Điểm danh</strong>
-                </div>
-                <a href="/html/Checkin.html" class="hud-chip-link">Nhận Quà</a>
-              </div>
-
-              <!-- Join Date Chip -->
-              <div class="hud-chip chip-joined">
-                <span class="hud-chip-icon">📅</span>
-                <div class="hud-chip-text">
-                  <span class="hud-chip-label">Tham gia</span>
-                  <span class="hud-chip-val" id="p-joined">—</span>
-                </div>
-              </div>
             </div>
           </div>
         </div>
 
         <!-- Quick Actions -->
         <div class="profile-header-actions">
-          <a href="/html/Store.html" class="btn btn-action-promax btn-topup-promax">
-            <span>⚡ Nạp Xu Nhanh</span>
+          <a href="/html/Store.html#topup" class="btn-header-action btn-topup-header">
+            <span>⚡ Nạp Xu</span>
           </a>
-          <a href="/html/Store.html" class="btn btn-action-promax btn-store-promax">
+          <a href="/html/Store.html" class="btn-header-action btn-store-header">
             <span>🛒 Cửa Hàng</span>
           </a>
           <div id="admin-link-wrap" class="hidden">
-            <a href="/html/Admin.html" class="btn btn-action-promax btn-admin-header">
-              <span>⚙️ Quản Trị Admin</span>
+            <a href="/html/Admin.html" class="btn-header-action btn-admin-header">
+              <span>⚙️ Quản Trị</span>
             </a>
           </div>
-          <button class="btn btn-action-promax btn-logout-header" onclick="doLogout()">
+          <button class="btn-header-action btn-logout-header" onclick="doLogout()">
             <span>🚪 Đăng xuất</span>
           </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 4-Tile Metrics Bar -->
+    <div class="profile-stats-bar">
+      <!-- Tile 1: Kho Xu -->
+      <div class="stat-tile">
+        <div class="stat-tile-icon">🪙</div>
+        <div class="stat-tile-content">
+          <span class="stat-tile-label">Kho Xu</span>
+          <strong class="stat-tile-val mono" id="p-coins">0 Xu</strong>
+        </div>
+        <div class="stat-tile-action">
+          <a href="/html/Store.html#topup" class="stat-tile-link">+ Nạp</a>
+        </div>
+      </div>
+
+      <!-- Tile 2: Minecraft IGN with 1-click copy -->
+      <div class="stat-tile" onclick="copyPlayerIGN()" style="cursor:pointer" title="Nhấn để sao chép Minecraft IGN">
+        <div class="stat-tile-icon">🎮</div>
+        <div class="stat-tile-content">
+          <span class="stat-tile-label">Minecraft IGN</span>
+          <strong class="stat-tile-val" id="p-mc">—</strong>
+        </div>
+        <div class="stat-tile-action">
+          <button class="stat-tile-copy" type="button" title="Sao chép tên người chơi">
+            <span id="copy-ign-icon">📋</span>
+            <span>Copy</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Tile 3: Streak Điểm danh -->
+      <div class="stat-tile">
+        <div class="stat-tile-icon">🔥</div>
+        <div class="stat-tile-content">
+          <span class="stat-tile-label">Điểm Danh</span>
+          <strong class="stat-tile-val" id="p-streak">0 Ngày</strong>
+        </div>
+        <div class="stat-tile-action">
+          <a href="/html/Checkin.html" class="stat-tile-link">Nhận Quà ↗</a>
+        </div>
+      </div>
+
+      <!-- Tile 4: Ngày Tham Gia -->
+      <div class="stat-tile">
+        <div class="stat-tile-icon">📅</div>
+        <div class="stat-tile-content">
+          <span class="stat-tile-label">Ngày Gia Nhập</span>
+          <strong class="stat-tile-val" id="p-joined">—</strong>
         </div>
       </div>
     </div>
@@ -823,7 +796,7 @@
           <div class="skin-card-header">
             <div class="skin-card-title">
               <span class="hero-icon">🧍</span>
-              <span>Mô Hình Skin 3D ProMax</span>
+              <span>Mô Hình Skin 3D</span>
             </div>
             <span class="badge badge-purple" id="p-skin-badge">Skin mặc định (Steve)</span>
           </div>

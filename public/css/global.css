@@ -14,54 +14,21 @@ body {
   position: relative;
 }
 
-/* ════ ProMax Custom Cyber Neon Scrollbar ════ */
+/* ════ Clean Minimal Dark Scrollbar ════ */
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
 }
 ::-webkit-scrollbar-track {
-  background: #070913;
+  background: #090b14;
 }
 ::-webkit-scrollbar-thumb {
-  background: linear-gradient(180deg, var(--lagoon, #22d3ee) 0%, var(--primary, #7c3aed) 50%, #4c1d95 100%);
+  background: #232c45;
   border-radius: 9999px;
-  border: 2px solid #070913;
+  border: 2px solid #090b14;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(180deg, #38bdf8 0%, #a855f7 100%);
-  box-shadow: 0 0 12px rgba(34, 211, 238, 0.6);
-}
-
-/* ════ Universal Ambient Background Orbs ════ */
-body::before {
-  content: '';
-  position: fixed;
-  top: -15%;
-  left: -10%;
-  width: 55vw;
-  height: 55vw;
-  max-width: 750px;
-  max-height: 750px;
-  background: radial-gradient(circle, rgba(124, 58, 237, 0.12) 0%, transparent 68%);
-  pointer-events: none;
-  z-index: -1;
-  filter: blur(80px);
-  transform: translateZ(0);
-}
-body::after {
-  content: '';
-  position: fixed;
-  bottom: -15%;
-  right: -10%;
-  width: 55vw;
-  height: 55vw;
-  max-width: 750px;
-  max-height: 750px;
-  background: radial-gradient(circle, rgba(34, 211, 238, 0.09) 0%, transparent 68%);
-  pointer-events: none;
-  z-index: -1;
-  filter: blur(80px);
-  transform: translateZ(0);
+  background: #394569;
 }
 
 /* ════ Keyframe Animations ════ */
@@ -1118,77 +1085,40 @@ footer {
 .skin-canvas-container canvas:active {
   cursor: grabbing;
 }
-/* ════ Cyber Hologram Pedestal & Beam ════ */
+/* ════ Clean Character Stage Platform ════ */
 .skin-pedestal-container {
   position: absolute;
   bottom: 2.8rem;
   left: 50%;
   transform: translateX(-50%);
-  width: 240px;
-  height: 120px;
+  width: 200px;
+  height: 48px;
   display: flex;
   align-items: center;
   justify-content: center;
   pointer-events: none;
   z-index: 1;
 }
-.skin-holo-beam {
-  position: absolute;
-  bottom: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 150px;
-  height: 280px;
-  background: linear-gradient(to top, rgba(34, 211, 238, 0.22) 0%, rgba(124, 58, 237, 0.08) 50%, transparent 100%);
-  clip-path: polygon(18% 0%, 82% 0%, 100% 100%, 0% 100%);
-  pointer-events: none;
-  animation: holoPulse 3.5s ease-in-out infinite;
-}
 .skin-pedestal-glow {
-  position: absolute;
-  bottom: 2.5rem;
-  left: 50%;
-  transform: translateX(-50%) rotateX(68deg);
-  width: 220px;
-  height: 220px;
+  width: 170px;
+  height: 34px;
   border-radius: 50%;
-  background: radial-gradient(circle at center, rgba(34, 211, 238, 0.45) 0%, rgba(124, 58, 237, 0.3) 45%, transparent 72%);
-  border: 2px dashed rgba(34, 211, 238, 0.65);
-  box-shadow: 0 0 28px rgba(34, 211, 238, 0.55), inset 0 0 20px rgba(124, 58, 237, 0.4);
+  background: radial-gradient(ellipse at center, rgba(124, 58, 237, 0.35) 0%, rgba(34, 211, 238, 0.12) 45%, transparent 75%);
+  filter: blur(6px);
   pointer-events: none;
-  z-index: 1;
-  animation: spinConic 18s linear infinite;
-}
-.skin-pedestal-glow::before {
-  content: '';
-  position: absolute;
-  inset: 22px;
-  border-radius: 50%;
-  border: 1.5px solid rgba(167, 139, 250, 0.7);
-  box-shadow: 0 0 14px rgba(167, 139, 250, 0.5);
-  animation: spinConicRev 10s linear infinite;
-}
-.skin-pedestal-glow::after {
-  content: '';
-  position: absolute;
-  inset: 44px;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(255, 255, 255, 0.85) 0%, rgba(34, 211, 238, 0.5) 30%, transparent 65%);
-  filter: blur(5px);
 }
 .skin-hint-badge {
   position: absolute;
   bottom: 0.85rem;
   font-family: var(--font-mono);
   font-size: 0.72rem;
-  color: var(--text-muted);
-  background: rgba(9, 11, 20, 0.75);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  padding: 0.35rem 0.85rem;
+  color: var(--text-dim);
+  background: rgba(9, 11, 20, 0.65);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  padding: 0.3rem 0.75rem;
   border-radius: 9999px;
-  border: 1px solid rgba(34, 211, 238, 0.22);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   pointer-events: none;
   z-index: 3;
 }
@@ -1295,22 +1225,16 @@ footer {
    IN-PAGE 3D SKIN PROFILE CARD (Account page & Homepage)
 ═══════════════════════════════════════════════════════════ */
 .skin-profile-card {
-  background: linear-gradient(135deg, rgba(23, 30, 54, 0.95) 0%, rgba(17, 22, 40, 0.98) 100%);
-  border: 1px solid rgba(34, 211, 238, 0.3);
-  border-top: 1px solid rgba(34, 211, 238, 0.6);
-  border-radius: var(--radius-lg);
+  background: #101524;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
   padding: 1.5rem;
-  box-shadow: 0 16px 45px rgba(0, 0, 0, 0.55), 0 0 25px rgba(34, 211, 238, 0.1);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
   position: relative;
-  overflow: hidden;
   margin-bottom: 1.5rem;
 }
 .skin-profile-card::before {
-  content: '';
-  position: absolute;
-  top: 0; left: 0; right: 0;
-  height: 2px;
-  background: linear-gradient(90deg, transparent, var(--lagoon), var(--primary), transparent);
+  display: none;
 }
 .skin-card-header {
   display: flex;
@@ -1319,9 +1243,9 @@ footer {
   margin-bottom: 1.1rem;
 }
 .skin-card-title {
-  font-family: var(--font-display, 'Chakra Petch', sans-serif);
+  font-family: var(--font-heading);
   font-size: 1.1rem;
-  font-weight: 800;
+  font-weight: 700;
   color: #ffffff;
   display: flex;
   align-items: center;
@@ -1335,27 +1259,29 @@ footer {
   justify-content: center;
   position: relative;
   background:
-    radial-gradient(ellipse 260px 180px at 50% 70%, rgba(34, 211, 238, 0.18) 0%, rgba(124, 58, 237, 0.1) 45%, transparent 75%),
-    linear-gradient(180deg, rgba(12, 16, 32, 0.8) 0%, rgba(7, 9, 18, 0.95) 100%);
-  border: 1px solid rgba(34, 211, 238, 0.25);
+    radial-gradient(ellipse 280px 160px at 50% 75%, rgba(56, 189, 248, 0.08) 0%, transparent 70%),
+    linear-gradient(180deg, #101524 0%, #0a0d17 100%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: var(--radius);
   padding: 1rem;
   margin-bottom: 1.1rem;
   overflow: hidden;
-  box-shadow: inset 0 0 35px rgba(0, 0, 0, 0.7);
-  transition: border-color var(--dur) var(--ease-out), box-shadow var(--dur) var(--ease-out);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  transition: border-color var(--dur) var(--ease-out);
 }
 .skin-interactive-stage.is-dragover {
-  border-color: var(--lagoon);
-  box-shadow: 0 0 30px rgba(34, 211, 238, 0.4), inset 0 0 30px rgba(34, 211, 238, 0.2);
+  border-color: var(--primary);
+  background:
+    radial-gradient(ellipse 280px 160px at 50% 75%, rgba(56, 189, 248, 0.15) 0%, transparent 70%),
+    linear-gradient(180deg, #13192c 0%, #0b0f1c 100%);
 }
 .skin-drop-zone-overlay {
   position: absolute;
   inset: 0;
-  background: rgba(9, 11, 20, 0.88);
+  background: rgba(10, 14, 26, 0.92);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
-  border: 2px dashed var(--lagoon);
+  border: 2px dashed rgba(56, 189, 248, 0.6);
   border-radius: var(--radius);
   display: flex;
   flex-direction: column;
@@ -1372,18 +1298,17 @@ footer {
   pointer-events: auto;
 }
 .skin-drop-zone-overlay .drop-icon {
-  font-size: 2.4rem;
+  font-size: 2.2rem;
   animation: floatSubtle 1.8s ease-in-out infinite;
 }
 .skin-drop-zone-overlay .drop-title {
   font-family: var(--font-heading);
-  font-size: 1.1rem;
-  font-weight: 800;
-  color: var(--lagoon);
-  text-shadow: 0 0 12px rgba(34, 211, 238, 0.6);
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #38bdf8;
 }
 .skin-drop-zone-overlay .drop-sub {
-  font-size: 0.8rem;
+  font-size: 0.82rem;
   color: var(--text-muted);
 }
 .skin-interactive-stage canvas {
