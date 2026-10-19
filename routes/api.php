@@ -33,7 +33,8 @@ Route::get('/products', [ProductController::class, 'index']);
 Route::get('/products/{id}', [ProductController::class, 'show']);
 
 // ─── Payment Webhooks (SePay Gateway) ─────────────────────────────────────────
-Route::post('/webhooks/sepay', [SepayWebhookController::class, 'handleWebhook']);
+Route::match(['GET', 'POST'], '/webhooks/sepay', [SepayWebhookController::class, 'handleWebhook']);
+Route::match(['GET', 'POST'], '/sepay/webhook', [SepayWebhookController::class, 'handleWebhook']);
 
 // ─── Protected Routes (Requires Bearer Token) ─────────────────────────────────
 Route::middleware('auth:sanctum')->group(function () {

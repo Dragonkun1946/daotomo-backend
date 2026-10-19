@@ -21,6 +21,19 @@ class SepayWebhookController extends Controller
      */
     public function handleWebhook(Request $request)
     {
+        // 0. Informative response for browser checks or monitoring probes (GET)
+        if ($request->isMethod('GET')) {
+            return response()->json([
+                'status' => 'OK',
+                'service' => 'SePay Webhook Gateway (Đảo Tò Mò)',
+                'framework' => 'Laravel 11',
+                'message' => 'SePay Webhook endpoint is active and awaiting POST notifications 🏝️',
+                'expected_method' => 'POST',
+                'expected_content_type' => 'application/json',
+                'official_url' => url('/api/webhooks/sepay'),
+            ], 200);
+        }
+
         // 1. Authenticate webhook request (API Key or HMAC-SHA256 signature)
         if (!$this->sepayService->verifyWebhook($request)) {
             Log::warning('[SePay Webhook] Authentication failed for incoming request from IP ' . $request->ip());

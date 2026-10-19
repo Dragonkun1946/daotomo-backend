@@ -450,4 +450,61 @@ class SepayWebhookTest extends TestCase
         $this->assertStringContainsString('0977364711', $orderData['vietqrUrl']);
         $this->assertStringContainsString('50000', $orderData['vietqrUrl']);
     }
+
+    // ─── 10. Route Probes & Aliases Tests ─────────────────────────────────────
+    public function test_sepay_webhook_get_probe_returns_200_active_info(): void
+    {
+        $res = $this->getJson('/api/webhooks/sepay');
+        $res->assertStatus(200)
+            ->assertJson([
+                'status' => 'OK',
+                'service' => 'SePay Webhook Gateway (Đảo Tò Mò)',
+                'expected_method' => 'POST',
+            ]);
+
+        // Also test root alias GET
+        $resRoot = $this->getJson('/webhooks/sepay');
+        $resRoot->assertStatus(200)
+                ->assertJson(['status' => 'OK']);
+    }
+
+    public function test_sepay_webhook_root_alias_and_alternate_path_work(): void
+    {
+        $order1 = $this->createTestOrder(50000, 'DTM-ALIAS1');
+
+        $payload1 = [
+            'id' => 91001,
+            'gateway' => 'MBBank',
+            'transactionDate' => '2026-10-19 14:00:00',
+            'accountNumber' => '0977364711',
+            'transferType' => 'in',
+            'transferAmount' => 50000,
+            'content' => 'DTM ALIAS1 thanh toan',
+        ];
+
+        // Root alias /webhooks/sepay
+        $res1 = $this->postJson('/webhooks/sepay', $payload1, [
+            'Authorization' => 'Apikey test_sepay_api_key_123',
+        ]);
+        $res1->assertStatus(200)->assertJson(['success' => true]);
+        $this->assertEquals('paid', $order1->fresh()->payment_status);
+
+        // Alternate path /api/sepay/webhook
+        $order2 = $this->createTestOrder(50000, 'DTM-ALIAS2');
+        $payload2 = [
+            'id' => 91002,
+            'gateway' => 'MBBank',
+            'transactionDate' => '2026-10-19 14:01:00',
+            'accountNumber' => '0977364711',
+            'transferType' => 'in',
+            'transferAmount' => 50000,
+            'content' => 'DTM ALIAS2 thanh toan',
+        ];
+
+        $res2 = $this->postJson('/api/sepay/webhook', $payload2, [
+            'Authorization' => 'Apikey test_sepay_api_key_123',
+        ]);
+        $res2->assertStatus(200)->assertJson(['success' => true]);
+        $this->assertEquals('paid', $order2->fresh()->payment_status);
+    }
 }
