@@ -42,6 +42,7 @@ class Order extends Model
         'transferContent',
         'adminNote',
         'qrUrl',
+        'qrOnlyUrl',
         'vietqrUrl',
         'sepayQrUrl',
     ];
@@ -91,14 +92,30 @@ class Order extends Model
         return $this->attributes['admin_note'] ?? '';
     }
 
+    public function getCleanTransferContent(): string
+    {
+        $raw = $this->transfer_content ?: $this->order_code;
+        return str_replace(['-', ' '], '', $raw);
+    }
+
     public function getVietqrUrlAttribute(): string
     {
         $bin = config('services.sepay.bank_bin', '970415');
         $acc = config('services.sepay.account_number', '103870631688');
         $accName = urlencode(config('services.sepay.account_name', 'DAO TO MO'));
         $amount = (int) $this->total_amount;
-        $content = urlencode($this->transfer_content ?: $this->order_code);
+        $content = urlencode($this->getCleanTransferContent());
         return "https://img.vietqr.io/image/{$bin}-{$acc}-compact2.png?amount={$amount}&addInfo={$content}&accountName={$accName}";
+    }
+
+    public function getQrOnlyUrlAttribute(): string
+    {
+        $bin = config('services.sepay.bank_bin', '970415');
+        $acc = config('services.sepay.account_number', '103870631688');
+        $accName = urlencode(config('services.sepay.account_name', 'DAO TO MO'));
+        $amount = (int) $this->total_amount;
+        $content = urlencode($this->getCleanTransferContent());
+        return "https://img.vietqr.io/image/{$bin}-{$acc}-qr_only.png?amount={$amount}&addInfo={$content}&accountName={$accName}";
     }
 
     public function getSepayQrUrlAttribute(): string
@@ -106,13 +123,13 @@ class Order extends Model
         $bank = config('services.sepay.bank_name', 'VietinBank');
         $acc = config('services.sepay.account_number', '103870631688');
         $amount = (int) $this->total_amount;
-        $content = urlencode($this->transfer_content ?: $this->order_code);
+        $content = urlencode($this->getCleanTransferContent());
         return "https://qr.sepay.vn/img?acc={$acc}&bank={$bank}&amount={$amount}&des={$content}";
     }
 
     public function getQrUrlAttribute(): string
     {
-        return $this->getVietqrUrlAttribute();
+        return $this->getQrOnlyUrlAttribute();
     }
 
     public function user()

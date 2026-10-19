@@ -250,6 +250,356 @@
     }
     .modal .qr-box img { width: 100%; height: 100%; object-fit: contain; }
 
+    /* Expanded Horizontal QR Hub Modal */
+    .modal.modal-qr-hub {
+      max-width: 860px;
+      width: 96%;
+      padding: 1.75rem 2rem;
+    }
+
+    .qr-hub-header {
+      text-align: center;
+      margin-bottom: 1.25rem;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      padding-bottom: 0.85rem;
+    }
+
+    .qr-hub-status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.3rem 0.85rem;
+      border-radius: 9999px;
+      background: rgba(34,211,238,0.12);
+      border: 1px solid rgba(34,211,238,0.35);
+      color: var(--lagoon);
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      margin-bottom: 0.45rem;
+    }
+
+    .qr-hub-title {
+      font-size: 1.35rem;
+      font-family: var(--font-display);
+      font-weight: 800;
+      color: #fff;
+      margin-bottom: 0.4rem;
+    }
+
+    .qr-hub-layout {
+      display: grid;
+      grid-template-columns: 310px 1fr;
+      gap: 1.75rem;
+      align-items: start;
+    }
+
+    @media (max-width: 768px) {
+      .modal.modal-qr-hub {
+        padding: 1.25rem 1rem;
+      }
+      .qr-hub-layout {
+        grid-template-columns: 1fr;
+        gap: 1.25rem;
+      }
+    }
+
+    /* Left: QR Card */
+    .qr-display-card {
+      background: rgba(255,255,255,0.02);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 1.1rem;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .qr-image-wrapper {
+      width: 100%;
+      max-width: 275px;
+      aspect-ratio: 1;
+      background: #ffffff;
+      border-radius: 14px;
+      padding: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 3px solid var(--lagoon);
+      box-shadow: 0 8px 30px rgba(34,211,238,0.3);
+      position: relative;
+      overflow: hidden;
+      margin-bottom: 0.85rem;
+    }
+
+    .qr-image-wrapper img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      image-rendering: -webkit-optimize-contrast;
+      image-rendering: crisp-edges;
+    }
+
+    .qr-scan-line {
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, transparent, #22d3ee, #a855f7, transparent);
+      box-shadow: 0 0 12px #22d3ee;
+      animation: qrScanAnim 2.8s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+      pointer-events: none;
+    }
+
+    @keyframes qrScanAnim {
+      0% { top: 0%; opacity: 0; }
+      15% { opacity: 1; }
+      85% { opacity: 1; }
+      100% { top: 98%; opacity: 0; }
+    }
+
+    .qr-view-tabs {
+      display: flex;
+      gap: 0.35rem;
+      width: 100%;
+      margin-bottom: 0.75rem;
+      background: rgba(0,0,0,0.35);
+      padding: 4px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+    }
+
+    .qr-tab {
+      flex: 1;
+      padding: 0.4rem 0.2rem;
+      border-radius: 4px;
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-size: 0.72rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      white-space: nowrap;
+    }
+
+    .qr-tab.active {
+      background: var(--primary);
+      color: #fff;
+      box-shadow: 0 2px 8px var(--primary-glow);
+    }
+
+    .qr-quick-actions {
+      display: flex;
+      gap: 0.5rem;
+      width: 100%;
+      margin-bottom: 0.6rem;
+    }
+
+    .qr-action-btn {
+      flex: 1;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.3rem;
+      padding: 0.45rem 0.5rem;
+      border-radius: var(--radius-sm);
+      background: rgba(255,255,255,0.05);
+      border: 1px solid var(--border);
+      color: var(--text);
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.2s ease;
+    }
+
+    .qr-action-btn:hover {
+      background: rgba(34,211,238,0.15);
+      border-color: var(--lagoon);
+      color: #fff;
+    }
+
+    .qr-tip-text {
+      font-size: 0.73rem;
+      color: var(--text-muted);
+      line-height: 1.4;
+      text-align: left;
+    }
+
+    /* Right: Details */
+    .qr-hub-right {
+      display: flex;
+      flex-direction: column;
+      gap: 0.85rem;
+    }
+
+    .qr-price-box {
+      background: linear-gradient(135deg, rgba(124,58,237,0.15) 0%, rgba(34,211,238,0.08) 100%);
+      border: 1px solid rgba(124,58,237,0.3);
+      border-radius: var(--radius-lg);
+      padding: 0.9rem 1.1rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .qr-price-label {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .qr-price-val {
+      font-size: 1.8rem;
+      font-weight: 900;
+      color: var(--accent);
+      font-family: var(--font-mono);
+      line-height: 1;
+    }
+
+    .qr-order-meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      padding-top: 0.5rem;
+      border-top: 1px solid rgba(255,255,255,0.06);
+      font-size: 0.82rem;
+      color: var(--text);
+      font-weight: 700;
+    }
+
+    .qr-bank-card {
+      background: rgba(255,255,255,0.02);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 0.95rem 1.1rem;
+      font-size: 0.85rem;
+      text-align: left;
+    }
+
+    .qr-bank-title {
+      font-weight: 700;
+      color: #fbbf24;
+      font-size: 0.88rem;
+      margin-bottom: 0.25rem;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .qr-bank-desc {
+      font-size: 0.76rem;
+      color: var(--text-muted);
+      margin-bottom: 0.65rem;
+      line-height: 1.4;
+    }
+
+    .qr-info-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.45rem 0;
+      border-bottom: 1px dashed rgba(255,255,255,0.06);
+      gap: 0.5rem;
+    }
+
+    .qr-info-row:last-of-type {
+      border-bottom: none;
+    }
+
+    .qr-info-row.highlight-row {
+      background: rgba(34,211,238,0.05);
+      padding: 0.45rem 0.6rem;
+      border-radius: 4px;
+      margin: 0.15rem 0;
+      border-bottom: none;
+    }
+
+    .qr-info-row.memo-row {
+      background: rgba(245,158,11,0.08);
+      border: 1px solid rgba(245,158,11,0.25);
+      padding: 0.55rem 0.65rem;
+      border-radius: 6px;
+      margin: 0.35rem 0;
+    }
+
+    .qr-info-label {
+      color: var(--text-muted);
+      font-size: 0.8rem;
+      flex-shrink: 0;
+    }
+
+    .qr-info-val {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      text-align: right;
+    }
+
+    .mono-bold {
+      font-family: var(--font-mono);
+      font-weight: 800;
+      color: #fff;
+      font-size: 0.95rem;
+    }
+
+    .mono-memo {
+      font-family: var(--font-mono);
+      font-weight: 800;
+      color: #fbbf24;
+      font-size: 1.05rem;
+      letter-spacing: 0.5px;
+    }
+
+    .qr-warning-note {
+      font-size: 0.74rem;
+      color: var(--text-muted);
+      line-height: 1.4;
+      margin-top: 0.6rem;
+      padding-top: 0.45rem;
+      border-top: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .qr-live-status {
+      display: flex;
+      align-items: center;
+      gap: 0.55rem;
+      padding: 0.55rem 0.85rem;
+      background: rgba(16,185,129,0.08);
+      border: 1px solid rgba(16,185,129,0.25);
+      border-radius: var(--radius-sm);
+      font-size: 0.78rem;
+      color: #34d399;
+      font-weight: 600;
+    }
+
+    .pulse-indicator {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: #10b981;
+      box-shadow: 0 0 10px #10b981;
+      animation: pulseDot 1.6s infinite;
+      flex-shrink: 0;
+    }
+
+    @keyframes pulseDot {
+      0% { transform: scale(0.9); opacity: 0.6; }
+      50% { transform: scale(1.3); opacity: 1; }
+      100% { transform: scale(0.9); opacity: 0.6; }
+    }
+
+    .qr-footer-actions {
+      display: flex;
+      gap: 0.65rem;
+      margin-top: 0.2rem;
+    }
+
     .copy-badge-btn {
       cursor: pointer;
       display: inline-flex;
@@ -424,39 +774,111 @@
       </div>
     </div>
 
-    <!-- Step 2: Payment Details (QR & Code) -->
-    <div id="modal-step-paid" style="display:none;text-align:center">
-      <div style="font-size:2.5rem;margin-bottom:0.25rem">🎉</div>
-      <h2>Đặt Hàng Thành Công!</h2>
-      <div class="countdown-timer-pill">⏰ Cửa sổ thanh toán: <span id="m-pay-countdown">15:00</span></div>
-      <p style="font-size:0.88rem;color:var(--text-muted);margin-bottom:0.85rem;line-height:1.5">
-        Quét mã VietQR bên dưới bằng bất kỳ App Ngân hàng hoặc MoMo để thanh toán.
-      </p>
-
-      <div class="qr-box">
-        <img id="m-vietqr-img" src="/img/qr.png" alt="Mã VietQR Chuyển Khoản">
+    <!-- Step 2: Payment Details (Expanded Horizontal QR Hub) -->
+    <div id="modal-step-paid" style="display:none">
+      <div class="qr-hub-header">
+        <div class="qr-hub-status-badge">🎉 ĐƠN HÀNG ĐÃ KHỞI TẠO — CHỜ THANH TOÁN</div>
+        <h2 class="qr-hub-title">Cổng Thanh Toán Tự Động VietQR / SePay</h2>
+        <div class="countdown-timer-pill">⏰ Cửa sổ thanh toán tự động: <span id="m-pay-countdown">15:00</span></div>
       </div>
 
-      <div style="font-size:1.6rem;font-weight:800;color:var(--accent);font-family:var(--font-mono);margin-top:0.5rem" id="m-res-total">0đ</div>
-      <div style="font-size:0.88rem;color:var(--text);font-weight:700;margin:0.4rem 0" id="m-res-code">Mã đơn: #DTM-XXXXXX</div>
-      
-      <div style="background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:var(--radius);padding:0.85rem 1rem;margin:1rem 0;font-size:0.85rem;text-align:left">
-        <div style="margin-bottom:0.5rem;display:flex;align-items:center;justify-content:space-between">
-          <span>STK VietinBank: <strong>103870631688</strong></span>
-          <button class="copy-badge-btn" onclick="copyText('103870631688', 'Đã chép STK!')">📋 Chép STK</button>
-        </div>
-        <div style="margin-bottom:0.5rem;display:flex;align-items:center;justify-content:space-between">
-          <span>Nội dung CK: <strong id="m-res-transfer" style="color:var(--lagoon);font-family:var(--font-mono)"></strong></span>
-          <button class="copy-badge-btn" onclick="copyTransferContent()">📋 Chép nội dung</button>
-        </div>
-        <div style="color:var(--text-muted);font-size:0.75rem">⚠️ Vui lòng ghi chính xác nội dung chuyển khoản để hệ thống ghi nhận tự động.</div>
-      </div>
+      <div class="qr-hub-layout">
+        <!-- LEFT: QR Display Frame & Tools -->
+        <div class="qr-hub-left">
+          <div class="qr-display-card">
+            <div class="qr-image-wrapper">
+              <img id="m-vietqr-img" src="/img/qr.png" alt="Mã VietQR Chuyển Khoản" />
+              <div class="qr-scan-line"></div>
+            </div>
 
-      <div style="display:flex;flex-direction:column;gap:0.6rem">
-        <a id="m-view-order-link" href="/html/Account.html" class="btn btn-primary btn-full">
-          📦 Đến Lịch Sử Đơn Hàng Để Theo Dõi
-        </a>
-        <button class="btn btn-ghost btn-full" onclick="closeModal()">Đã Hiểu, Đóng Lại</button>
+            <!-- QR Switcher Tabs -->
+            <div class="qr-view-tabs">
+              <button type="button" class="qr-tab active" id="tab-qr-scan" onclick="switchQrView('scan')">⚡ Mã Quét Nét Cao</button>
+              <button type="button" class="qr-tab" id="tab-qr-poster" onclick="switchQrView('poster')">🖼️ Khung VietQR</button>
+              <button type="button" class="qr-tab" id="tab-qr-sepay" onclick="switchQrView('sepay')">🏦 SePay QR</button>
+            </div>
+
+            <div class="qr-quick-actions">
+              <a id="btn-qr-download" href="#" target="_blank" download class="qr-action-btn">📥 Tải Mã QR</a>
+              <a id="btn-qr-open" href="#" target="_blank" class="qr-action-btn">🔎 Mở Cỡ Lớn</a>
+            </div>
+
+            <div class="qr-tip-text">
+              💡 <strong>Mẹo quét:</strong> Dùng App Ngân hàng (MB, VCB, BIDV, Techcombank...) hoặc MoMo quét mã. Hệ thống tự động xác nhận trong 5-15 giây.
+            </div>
+          </div>
+        </div>
+
+        <!-- RIGHT: Order Information & Manual Transfer Info -->
+        <div class="qr-hub-right">
+          <!-- Total Price Banner -->
+          <div class="qr-price-box">
+            <div>
+              <div class="qr-price-label">Số Tiền Cần Thanh Toán</div>
+              <div class="qr-price-val" id="m-res-total">0đ</div>
+            </div>
+            <button type="button" class="copy-badge-btn" onclick="copyTotalAmount()" style="margin:0">📋 Chép số tiền</button>
+            <div class="qr-order-meta">
+              <span id="m-res-code">Mã đơn: #DTM-XXXXXX</span>
+              <button type="button" class="copy-badge-btn" onclick="copyOrderCode()" style="margin:0">📋 Chép mã đơn</button>
+            </div>
+          </div>
+
+          <!-- Bank Information Card -->
+          <div class="qr-bank-card">
+            <div class="qr-bank-title">💳 Thông Tin Chuyển Khoản Thủ Công</div>
+            <div class="qr-bank-desc">Nếu không thể quét QR, vui lòng chuyển khoản chính xác thông tin:</div>
+
+            <div class="qr-info-row">
+              <div class="qr-info-label">Ngân hàng:</div>
+              <div class="qr-info-val">
+                <strong id="m-res-bank">VietinBank</strong> (Công Thương Việt Nam)
+              </div>
+            </div>
+
+            <div class="qr-info-row highlight-row">
+              <div class="qr-info-label">Số tài khoản:</div>
+              <div class="qr-info-val">
+                <span class="mono-bold" id="m-res-acc">103870631688</span>
+                <button type="button" class="copy-badge-btn" onclick="copyText('103870631688', 'Đã sao chép STK!')">📋 Chép STK</button>
+              </div>
+            </div>
+
+            <div class="qr-info-row">
+              <div class="qr-info-label">Chủ tài khoản:</div>
+              <div class="qr-info-val">
+                <strong id="m-res-accname">DAO TO MO</strong>
+                <button type="button" class="copy-badge-btn" onclick="copyAccountName()">📋 Chép tên</button>
+              </div>
+            </div>
+
+            <div class="qr-info-row memo-row">
+              <div class="qr-info-label">Nội dung CK:</div>
+              <div class="qr-info-val">
+                <span class="mono-memo" id="m-res-transfer">DTM XXXXXX</span>
+                <button type="button" class="copy-badge-btn" onclick="copyTransferContent()" style="background:#fbbf24;color:#000;font-weight:700">📋 Chép nội dung</button>
+              </div>
+            </div>
+
+            <div class="qr-warning-note">
+              ⚠️ <strong>Lưu ý:</strong> Giữ nguyên nội dung chuyển khoản để hệ thống SePay tự động kích hoạt tài khoản ngay lập tức.
+            </div>
+          </div>
+
+          <!-- Live Listening Indicator -->
+          <div class="qr-live-status" id="qr-live-pulse">
+            <span class="pulse-indicator"></span>
+            <span id="qr-live-text">Đang lắng nghe thanh toán tự động qua SePay...</span>
+          </div>
+
+          <!-- Action buttons -->
+          <div class="qr-footer-actions">
+            <a id="m-view-order-link" href="/html/Account.html" class="btn btn-primary" style="flex:2;text-align:center">
+              📦 Xem Đơn Trong Tài Khoản
+            </a>
+            <button type="button" class="btn btn-ghost" style="flex:1" onclick="closeModal()">Đóng</button>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -625,28 +1047,58 @@ async function submitCreateOrder() {
   document.getElementById('m-error-msg').innerHTML = '';
 
   try {
-    const { data: order } = await api.createOrder([{ productId: selectedProduct._id, quantity: qty }], mc, note, 'qr');
-    const code = order.orderCode || '#' + order._id.slice(-8).toUpperCase();
-    const transfer = order.paymentDetails?.transferContent || code;
+    const res = await api.createOrder([{ productId: selectedProduct._id, quantity: qty }], mc, note, 'qr');
+    const order = res.order || res.data || res;
+    const payment = res.payment || {};
 
-    document.getElementById('m-res-total').textContent = order.total.toLocaleString('vi-VN') + 'đ';
+    const code = order.orderCode || order.order_code || payment.orderCode || '#' + (order.id || order._id || '').slice(-8).toUpperCase();
+    const transfer = payment.transferContent || order.transferContent || order.transfer_content || code;
+    const total = order.totalAmount || order.total_amount || order.total || payment.totalAmount || (selectedProduct.price * qty);
+    const orderId = order.id || order._id;
+
+    const cleanTransfer = transfer.replace(/[\s-]/g, '');
+    const qrOnlyUrl = payment.qrOnlyUrl || order.qrOnlyUrl ||
+      `https://img.vietqr.io/image/970415-103870631688-qr_only.png?amount=${total}&addInfo=${encodeURIComponent(cleanTransfer)}&accountName=DAO%20TO%20MO`;
+    const vietqrUrl = payment.vietqrUrl || order.vietqrUrl ||
+      `https://img.vietqr.io/image/970415-103870631688-compact2.png?amount=${total}&addInfo=${encodeURIComponent(cleanTransfer)}&accountName=DAO%20TO%20MO`;
+    const sepayQrUrl = payment.sepayQrUrl || order.sepayQrUrl ||
+      `https://qr.sepay.vn/img?acc=103870631688&bank=VietinBank&amount=${total}&des=${encodeURIComponent(cleanTransfer)}`;
+
+    currentOrderPayment = {
+      orderId,
+      code,
+      transfer,
+      total,
+      qrOnlyUrl,
+      vietqrUrl,
+      sepayQrUrl,
+      bankName: payment.bankName || 'VietinBank',
+      accountNumber: payment.accountNumber || '103870631688',
+      accountName: payment.accountName || 'DAO TO MO',
+    };
+
+    document.getElementById('m-res-total').textContent = total.toLocaleString('vi-VN') + 'đ';
     document.getElementById('m-res-code').textContent = 'Mã đơn: ' + code;
     document.getElementById('m-res-transfer').textContent = transfer;
-    document.getElementById('m-view-order-link').href = `/html/Account.html?orderId=${order._id}`;
+    const accEl = document.getElementById('m-res-acc');
+    if (accEl) accEl.textContent = currentOrderPayment.accountNumber;
+    const accNameEl = document.getElementById('m-res-accname');
+    if (accNameEl) accNameEl.textContent = currentOrderPayment.accountName;
+    const bankEl = document.getElementById('m-res-bank');
+    if (bankEl) bankEl.textContent = currentOrderPayment.bankName;
 
-    // Dynamic VietQR / SePay generator
-    const vietqrUrl = order.qrUrl || order.vietqrUrl || order.paymentDetails?.vietqrUrl ||
-      `https://img.vietqr.io/image/970415-103870631688-compact2.png?amount=${order.total}&addInfo=${encodeURIComponent(transfer)}&accountName=DAO%20TO%20MO`;
-    const imgEl = document.getElementById('m-vietqr-img');
-    if (imgEl) {
-      imgEl.src = vietqrUrl;
-      imgEl.onerror = () => { imgEl.src = '/img/qr.png'; };
-    }
+    document.getElementById('m-view-order-link').href = `/html/Account.html?orderId=${orderId}`;
+
+    // Switch default to pure high-res QR for fastest scanning
+    switchQrView('scan');
 
     document.getElementById('modal-step-confirm').style.display = 'none';
     document.getElementById('modal-step-paid').style.display = 'block';
+    document.querySelector('.modal').classList.add('modal-qr-hub');
 
     startCountdown();
+    startOrderPolling(orderId);
+
     if (window.ConfettiFX) ConfettiFX.fire();
     if (window.SoundFX) SoundFX.playSuccess();
     if (typeof api.showToast === 'function') api.showToast('Tạo đơn hàng ' + code + ' thành công!', 'success');
@@ -659,9 +1111,104 @@ async function submitCreateOrder() {
   }
 }
 
+let currentOrderPayment = null;
+let orderPollingTimer = null;
+
+function switchQrView(mode) {
+  if (!currentOrderPayment) return;
+  const imgEl = document.getElementById('m-vietqr-img');
+  const btnDownload = document.getElementById('btn-qr-download');
+  const btnOpen = document.getElementById('btn-qr-open');
+
+  document.querySelectorAll('.qr-tab').forEach(t => t.classList.remove('active'));
+  let targetUrl = currentOrderPayment.qrOnlyUrl;
+
+  if (mode === 'poster') {
+    targetUrl = currentOrderPayment.vietqrUrl;
+    document.getElementById('tab-qr-poster')?.classList.add('active');
+  } else if (mode === 'sepay') {
+    targetUrl = currentOrderPayment.sepayQrUrl;
+    document.getElementById('tab-qr-sepay')?.classList.add('active');
+  } else {
+    // Default: 'scan' (high-res pure QR)
+    targetUrl = currentOrderPayment.qrOnlyUrl;
+    document.getElementById('tab-qr-scan')?.classList.add('active');
+  }
+
+  if (imgEl) {
+    imgEl.src = targetUrl;
+    imgEl.onerror = () => { imgEl.src = currentOrderPayment.sepayQrUrl || '/img/qr.png'; };
+  }
+  if (btnDownload) btnDownload.href = targetUrl;
+  if (btnOpen) btnOpen.href = targetUrl;
+}
+
+function startOrderPolling(orderId) {
+  stopOrderPolling();
+  if (!orderId) return;
+
+  orderPollingTimer = setInterval(async () => {
+    try {
+      const res = await api.getOrder(orderId);
+      const o = res.order || res.data || res;
+      if (o && (o.payment_status === 'paid' || o.paymentStatus === 'paid' || o.order_status === 'paid' || o.orderStatus === 'paid')) {
+        stopOrderPolling();
+        onPaymentReceivedSuccess(o);
+      }
+    } catch (e) {
+      // Ignore background network transient errors
+    }
+  }, 3500);
+}
+
+function stopOrderPolling() {
+  if (orderPollingTimer) {
+    clearInterval(orderPollingTimer);
+    orderPollingTimer = null;
+  }
+}
+
+function onPaymentReceivedSuccess(order) {
+  if (window.SoundFX) SoundFX.playSuccess();
+  if (window.ConfettiFX) ConfettiFX.fire();
+  if (typeof api.showToast === 'function') {
+    api.showToast('🎉 Nhận thanh toán thành công qua SePay!', 'success');
+  }
+
+  const liveEl = document.getElementById('qr-live-pulse');
+  if (liveEl) {
+    liveEl.style.background = 'rgba(16,185,129,0.2)';
+    liveEl.style.borderColor = '#10b981';
+    liveEl.innerHTML = '<span class="pulse-indicator" style="background:#10b981"></span> <strong>ĐÃ THANH TOÁN THÀNH CÔNG!</strong> Hệ thống đang xử lý giao vật phẩm.';
+  }
+
+  const headerBadge = document.querySelector('.qr-hub-status-badge');
+  if (headerBadge) {
+    headerBadge.textContent = '✅ ĐÃ THANH TOÁN THÀNH CÔNG';
+    headerBadge.style.background = 'rgba(16,185,129,0.2)';
+    headerBadge.style.borderColor = '#10b981';
+    headerBadge.style.color = '#34d399';
+  }
+}
+
 function copyTransferContent() {
-  const content = document.getElementById('m-res-transfer')?.textContent || '';
+  const content = document.getElementById('m-res-transfer')?.textContent || currentOrderPayment?.transfer || '';
   copyText(content, 'Đã sao chép nội dung chuyển khoản!');
+}
+
+function copyOrderCode() {
+  const code = currentOrderPayment?.code || document.getElementById('m-res-code')?.textContent || '';
+  copyText(code.replace('Mã đơn: ', '').trim(), 'Đã sao chép mã đơn hàng!');
+}
+
+function copyTotalAmount() {
+  const total = currentOrderPayment?.total ? String(currentOrderPayment.total) : '50000';
+  copyText(total, 'Đã sao chép số tiền chuyển khoản!');
+}
+
+function copyAccountName() {
+  const name = currentOrderPayment?.accountName || 'DAO TO MO';
+  copyText(name, 'Đã sao chép tên chủ tài khoản!');
 }
 
 function copyText(text, message) {
@@ -673,6 +1220,8 @@ function copyText(text, message) {
 
 function closeModal() {
   document.getElementById('modal').classList.remove('open');
+  document.querySelector('.modal')?.classList.remove('modal-qr-hub');
+  stopOrderPolling();
   if (countdownInterval) clearInterval(countdownInterval);
 }
 

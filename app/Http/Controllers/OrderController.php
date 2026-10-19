@@ -160,6 +160,8 @@ class OrderController extends Controller
                 'orderCode' => $order->order_code,
                 'transferContent' => $order->transfer_content,
                 'totalAmount' => $order->total_amount,
+                'qrUrl' => $order->qr_url,
+                'qrOnlyUrl' => $order->qr_only_url,
                 'vietqrUrl' => $order->vietqr_url,
                 'sepayQrUrl' => $order->sepay_qr_url,
                 'bankName' => config('services.sepay.bank_name', 'VietinBank'),
