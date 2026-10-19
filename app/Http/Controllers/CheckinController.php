@@ -29,7 +29,7 @@ class CheckinController extends Controller
             ->where('checkin_date', $yesterday)
             ->first();
 
-        $streak = $lastCheckin ? (($lastCheckin->streak_day % 7) + 1) : 1;
+        $streak = $lastCheckin ? ($lastCheckin->streak_day + 1) : 1;
         $coinsAwarded = 100 + ($streak * 10);
 
         Checkin::create([
@@ -41,13 +41,19 @@ class CheckinController extends Controller
 
         $user->increment('coins', $coinsAwarded);
 
-        return response()->json([
+        $payload = [
             'success' => true,
             'message' => "Điểm danh ngày {$streak} thành công! Nhận được {$coinsAwarded} xu Đảo 🏝️",
             'streak' => $streak,
             'coinsAwarded' => $coinsAwarded,
-            'userCoins' => $user->coins,
-        ]);
+            'userCoins' => (int) $user->fresh()->coins,
+            'checkedToday' => true,
+            'checkedInToday' => true,
+        ];
+
+        return response()->json(array_merge($payload, [
+            'data' => $payload,
+        ]));
     }
 
     // ─── GET /api/checkin/me ──────────────────────────────────────────────────
@@ -70,14 +76,25 @@ class CheckinController extends Controller
             ->orderBy('checkin_date', 'desc')
             ->first();
 
-        $currentStreak = $last ? $last->streak_day : 0;
+        $currentStreak = $last ? (int) $last->streak_day : 0;
+        $totalDays = Checkin::where('user_id', $user->id)->count();
+        $dates = $checkins->pluck('checkin_date')->map(function ($d) {
+            return is_string($d) ? substr($d, 0, 10) : $d->format('Y-m-d');
+        })->values()->toArray();
 
-        return response()->json([
+        $payload = [
             'success' => true,
-            'checkins' => $checkins,
             'streak' => $currentStreak,
             'checkedToday' => $checkedToday,
-            'coins' => $user->coins,
-        ]);
+            'checkedInToday' => $checkedToday,
+            'totalDays' => $totalDays,
+            'dates' => $dates,
+            'checkins' => $checkins,
+            'coins' => (int) $user->coins,
+        ];
+
+        return response()->json(array_merge($payload, [
+            'data' => $payload,
+        ]));
     }
 }

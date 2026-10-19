@@ -508,15 +508,21 @@ function renderCalendar(dates) {
 
 async function loadCheckinState() {
   try {
-    const { data } = await api.getMyCheckins();
-    document.getElementById('stat-streak').textContent = data.streak;
-    document.getElementById('stat-total').textContent = data.totalDays;
-    updateMilestoneProgress(data.streak || 0);
-    renderCalendar(data.dates);
+    const res = await api.getMyCheckins();
+    const data = res?.data || res || {};
+    const streak = data.streak !== undefined ? Number(data.streak) : 0;
+    const totalDays = data.totalDays !== undefined ? Number(data.totalDays) : (Array.isArray(data.dates) ? data.dates.length : 0);
+    const dates = Array.isArray(data.dates) ? data.dates : [];
+    const isChecked = Boolean(data.checkedInToday || data.checkedToday);
+
+    document.getElementById('stat-streak').textContent = streak;
+    document.getElementById('stat-total').textContent = totalDays;
+    updateMilestoneProgress(streak);
+    renderCalendar(dates);
 
     const btn = document.getElementById('checkin-btn');
     const note = document.getElementById('checkin-note');
-    if (data.checkedInToday) {
+    if (isChecked) {
       btn.disabled = true;
       btn.textContent = '✅ Đã Điểm Danh Hôm Nay';
       note.textContent = 'Chúc mừng bạn! Hãy quay lại vào ngày mai để tiếp tục giữ vững chuỗi nhé.';
@@ -536,15 +542,36 @@ async function doCheckin() {
   const original = btn.textContent;
   btn.textContent = 'Đang ghi nhận...';
   try {
-    await api.checkinToday();
+    const res = await api.checkinToday();
+    const data = res?.data || res || {};
     await loadCheckinState();
+
+    // Update coins in local user session if available
+    if (data.userCoins !== undefined && typeof api.getUser === 'function' && typeof api.setUser === 'function') {
+      const u = api.getUser();
+      if (u) {
+        u.coins = data.userCoins;
+        api.setUser(u);
+      }
+    }
+
+    if (window.ConfettiFX && typeof window.ConfettiFX.fire === 'function') {
+      window.ConfettiFX.fire(window.innerWidth / 2, window.innerHeight / 2, 40);
+    }
+    if (window.SoundFX && typeof window.SoundFX.playSuccess === 'function') {
+      window.SoundFX.playSuccess();
+    }
+
     if (typeof api.showToast === 'function') {
-      api.showToast('Điểm danh thành công! +1 chuỗi ngày', 'success');
+      api.showToast(data.message || res.message || 'Điểm danh thành công! +1 chuỗi ngày', 'success');
     }
   } catch (e) {
     document.getElementById('checkin-note').textContent = e.message;
     btn.disabled = false;
     btn.textContent = original;
+    if (window.SoundFX && typeof window.SoundFX.playError === 'function') {
+      window.SoundFX.playError();
+    }
     if (typeof api.showToast === 'function') {
       api.showToast(e.message || 'Lỗi khi điểm danh', 'error');
     }

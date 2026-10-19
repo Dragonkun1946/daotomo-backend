@@ -355,6 +355,29 @@ class ApiTest extends TestCase
              ->assertJson(['success' => false]);
     }
 
+    public function test_get_checkin_me_returns_streak_and_history(): void
+    {
+        $user = User::where('email', 'player@daotomo.site')->first();
+
+        $res = $this->actingAs($user)->getJson('/api/checkin/me');
+        $res->assertStatus(200)
+             ->assertJsonStructure([
+                 'success',
+                 'streak',
+                 'checkedToday',
+                 'checkedInToday',
+                 'totalDays',
+                 'dates',
+                 'checkins',
+                 'coins',
+                 'data' => [
+                     'streak',
+                     'checkedToday',
+                     'totalDays',
+                 ],
+             ]);
+    }
+
     // ─── 9. Discord OAuth Flow ────────────────────────────────────────────────
     public function test_discord_oauth_redirect_when_not_configured(): void
     {

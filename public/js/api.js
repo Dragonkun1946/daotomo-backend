@@ -245,6 +245,11 @@ function showToast(message, type = 'info', duration = 3400) {
 const api = {
   getToken:   () => localStorage.getItem('dtm_token'),
   getUser:    () => JSON.parse(localStorage.getItem('dtm_user') || 'null'),
+  setUser:    (user) => {
+    if (user) {
+      localStorage.setItem('dtm_user', JSON.stringify(user));
+    }
+  },
   isLoggedIn: () => !!localStorage.getItem('dtm_token'),
   setSession(token, user) {
     if (token) localStorage.setItem('dtm_token', token);
@@ -322,6 +327,7 @@ const api = {
     api.request(`/orders/${id}/payment-proof`, { method: 'PUT', body: JSON.stringify({ paymentProof, note }) }),
   checkinToday: () => api.request('/checkin', { method: 'POST' }),
   getMyCheckins: () => api.request('/checkin/me'),
+  getCheckinStatus: () => api.request('/checkin/me'),
   updateSkin: (skinData, skinUrl) =>
     api.request('/auth/skin', { method: 'POST', body: JSON.stringify({ skinData, skinUrl }) }),
   getActiveSkinUrl: () => {

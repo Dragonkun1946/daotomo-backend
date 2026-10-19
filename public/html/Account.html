@@ -767,14 +767,14 @@
       </div>
 
       <!-- Tile 3: Streak Điểm danh -->
-      <div class="stat-tile">
+      <div class="stat-tile" onclick="window.location.href='/html/Checkin.html'" style="cursor:pointer" title="Bấm để vào trang Điểm Danh nhận quà">
         <div class="stat-tile-icon">🔥</div>
         <div class="stat-tile-content">
           <span class="stat-tile-label">Điểm Danh</span>
           <strong class="stat-tile-val" id="p-streak">0 Ngày</strong>
         </div>
         <div class="stat-tile-action">
-          <a href="/html/Checkin.html" class="stat-tile-link">Nhận Quà ↗</a>
+          <a href="/html/Checkin.html" class="stat-tile-link" id="checkin-action-link" onclick="event.stopPropagation()">Nhận Quà ↗</a>
         </div>
       </div>
 
@@ -1196,14 +1196,44 @@ function showProfile(user) {
   }
 
   // Checkin streak query
-  if (window.api && typeof window.api.getCheckinStatus === 'function') {
-    window.api.getCheckinStatus().then(st => {
-      const streakEl = document.getElementById('p-streak');
-      if (streakEl && st && st.streak !== undefined) {
-        streakEl.textContent = `${st.streak} Ngày 🔥`;
+  const loadCheckinStreak = async () => {
+    const streakEl = document.getElementById('p-streak');
+    const linkEl   = document.getElementById('checkin-action-link');
+    if (!streakEl) return;
+    try {
+      const fn = (window.api && (window.api.getCheckinStatus || window.api.getMyCheckins));
+      if (typeof fn === 'function') {
+        const res = await fn.call(window.api);
+        const data = res?.data || res || {};
+        const streak = data.streak !== undefined ? Number(data.streak) : 0;
+        const checkedToday = Boolean(data.checkedToday || data.checkedInToday);
+
+        streakEl.textContent = `${streak} Ngày 🔥`;
+        if (linkEl) {
+          if (checkedToday) {
+            linkEl.textContent = 'Đã Nhận ✓';
+            linkEl.style.color = '#34d399';
+            linkEl.style.borderColor = 'rgba(16, 185, 129, 0.35)';
+            linkEl.style.background = 'rgba(16, 185, 129, 0.12)';
+            linkEl.title = 'Hôm nay bạn đã hoàn thành điểm danh!';
+          } else {
+            linkEl.textContent = 'Nhận Quà ↗';
+            linkEl.style.color = '#38bdf8';
+            linkEl.style.borderColor = 'rgba(56, 189, 248, 0.25)';
+            linkEl.style.background = 'rgba(56, 189, 248, 0.1)';
+            linkEl.title = 'Bấm để vào trang điểm danh nhận quà';
+          }
+        }
+        if (data.coins !== undefined) {
+          const coinsEl = document.getElementById('p-coins');
+          if (coinsEl) coinsEl.textContent = Number(data.coins).toLocaleString('vi-VN') + ' Xu';
+        }
       }
-    }).catch(() => {});
-  }
+    } catch (err) {
+      console.warn('Checkin query error:', err);
+    }
+  };
+  loadCheckinStreak();
 
   updateAccountAvatar(user);
   if (user.createdAt) {
