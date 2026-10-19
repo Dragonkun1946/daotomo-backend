@@ -23,6 +23,8 @@ class SepayWebhookController extends Controller
     {
         // 0. Informative response for browser checks or monitoring probes (GET)
         if ($request->isMethod('GET')) {
+            $configuredKey = config('services.sepay.webhook_api_key');
+            $configuredSecret = config('services.sepay.webhook_secret');
             return response()->json([
                 'status' => 'OK',
                 'service' => 'SePay Webhook Gateway (Đảo Tò Mò)',
@@ -31,6 +33,10 @@ class SepayWebhookController extends Controller
                 'expected_method' => 'POST',
                 'expected_content_type' => 'application/json',
                 'official_url' => url('/api/webhooks/sepay'),
+                'account_number' => config('services.sepay.account_number'),
+                'has_webhook_api_key' => !empty($configuredKey),
+                'webhook_api_key' => $configuredKey ?: null,
+                'has_webhook_secret' => !empty($configuredSecret),
             ], 200);
         }
 
