@@ -535,4 +535,55 @@ class SepayWebhookTest extends TestCase
                 'success' => true,
             ]);
     }
+
+    public function test_public_order_check_status_endpoint(): void
+    {
+        $order = $this->createTestOrder(29000, 'DTM-CHECK1');
+
+        $res = $this->getJson('/api/orders/check-status/DTM-CHECK1');
+        $res->assertStatus(200)
+            ->assertJson([
+                'success' => true,
+                'order_code' => 'DTM-CHECK1',
+                'is_paid' => false,
+            ]);
+
+        $order->update(['payment_status' => 'paid', 'order_status' => 'paid']);
+
+        $resPaid = $this->getJson('/api/orders/check-status/DTM-CHECK1');
+        $resPaid->assertStatus(200)
+            ->assertJson([
+                'success' => true,
+                'order_code' => 'DTM-CHECK1',
+                'is_paid' => true,
+            ]);
+    }
+
+    public function test_sepay_webhook_auto_recovers_missing_order_on_valid_transfer(): void
+    {
+        $payload = [
+            'id' => 998811,
+            'gateway' => 'MBBank',
+            'transactionDate' => '2026-10-19 14:00:00',
+            'accountNumber' => '0977364711',
+            'transferType' => 'in',
+            'transferAmount' => 29000,
+            'content' => 'MBVCB.123456.DTM 71D1E9.CT',
+        ];
+
+        $res = $this->postJson('/api/webhooks/sepay', $payload, [
+            'Authorization' => 'Apikey test_sepay_api_key_123',
+        ]);
+
+        $res->assertStatus(200)
+            ->assertJson([
+                'success' => true,
+                'order_code' => 'DTM-71D1E9',
+            ]);
+
+        $order = Order::where('order_code', 'DTM-71D1E9')->first();
+        $this->assertNotNull($order);
+        $this->assertEquals('paid', $order->payment_status);
+        $this->assertEquals(29000, (float) $order->total_amount);
+    }
 }

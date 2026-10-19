@@ -871,6 +871,13 @@
             <span id="qr-live-text">Đang lắng nghe thanh toán tự động qua SePay...</span>
           </div>
 
+          <!-- Manual Verification Button -->
+          <div style="margin: 0.65rem 0 0.25rem 0; text-align: center;">
+            <button type="button" id="btn-manual-check" class="btn btn-ghost" style="width:100%;font-size:0.88rem;padding:0.5rem 1rem;border:1px dashed rgba(163,230,53,0.4);border-radius:10px;color:#a3e635;cursor:pointer;background:rgba(163,230,53,0.06);transition:all 0.2s" onclick="checkOrderStatusManual()">
+              🔄 Đã chuyển tiền? Bấm để kiểm tra giao dịch ngay
+            </button>
+          </div>
+
           <!-- Action buttons -->
           <div class="qr-footer-actions">
             <a id="m-view-order-link" href="/html/Account.html" class="btn btn-primary" style="flex:2;text-align:center">
@@ -1097,7 +1104,7 @@ async function submitCreateOrder() {
     document.querySelector('.modal').classList.add('modal-qr-hub');
 
     startCountdown();
-    startOrderPolling(orderId);
+    startOrderPolling(orderId, code);
 
     if (window.ConfettiFX) ConfettiFX.fire();
     if (window.SoundFX) SoundFX.playSuccess();
@@ -1155,22 +1162,119 @@ function switchQrView(mode) {
   if (btnOpen) btnOpen.href = targetUrl;
 }
 
-function startOrderPolling(orderId) {
+async function checkOrderStatusManual() {
+  const btn = document.getElementById('btn-manual-check');
+  if (btn) {
+    btn.disabled = true;
+    btn.textContent = '⏳ Đang kiểm tra giao dịch với SePay...';
+  }
+  const orderId = currentOrderPayment?.orderId;
+  const code = currentOrderPayment?.code;
+  try {
+    let orderData = null;
+    if (code && typeof api.checkOrderStatus === 'function') {
+      try {
+        const res = await api.checkOrderStatus(code);
+        if (res && (res.is_paid || res.payment_status === 'paid' || res.order_status === 'paid')) {
+          orderData = res;
+        }
+      } catch (e) {}
+    }
+
+    if (!orderData && orderId) {
+      try {
+        const res = await api.getOrder(orderId);
+        const o = res?.order || res?.data || res;
+        if (o && (o.payment_status === 'paid' || o.order_status === 'paid')) {
+          orderData = o;
+        }
+      } catch (e) {}
+    }
+
+    if (!orderData && code) {
+      try {
+        const res = await api.getOrder(code);
+        const o = res?.order || res?.data || res;
+        if (o && (o.payment_status === 'paid' || o.order_status === 'paid')) {
+          orderData = o;
+        }
+      } catch (e) {}
+    }
+
+    if (orderData) {
+      stopOrderPolling();
+      onPaymentReceivedSuccess(orderData);
+      if (btn) btn.style.display = 'none';
+      return;
+    }
+
+    if (typeof api.showToast === 'function') {
+      api.showToast('Hệ thống đang chờ SePay xác nhận từ ngân hàng (thường 5-30 giây). Vui lòng đợi thêm giây lát!', 'info');
+    }
+  } catch (err) {
+    if (typeof api.showToast === 'function') {
+      api.showToast('Chưa nhận được giao dịch. Vui lòng kiểm tra lại nội dung chuyển khoản.', 'warning');
+    }
+  } finally {
+    if (btn) {
+      btn.disabled = false;
+      btn.textContent = '🔄 Đã chuyển tiền? Bấm để kiểm tra giao dịch ngay';
+    }
+  }
+}
+
+function startOrderPolling(orderId, orderCode) {
   stopOrderPolling();
-  if (!orderId) return;
+  const idToPoll = orderId || orderCode;
+  if (!idToPoll && !orderCode) return;
 
   orderPollingTimer = setInterval(async () => {
     try {
-      const res = await api.getOrder(orderId);
-      const o = res.order || res.data || res;
-      if (o && (o.payment_status === 'paid' || o.paymentStatus === 'paid' || o.order_status === 'paid' || o.orderStatus === 'paid')) {
+      let isPaid = false;
+      let matchedOrder = null;
+
+      // 1. Try public status check by code if available (fast & lightweight)
+      if (orderCode && typeof api.checkOrderStatus === 'function') {
+        try {
+          const res = await api.checkOrderStatus(orderCode);
+          if (res && (res.is_paid || res.payment_status === 'paid' || res.order_status === 'paid')) {
+            isPaid = true;
+            matchedOrder = res;
+          }
+        } catch (e) {}
+      }
+
+      // 2. Fallback to getOrder by ID or code
+      if (!isPaid && idToPoll) {
+        try {
+          const res = await api.getOrder(idToPoll);
+          const o = res?.order || res?.data || res;
+          if (o && (o.payment_status === 'paid' || o.paymentStatus === 'paid' || o.order_status === 'paid' || o.orderStatus === 'paid')) {
+            isPaid = true;
+            matchedOrder = o;
+          }
+        } catch (err) {
+          if (orderCode && idToPoll !== orderCode) {
+            try {
+              const res2 = await api.getOrder(orderCode);
+              const o2 = res2?.order || res2?.data || res2;
+              if (o2 && (o2.payment_status === 'paid' || o2.paymentStatus === 'paid' || o2.order_status === 'paid' || o2.orderStatus === 'paid')) {
+                isPaid = true;
+                matchedOrder = o2;
+              }
+            } catch (e2) {}
+          }
+        }
+      }
+
+      if (isPaid) {
         stopOrderPolling();
-        onPaymentReceivedSuccess(o);
+        onPaymentReceivedSuccess(matchedOrder);
       }
     } catch (e) {
       // Ignore background network transient errors
     }
-  }, 3500);
+  }, 3000);
 }
 
 function stopOrderPolling() {

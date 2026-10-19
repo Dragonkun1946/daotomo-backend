@@ -53,6 +53,9 @@ Route::get('/products/{id}', [ProductController::class, 'show']);
 Route::match(['GET', 'POST'], '/webhooks/sepay', [SepayWebhookController::class, 'handleWebhook']);
 Route::match(['GET', 'POST'], '/sepay/webhook', [SepayWebhookController::class, 'handleWebhook']);
 
+// ─── Public Order Status Check ────────────────────────────────────────────────
+Route::get('/orders/check-status/{code}', [OrderController::class, 'checkPublicStatus']);
+
 // ─── Protected Routes (Requires Bearer Token) ─────────────────────────────────
 Route::middleware('auth:sanctum')->group(function () {
     // Auth profile & Skin management

@@ -199,7 +199,24 @@ class OrderController extends Controller
     public function show(Request $request, $id)
     {
         $user = $request->user();
-        $order = Order::with(['items', 'user'])->find($id);
+        $order = is_numeric($id)
+            ? Order::with(['items', 'user'])->find($id)
+            : Order::with(['items', 'user'])->where('order_code', $id)->first();
+
+        if (!$order) {
+            $order = Order::with(['items', 'user'])->where('order_code', $id)->first();
+        }
+
+        if (!$order && str_starts_with(strtoupper((string) $id), 'DTM-')) {
+            $order = Order::with(['items', 'user'])->where('order_code', strtoupper($id))->first();
+        }
+
+        if (!$order) {
+            $cleanSuffix = preg_replace('/^(?:DTM|DH)[-_\s]?/i', '', (string) $id);
+            if (!empty($cleanSuffix)) {
+                $order = Order::with(['items', 'user'])->where('order_code', 'LIKE', "%{$cleanSuffix}")->first();
+            }
+        }
 
         if (!$order) {
             return response()->json(['success' => false, 'message' => 'Không tìm thấy đơn hàng.'], 404);
@@ -216,6 +233,41 @@ class OrderController extends Controller
         return response()->json([
             'success' => true,
             'order' => $order,
+        ]);
+    }
+
+    // ─── GET /api/orders/check-status/{code} (Public status polling) ──────────
+    public function checkPublicStatus(Request $request, $code)
+    {
+        $cleanCode = strtoupper(trim((string) $code));
+        $cleanSuffix = preg_replace('/^(?:DTM|DH)[-_\s]?/i', '', $cleanCode);
+
+        $order = Order::where('order_code', $cleanCode)
+            ->orWhere('order_code', 'LIKE', "%{$cleanSuffix}")
+            ->first();
+
+        if (!$order && is_numeric($code)) {
+            $order = Order::find($code);
+        }
+
+        if (!$order) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Không tìm thấy đơn hàng.',
+            ], 404);
+        }
+
+        $isPaid = in_array(strtolower((string) $order->payment_status), ['paid', 'completed']) ||
+                  in_array(strtolower((string) $order->order_status), ['paid', 'completed', 'delivered']);
+
+        return response()->json([
+            'success' => true,
+            'order_code' => $order->order_code,
+            'payment_status' => $order->payment_status,
+            'order_status' => $order->order_status,
+            'status' => $order->status ?? $order->order_status,
+            'is_paid' => $isPaid,
+            'updated_at' => $order->updated_at,
         ]);
     }
 

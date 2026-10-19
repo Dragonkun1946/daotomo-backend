@@ -334,6 +334,7 @@ const api = {
     return api.request(`/orders/my${qs ? '?'+qs : ''}`);
   },
   getOrder: (id) => api.request(`/orders/${id}`),
+  checkOrderStatus: (code) => api.request(`/orders/check-status/${encodeURIComponent(code)}`),
   getAllOrders: (params={}) => {
     const qs = new URLSearchParams(params).toString();
     return api.request(`/orders${qs ? '?'+qs : ''}`);
