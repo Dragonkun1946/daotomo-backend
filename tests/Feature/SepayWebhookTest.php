@@ -507,4 +507,32 @@ class SepayWebhookTest extends TestCase
         $res2->assertStatus(200)->assertJson(['success' => true]);
         $this->assertEquals('paid', $order2->fresh()->payment_status);
     }
+
+    public function test_sepay_webhook_gui_thu_test_probe_succeeds_with_200(): void
+    {
+        // Exact official payload sent when clicking "Gửi thử" on SePay Dashboard
+        $guiThuPayload = [
+            'id' => 92704,
+            'gateway' => 'Vietcombank',
+            'transactionDate' => '2024-07-02 11:08:33',
+            'accountNumber' => '1017588888',
+            'subAccount' => '',
+            'code' => 'SEVN63DC8E5C',
+            'content' => 'SEVN63DC8E5C chuyen tien',
+            'transferType' => 'in',
+            'description' => 'NGUYEN VAN A chuyen tien',
+            'transferAmount' => 5000000,
+            'accumulated' => 105000000,
+            'referenceCode' => 'FT24012345678',
+        ];
+
+        $res = $this->postJson('/api/webhooks/sepay', $guiThuPayload, [
+            'Authorization' => 'Apikey test_sepay_api_key_123',
+        ]);
+
+        $res->assertStatus(200)
+            ->assertJson([
+                'success' => true,
+            ]);
+    }
 }
