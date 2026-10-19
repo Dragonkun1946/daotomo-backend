@@ -422,8 +422,9 @@ async function handleBuy() {
     document.getElementById('m-note').textContent  = note;
     document.getElementById('m-acc-link').href     = `/html/Account.html?orderId=${order._id}`;
 
-    // Dynamic VietQR Generator
-    const vietqrUrl = `https://img.vietqr.io/image/970415-103870631688-compact2.png?amount=${order.total}&addInfo=${encodeURIComponent(note)}&accountName=DAO%20TO%20MO`;
+    // Dynamic VietQR / SePay Generator
+    const vietqrUrl = order.qrUrl || order.vietqrUrl || order.paymentDetails?.vietqrUrl ||
+      `https://img.vietqr.io/image/970415-103870631688-compact2.png?amount=${order.total}&addInfo=${encodeURIComponent(note)}&accountName=DAO%20TO%20MO`;
     const imgEl = document.getElementById('m-vietqr-img');
     if (imgEl) {
       imgEl.src = vietqrUrl;

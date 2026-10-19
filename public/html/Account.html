@@ -1662,7 +1662,8 @@ async function openOrderDetail(orderId) {
       const transferContent = o.paymentDetails?.transferContent || code;
       document.getElementById('od-transfer-content').textContent = transferContent;
       
-      const vietqrUrl = `https://img.vietqr.io/image/970415-103870631688-compact2.png?amount=${o.total}&addInfo=${encodeURIComponent(transferContent)}&accountName=DAO%20TO%20MO`;
+      const vietqrUrl = o.qrUrl || o.vietqrUrl || o.paymentDetails?.vietqrUrl ||
+        `https://img.vietqr.io/image/970415-103870631688-compact2.png?amount=${o.total}&addInfo=${encodeURIComponent(transferContent)}&accountName=DAO%20TO%20MO`;
       const qrImg = document.getElementById('od-vietqr-img');
       if (qrImg) {
         qrImg.src = vietqrUrl;

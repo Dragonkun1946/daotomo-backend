@@ -41,6 +41,9 @@ class Order extends Model
         'paymentProof',
         'transferContent',
         'adminNote',
+        'qrUrl',
+        'vietqrUrl',
+        'sepayQrUrl',
     ];
 
     public function getOrderCodeAttribute(): string
@@ -88,6 +91,30 @@ class Order extends Model
         return $this->attributes['admin_note'] ?? '';
     }
 
+    public function getVietqrUrlAttribute(): string
+    {
+        $bin = config('services.sepay.bank_bin', '970415');
+        $acc = config('services.sepay.account_number', '103870631688');
+        $accName = urlencode(config('services.sepay.account_name', 'DAO TO MO'));
+        $amount = (int) $this->total_amount;
+        $content = urlencode($this->transfer_content ?: $this->order_code);
+        return "https://img.vietqr.io/image/{$bin}-{$acc}-compact2.png?amount={$amount}&addInfo={$content}&accountName={$accName}";
+    }
+
+    public function getSepayQrUrlAttribute(): string
+    {
+        $bank = config('services.sepay.bank_name', 'VietinBank');
+        $acc = config('services.sepay.account_number', '103870631688');
+        $amount = (int) $this->total_amount;
+        $content = urlencode($this->transfer_content ?: $this->order_code);
+        return "https://qr.sepay.vn/img?acc={$acc}&bank={$bank}&amount={$amount}&des={$content}";
+    }
+
+    public function getQrUrlAttribute(): string
+    {
+        return $this->getVietqrUrlAttribute();
+    }
+
     public function user()
     {
         return $this->belongsTo(User::class);
@@ -96,5 +123,10 @@ class Order extends Model
     public function items()
     {
         return $this->hasMany(OrderItem::class);
+    }
+
+    public function paymentTransactions()
+    {
+        return $this->hasMany(PaymentTransaction::class);
     }
 }

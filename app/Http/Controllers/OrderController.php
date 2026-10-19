@@ -107,9 +107,12 @@ class OrderController extends Controller
             ];
         }
 
-        // Generate unique code e.g. DTM-XXXXXX
-        $randomHex = strtoupper(bin2hex(random_bytes(3)));
-        $orderCode = "DTM-{$randomHex}";
+        // Generate unique code e.g. DTM-XXXXXX guaranteed unique
+        do {
+            $randomHex = strtoupper(bin2hex(random_bytes(3)));
+            $orderCode = "DTM-{$randomHex}";
+        } while (Order::where('order_code', $orderCode)->exists());
+
         $transferContent = "DTM {$randomHex}";
 
         $minecraftUsername = $request->input('minecraftUsername') ?? $user->minecraft_username ?? '';
@@ -153,6 +156,16 @@ class OrderController extends Controller
             'success' => true,
             'message' => 'Đặt hàng thành công! Vui lòng thanh toán theo thông tin bên dưới.',
             'order' => $order,
+            'payment' => [
+                'orderCode' => $order->order_code,
+                'transferContent' => $order->transfer_content,
+                'totalAmount' => $order->total_amount,
+                'vietqrUrl' => $order->vietqr_url,
+                'sepayQrUrl' => $order->sepay_qr_url,
+                'bankName' => config('services.sepay.bank_name', 'VietinBank'),
+                'accountNumber' => config('services.sepay.account_number', '103870631688'),
+                'accountName' => config('services.sepay.account_name', 'DAO TO MO'),
+            ],
         ], 201);
     }
 
