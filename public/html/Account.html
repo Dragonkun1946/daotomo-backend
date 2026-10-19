@@ -967,18 +967,18 @@
       <div style="background:rgba(0,0,0,0.25);border:1px solid var(--border);border-radius:var(--radius-sm);padding:0.75rem 0.85rem;text-align:left;font-size:0.82rem;display:flex;flex-direction:column;gap:0.4rem">
         <div style="display:flex;justify-content:space-between;align-items:center">
           <span style="color:var(--text-muted)">Ngân hàng:</span>
-          <strong>VietinBank (Công Thương Việt Nam)</strong>
+          <strong>MBBank (Ngân hàng TMCP Quân đội)</strong>
         </div>
         <div style="display:flex;justify-content:space-between;align-items:center">
           <span style="color:var(--text-muted)">Số tài khoản:</span>
           <div>
-            <strong style="font-family:var(--font-mono);font-size:0.9rem">103870631688</strong>
-            <button class="hud-copy" style="padding:0.15rem 0.45rem;font-size:0.7rem;margin-left:0.3rem" onclick="navigator.clipboard.writeText('103870631688'); if(typeof api.showToast==='function') api.showToast('Đã chép STK!','success')">Sao chép</button>
+            <strong style="font-family:var(--font-mono);font-size:0.9rem">0977364711</strong>
+            <button class="hud-copy" style="padding:0.15rem 0.45rem;font-size:0.7rem;margin-left:0.3rem" onclick="navigator.clipboard.writeText('0977364711'); if(typeof api.showToast==='function') api.showToast('Đã chép STK!','success')">Sao chép</button>
           </div>
         </div>
         <div style="display:flex;justify-content:space-between;align-items:center">
           <span style="color:var(--text-muted)">Chủ tài khoản:</span>
-          <strong>DAO TO MO</strong>
+          <strong>NGUYEN TRONG NGHIA</strong>
         </div>
         <div style="display:flex;justify-content:space-between;align-items:center;background:rgba(245,158,11,0.12);padding:0.4rem 0.5rem;border-radius:4px;border:1px solid rgba(245,158,11,0.25)">
           <span style="color:#fbbf24;font-weight:700">Nội dung CK:</span>
@@ -1703,9 +1703,9 @@ async function openOrderDetail(orderId) {
       odCurrentOrderPayment = {
         total,
         transfer: transferContent,
-        qrOnlyUrl: o.qrOnlyUrl || `https://img.vietqr.io/image/970415-103870631688-qr_only.png?amount=${total}&addInfo=${encodeURIComponent(cleanTransfer)}&accountName=DAO%20TO%20MO`,
-        vietqrUrl: o.vietqrUrl || `https://img.vietqr.io/image/970415-103870631688-compact2.png?amount=${total}&addInfo=${encodeURIComponent(cleanTransfer)}&accountName=DAO%20TO%20MO`,
-        sepayQrUrl: o.sepayQrUrl || `https://qr.sepay.vn/img?acc=103870631688&bank=VietinBank&amount=${total}&des=${encodeURIComponent(cleanTransfer)}`,
+        qrOnlyUrl: o.qrOnlyUrl || `https://img.vietqr.io/image/970422-0977364711-qr_only.png?amount=${total}&addInfo=${encodeURIComponent(cleanTransfer)}&accountName=NGUYEN%20TRONG%20NGHIA`,
+        vietqrUrl: o.vietqrUrl || `https://img.vietqr.io/image/970422-0977364711-compact2.png?amount=${total}&addInfo=${encodeURIComponent(cleanTransfer)}&accountName=NGUYEN%20TRONG%20NGHIA`,
+        sepayQrUrl: o.sepayQrUrl || `https://qr.sepay.vn/img?acc=0977364711&bank=MBBank&amount=${total}&des=${encodeURIComponent(cleanTransfer)}`,
       };
 
       document.getElementById('od-transfer-content').textContent = transferContent;

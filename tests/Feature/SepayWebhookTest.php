@@ -41,10 +41,10 @@ class SepayWebhookTest extends TestCase
 
         Config::set('services.sepay.webhook_api_key', 'test_sepay_api_key_123');
         Config::set('services.sepay.webhook_secret', 'test_sepay_secret_456');
-        Config::set('services.sepay.account_number', '103870631688');
-        Config::set('services.sepay.bank_name', 'VietinBank');
-        Config::set('services.sepay.bank_bin', '970415');
-        Config::set('services.sepay.account_name', 'DAO TO MO');
+        Config::set('services.sepay.account_number', '0977364711');
+        Config::set('services.sepay.bank_name', 'MBBank');
+        Config::set('services.sepay.bank_bin', '970422');
+        Config::set('services.sepay.account_name', 'NGUYEN TRONG NGHIA');
     }
 
     protected function createTestOrder(float $amount = 50000, string $code = 'DTM-ABC123'): Order
@@ -81,8 +81,8 @@ class SepayWebhookTest extends TestCase
     {
         $payload = [
             'id' => 1001,
-            'gateway' => 'VietinBank',
-            'accountNumber' => '103870631688',
+            'gateway' => 'MBBank',
+            'accountNumber' => '0977364711',
             'transferType' => 'in',
             'transferAmount' => 50000,
             'content' => 'DTM ABC123',
@@ -107,9 +107,9 @@ class SepayWebhookTest extends TestCase
 
         $payload = [
             'id' => 1002,
-            'gateway' => 'VietinBank',
+            'gateway' => 'MBBank',
             'transactionDate' => now()->toDateTimeString(),
-            'accountNumber' => '103870631688',
+            'accountNumber' => '0977364711',
             'transferType' => 'in',
             'transferAmount' => 50000,
             'content' => 'DTM HMAC01 thanh toan',
@@ -144,9 +144,9 @@ class SepayWebhookTest extends TestCase
 
         $payload = [
             'id' => 1003,
-            'gateway' => 'VietinBank',
+            'gateway' => 'MBBank',
             'transactionDate' => now()->toDateTimeString(),
-            'accountNumber' => '103870631688',
+            'accountNumber' => '0977364711',
             'transferType' => 'in',
             'transferAmount' => 50000,
             'content' => 'DTM TSHMAC thanh toan',
@@ -183,9 +183,9 @@ class SepayWebhookTest extends TestCase
 
         $payload = [
             'id' => 1004,
-            'gateway' => 'VietinBank',
+            'gateway' => 'MBBank',
             'transactionDate' => now()->toDateTimeString(),
-            'accountNumber' => '103870631688',
+            'accountNumber' => '0977364711',
             'transferType' => 'in',
             'transferAmount' => 50000,
             'content' => 'DTM REPLAY thanh toan',
@@ -223,9 +223,9 @@ class SepayWebhookTest extends TestCase
 
         $payload = [
             'id' => 90001,
-            'gateway' => 'VietinBank',
+            'gateway' => 'MBBank',
             'transactionDate' => '2026-10-19 13:00:00',
-            'accountNumber' => '103870631688',
+            'accountNumber' => '0977364711',
             'transferType' => 'in',
             'transferAmount' => 50000,
             'accumulated' => 1500000,
@@ -265,9 +265,9 @@ class SepayWebhookTest extends TestCase
 
         $payload = [
             'id' => 90002,
-            'gateway' => 'VietinBank',
+            'gateway' => 'MBBank',
             'transactionDate' => '2026-10-19 13:05:00',
-            'accountNumber' => '103870631688',
+            'accountNumber' => '0977364711',
             'transferType' => 'in',
             'transferAmount' => 40000, // Needed 100k
             'content' => 'DTM UNDERPAY chuyen khoan',
@@ -296,8 +296,8 @@ class SepayWebhookTest extends TestCase
     {
         $payload = [
             'id' => 90003,
-            'gateway' => 'VietinBank',
-            'accountNumber' => '103870631688',
+            'gateway' => 'MBBank',
+            'accountNumber' => '0977364711',
             'transferType' => 'in',
             'transferAmount' => 50000,
             'content' => 'NGUYEN VAN B CHUYEN KHOAN KHONG CO MA DON',
@@ -323,8 +323,8 @@ class SepayWebhookTest extends TestCase
 
         $payload = [
             'id' => 90004,
-            'gateway' => 'VietinBank',
-            'accountNumber' => '103870631688',
+            'gateway' => 'MBBank',
+            'accountNumber' => '0977364711',
             'transferType' => 'in',
             'transferAmount' => 50000,
             'content' => 'DTM IDEMPOTENT thanh toan',
@@ -363,8 +363,8 @@ class SepayWebhookTest extends TestCase
 
         $payload = [
             'id' => 90005,
-            'gateway' => 'VietinBank',
-            'accountNumber' => '103870631688',
+            'gateway' => 'MBBank',
+            'accountNumber' => '0977364711',
             'transferType' => 'in',
             'transferAmount' => 50000,
             'content' => 'DTM CANCELLED chuyen tien',
@@ -392,8 +392,8 @@ class SepayWebhookTest extends TestCase
     {
         $payload = [
             'id' => 90006,
-            'gateway' => 'VietinBank',
-            'accountNumber' => '103870631688',
+            'gateway' => 'MBBank',
+            'accountNumber' => '0977364711',
             'transferType' => 'out', // Outgoing money
             'transferAmount' => 50000,
             'content' => 'RUT TIEN VE TAI KHOAN',
@@ -412,7 +412,7 @@ class SepayWebhookTest extends TestCase
     {
         $payload = [
             'id' => 90007,
-            'gateway' => 'VietinBank',
+            'gateway' => 'MBBank',
             'accountNumber' => '9999999999', // Different account
             'transferType' => 'in',
             'transferAmount' => 50000,
@@ -447,7 +447,7 @@ class SepayWebhookTest extends TestCase
         $this->assertStringStartsWith('DTM-', $orderData['orderCode']);
         $this->assertNotEmpty($orderData['vietqrUrl']);
         $this->assertNotEmpty($orderData['sepayQrUrl']);
-        $this->assertStringContainsString('103870631688', $orderData['vietqrUrl']);
+        $this->assertStringContainsString('0977364711', $orderData['vietqrUrl']);
         $this->assertStringContainsString('50000', $orderData['vietqrUrl']);
     }
 }

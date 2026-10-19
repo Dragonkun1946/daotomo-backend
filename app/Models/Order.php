@@ -100,9 +100,9 @@ class Order extends Model
 
     public function getVietqrUrlAttribute(): string
     {
-        $bin = config('services.sepay.bank_bin', '970415');
-        $acc = config('services.sepay.account_number', '103870631688');
-        $accName = urlencode(config('services.sepay.account_name', 'DAO TO MO'));
+        $bin = config('services.sepay.bank_bin', '970422');
+        $acc = config('services.sepay.account_number', '0977364711');
+        $accName = urlencode(config('services.sepay.account_name', 'NGUYEN TRONG NGHIA'));
         $amount = (int) $this->total_amount;
         $content = urlencode($this->getCleanTransferContent());
         return "https://img.vietqr.io/image/{$bin}-{$acc}-compact2.png?amount={$amount}&addInfo={$content}&accountName={$accName}";
@@ -110,9 +110,9 @@ class Order extends Model
 
     public function getQrOnlyUrlAttribute(): string
     {
-        $bin = config('services.sepay.bank_bin', '970415');
-        $acc = config('services.sepay.account_number', '103870631688');
-        $accName = urlencode(config('services.sepay.account_name', 'DAO TO MO'));
+        $bin = config('services.sepay.bank_bin', '970422');
+        $acc = config('services.sepay.account_number', '0977364711');
+        $accName = urlencode(config('services.sepay.account_name', 'NGUYEN TRONG NGHIA'));
         $amount = (int) $this->total_amount;
         $content = urlencode($this->getCleanTransferContent());
         return "https://img.vietqr.io/image/{$bin}-{$acc}-qr_only.png?amount={$amount}&addInfo={$content}&accountName={$accName}";
@@ -120,8 +120,8 @@ class Order extends Model
 
     public function getSepayQrUrlAttribute(): string
     {
-        $bank = config('services.sepay.bank_name', 'VietinBank');
-        $acc = config('services.sepay.account_number', '103870631688');
+        $bank = config('services.sepay.bank_name', 'MBBank');
+        $acc = config('services.sepay.account_number', '0977364711');
         $amount = (int) $this->total_amount;
         $content = urlencode($this->getCleanTransferContent());
         return "https://qr.sepay.vn/img?acc={$acc}&bank={$bank}&amount={$amount}&des={$content}";

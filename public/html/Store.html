@@ -832,22 +832,22 @@
             <div class="qr-info-row">
               <div class="qr-info-label">Ngân hàng:</div>
               <div class="qr-info-val">
-                <strong id="m-res-bank">VietinBank</strong> (Công Thương Việt Nam)
+                <strong id="m-res-bank">MBBank</strong> (Ngân hàng TMCP Quân đội)
               </div>
             </div>
 
             <div class="qr-info-row highlight-row">
               <div class="qr-info-label">Số tài khoản:</div>
               <div class="qr-info-val">
-                <span class="mono-bold" id="m-res-acc">103870631688</span>
-                <button type="button" class="copy-badge-btn" onclick="copyText('103870631688', 'Đã sao chép STK!')">📋 Chép STK</button>
+                <span class="mono-bold" id="m-res-acc">0977364711</span>
+                <button type="button" class="copy-badge-btn" onclick="copyText('0977364711', 'Đã sao chép STK!')">📋 Chép STK</button>
               </div>
             </div>
 
             <div class="qr-info-row">
               <div class="qr-info-label">Chủ tài khoản:</div>
               <div class="qr-info-val">
-                <strong id="m-res-accname">DAO TO MO</strong>
+                <strong id="m-res-accname">NGUYEN TRONG NGHIA</strong>
                 <button type="button" class="copy-badge-btn" onclick="copyAccountName()">📋 Chép tên</button>
               </div>
             </div>
@@ -1058,11 +1058,11 @@ async function submitCreateOrder() {
 
     const cleanTransfer = transfer.replace(/[\s-]/g, '');
     const qrOnlyUrl = payment.qrOnlyUrl || order.qrOnlyUrl ||
-      `https://img.vietqr.io/image/970415-103870631688-qr_only.png?amount=${total}&addInfo=${encodeURIComponent(cleanTransfer)}&accountName=DAO%20TO%20MO`;
+      `https://img.vietqr.io/image/970422-0977364711-qr_only.png?amount=${total}&addInfo=${encodeURIComponent(cleanTransfer)}&accountName=NGUYEN%20TRONG%20NGHIA`;
     const vietqrUrl = payment.vietqrUrl || order.vietqrUrl ||
-      `https://img.vietqr.io/image/970415-103870631688-compact2.png?amount=${total}&addInfo=${encodeURIComponent(cleanTransfer)}&accountName=DAO%20TO%20MO`;
+      `https://img.vietqr.io/image/970422-0977364711-compact2.png?amount=${total}&addInfo=${encodeURIComponent(cleanTransfer)}&accountName=NGUYEN%20TRONG%20NGHIA`;
     const sepayQrUrl = payment.sepayQrUrl || order.sepayQrUrl ||
-      `https://qr.sepay.vn/img?acc=103870631688&bank=VietinBank&amount=${total}&des=${encodeURIComponent(cleanTransfer)}`;
+      `https://qr.sepay.vn/img?acc=0977364711&bank=MBBank&amount=${total}&des=${encodeURIComponent(cleanTransfer)}`;
 
     currentOrderPayment = {
       orderId,
@@ -1072,9 +1072,9 @@ async function submitCreateOrder() {
       qrOnlyUrl,
       vietqrUrl,
       sepayQrUrl,
-      bankName: payment.bankName || 'VietinBank',
-      accountNumber: payment.accountNumber || '103870631688',
-      accountName: payment.accountName || 'DAO TO MO',
+      bankName: payment.bankName || 'MBBank',
+      accountNumber: payment.accountNumber || '0977364711',
+      accountName: payment.accountName || 'NGUYEN TRONG NGHIA',
     };
 
     document.getElementById('m-res-total').textContent = total.toLocaleString('vi-VN') + 'đ';
@@ -1207,7 +1207,7 @@ function copyTotalAmount() {
 }
 
 function copyAccountName() {
-  const name = currentOrderPayment?.accountName || 'DAO TO MO';
+  const name = currentOrderPayment?.accountName || 'NGUYEN TRONG NGHIA';
   copyText(name, 'Đã sao chép tên chủ tài khoản!');
 }
 

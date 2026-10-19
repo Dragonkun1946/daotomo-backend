@@ -164,9 +164,9 @@ class OrderController extends Controller
                 'qrOnlyUrl' => $order->qr_only_url,
                 'vietqrUrl' => $order->vietqr_url,
                 'sepayQrUrl' => $order->sepay_qr_url,
-                'bankName' => config('services.sepay.bank_name', 'VietinBank'),
-                'accountNumber' => config('services.sepay.account_number', '103870631688'),
-                'accountName' => config('services.sepay.account_name', 'DAO TO MO'),
+                'bankName' => config('services.sepay.bank_name', 'MBBank'),
+                'accountNumber' => config('services.sepay.account_number', '0977364711'),
+                'accountName' => config('services.sepay.account_name', 'NGUYEN TRONG NGHIA'),
             ],
         ], 201);
     }
