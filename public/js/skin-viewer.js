@@ -35,6 +35,50 @@
   // Keep track of all active viewer instances on the current page for synchronized updates
   const activeViewers = new Set();
 
+  /**
+   * Extract Minecraft face avatar (Base layer + Hat/Helmet outer layer) from skin
+   * @param {string} skinSrc - URL or Base64 data of skin
+   * @param {number} size - Output pixel dimension (default 128)
+   * @returns {Promise<string>} Data URL PNG of the face
+   */
+  function extractMinecraftFace(skinSrc, size = 128) {
+    return new Promise((resolve, reject) => {
+      if (!skinSrc) return reject(new Error('No skin provided'));
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
+      img.onload = () => {
+        try {
+          const canvas = document.createElement('canvas');
+          canvas.width = size;
+          canvas.height = size;
+          const ctx = canvas.getContext('2d');
+          ctx.imageSmoothingEnabled = false;
+
+          const scale = img.naturalWidth ? (img.naturalWidth / 64) : 1;
+          const s = 8 * scale;
+          const faceX = 8 * scale;
+          const faceY = 8 * scale;
+          const hatX = 40 * scale;
+          const hatY = 8 * scale;
+
+          // 1. Draw base head (front face)
+          ctx.drawImage(img, faceX, faceY, s, s, 0, 0, size, size);
+
+          // 2. Draw outer layer (hat/hair/helmet)
+          ctx.drawImage(img, hatX, hatY, s, s, 0, 0, size, size);
+
+          resolve(canvas.toDataURL('image/png'));
+        } catch (err) {
+          reject(err);
+        }
+      };
+      img.onerror = (e) => reject(e);
+      img.src = skinSrc;
+    });
+  }
+
+  window.extractMinecraftFace = extractMinecraftFace;
+
   class MinecraftSkinViewer {
     constructor(canvas, options = {}) {
       this.canvas = typeof canvas === 'string' ? document.getElementById(canvas) : canvas;

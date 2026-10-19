@@ -167,11 +167,41 @@ class AuthController extends Controller
 
         // 1. Reset to default (Steve)
         if ($skinUrl === '' || $skinUrl === '/img/steve.png') {
-            $user->update(['skin_url' => '']);
+            $steveAvatar = '';
+            if (extension_loaded('gd') && File::exists(public_path('img/steve.png'))) {
+                $srcImg = @imagecreatefrompng(public_path('img/steve.png'));
+                if ($srcImg) {
+                    $avatarImg = imagecreatetruecolor(128, 128);
+                    imagealphablending($avatarImg, false);
+                    imagesavealpha($avatarImg, true);
+                    $transparent = imagecolorallocatealpha($avatarImg, 0, 0, 0, 127);
+                    imagefilledrectangle($avatarImg, 0, 0, 128, 128, $transparent);
+                    imagealphablending($avatarImg, true);
+                    imagecopyresampled($avatarImg, $srcImg, 0, 0, 8, 8, 128, 128, 8, 8);
+                    imagecopyresampled($avatarImg, $srcImg, 0, 0, 40, 8, 128, 128, 8, 8);
+
+                    $avatarDir = public_path('uploads/avatars');
+                    if (!File::exists($avatarDir)) {
+                        File::makeDirectory($avatarDir, 0755, true);
+                    }
+                    $avatarPath = $avatarDir . DIRECTORY_SEPARATOR . "{$user->id}.png";
+                    imagepng($avatarImg, $avatarPath);
+                    imagedestroy($avatarImg);
+                    imagedestroy($srcImg);
+                    $steveAvatar = "/uploads/avatars/{$user->id}.png?v=" . time();
+                }
+            }
+
+            $user->update([
+                'skin_url' => '',
+                'avatar' => $steveAvatar,
+            ]);
+
             return response()->json([
                 'success' => true,
                 'message' => 'Đã khôi phục skin mặc định (Steve).',
                 'skinUrl' => '/img/steve.png',
+                'avatar' => $steveAvatar,
                 'user' => $user->fresh(),
             ]);
         }
@@ -216,6 +246,8 @@ class AuthController extends Controller
             }
 
             // Verify dimensions from IHDR chunk (offset 16-24: 4 bytes width, 4 bytes height big-endian)
+            $width = 64;
+            $height = 64;
             if (strlen($binary) >= 24) {
                 $dim = unpack('Nwidth/Nheight', substr($binary, 16, 8));
                 $width = $dim['width'];
@@ -245,12 +277,51 @@ class AuthController extends Controller
             File::put($filePath, $binary);
 
             $savedUrl = "/uploads/skins/{$fileName}?v=" . time();
-            $user->update(['skin_url' => $savedUrl]);
+
+            // Extract face avatar and save to public/uploads/avatars/<userId>.png
+            $avatarUrl = null;
+            if (extension_loaded('gd')) {
+                $srcImg = @imagecreatefromstring($binary);
+                if ($srcImg) {
+                    $imgWidth = imagesx($srcImg);
+                    $scale = ($imgWidth >= 128) ? 2 : 1;
+                    $avatarImg = imagecreatetruecolor(128, 128);
+                    imagealphablending($avatarImg, false);
+                    imagesavealpha($avatarImg, true);
+                    $transparent = imagecolorallocatealpha($avatarImg, 0, 0, 0, 127);
+                    imagefilledrectangle($avatarImg, 0, 0, 128, 128, $transparent);
+                    imagealphablending($avatarImg, true);
+
+                    // 1. Base head: x=8*scale, y=8*scale, w=8*scale, h=8*scale
+                    imagecopyresampled($avatarImg, $srcImg, 0, 0, 8 * $scale, 8 * $scale, 128, 128, 8 * $scale, 8 * $scale);
+
+                    // 2. Hat / Helmet layer: x=40*scale, y=8*scale, w=8*scale, h=8*scale
+                    imagecopyresampled($avatarImg, $srcImg, 0, 0, 40 * $scale, 8 * $scale, 128, 128, 8 * $scale, 8 * $scale);
+
+                    $avatarDir = public_path('uploads/avatars');
+                    if (!File::exists($avatarDir)) {
+                        File::makeDirectory($avatarDir, 0755, true);
+                    }
+                    $avatarPath = $avatarDir . DIRECTORY_SEPARATOR . "{$user->id}.png";
+                    imagepng($avatarImg, $avatarPath);
+                    imagedestroy($avatarImg);
+                    imagedestroy($srcImg);
+
+                    $avatarUrl = "/uploads/avatars/{$user->id}.png?v=" . time();
+                }
+            }
+
+            $updateData = ['skin_url' => $savedUrl];
+            if ($avatarUrl) {
+                $updateData['avatar'] = $avatarUrl;
+            }
+            $user->update($updateData);
 
             return response()->json([
                 'success' => true,
-                'message' => 'Đã lưu skin nhân vật vào tài khoản thành công! 🎮',
+                'message' => 'Đã lưu skin và cập nhật avatar khuôn mặt thành công! 🎮',
                 'skinUrl' => $savedUrl,
+                'avatar' => $avatarUrl,
                 'user' => $user->fresh(),
             ]);
         }

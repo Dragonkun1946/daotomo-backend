@@ -21,9 +21,18 @@ class ApiTest extends TestCase
         $this->seed();
     }
 
-    // Helper to create a dummy valid PNG buffer with custom width and height
+    // Helper to create a valid PNG buffer with custom width and height
     private function createMockPngBase64(int $width = 64, int $height = 64): string
     {
+        if (extension_loaded('gd')) {
+            $img = imagecreatetruecolor($width, $height);
+            ob_start();
+            imagepng($img);
+            $binary = ob_get_clean();
+            imagedestroy($img);
+            return 'data:image/png;base64,' . base64_encode($binary);
+        }
+
         $header = "\x89PNG\r\n\x1a\n";
         $ihdrLen = pack('N', 13);
         $ihdrType = "IHDR";
@@ -137,6 +146,10 @@ class ApiTest extends TestCase
 
         $savedFile = public_path("uploads/skins/{$user->id}.png");
         $this->assertFileExists($savedFile);
+
+        $avatarFile = public_path("uploads/avatars/{$user->id}.png");
+        $this->assertFileExists($avatarFile);
+        $this->assertNotNull($user->fresh()->avatar);
     }
 
     public function test_skin_reset_to_steve(): void
