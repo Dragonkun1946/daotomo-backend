@@ -14,6 +14,9 @@ const getApiBase = () => {
       }
       return '/api';
     }
+    if (protocol === 'file:') {
+      return 'http://127.0.0.1:8000/api';
+    }
   }
   return 'https://daotomo-backend.onrender.com/api';
 };
