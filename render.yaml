@@ -16,7 +16,7 @@ services:
       - key: LOG_CHANNEL
         value: stderr
       - key: DB_CONNECTION
-        value: pgsql
+        value: sqlite
       - key: APP_KEY
         sync: false
       - key: DISCORD_CLIENT_ID

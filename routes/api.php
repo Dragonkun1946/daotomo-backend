@@ -9,9 +9,26 @@ use App\Http\Middleware\AdminMiddleware;
 
 // ─── Health Check ─────────────────────────────────────────────────────────────
 Route::get('/health', function () {
+    $dbStatus = 'OK';
+    $dbError = null;
+    $productCount = 0;
+    try {
+        \Illuminate\Support\Facades\DB::connection()->getPdo();
+        $productCount = \Illuminate\Support\Facades\DB::table('products')->count();
+    } catch (\Throwable $e) {
+        $dbStatus = 'ERROR';
+        $dbError = $e->getMessage();
+    }
+
     return response()->json([
-        'status' => 'OK',
+        'status' => $dbStatus === 'OK' ? 'OK' : 'DEGRADED',
         'message' => 'Đảo Tò Mò API is running 🏝️ (Laravel Framework)',
+        'database' => [
+            'status' => $dbStatus,
+            'driver' => config('database.default'),
+            'product_count' => $productCount,
+            'error' => $dbError,
+        ],
     ]);
 });
 

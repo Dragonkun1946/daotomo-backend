@@ -16,7 +16,16 @@ return [
     |
     */
 
-    'default' => env('DB_CONNECTION', 'sqlite'),
+    'default' => (function () {
+        $conn = env('DB_CONNECTION');
+        if (empty($conn) || $conn === 'sqlite') {
+            return 'sqlite';
+        }
+        if ($conn === 'pgsql' && !env('DATABASE_URL') && (!env('DB_HOST') || env('DB_HOST') === '127.0.0.1')) {
+            return 'sqlite';
+        }
+        return $conn;
+    })(),
 
     /*
     |--------------------------------------------------------------------------

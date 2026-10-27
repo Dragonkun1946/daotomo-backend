@@ -31,9 +31,19 @@ RUN chmod +x /var/www/html/scripts/00-laravel-deploy.sh \
 # Install production dependencies with optimized autoloader
 RUN composer install --no-dev --optimize-autoloader --no-interaction
 
-# Set correct storage and cache permissions
-RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache /var/www/html/public/uploads \
-    && chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache /var/www/html/public/uploads
+# Prepare SQLite database and pre-seed in image
+RUN if [ ! -f .env ]; then cp .env.example .env; fi \
+    && mkdir -p /var/www/html/database \
+    && touch /var/www/html/database/database.sqlite \
+    && chmod 666 /var/www/html/database/database.sqlite \
+    && php artisan key:generate --force \
+    && php artisan migrate --force \
+    && php artisan db:seed --force
+
+# Set correct storage, database, and cache permissions
+RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache /var/www/html/public/uploads /var/www/html/database /var/www/html/.env \
+    && chmod -R 777 /var/www/html/storage /var/www/html/bootstrap/cache /var/www/html/public/uploads /var/www/html/database \
+    && chmod 666 /var/www/html/.env
 
 # Container entrypoint
 CMD ["/start.sh"]
