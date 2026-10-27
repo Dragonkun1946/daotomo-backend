@@ -639,23 +639,27 @@ async function submitCreateOrder() {
   document.getElementById('m-error-msg').innerHTML = '';
 
   try {
-    const { data: order } = await api.createOrder([{ productId: selectedProduct._id, quantity: qty }], mc, note, 'qr');
-    const code = order.orderCode || '#' + order._id.slice(-8).toUpperCase();
-    const transfer = order.paymentDetails?.transferContent || code;
+    const res = await api.createOrder([{ productId: selectedProduct._id, quantity: qty }], mc, note, 'qr');
+    const order = (res && (res.order || res.data)) || res;
+    if (!order) throw new Error('Không nhận được dữ liệu đơn hàng từ máy chủ.');
 
-    document.getElementById('m-res-total').textContent = order.total.toLocaleString('vi-VN') + 'đ';
+    const code = order.orderCode || order.order_code || '#' + (order._id || order.id || '').toString().slice(-8).toUpperCase();
+    const transfer = order.transferContent || order.transfer_content || order.paymentDetails?.transferContent || code;
+    const total = order.total || order.totalAmount || order.total_amount || (selectedProduct.price * qty);
+
+    document.getElementById('m-res-total').textContent = Number(total).toLocaleString('vi-VN') + 'đ';
     document.getElementById('m-res-code').textContent = 'Mã đơn: ' + code;
     document.getElementById('m-res-transfer').textContent = transfer;
-    document.getElementById('m-view-order-link').href = `/html/Account.html?orderId=${order._id}`;
+    document.getElementById('m-view-order-link').href = `/html/Account.html?orderId=${order._id || order.id}`;
 
     // Dynamic SePay / VietQR generator for MBBank 0977364711
     const cleanTransfer = transfer.replace(/[\s-]/g, '');
-    const vietqrUrl = `https://qr.sepay.vn/img?acc=0977364711&bank=MBBank&amount=${order.total}&des=${encodeURIComponent(cleanTransfer)}`;
+    const vietqrUrl = order.vietqrUrl || order.sepayQrUrl || `https://qr.sepay.vn/img?acc=0977364711&bank=MBBank&amount=${total}&des=${encodeURIComponent(cleanTransfer)}`;
     const imgEl = document.getElementById('m-vietqr-img');
     if (imgEl) {
       imgEl.src = vietqrUrl;
       imgEl.onerror = () => {
-        imgEl.src = `https://img.vietqr.io/image/MB-0977364711-compact2.png?amount=${order.total}&addInfo=${encodeURIComponent(transfer)}&accountName=NGUYEN%20TRONG%20NGHIA`;
+        imgEl.src = `https://img.vietqr.io/image/970422-0977364711-compact2.png?amount=${total}&addInfo=${encodeURIComponent(transfer)}&accountName=NGUYEN%20TRONG%20NGHIA`;
       };
     }
 

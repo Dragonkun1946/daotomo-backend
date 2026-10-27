@@ -36,16 +36,42 @@ class Order extends Model
         'minecraftUsername',
         'paymentMethod',
         'totalAmount',
+        'total',
         'orderStatus',
         'paymentStatus',
         'paymentProof',
         'transferContent',
+        'paymentDetails',
         'adminNote',
         'vietqrUrl',
         'sepayQrUrl',
         'qrUrl',
         'qrOnlyUrl',
     ];
+
+    public function toArray()
+    {
+        $array = parent::toArray();
+        $array['_id'] = (string) ($this->id ?? '');
+        return $array;
+    }
+
+    public function getTotalAttribute(): float
+    {
+        return (float) ($this->attributes['total_amount'] ?? 0);
+    }
+
+    public function getPaymentDetailsAttribute(): array
+    {
+        return [
+            'accountNumber' => config('services.sepay.account_number', '0977364711'),
+            'bankName' => config('services.sepay.bank_name', 'MBBank'),
+            'bankBin' => config('services.sepay.bank_bin', '970422'),
+            'accountName' => config('services.sepay.account_name', 'NGUYEN TRONG NGHIA'),
+            'transferContent' => $this->transfer_content ?: $this->order_code,
+            'qrUrl' => $this->vietqr_url,
+        ];
+    }
 
     public function getOrderCodeAttribute(): string
     {

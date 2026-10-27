@@ -64,6 +64,7 @@ class OrderController extends Controller
                     'success' => true,
                     'message' => 'Đơn hàng đã được tạo trước đó (Idempotent).',
                     'order' => $existing,
+                    'data' => $existing,
                 ], 200);
             }
         }
@@ -189,6 +190,7 @@ class OrderController extends Controller
             'success' => true,
             'message' => 'Đặt hàng thành công! Vui lòng thanh toán theo thông tin bên dưới.',
             'order' => $order,
+            'data' => $order,
         ], 201);
     }
 
