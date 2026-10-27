@@ -1,11 +1,17 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\AuthController;
-use App\Http\Controllers\ProductController;
-use App\Http\Controllers\OrderController;
-use App\Http\Controllers\CheckinController;
-use App\Http\Controllers\SepayWebhookController;
+use App\Http\Controllers\Api\Auth\AuthController;
+use App\Http\Controllers\Api\Auth\PasswordResetController;
+use App\Http\Controllers\Api\Auth\DiscordOAuthController;
+use App\Http\Controllers\Api\User\ProfileController;
+use App\Http\Controllers\Api\User\SkinController;
+use App\Http\Controllers\Api\Product\ProductController;
+use App\Http\Controllers\Api\Admin\AdminProductController;
+use App\Http\Controllers\Api\Order\OrderController;
+use App\Http\Controllers\Api\Admin\AdminOrderController;
+use App\Http\Controllers\Api\Checkin\CheckinController;
+use App\Http\Controllers\Api\Payment\SepayWebhookController;
 use App\Http\Middleware\AdminMiddleware;
 
 // ─── Health Check ─────────────────────────────────────────────────────────────
@@ -37,12 +43,12 @@ Route::get('/health', function () {
 Route::prefix('auth')->group(function () {
     Route::post('/register', [AuthController::class, 'register']);
     Route::post('/login', [AuthController::class, 'login']);
-    Route::middleware('throttle:5,1')->post('/forgot-password', [AuthController::class, 'forgotPassword']);
-    Route::post('/reset-password/{token}', [AuthController::class, 'resetPassword']);
+    Route::middleware('throttle:5,1')->post('/forgot-password', [PasswordResetController::class, 'forgotPassword']);
+    Route::post('/reset-password/{token}', [PasswordResetController::class, 'resetPassword']);
 
     // OAuth: Discord
-    Route::get('/discord', [AuthController::class, 'redirectToDiscord']);
-    Route::get('/discord/callback', [AuthController::class, 'handleDiscordCallback']);
+    Route::get('/discord', [DiscordOAuthController::class, 'redirect']);
+    Route::get('/discord/callback', [DiscordOAuthController::class, 'callback']);
 });
 
 // ─── Public Product Routes ────────────────────────────────────────────────────
@@ -61,9 +67,9 @@ Route::match(['GET', 'POST'], '/sepay/webhook', [SepayWebhookController::class, 
 // ─── Protected Routes (Requires Bearer Token) ─────────────────────────────────
 Route::middleware('auth:sanctum')->group(function () {
     // Auth profile & Skin management
-    Route::get('/auth/me', [AuthController::class, 'me']);
-    Route::put('/auth/me', [AuthController::class, 'updateMe']);
-    Route::post('/auth/skin', [AuthController::class, 'updateSkin']);
+    Route::get('/auth/me', [ProfileController::class, 'me']);
+    Route::put('/auth/me', [ProfileController::class, 'updateMe']);
+    Route::post('/auth/skin', [SkinController::class, 'updateSkin']);
 
     // Order user endpoints
     Route::post('/orders', [OrderController::class, 'store']);
@@ -78,11 +84,11 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // ─── Admin Only Routes ────────────────────────────────────────────────────
     Route::middleware(AdminMiddleware::class)->group(function () {
-        Route::post('/products', [ProductController::class, 'store']);
-        Route::put('/products/{id}', [ProductController::class, 'update']);
-        Route::delete('/products/{id}', [ProductController::class, 'destroy']);
+        Route::post('/products', [AdminProductController::class, 'store']);
+        Route::put('/products/{id}', [AdminProductController::class, 'update']);
+        Route::delete('/products/{id}', [AdminProductController::class, 'destroy']);
 
-        Route::get('/orders', [OrderController::class, 'adminIndex']);
-        Route::put('/orders/{id}/status', [OrderController::class, 'updateStatus']);
+        Route::get('/orders', [AdminOrderController::class, 'index']);
+        Route::put('/orders/{id}/status', [AdminOrderController::class, 'updateStatus']);
     });
 });

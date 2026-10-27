@@ -2,7 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\File;
-use App\Http\Controllers\SepayWebhookController;
+use App\Http\Controllers\Api\Payment\SepayWebhookController;
 
 // ─── SePay Webhook Root Aliases ───────────────────────────────────────────────
 Route::match(['GET', 'POST'], '/webhooks/sepay', [SepayWebhookController::class, 'handleWebhook']);
