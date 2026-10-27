@@ -2,6 +2,11 @@
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\File;
+use App\Http\Controllers\SepayWebhookController;
+
+// ─── SePay Webhook Root Aliases ───────────────────────────────────────────────
+Route::match(['GET', 'POST'], '/webhooks/sepay', [SepayWebhookController::class, 'handleWebhook']);
+Route::match(['GET', 'POST'], '/sepay/webhook', [SepayWebhookController::class, 'handleWebhook']);
 
 Route::get('/', function () {
     $indexPath = public_path('index.html');

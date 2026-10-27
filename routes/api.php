@@ -5,6 +5,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\CheckinController;
+use App\Http\Controllers\SepayWebhookController;
 use App\Http\Middleware\AdminMiddleware;
 
 // ─── Health Check ─────────────────────────────────────────────────────────────
@@ -47,6 +48,14 @@ Route::prefix('auth')->group(function () {
 // ─── Public Product Routes ────────────────────────────────────────────────────
 Route::get('/products', [ProductController::class, 'index']);
 Route::get('/products/{id}', [ProductController::class, 'show']);
+
+// ─── Order Public Polling ─────────────────────────────────────────────────────
+Route::get('/orders/check-status/{code}', [OrderController::class, 'showByCode']);
+Route::get('/orders/status/{code}', [OrderController::class, 'showByCode']);
+
+// ─── SePay Webhook Endpoints ──────────────────────────────────────────────────
+Route::match(['GET', 'POST'], '/webhooks/sepay', [SepayWebhookController::class, 'handleWebhook']);
+Route::match(['GET', 'POST'], '/sepay/webhook', [SepayWebhookController::class, 'handleWebhook']);
 
 // ─── Protected Routes (Requires Bearer Token) ─────────────────────────────────
 Route::middleware('auth:sanctum')->group(function () {

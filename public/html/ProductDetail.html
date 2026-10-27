@@ -215,14 +215,21 @@
     
     <div style="background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:var(--radius);padding:0.85rem 1rem;margin-bottom:1rem;font-size:0.85rem;text-align:left">
       <div style="margin-bottom:0.45rem;display:flex;align-items:center;justify-content:space-between">
-        <span>STK VietinBank: <strong>103870631688</strong></span>
-        <button class="copy-badge-btn" style="cursor:pointer;padding:0.2rem 0.6rem;border-radius:4px;background:rgba(34,211,238,0.15);border:1px solid rgba(34,211,238,0.3);color:var(--lagoon);font-size:0.75rem;font-family:var(--font-mono)" onclick="copyText('103870631688', 'Đã sao chép STK!')">📋 Chép STK</button>
+        <span>Ngân hàng: <strong>MBBank (Quân Đội)</strong></span>
+        <span style="font-size:0.75rem;color:var(--text-muted)">Chủ TK: <strong>NGUYEN TRONG NGHIA</strong></span>
+      </div>
+      <div style="margin-bottom:0.45rem;display:flex;align-items:center;justify-content:space-between">
+        <span>STK MBBank: <strong style="color:#fff;font-family:var(--font-mono)">0977364711</strong></span>
+        <button class="copy-badge-btn" style="cursor:pointer;padding:0.2rem 0.6rem;border-radius:4px;background:rgba(34,211,238,0.15);border:1px solid rgba(34,211,238,0.3);color:var(--lagoon);font-size:0.75rem;font-family:var(--font-mono)" onclick="copyText('0977364711', 'Đã sao chép STK MBBank!')">📋 Chép STK</button>
       </div>
       <div style="margin-bottom:0.45rem;display:flex;align-items:center;justify-content:space-between">
         <span>Nội dung CK: <strong id="m-note" style="color:var(--lagoon);font-family:var(--font-mono)"></strong></span>
         <button class="copy-badge-btn" style="cursor:pointer;padding:0.2rem 0.6rem;border-radius:4px;background:rgba(34,211,238,0.15);border:1px solid rgba(34,211,238,0.3);color:var(--lagoon);font-size:0.75rem;font-family:var(--font-mono)" onclick="copyTransferNote()">📋 Chép nội dung</button>
       </div>
-      <div style="font-size:0.75rem;color:var(--text-muted)">⚠️ Vui lòng ghi chính xác nội dung chuyển khoản để hệ thống đối soát tự động.</div>
+      <div id="m-live-status-box" style="margin-top:0.6rem;padding:0.4rem 0.6rem;border-radius:4px;background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.25);font-size:0.75rem;color:#fcd34d;display:flex;align-items:center;gap:0.4rem">
+        <span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#f59e0b;animation:pulse 1.5s infinite"></span>
+        <span id="m-live-status-text">Đang lắng nghe SePay tự động ghi nhận chuyển khoản...</span>
+      </div>
     </div>
 
     <div style="display:flex;flex-direction:column;gap:0.6rem">
@@ -422,16 +429,20 @@ async function handleBuy() {
     document.getElementById('m-note').textContent  = note;
     document.getElementById('m-acc-link').href     = `/html/Account.html?orderId=${order._id}`;
 
-    // Dynamic VietQR Generator
-    const vietqrUrl = `https://img.vietqr.io/image/970415-103870631688-compact2.png?amount=${order.total}&addInfo=${encodeURIComponent(note)}&accountName=DAO%20TO%20MO`;
+    // Dynamic SePay / VietQR Generator for MBBank 0977364711
+    const cleanNote = note.replace(/[\s-]/g, '');
+    const vietqrUrl = `https://qr.sepay.vn/img?acc=0977364711&bank=MBBank&amount=${order.total}&des=${encodeURIComponent(cleanNote)}`;
     const imgEl = document.getElementById('m-vietqr-img');
     if (imgEl) {
       imgEl.src = vietqrUrl;
-      imgEl.onerror = () => { imgEl.src = '/img/qr.png'; };
+      imgEl.onerror = () => {
+        imgEl.src = `https://img.vietqr.io/image/MB-0977364711-compact2.png?amount=${order.total}&addInfo=${encodeURIComponent(note)}&accountName=NGUYEN%20TRONG%20NGHIA`;
+      };
     }
 
     document.getElementById('modal').classList.add('open');
     startCountdown();
+    startOrderPolling(code);
 
     if (window.ConfettiFX) ConfettiFX.fire();
     if (window.SoundFX) SoundFX.playSuccess();
@@ -444,6 +455,33 @@ async function handleBuy() {
     btn.disabled = false;
     updateQtyPrice();
   }
+}
+
+let pollingInterval = null;
+function startOrderPolling(orderCode) {
+  if (pollingInterval) clearInterval(pollingInterval);
+  const statusBox = document.getElementById('m-live-status-box');
+  const statusText = document.getElementById('m-live-status-text');
+
+  pollingInterval = setInterval(async () => {
+    try {
+      const res = await api.request(`/orders/status/${orderCode}`);
+      if (res && res.success && res.order && res.order.is_paid) {
+        clearInterval(pollingInterval);
+        if (statusBox) {
+          statusBox.style.background = 'rgba(16,185,129,0.15)';
+          statusBox.style.borderColor = 'rgba(16,185,129,0.4)';
+          statusBox.style.color = '#34d399';
+        }
+        if (statusText) {
+          statusText.innerHTML = '🎉 <strong>ĐÃ THANH TOÁN THÀNH CÔNG!</strong> Hệ thống đã tự động ghi nhận tiền.';
+        }
+        if (window.ConfettiFX) ConfettiFX.fire();
+        if (window.SoundFX) SoundFX.playSuccess();
+        if (typeof api.showToast === 'function') api.showToast('Thanh toán đơn hàng thành công!', 'success');
+      }
+    } catch (e) {}
+  }, 3000);
 }
 
 function copyTransferNote() {
@@ -461,6 +499,7 @@ function copyText(text, msg) {
 function closeModal() {
   document.getElementById('modal').classList.remove('open');
   if (countdownInterval) clearInterval(countdownInterval);
+  if (pollingInterval) clearInterval(pollingInterval);
 }
 document.getElementById('modal').addEventListener('click', e => { if (e.target===e.currentTarget) closeModal(); });
 

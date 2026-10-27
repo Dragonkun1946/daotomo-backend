@@ -41,4 +41,14 @@ return [
         'redirect' => env('DISCORD_CALLBACK_URL'),
     ],
 
+    'sepay' => [
+        'webhook_api_key' => env('SEPAY_WEBHOOK_API_KEY'),
+        'webhook_secret' => env('SEPAY_WEBHOOK_SECRET'),
+        'account_number' => env('SEPAY_ACCOUNT_NUMBER', '0977364711'),
+        'account_name' => env('SEPAY_ACCOUNT_NAME', 'NGUYEN TRONG NGHIA'),
+        'bank_name' => env('SEPAY_BANK_NAME', 'MBBank'),
+        'bank_brand' => env('SEPAY_BANK_BRAND', 'MBBank'),
+        'bank_bin' => env('SEPAY_BANK_BIN', '970422'),
+    ],
+
 ];

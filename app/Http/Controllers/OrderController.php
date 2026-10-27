@@ -204,6 +204,38 @@ class OrderController extends Controller
         ]);
     }
 
+    // ─── GET /api/orders/status/{code} (Public Polling) ─────────────────────────
+    public function showByCode($code)
+    {
+        $cleanCode = trim($code);
+        $cleanSuffix = preg_replace('/^(?:DTM|DH)[-_\s]?/i', '', $cleanCode);
+        $order = Order::with('items')
+            ->where('order_code', $cleanCode)
+            ->orWhere('order_code', str_replace(' ', '-', $cleanCode))
+            ->orWhere('order_code', 'LIKE', "%{$cleanSuffix}")
+            ->orWhere('transfer_content', 'LIKE', "%{$cleanSuffix}%")
+            ->first();
+
+        if (!$order) {
+            return response()->json(['success' => false, 'message' => 'Không tìm thấy đơn hàng.'], 404);
+        }
+
+        return response()->json([
+            'success' => true,
+            'order_code' => $order->order_code,
+            'is_paid' => $order->payment_status === 'paid',
+            'order' => [
+                'id' => $order->id,
+                'order_code' => $order->order_code,
+                'payment_status' => $order->payment_status,
+                'order_status' => $order->order_status,
+                'status' => $order->status,
+                'total_amount' => $order->total_amount,
+                'is_paid' => $order->payment_status === 'paid',
+            ],
+        ]);
+    }
+
     // ─── PUT /api/orders/{id}/cancel (User) ────────────────────────────────────
     public function cancel(Request $request, $id)
     {

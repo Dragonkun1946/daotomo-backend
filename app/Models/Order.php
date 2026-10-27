@@ -41,6 +41,10 @@ class Order extends Model
         'paymentProof',
         'transferContent',
         'adminNote',
+        'vietqrUrl',
+        'sepayQrUrl',
+        'qrUrl',
+        'qrOnlyUrl',
     ];
 
     public function getOrderCodeAttribute(): string
@@ -88,6 +92,46 @@ class Order extends Model
         return $this->attributes['admin_note'] ?? '';
     }
 
+    public function getCleanTransferContent(): string
+    {
+        $raw = $this->transfer_content ?: $this->order_code;
+        return str_replace(['-', ' '], '', $raw);
+    }
+
+    public function getVietqrUrlAttribute(): string
+    {
+        $bin = config('services.sepay.bank_bin', '970422');
+        $acc = config('services.sepay.account_number', '0977364711');
+        $accName = urlencode(config('services.sepay.account_name', 'NGUYEN TRONG NGHIA'));
+        $amount = (int) $this->total_amount;
+        $content = urlencode($this->getCleanTransferContent());
+        return "https://img.vietqr.io/image/{$bin}-{$acc}-compact2.png?amount={$amount}&addInfo={$content}&accountName={$accName}";
+    }
+
+    public function getQrOnlyUrlAttribute(): string
+    {
+        $bin = config('services.sepay.bank_bin', '970422');
+        $acc = config('services.sepay.account_number', '0977364711');
+        $accName = urlencode(config('services.sepay.account_name', 'NGUYEN TRONG NGHIA'));
+        $amount = (int) $this->total_amount;
+        $content = urlencode($this->getCleanTransferContent());
+        return "https://img.vietqr.io/image/{$bin}-{$acc}-qr_only.png?amount={$amount}&addInfo={$content}&accountName={$accName}";
+    }
+
+    public function getSepayQrUrlAttribute(): string
+    {
+        $bank = config('services.sepay.bank_name', 'MBBank');
+        $acc = config('services.sepay.account_number', '0977364711');
+        $amount = (int) $this->total_amount;
+        $content = urlencode($this->getCleanTransferContent());
+        return "https://qr.sepay.vn/img?acc={$acc}&bank={$bank}&amount={$amount}&des={$content}";
+    }
+
+    public function getQrUrlAttribute(): string
+    {
+        return $this->getQrOnlyUrlAttribute();
+    }
+
     public function user()
     {
         return $this->belongsTo(User::class);
@@ -96,5 +140,10 @@ class Order extends Model
     public function items()
     {
         return $this->hasMany(OrderItem::class);
+    }
+
+    public function transactions()
+    {
+        return $this->hasMany(PaymentTransaction::class);
     }
 }
