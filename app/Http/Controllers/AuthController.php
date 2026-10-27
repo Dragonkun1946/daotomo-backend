@@ -452,12 +452,14 @@ class AuthController extends Controller
 
         // Detect if real mail transport is configured (unless running in test suite)
         $isTesting = app()->runningUnitTests();
+        $resendKey = env('RESEND_API_KEY');
+        $brevoKey = env('BREVO_API_KEY');
         $defaultMailer = config('mail.default');
         $smtpHost = config('mail.mailers.smtp.host');
         $smtpUser = config('mail.mailers.smtp.username');
         $smtpPass = config('mail.mailers.smtp.password');
 
-        $hasRealTransport = $isTesting || (
+        $hasRealTransport = $isTesting || !empty($resendKey) || !empty($brevoKey) || (
             $defaultMailer === 'smtp' && !empty($smtpHost) && $smtpHost !== '127.0.0.1' && !empty($smtpUser) && !empty($smtpPass)
         ) || in_array($defaultMailer, ['mailgun', 'postmark', 'ses', 'resend']);
 
@@ -473,17 +475,99 @@ class AuthController extends Controller
                 Log::info("[Password Reset Dev Link]: {$resetUrl}");
                 return response()->json([
                     'success' => false,
-                    'message' => 'Máy chủ chưa được kết nối SMTP (MAIL_MAILER hiện là "' . $defaultMailer . '"). Vui lòng cấu hình tài khoản SMTP (như Gmail App Password hoặc Brevo) trong biến môi trường để gửi thư đến hộp thư.',
+                    'message' => 'Máy chủ chưa được kết nối SMTP (MAIL_MAILER hiện là "' . $defaultMailer . '"). Vui lòng cấu hình tài khoản SMTP hoặc RESEND_API_KEY trong biến môi trường để gửi thư đến hộp thư.',
                     'dev_reset_url' => $resetUrl,
                 ], 503);
             }
 
             return response()->json([
                 'success' => false,
-                'message' => 'Hệ thống gửi email chưa được cấu hình máy chủ SMTP trên máy chủ (Render). Vui lòng thông báo cho quản trị viên thêm biến môi trường SMTP.',
+                'message' => 'Hệ thống gửi email chưa được cấu hình máy chủ SMTP trên máy chủ (Render). Vui lòng thông báo cho quản trị viên thêm biến môi trường RESEND_API_KEY hoặc SMTP.',
             ], 503);
         }
 
+        // 1. Try Resend HTTPS API (Port 443 — Bypasses Render free tier port 587/465 block)
+        if (!empty($resendKey) && !$isTesting) {
+            try {
+                $htmlBody = view('emails.reset_password', [
+                    'resetUrl' => $resetUrl,
+                    'user' => $user,
+                    'username' => $user->name ?: $user->username,
+                    'email' => $user->email,
+                ])->render();
+
+                $fromName = env('MAIL_FROM_NAME', 'Đảo Tò Mò');
+                $fromEmail = env('RESEND_FROM_EMAIL', env('MAIL_FROM_ADDRESS', 'onboarding@resend.dev'));
+
+                $resendRes = Http::withToken($resendKey)
+                    ->timeout(10)
+                    ->post('https://api.resend.com/emails', [
+                        'from' => "{$fromName} <{$fromEmail}>",
+                        'to' => [$user->email],
+                        'subject' => '🏝️ [Đảo Tò Mò] Đặt lại mật khẩu tài khoản của bạn',
+                        'html' => $htmlBody,
+                    ]);
+
+                if ($resendRes->successful()) {
+                    Log::info('[Password Reset] Email sent successfully via Resend HTTPS API.', [
+                        'user_id' => $user->id,
+                        'email_id' => $resendRes->json('id'),
+                    ]);
+
+                    return response()->json([
+                        'success' => true,
+                        'message' => $genericSuccessMessage,
+                    ]);
+                }
+
+                Log::error('[Password Reset] Resend API error: ' . $resendRes->body());
+            } catch (\Throwable $re) {
+                Log::error('[Password Reset] Resend API exception: ' . $re->getMessage());
+            }
+        }
+
+        // 2. Try Brevo HTTPS API (Port 443 — Bypasses Render port blocks)
+        if (!empty($brevoKey) && !$isTesting) {
+            try {
+                $htmlBody = view('emails.reset_password', [
+                    'resetUrl' => $resetUrl,
+                    'user' => $user,
+                    'username' => $user->name ?: $user->username,
+                    'email' => $user->email,
+                ])->render();
+
+                $fromName = env('MAIL_FROM_NAME', 'Đảo Tò Mò');
+                $fromEmail = env('MAIL_FROM_ADDRESS', 'contact@daotomo.site');
+
+                $brevoRes = Http::withHeaders([
+                    'api-key' => $brevoKey,
+                    'Content-Type' => 'application/json',
+                ])->timeout(10)->post('https://api.brevo.com/v3/smtp/email', [
+                    'sender' => ['name' => $fromName, 'email' => $fromEmail],
+                    'to' => [['email' => $user->email, 'name' => $user->name ?: $user->username]],
+                    'subject' => '🏝️ [Đảo Tò Mò] Đặt lại mật khẩu tài khoản của bạn',
+                    'htmlContent' => $htmlBody,
+                ]);
+
+                if ($brevoRes->successful()) {
+                    Log::info('[Password Reset] Email sent successfully via Brevo HTTPS API.', [
+                        'user_id' => $user->id,
+                        'message_id' => $brevoRes->json('messageId'),
+                    ]);
+
+                    return response()->json([
+                        'success' => true,
+                        'message' => $genericSuccessMessage,
+                    ]);
+                }
+
+                Log::error('[Password Reset] Brevo API error: ' . $brevoRes->body());
+            } catch (\Throwable $be) {
+                Log::error('[Password Reset] Brevo API exception: ' . $be->getMessage());
+            }
+        }
+
+        // 3. Standard Symfony Mailer / SMTP transport
         try {
             Mail::to($user->email)->send(new ResetPasswordMail($resetUrl, $user));
 
@@ -497,11 +581,19 @@ class AuthController extends Controller
                 'message' => $genericSuccessMessage,
             ]);
         } catch (\Throwable $e) {
-            // Log transport/SMTP error without leaking secrets or tokens
-            Log::error('[Password Reset] Failed to send email: ' . $e->getMessage(), [
+            $msg = $e->getMessage();
+            Log::error('[Password Reset] Failed to send email via SMTP: ' . $msg, [
                 'user_id' => $user->id,
                 'mailer' => config('mail.default'),
             ]);
+
+            $isPortBlocked = str_contains($msg, 'timed out') || str_contains($msg, 'Connection refused') || str_contains($msg, 'Operation timed out');
+            if ($isPortBlocked) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Không thể kết nối đến máy chủ SMTP (kết nối bị quá hạn). Lưu ý: Render gói Free chặn các cổng SMTP 587/465. Vui lòng cấu hình biến RESEND_API_KEY trên Render để gửi email qua giao thức HTTPS (Cổng 443).',
+                ], 500);
+            }
 
             return response()->json([
                 'success' => false,
