@@ -383,7 +383,8 @@
     <!-- Step 1: Confirm Details & Quantity -->
     <div id="modal-step-confirm">
       <h2>🛒 Mua Vật Phẩm</h2>
-      <p id="m-prod-name" style="color:var(--lagoon);font-weight:700;font-size:1.05rem;margin-bottom:0.6rem;font-family:var(--font-display)"></p>
+      <p id="m-prod-name" style="color:var(--lagoon);font-weight:700;font-size:1.05rem;margin-bottom:0.4rem;font-family:var(--font-display)"></p>
+      <div id="m-user-status-tip" style="font-size:0.8rem;color:var(--text-muted);margin-bottom:0.75rem;padding:0.4rem 0.6rem;background:rgba(255,255,255,0.02);border-radius:6px;border:1px dashed var(--border)"></div>
       
       <div style="background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:var(--radius);padding:1rem;margin-bottom:1.25rem;text-align:left">
         <div style="display:flex;justify-content:space-between;margin-bottom:0.5rem;font-size:0.9rem">
@@ -563,22 +564,28 @@ document.querySelectorAll('.filter-btn').forEach(btn => {
 
 function openBuyModal(productId, evt) {
   if (evt) evt.stopPropagation();
-  if (!api.isLoggedIn()) {
-    if (confirm('Bạn cần đăng nhập tài khoản để đặt hàng.\nChuyển đến trang Đăng nhập ngay bây giờ?')) {
-      location.href = '/html/Account.html';
-    }
-    return;
-  }
   selectedProduct = products.find(p => p._id === productId);
   if (!selectedProduct) return;
 
   const u = api.getUser();
+  const isLogged = api.isLoggedIn() && !!u;
+
   document.getElementById('m-prod-name').textContent = selectedProduct.name;
   document.getElementById('m-unit-price').textContent = selectedProduct.price.toLocaleString('vi-VN') + 'đ';
   document.getElementById('m-qty').value = 1;
   document.getElementById('m-mc').value = (u && u.minecraftUsername) || '';
   document.getElementById('m-client-note').value = '';
   document.getElementById('m-error-msg').innerHTML = '';
+
+  const userTip = document.getElementById('m-user-status-tip');
+  if (userTip) {
+    if (isLogged) {
+      userTip.innerHTML = `👤 Tài khoản: <strong style="color:var(--lagoon)">${u.username}</strong> <span style="color:var(--text-muted);font-size:0.75rem">(Đơn sẽ lưu vào hồ sơ)</span>`;
+    } else {
+      userTip.innerHTML = `⚡ <em>Mua hàng nhanh với tư cách Khách. (Hoặc <a href="/html/Account.html?redirect=/html/Store.html" style="color:var(--lagoon);font-weight:600;text-decoration:underline">Đăng nhập</a> để tích xu)</em>`;
+    }
+  }
+
   updateModalTotal();
 
   document.getElementById('modal-step-confirm').style.display = 'block';
@@ -662,7 +669,15 @@ async function submitCreateOrder() {
     if (window.SoundFX) SoundFX.playSuccess();
     if (typeof api.showToast === 'function') api.showToast('Tạo đơn hàng ' + code + ' thành công!', 'success');
   } catch (e) {
-    document.getElementById('m-error-msg').innerHTML = `<div class="alert alert-error">❌ ${e.message}</div>`;
+    if (e.status === 401 || e.message?.includes('Unauthenticated') || e.message?.includes('đăng nhập')) {
+      document.getElementById('m-error-msg').innerHTML = `
+        <div class="alert alert-warning" style="text-align:left;font-size:0.88rem;display:flex;flex-direction:column;gap:0.4rem">
+          <div>⚠️ Phiên đăng nhập đã hết hạn. <a href="/html/Account.html?redirect=/html/Store.html" style="color:var(--accent);font-weight:700;text-decoration:underline">Đăng Nhập Lại</a> hoặc bấm lại nút xác nhận để đặt hàng với tư cách Khách.</div>
+        </div>
+      `;
+    } else {
+      document.getElementById('m-error-msg').innerHTML = `<div class="alert alert-error">❌ ${e.message}</div>`;
+    }
     if (window.SoundFX) SoundFX.playError();
   } finally {
     btn.disabled = false;

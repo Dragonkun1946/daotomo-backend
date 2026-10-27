@@ -181,6 +181,26 @@ class ApiTest extends TestCase
         $response->assertStatus(401);
     }
 
+    public function test_guest_order_creation_success(): void
+    {
+        $product = Product::where('is_active', true)->first();
+        $response = $this->postJson('/api/orders/guest', [
+            'items' => [
+                ['productId' => $product->id, 'quantity' => 1],
+            ],
+            'minecraftUsername' => 'StevePro99',
+            'note' => 'Khach mua nhanh',
+        ]);
+
+        $response->assertStatus(201)
+                 ->assertJson(['success' => true]);
+
+        $order = Order::where('minecraft_username', 'StevePro99')->latest()->first();
+        $this->assertNotNull($order);
+        $this->assertStringStartsWith('DTM-', $order->order_code);
+        $this->assertEquals((float) $product->price, (float) $order->total_amount);
+    }
+
     public function test_order_creation_rejects_empty_items(): void
     {
         $user = User::where('email', 'player@daotomo.site')->first();

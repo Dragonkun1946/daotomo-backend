@@ -5,15 +5,51 @@ namespace App\Http\Controllers;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Product;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 
 class OrderController extends Controller
 {
-    // ─── POST /api/orders (Create Order) ──────────────────────────────────────
+    // ─── POST /api/orders (Create Order - Protected) ──────────────────────────
     public function store(Request $request)
     {
         $user = $request->user();
+        if (!$user) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Bạn cần đăng nhập tài khoản để đặt hàng thành viên.',
+            ], 401);
+        }
+
+        return $this->processOrderCreation($request, $user);
+    }
+
+    // ─── POST /api/orders/guest (Create Order - Guest) ────────────────────────
+    public function storeGuest(Request $request)
+    {
+        $guestUser = User::firstOrCreate(
+            ['email' => 'guest@daotomo.site'],
+            [
+                'username' => 'guest',
+                'name' => 'Khách Vãng Lai',
+                'password' => Hash::make('Guest@DaoTomo2026!'),
+                'role' => 'user',
+                'minecraft_username' => 'GuestPlayer',
+                'coins' => 0,
+            ]
+        );
+
+        return $this->processOrderCreation($request, $guestUser);
+    }
+
+    /**
+     * Shared logic for order creation (both member & guest).
+     */
+    protected function processOrderCreation(Request $request, User $user)
+    {
         $idempotencyKey = $request->header('X-Idempotency-Key') ?? $request->input('idempotencyKey');
 
         // Idempotency check: if already processed, return existing order

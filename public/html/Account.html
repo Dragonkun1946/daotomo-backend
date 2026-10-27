@@ -1034,7 +1034,12 @@ async function doLogin() {
     const { token, user, message } = await api.login(email, pass);
     api.setSession(token, user);
     showMsg(message, 'success');
-    setTimeout(() => showProfile(user), 500);
+    const redirectUrl = new URLSearchParams(location.search).get('redirect');
+    if (redirectUrl) {
+      setTimeout(() => { location.href = redirectUrl; }, 600);
+    } else {
+      setTimeout(() => showProfile(user), 500);
+    }
   } catch (e) {
     showMsg(e.message);
   } finally {
@@ -1056,7 +1061,12 @@ async function doRegister() {
     const { token, user, message } = await api.register(username, email, pass, mc);
     api.setSession(token, user);
     showMsg(message, 'success');
-    setTimeout(() => showProfile(user), 500);
+    const redirectUrl = new URLSearchParams(location.search).get('redirect');
+    if (redirectUrl) {
+      setTimeout(() => { location.href = redirectUrl; }, 600);
+    } else {
+      setTimeout(() => showProfile(user), 500);
+    }
   } catch (e) {
     showMsg(e.message);
   } finally {

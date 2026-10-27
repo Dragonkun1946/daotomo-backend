@@ -253,7 +253,10 @@ const api = {
       localStorage.setItem('dtm_user', JSON.stringify(user));
     }
   },
-  isLoggedIn: () => !!localStorage.getItem('dtm_token'),
+  isLoggedIn: () => {
+    const t = localStorage.getItem('dtm_token');
+    return !!t && t !== 'null' && t !== 'undefined' && t !== 'false' && t.trim() !== '';
+  },
   setSession(token, user) {
     if (token) localStorage.setItem('dtm_token', token);
     if (user) {
@@ -284,7 +287,7 @@ const api = {
   async request(endpoint, opts = {}) {
     const token = this.getToken();
     const headers = { 'Content-Type': 'application/json', 'Accept': 'application/json', ...opts.headers };
-    if (token) headers['Authorization'] = `Bearer ${token}`;
+    if (token && token !== 'null' && token !== 'undefined') headers['Authorization'] = `Bearer ${token}`;
     const res  = await fetch(`${API}${endpoint}`, { ...opts, headers });
     let data;
     const contentType = res.headers.get('content-type') || '';
@@ -300,7 +303,20 @@ const api = {
         throw new Error(res.status === 500 ? 'Máy chủ đang khởi động hoặc kết nối cơ sở dữ liệu (500). Vui lòng thử lại sau giây lát!' : (text.slice(0, 120) || `Lỗi HTTP ${res.status}`));
       }
     }
-    if (!res.ok) throw new Error(data.message || 'Lỗi không xác định');
+    if (!res.ok) {
+      if (res.status === 401) {
+        if (!endpoint.includes('/auth/login') && !endpoint.includes('/auth/register')) {
+          this.clearSession();
+        }
+        const friendlyMsg = (data.message === 'Unauthenticated.' || !data.message)
+          ? 'Phiên đăng nhập đã hết hạn hoặc bạn chưa đăng nhập.'
+          : data.message;
+        const err = new Error(friendlyMsg);
+        err.status = 401;
+        throw err;
+      }
+      throw new Error(data.message || 'Lỗi không xác định');
+    }
     return data;
   },
   register: (username, email, password, mc='') =>
@@ -317,13 +333,38 @@ const api = {
     return api.request(`/products${qs ? '?'+qs : ''}`);
   },
   getProduct:  (id) => api.request(`/products/${id}`),
-  createOrder: (items, mc='', note='', paymentMethod='qr', idempotencyKey='') => {
+  createOrder: async function(items, mc='', note='', paymentMethod='qr', idempotencyKey='') {
     const headers = {};
     if (idempotencyKey) headers['X-Idempotency-Key'] = idempotencyKey;
-    return api.request('/orders', {
+    const payload = { items, minecraftUsername: mc, note, paymentMethod, idempotencyKey };
+
+    // If user is logged in, try member order first
+    if (this.isLoggedIn()) {
+      try {
+        return await this.request('/orders', {
+          method: 'POST',
+          headers,
+          body: JSON.stringify(payload),
+        });
+      } catch (err) {
+        // If token was invalid/expired (401), clear dead session and fallback to guest order seamlessly
+        if (err.status === 401 || err.message?.includes('Unauthenticated') || err.message?.includes('đăng nhập')) {
+          this.clearSession();
+          return await this.request('/orders/guest', {
+            method: 'POST',
+            headers,
+            body: JSON.stringify(payload),
+          });
+        }
+        throw err;
+      }
+    }
+
+    // Guest checkout (user not logged in)
+    return await this.request('/orders/guest', {
       method: 'POST',
       headers,
-      body: JSON.stringify({ items, minecraftUsername: mc, note, paymentMethod, idempotencyKey }),
+      body: JSON.stringify(payload),
     });
   },
   getMyOrders: (params={}) => {

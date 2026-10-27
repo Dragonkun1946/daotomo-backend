@@ -407,11 +407,6 @@ function startCountdown() {
 
 async function handleBuy() {
   if (!currentProduct) return;
-  if (!api.isLoggedIn()) {
-    if (confirm('Bạn cần đăng nhập tài khoản để đặt mua vật phẩm.\nChuyển đến trang Đăng nhập ngay?'))
-      location.href = '/html/Account.html';
-    return;
-  }
   const qtyInput = document.getElementById('buy-qty');
   const quantity = Math.max(1, parseInt(qtyInput ? qtyInput.value : 1, 10) || 1);
   const btn = document.getElementById('buy-btn');

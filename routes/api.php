@@ -49,9 +49,10 @@ Route::prefix('auth')->group(function () {
 Route::get('/products', [ProductController::class, 'index']);
 Route::get('/products/{id}', [ProductController::class, 'show']);
 
-// ─── Order Public Polling ─────────────────────────────────────────────────────
+// ─── Order Public Endpoints ───────────────────────────────────────────────────
 Route::get('/orders/check-status/{code}', [OrderController::class, 'showByCode']);
 Route::get('/orders/status/{code}', [OrderController::class, 'showByCode']);
+Route::post('/orders/guest', [OrderController::class, 'storeGuest']);
 
 // ─── SePay Webhook Endpoints ──────────────────────────────────────────────────
 Route::match(['GET', 'POST'], '/webhooks/sepay', [SepayWebhookController::class, 'handleWebhook']);
