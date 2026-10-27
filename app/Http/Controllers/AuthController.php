@@ -450,6 +450,40 @@ class AuthController extends Controller
 
         $resetUrl = $this->getSafeFrontendUrl('/html/Account.html?resetToken=' . $resetToken);
 
+        // Detect if real mail transport is configured (unless running in test suite)
+        $isTesting = app()->runningUnitTests();
+        $defaultMailer = config('mail.default');
+        $smtpHost = config('mail.mailers.smtp.host');
+        $smtpUser = config('mail.mailers.smtp.username');
+        $smtpPass = config('mail.mailers.smtp.password');
+
+        $hasRealTransport = $isTesting || (
+            $defaultMailer === 'smtp' && !empty($smtpHost) && $smtpHost !== '127.0.0.1' && !empty($smtpUser) && !empty($smtpPass)
+        ) || in_array($defaultMailer, ['mailgun', 'postmark', 'ses', 'resend']);
+
+        if (!$hasRealTransport) {
+            Log::warning('[Password Reset] Email cannot be delivered: SMTP service is not configured.', [
+                'mailer' => $defaultMailer,
+                'host' => $smtpHost,
+                'has_user' => !empty($smtpUser),
+            ]);
+
+            // If in local/debug mode, log the reset URL and provide actionable feedback
+            if (config('app.debug') || app()->environment('local')) {
+                Log::info("[Password Reset Dev Link]: {$resetUrl}");
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Máy chủ chưa được kết nối SMTP (MAIL_MAILER hiện là "' . $defaultMailer . '"). Vui lòng cấu hình tài khoản SMTP (như Gmail App Password hoặc Brevo) trong biến môi trường để gửi thư đến hộp thư.',
+                    'dev_reset_url' => $resetUrl,
+                ], 503);
+            }
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Hệ thống gửi email chưa được cấu hình máy chủ SMTP trên máy chủ (Render). Vui lòng thông báo cho quản trị viên thêm biến môi trường SMTP.',
+            ], 503);
+        }
+
         try {
             Mail::to($user->email)->send(new ResetPasswordMail($resetUrl, $user));
 
