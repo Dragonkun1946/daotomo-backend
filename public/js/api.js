@@ -324,6 +324,8 @@ const api = {
   login: (email, password) =>
     api.request('/auth/login', { method:'POST', body: JSON.stringify({ email, password }) }),
   getMe: () => api.request('/auth/me'),
+  updateMe: (data) =>
+    api.request('/auth/me', { method: 'PUT', body: JSON.stringify(data) }),
   forgotPassword: (email) =>
     api.request('/auth/forgot-password', { method: 'POST', body: JSON.stringify({ email }) }),
   resetPassword: (token, password) =>

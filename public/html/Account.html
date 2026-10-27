@@ -253,6 +253,16 @@
       transition: all 0.2s ease;
       cursor: pointer;
     }
+    .btn-edit-header {
+      background: rgba(34, 211, 238, 0.12);
+      border: 1px solid rgba(34, 211, 238, 0.35);
+      color: #38bdf8;
+    }
+    .btn-edit-header:hover {
+      background: rgba(34, 211, 238, 0.22);
+      color: #ffffff;
+      transform: translateY(-1px);
+    }
     .btn-topup-header {
       background: #3b82f6;
       color: #ffffff;
@@ -291,6 +301,83 @@
     .btn-logout-header:hover {
       background: rgba(239, 68, 68, 0.18);
       color: #ffffff;
+      transform: translateY(-1px);
+    }
+
+    .profile-meta-chips {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      flex-wrap: wrap;
+      margin-top: 0.15rem;
+    }
+    .profile-bio-text {
+      font-size: 0.86rem;
+      color: #cbd5e1;
+      line-height: 1.45;
+      max-width: 650px;
+      margin-top: 0.35rem;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 8px;
+      padding: 0.45rem 0.75rem;
+    }
+    .profile-bio-text.empty {
+      color: #64748b;
+      font-style: italic;
+    }
+    .badge-discord {
+      background: rgba(88, 101, 242, 0.16);
+      border: 1px solid rgba(88, 101, 242, 0.4);
+      color: #a5b4fc;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-size: 0.74rem;
+      padding: 0.2rem 0.6rem;
+      border-radius: 6px;
+      font-family: var(--font-mono);
+    }
+    .missing-mc-alert {
+      background: linear-gradient(90deg, rgba(245, 158, 11, 0.14) 0%, rgba(217, 119, 6, 0.08) 100%);
+      border: 1px solid rgba(245, 158, 11, 0.38);
+      border-radius: 12px;
+      padding: 0.85rem 1.25rem;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      flex-wrap: wrap;
+      animation: pulseAlert 3.5s infinite ease-in-out;
+    }
+    @keyframes pulseAlert {
+      0%, 100% { border-color: rgba(245, 158, 11, 0.38); }
+      50% { border-color: rgba(245, 158, 11, 0.75); box-shadow: 0 0 16px rgba(245, 158, 11, 0.18); }
+    }
+    .missing-mc-alert .alert-content {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-size: 0.86rem;
+      color: #fef3c7;
+    }
+    .missing-mc-alert .alert-action {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      background: #f59e0b;
+      color: #0f172a;
+      font-weight: 700;
+      font-size: 0.8rem;
+      padding: 0.45rem 0.95rem;
+      border-radius: 8px;
+      cursor: pointer;
+      border: none;
+      transition: all 0.15s ease;
+    }
+    .missing-mc-alert .alert-action:hover {
+      background: #fbbf24;
       transform: translateY(-1px);
     }
 
@@ -711,14 +798,24 @@
               <span class="badge" id="p-badge">🎮 Player</span>
               <span class="profile-user-id" id="p-sys-id">#0000</span>
             </div>
-            <div class="profile-email-row">
-              <span id="p-email">—</span>
+            <div class="profile-meta-chips">
+              <span class="profile-email-row" id="p-email">—</span>
+              <span id="p-discord-wrap" class="hidden">
+                <span class="badge-discord" id="p-discord-badge" title="Tài khoản Discord đã liên kết">
+                  <svg style="width:13px;height:13px" viewBox="0 0 24 24" fill="currentColor"><path d="M20.3 5.4A17.6 17.6 0 0 0 15.9 4l-.3.6a13 13 0 0 1 3.8 1.5 15.3 15.3 0 0 0-13 0A13 13 0 0 1 10.2 4l-.3-.6a17.6 17.6 0 0 0-4.4 1.4C2.6 9.8 1.8 14 2.2 18.2a17.7 17.7 0 0 0 5.4 2.7l.7-1.1a11 11 0 0 1-1.7-.8l.4-.3a12.7 12.7 0 0 0 10 0l.4.3a11 11 0 0 1-1.7.8l.7 1.1a17.6 17.6 0 0 0 5.4-2.7c.5-4.8-.7-8.9-3.5-12.8ZM9 15.3c-.9 0-1.7-.9-1.7-2s.7-2 1.7-2 1.7.9 1.7 2-.8 2-1.7 2Zm6 0c-.9 0-1.7-.9-1.7-2s.7-2 1.7-2 1.7.9 1.7 2-.8 2-1.7 2Z"/></svg>
+                  <span id="p-discord-name">Discord</span>
+                </span>
+              </span>
             </div>
+            <div class="profile-bio-text empty" id="p-bio">Chưa có tiểu sử cá nhân. Bấm "Sửa Hồ Sơ" để cập nhật!</div>
           </div>
         </div>
 
         <!-- Quick Actions -->
         <div class="profile-header-actions">
+          <button type="button" class="btn-header-action btn-edit-header" onclick="openEditProfileModal()">
+            <span>✏️ Sửa Hồ Sơ</span>
+          </button>
           <a href="/html/Store.html#topup" class="btn-header-action btn-topup-header">
             <span>⚡ Nạp Xu</span>
           </a>
@@ -737,6 +834,21 @@
       </div>
     </div>
 
+    <!-- Missing Minecraft IGN Alert Banner (shown when user has not set IGN) -->
+    <div class="missing-mc-alert hidden" id="mc-missing-banner">
+      <div class="alert-content">
+        <span style="font-size:1.35rem">⚠️</span>
+        <div>
+          <strong style="display:block;color:#fbbf24;margin-bottom:2px">Bạn chưa liên kết tên nhân vật Minecraft (IGN)!</strong>
+          <span>Vui lòng cập nhật tên Minecraft để server tự động giao rank, vật phẩm khi mua hàng và hiển thị skin 3D chuẩn xác.</span>
+        </div>
+      </div>
+      <button class="alert-action" type="button" onclick="openEditProfileModal()">
+        <span>✏️ Đặt Tên Ingame Ngay</span>
+        <span>→</span>
+      </button>
+    </div>
+
     <!-- 4-Tile Metrics Bar -->
     <div class="profile-stats-bar">
       <!-- Tile 1: Kho Xu -->
@@ -751,17 +863,17 @@
         </div>
       </div>
 
-      <!-- Tile 2: Minecraft IGN with 1-click copy -->
-      <div class="stat-tile" onclick="copyPlayerIGN()" style="cursor:pointer" title="Nhấn để sao chép Minecraft IGN">
+      <!-- Tile 2: Minecraft IGN with 1-click copy / edit -->
+      <div class="stat-tile" id="stat-tile-mc" onclick="handleMcTileClick(event)" style="cursor:pointer" title="Nhấn để sao chép hoặc thiết lập Minecraft IGN">
         <div class="stat-tile-icon">🎮</div>
         <div class="stat-tile-content">
           <span class="stat-tile-label">Minecraft IGN</span>
           <strong class="stat-tile-val" id="p-mc">—</strong>
         </div>
         <div class="stat-tile-action">
-          <button class="stat-tile-copy" type="button" title="Sao chép tên người chơi">
+          <button class="stat-tile-copy" id="stat-mc-btn" type="button" title="Sao chép tên người chơi">
             <span id="copy-ign-icon">📋</span>
-            <span>Copy</span>
+            <span id="copy-ign-label">Copy</span>
           </button>
         </div>
       </div>
@@ -981,6 +1093,91 @@
   </div>
 </div>
 
+<!-- ═══════════════════════════════════════════════════════════
+     PROFILE EDIT MODAL (Responsive, Full Validation)
+═══════════════════════════════════════════════════════════ -->
+<div class="modal-overlay" id="profile-edit-modal" role="dialog" aria-modal="true" aria-labelledby="edit-profile-title">
+  <div class="modal" style="max-width:540px;">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1.15rem">
+      <div>
+        <h2 id="edit-profile-title" style="margin:0;font-size:1.25rem;font-weight:800;display:flex;align-items:center;gap:0.5rem">
+          <span>✏️</span> Chỉnh Sửa Hồ Sơ Cá Nhân
+        </h2>
+        <div style="font-size:0.8rem;color:var(--text-muted);margin-top:3px">Cập nhật thông tin hiển thị và tên Minecraft của bạn</div>
+      </div>
+      <button type="button" onclick="closeEditProfileModal()" style="background:none;border:none;color:var(--text-muted);font-size:1.3rem;cursor:pointer;padding:0 0.4rem" aria-label="Đóng cửa sổ">✕</button>
+    </div>
+
+    <div id="edit-profile-msg"></div>
+
+    <form id="edit-profile-form" onsubmit="event.preventDefault(); doSaveProfile();">
+      <!-- Tên hiển thị -->
+      <div class="form-group" style="margin-bottom:1rem">
+        <label for="edit-name" style="display:flex;justify-content:space-between;font-size:0.85rem;font-weight:700;margin-bottom:0.35rem">
+          <span>Tên hiển thị (Display Name) <span style="color:#ef4444">*</span></span>
+          <span style="font-size:0.75rem;color:var(--text-muted);font-weight:400">2 - 30 ký tự</span>
+        </label>
+        <input class="input" type="text" id="edit-name" placeholder="Ví dụ: Dragon Kun" maxlength="30" required autocomplete="nickname">
+        <div style="font-size:0.75rem;color:var(--text-muted);margin-top:0.3rem">Tên hiển thị công khai trên website. Không ảnh hưởng đến tài khoản đăng nhập hay Discord.</div>
+      </div>
+
+      <!-- Tên Minecraft IGN -->
+      <div class="form-group" style="margin-bottom:1rem">
+        <label for="edit-mc" style="display:flex;justify-content:space-between;font-size:0.85rem;font-weight:700;margin-bottom:0.35rem">
+          <span>Tên Minecraft Ingame (IGN)</span>
+          <span style="font-size:0.75rem;color:var(--text-muted);font-weight:400">3 - 16 ký tự</span>
+        </label>
+        <input class="input" type="text" id="edit-mc" placeholder="Ví dụ: DragonKun_VN" maxlength="16" pattern="^[a-zA-Z0-9_]{3,16}$" autocomplete="off">
+        <div style="font-size:0.75rem;color:var(--text-muted);margin-top:0.3rem">Chỉ gồm chữ cái (A-Z, a-z), số (0-9) và dấu gạch dưới (_). Bắt buộc để nhận quà và đồ nạp trong game.</div>
+      </div>
+
+      <!-- Tiểu sử (Bio) -->
+      <div class="form-group" style="margin-bottom:1rem">
+        <label for="edit-bio" style="display:flex;justify-content:space-between;font-size:0.85rem;font-weight:700;margin-bottom:0.35rem">
+          <span>Tiểu sử cá nhân</span>
+          <span style="font-size:0.75rem;color:var(--text-muted);font-weight:400" id="edit-bio-count">0/255</span>
+        </label>
+        <textarea class="input" id="edit-bio" rows="3" maxlength="255" placeholder="Viết vài dòng giới thiệu bản thân trên Đảo Tò Mò..." style="resize:vertical;min-height:75px"></textarea>
+      </div>
+
+      <!-- Thông tin tài khoản hệ thống (Chỉ đọc) -->
+      <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:0.85rem;margin-bottom:1.25rem;font-size:0.8rem">
+        <div style="font-weight:700;color:var(--text-muted);margin-bottom:0.5rem;font-size:0.74rem;text-transform:uppercase;letter-spacing:0.5px">Thông tin tài khoản (Chỉ đọc)</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.6rem">
+          <div>
+            <span style="color:var(--text-muted)">Tên đăng nhập:</span>
+            <strong id="edit-ro-username" style="display:block;color:#fff;font-family:var(--font-mono);font-size:0.85rem;margin-top:1px">—</strong>
+          </div>
+          <div>
+            <span style="color:var(--text-muted)">Mã Đảo Viên:</span>
+            <strong id="edit-ro-id" style="display:block;color:#38bdf8;font-family:var(--font-mono);font-size:0.85rem;margin-top:1px">—</strong>
+          </div>
+          <div style="grid-column: span 2">
+            <span style="color:var(--text-muted)">Email đăng ký:</span>
+            <strong id="edit-ro-email" style="display:block;color:#fff;font-size:0.85rem;word-break:break-all;margin-top:1px">—</strong>
+          </div>
+          <div style="grid-column: span 2">
+            <span style="color:var(--text-muted)">Tài khoản Discord:</span>
+            <div id="edit-ro-discord" style="margin-top:3px;display:flex;align-items:center;gap:0.4rem">
+              <span style="color:var(--text-muted);font-style:italic">Chưa liên kết</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div style="display:flex;gap:0.75rem;justify-content:flex-end">
+        <button type="button" class="btn btn-ghost" onclick="closeEditProfileModal()" style="font-size:0.85rem;padding:0.6rem 1.15rem">
+          Hủy bỏ
+        </button>
+        <button type="submit" id="btn-save-profile" class="btn btn-primary" style="font-size:0.85rem;padding:0.6rem 1.45rem">
+          💾 Lưu Thay Đổi
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
 <footer>
   <div class="footer-grid">
     <div class="footer-col"><h3>🏝️ Đảo Tò Mò</h3><p>Cộng đồng game thủ Việt chill nhất.</p></div>
@@ -1187,13 +1384,66 @@ async function updateAccountAvatar(user, customSkinSrc = null) {
 }
 
 /* ── Show profile ── */
+let currentUserData = null;
 const EMOJIS = ['🐉','🦁','🐺','🦊','🐯','🦅','🐬','🦋','🐸','🐼'];
+
 function showProfile(user) {
+  currentUserData = user;
   document.getElementById('auth-section').classList.add('hidden');
   document.getElementById('profile-section').classList.remove('hidden');
-  document.getElementById('p-name').textContent   = user.username;
-  document.getElementById('p-email').textContent  = user.email;
-  document.getElementById('p-mc').textContent     = user.minecraftUsername || 'Chưa thiết lập';
+
+  // Display Name & System ID
+  const displayName = user.name || user.username || 'Player';
+  document.getElementById('p-name').textContent = displayName;
+  document.getElementById('p-email').textContent = user.email || '—';
+
+  // Minecraft IGN & Missing Banner
+  const mcUsername = (user.minecraftUsername || user.minecraft_username || '').trim();
+  const pMc = document.getElementById('p-mc');
+  const mcBanner = document.getElementById('mc-missing-banner');
+  const copyBtnLabel = document.getElementById('copy-ign-label');
+  const copyBtnIcon = document.getElementById('copy-ign-icon');
+
+  if (pMc) {
+    pMc.textContent = mcUsername || 'Chưa thiết lập';
+    pMc.style.color = mcUsername ? '#ffffff' : '#fbbf24';
+  }
+  if (mcBanner) {
+    mcBanner.classList.toggle('hidden', !!mcUsername);
+  }
+  if (copyBtnLabel) {
+    copyBtnLabel.textContent = mcUsername ? 'Copy' : 'Đặt tên';
+  }
+  if (copyBtnIcon) {
+    copyBtnIcon.textContent = mcUsername ? '📋' : '✏️';
+  }
+
+  // Discord Badge
+  const discordWrap = document.getElementById('p-discord-wrap');
+  const discordName = document.getElementById('p-discord-name');
+  const discordHandle = user.discordUsername || user.discord_username;
+  const discordId = user.discordId || user.discord_id;
+  if (discordWrap && discordName) {
+    if (discordHandle || discordId) {
+      discordWrap.classList.remove('hidden');
+      discordName.textContent = discordHandle ? `@${discordHandle}` : 'Đã liên kết Discord';
+    } else {
+      discordWrap.classList.add('hidden');
+    }
+  }
+
+  // Bio
+  const bioEl = document.getElementById('p-bio');
+  if (bioEl) {
+    const bioText = (user.bio || '').trim();
+    if (bioText) {
+      bioEl.textContent = bioText;
+      bioEl.classList.remove('empty');
+    } else {
+      bioEl.textContent = 'Chưa có tiểu sử cá nhân. Bấm "Sửa Hồ Sơ" để cập nhật!';
+      bioEl.classList.add('empty');
+    }
+  }
   
   // ProMax: Coins & System ID
   const coinsEl = document.getElementById('p-coins');
@@ -1246,8 +1496,9 @@ function showProfile(user) {
   loadCheckinStreak();
 
   updateAccountAvatar(user);
-  if (user.createdAt) {
-    document.getElementById('p-joined').textContent = new Date(user.createdAt).toLocaleDateString('vi-VN');
+  if (user.createdAt || user.created_at) {
+    const d = new Date(user.createdAt || user.created_at);
+    document.getElementById('p-joined').textContent = !isNaN(d) ? d.toLocaleDateString('vi-VN') : '—';
   }
   const badge = document.getElementById('p-badge');
   badge.textContent = user.role === 'admin' ? '⭐ Admin VIP' : '🎮 Player';
@@ -1256,7 +1507,7 @@ function showProfile(user) {
   if (adminWrap && user.role === 'admin') adminWrap.classList.remove('hidden');
   const nav = document.getElementById('nav-account-link');
   const navLabel = nav?.querySelector('span:last-child');
-  if (navLabel) navLabel.textContent = user.username;
+  if (navLabel) navLabel.textContent = displayName;
   loadOrders();
   setTimeout(() => {
     initAccountSkin(user);
@@ -1264,11 +1515,21 @@ function showProfile(user) {
   }, 120);
 }
 
+function handleMcTileClick(e) {
+  const user = currentUserData || api.getUser();
+  const mc = (user && (user.minecraftUsername || user.minecraft_username)) || '';
+  if (!mc.trim()) {
+    openEditProfileModal();
+    return;
+  }
+  copyPlayerIGN();
+}
+
 function copyPlayerIGN() {
   const mcEl = document.getElementById('p-mc');
   const mc = mcEl ? mcEl.textContent.trim() : '';
   if (!mc || mc === 'Chưa thiết lập' || mc === '—') {
-    if (typeof showToast === 'function') showToast('Chưa thiết lập tên Minecraft IGN trong hồ sơ.', 'info');
+    openEditProfileModal();
     return;
   }
   navigator.clipboard.writeText(mc).then(() => {
@@ -1282,6 +1543,158 @@ function copyPlayerIGN() {
   }).catch(() => {
     if (typeof showToast === 'function') showToast(mc, 'info');
   });
+}
+
+/* ── Profile Edit Modal Controller ── */
+function openEditProfileModal() {
+  const user = currentUserData || api.getUser();
+  if (!user) return;
+
+  const modal = document.getElementById('profile-edit-modal');
+  if (!modal) return;
+
+  const nameInput = document.getElementById('edit-name');
+  const mcInput   = document.getElementById('edit-mc');
+  const bioInput  = document.getElementById('edit-bio');
+  const bioCount  = document.getElementById('edit-bio-count');
+
+  if (nameInput) nameInput.value = user.name || user.username || '';
+  if (mcInput)   mcInput.value = user.minecraftUsername || user.minecraft_username || '';
+  if (bioInput) {
+    bioInput.value = user.bio || '';
+    if (bioCount) bioCount.textContent = `${bioInput.value.length}/255`;
+  }
+
+  // System Read-only fields
+  const roUser = document.getElementById('edit-ro-username');
+  if (roUser) roUser.textContent = user.username || '—';
+
+  const roId = document.getElementById('edit-ro-id');
+  if (roId) roId.textContent = `#DTM-${String(user.id || user._id || '101').padStart(4, '0')}`;
+
+  const roEmail = document.getElementById('edit-ro-email');
+  if (roEmail) roEmail.textContent = user.email || '—';
+
+  const roDiscord = document.getElementById('edit-ro-discord');
+  if (roDiscord) {
+    const dHandle = user.discordUsername || user.discord_username;
+    const dId = user.discordId || user.discord_id;
+    if (dHandle || dId) {
+      roDiscord.innerHTML = `
+        <span class="badge-discord">
+          <svg style="width:13px;height:13px" viewBox="0 0 24 24" fill="currentColor"><path d="M20.3 5.4A17.6 17.6 0 0 0 15.9 4l-.3.6a13 13 0 0 1 3.8 1.5 15.3 15.3 0 0 0-13 0A13 13 0 0 1 10.2 4l-.3-.6a17.6 17.6 0 0 0-4.4 1.4C2.6 9.8 1.8 14 2.2 18.2a17.7 17.7 0 0 0 5.4 2.7l.7-1.1a11 11 0 0 1-1.7-.8l.4-.3a12.7 12.7 0 0 0 10 0l.4.3a11 11 0 0 1-1.7.8l.7 1.1a17.6 17.6 0 0 0 5.4-2.7c.5-4.8-.7-8.9-3.5-12.8ZM9 15.3c-.9 0-1.7-.9-1.7-2s.7-2 1.7-2 1.7.9 1.7 2-.8 2-1.7 2Zm6 0c-.9 0-1.7-.9-1.7-2s.7-2 1.7-2 1.7.9 1.7 2-.8 2-1.7 2Z"/></svg>
+          <span>${dHandle ? `@${dHandle}` : 'ID: ' + dId}</span>
+        </span>
+      `;
+    } else {
+      roDiscord.innerHTML = `<span style="color:var(--text-muted);font-style:italic">Chưa liên kết tài khoản Discord</span>`;
+    }
+  }
+
+  const msgEl = document.getElementById('edit-profile-msg');
+  if (msgEl) msgEl.innerHTML = '';
+
+  modal.classList.add('open');
+  setTimeout(() => { if (nameInput) nameInput.focus(); }, 100);
+}
+
+function closeEditProfileModal() {
+  const modal = document.getElementById('profile-edit-modal');
+  if (modal) modal.classList.remove('open');
+}
+
+// Live bio counter
+document.addEventListener('input', (e) => {
+  if (e.target && e.target.id === 'edit-bio') {
+    const counter = document.getElementById('edit-bio-count');
+    if (counter) counter.textContent = `${e.target.value.length}/255`;
+  }
+});
+
+// ESC & Overlay clicks
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    closeEditProfileModal();
+  }
+});
+document.addEventListener('click', (e) => {
+  if (e.target && e.target.id === 'profile-edit-modal') {
+    closeEditProfileModal();
+  }
+});
+
+async function doSaveProfile() {
+  const nameInput = document.getElementById('edit-name');
+  const mcInput   = document.getElementById('edit-mc');
+  const bioInput  = document.getElementById('edit-bio');
+  const msgEl     = document.getElementById('edit-profile-msg');
+  const saveBtn   = document.getElementById('btn-save-profile');
+
+  const name = nameInput ? nameInput.value.trim() : '';
+  const mc   = mcInput ? mcInput.value.trim() : '';
+  const bio  = bioInput ? bioInput.value.trim() : '';
+
+  // Client-side validation
+  if (!name || name.length < 2 || name.length > 30) {
+    if (msgEl) msgEl.innerHTML = '<div class="alert alert-error">Tên hiển thị phải có từ 2 đến 30 ký tự.</div>';
+    if (nameInput) nameInput.focus();
+    return;
+  }
+
+  if (mc && !/^[a-zA-Z0-9_]{3,16}$/.test(mc)) {
+    if (msgEl) msgEl.innerHTML = '<div class="alert alert-error">Tên Minecraft không hợp lệ (phải từ 3 đến 16 ký tự, chỉ gồm chữ cái, chữ số và dấu gạch dưới).</div>';
+    if (mcInput) mcInput.focus();
+    return;
+  }
+
+  if (bio && bio.length > 255) {
+    if (msgEl) msgEl.innerHTML = '<div class="alert alert-error">Tiểu sử không được vượt quá 255 ký tự.</div>';
+    if (bioInput) bioInput.focus();
+    return;
+  }
+
+  if (saveBtn) {
+    saveBtn.disabled = true;
+    saveBtn.textContent = '⏳ Đang lưu...';
+  }
+  if (msgEl) msgEl.innerHTML = '';
+
+  try {
+    const res = await api.updateMe({
+      name,
+      minecraftUsername: mc,
+      bio
+    });
+
+    const updatedUser = res.user || res.data || res;
+    currentUserData = updatedUser;
+
+    // Persist session
+    api.setSession(api.getToken(), updatedUser);
+
+    // Refresh UI
+    showProfile(updatedUser);
+
+    // Close modal
+    closeEditProfileModal();
+
+    // Success notifications
+    if (typeof showToast === 'function') {
+      showToast('Cập nhật hồ sơ cá nhân thành công! 🎉', 'success');
+    }
+    if (window.SoundFX) {
+      window.SoundFX.playSuccess();
+    }
+  } catch (err) {
+    if (msgEl) {
+      msgEl.innerHTML = `<div class="alert alert-error">${err.message || 'Lỗi khi cập nhật hồ sơ.'}</div>`;
+    }
+  } finally {
+    if (saveBtn) {
+      saveBtn.disabled = false;
+      saveBtn.textContent = '💾 Lưu Thay Đổi';
+    }
+  }
 }
 
 function initSkinStageDragDrop() {

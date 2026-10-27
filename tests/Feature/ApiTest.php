@@ -5,10 +5,12 @@ namespace Tests\Feature;
 use App\Models\User;
 use App\Models\Product;
 use App\Models\Order;
+use App\Mail\ResetPasswordMail;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Mail;
 use Tests\TestCase;
 
 class ApiTest extends TestCase
@@ -494,5 +496,222 @@ class ApiTest extends TestCase
             'email' => 'player@daotomo.site',
             'discord_id' => '1122334455',
         ]);
+    }
+
+    // ─── 10. Password Reset Flow Tests ────────────────────────────────────────
+    public function test_forgot_password_sends_email_to_existing_user(): void
+    {
+        Mail::fake();
+
+        $response = $this->postJson('/api/auth/forgot-password', [
+            'email' => 'player@daotomo.site',
+        ]);
+
+        $response->assertStatus(200)
+                 ->assertJson(['success' => true]);
+
+        $user = User::where('email', 'player@daotomo.site')->first();
+        $this->assertNotNull($user->reset_password_token);
+        $this->assertNotNull($user->reset_password_expire);
+        $this->assertTrue($user->reset_password_expire->isFuture());
+
+        Mail::assertSent(ResetPasswordMail::class, function ($mail) use ($user) {
+            return $mail->hasTo('player@daotomo.site') &&
+                   str_contains($mail->resetUrl, $user->reset_password_token);
+        });
+    }
+
+    public function test_forgot_password_returns_generic_success_without_sending_mail_for_non_existent_email(): void
+    {
+        Mail::fake();
+
+        $response = $this->postJson('/api/auth/forgot-password', [
+            'email' => 'nonexistent_user@daotomo.site',
+        ]);
+
+        $response->assertStatus(200)
+                 ->assertJson(['success' => true]);
+
+        Mail::assertNothingSent();
+    }
+
+    public function test_forgot_password_rate_limiting(): void
+    {
+        Mail::fake();
+
+        // 5 requests allowed per minute
+        for ($i = 0; $i < 5; $i++) {
+            $this->postJson('/api/auth/forgot-password', ['email' => 'player@daotomo.site'])->assertStatus(200);
+        }
+
+        // 6th request should hit 429 Too Many Requests
+        $response = $this->postJson('/api/auth/forgot-password', ['email' => 'player@daotomo.site']);
+        $response->assertStatus(429);
+    }
+
+    public function test_reset_password_rejects_invalid_or_expired_token(): void
+    {
+        $response = $this->postJson('/api/auth/reset-password/invalidtoken123', [
+            'password' => 'newpassword123',
+        ]);
+
+        $response->assertStatus(400)
+                 ->assertJson(['success' => false]);
+    }
+
+    public function test_reset_password_validates_short_password(): void
+    {
+        $user = User::where('email', 'player@daotomo.site')->first();
+        $user->update([
+            'reset_password_token' => 'validtoken1234567890abcdef',
+            'reset_password_expire' => now()->addMinutes(30),
+        ]);
+
+        $response = $this->postJson('/api/auth/reset-password/validtoken1234567890abcdef', [
+            'password' => '123',
+        ]);
+
+        $response->assertStatus(400)
+                 ->assertJson(['success' => false]);
+    }
+
+    public function test_reset_password_successfully_resets_password_and_returns_token(): void
+    {
+        $user = User::where('email', 'player@daotomo.site')->first();
+        $user->update([
+            'reset_password_token' => 'validtoken1234567890abcdef',
+            'reset_password_expire' => now()->addMinutes(30),
+        ]);
+
+        $response = $this->postJson('/api/auth/reset-password/validtoken1234567890abcdef', [
+            'password' => 'NewBrandPass2026!',
+        ]);
+
+        $response->assertStatus(200)
+                 ->assertJson(['success' => true])
+                 ->assertJsonStructure(['token', 'user']);
+
+        $user->refresh();
+        $this->assertNull($user->reset_password_token);
+        $this->assertNull($user->reset_password_expire);
+
+        // Verify login with new password succeeds
+        $loginRes = $this->postJson('/api/auth/login', [
+            'email' => 'player@daotomo.site',
+            'password' => 'NewBrandPass2026!',
+        ]);
+        $loginRes->assertStatus(200);
+    }
+
+    // ─── 11. Profile View & Update Tests ──────────────────────────────────────
+    public function test_get_me_returns_profile_with_discord_username_and_bio(): void
+    {
+        $user = User::where('email', 'player@daotomo.site')->first();
+        $user->update([
+            'discord_username' => 'DragonKun#1234',
+            'bio' => 'Chúa đảo Minecraft Đảo Tò Mò',
+        ]);
+
+        $response = $this->actingAs($user)->getJson('/api/auth/me');
+
+        $response->assertStatus(200)
+                 ->assertJson([
+                     'success' => true,
+                     'user' => [
+                         'email' => 'player@daotomo.site',
+                         'discordUsername' => 'DragonKun#1234',
+                         'bio' => 'Chúa đảo Minecraft Đảo Tò Mò',
+                     ],
+                 ]);
+    }
+
+    public function test_update_me_rejects_unauthenticated(): void
+    {
+        $response = $this->putJson('/api/auth/me', [
+            'name' => 'Dragon King',
+        ]);
+
+        $response->assertStatus(401);
+    }
+
+    public function test_update_me_updates_name_mc_username_and_bio(): void
+    {
+        $user = User::where('email', 'player@daotomo.site')->first();
+
+        $response = $this->actingAs($user)->putJson('/api/auth/me', [
+            'name' => 'Dragon Kun VIP',
+            'minecraftUsername' => 'DragonKun_VN',
+            'bio' => 'Xin chào cộng đồng Đảo Tò Mò!',
+        ]);
+
+        $response->assertStatus(200)
+                 ->assertJson([
+                     'success' => true,
+                     'user' => [
+                         'name' => 'Dragon Kun VIP',
+                         'minecraftUsername' => 'DragonKun_VN',
+                         'bio' => 'Xin chào cộng đồng Đảo Tò Mò!',
+                     ],
+                 ]);
+
+        $this->assertDatabaseHas('users', [
+            'id' => $user->id,
+            'name' => 'Dragon Kun VIP',
+            'minecraft_username' => 'DragonKun_VN',
+            'bio' => 'Xin chào cộng đồng Đảo Tò Mò!',
+        ]);
+    }
+
+    public function test_update_me_validates_minecraft_username(): void
+    {
+        $user = User::where('email', 'player@daotomo.site')->first();
+
+        // 1. Invalid special character '-'
+        $response1 = $this->actingAs($user)->putJson('/api/auth/me', [
+            'minecraftUsername' => 'Invalid-Name!',
+        ]);
+        $response1->assertStatus(422)
+                  ->assertJsonValidationErrors(['minecraftUsername']);
+
+        // 2. Too long (> 16 chars)
+        $response2 = $this->actingAs($user)->putJson('/api/auth/me', [
+            'minecraftUsername' => 'SuperLongMinecraftUsernameExceeds16',
+        ]);
+        $response2->assertStatus(422)
+                  ->assertJsonValidationErrors(['minecraftUsername']);
+    }
+
+    public function test_discord_oauth_callback_saves_discord_username_and_preserves_custom_name(): void
+    {
+        Config::set('services.discord.client_id', 'mock_client_id');
+        Config::set('services.discord.client_secret', 'mock_client_secret');
+
+        // Existing user with a customized display name
+        $user = User::where('email', 'player@daotomo.site')->first();
+        $user->update(['name' => 'Custom Display Name']);
+
+        $state = 'valid_oauth_state_789';
+        Cache::put('discord_oauth_state_' . $state, ['created_at' => now()->timestamp], 600);
+
+        Http::fake([
+            'https://discord.com/api/oauth2/token' => Http::response(['access_token' => 'mock_token_abc'], 200),
+            'https://discord.com/api/users/@me' => Http::response([
+                'id' => '7778889990',
+                'username' => 'DiscordHero',
+                'discriminator' => '0',
+                'global_name' => 'Discord Global',
+                'email' => 'player@daotomo.site',
+                'avatar' => 'new_avatar_hash',
+            ], 200),
+        ]);
+
+        $response = $this->get("/api/auth/discord/callback?code=valid_code&state={$state}");
+        $response->assertRedirect();
+
+        $user->refresh();
+        $this->assertEquals('7778889990', $user->discord_id);
+        $this->assertEquals('DiscordHero', $user->discord_username);
+        // Custom display name must be preserved!
+        $this->assertEquals('Custom Display Name', $user->name);
     }
 }

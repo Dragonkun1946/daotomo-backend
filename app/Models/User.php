@@ -22,6 +22,8 @@ class User extends Authenticatable
         'avatar',
         'coins',
         'discord_id',
+        'discord_username',
+        'bio',
         'reset_password_token',
         'reset_password_expire',
     ];
@@ -36,6 +38,8 @@ class User extends Authenticatable
         'minecraftUsername',
         'skinUrl',
         'discordId',
+        'discordUsername',
+        'bio',
     ];
 
     protected function casts(): array
@@ -62,6 +66,16 @@ class User extends Authenticatable
     public function getDiscordIdAttribute(): string
     {
         return $this->attributes['discord_id'] ?? '';
+    }
+
+    public function getDiscordUsernameAttribute(): string
+    {
+        return $this->attributes['discord_username'] ?? '';
+    }
+
+    public function getBioAttribute(): string
+    {
+        return $this->attributes['bio'] ?? '';
     }
 
     public function orders()
