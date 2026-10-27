@@ -239,6 +239,7 @@ class OrderController extends Controller
         return response()->json([
             'success' => true,
             'order' => $order,
+            'data' => $order,
         ]);
     }
 
@@ -312,6 +313,7 @@ class OrderController extends Controller
             'success' => true,
             'message' => 'Đã hủy đơn hàng thành công.',
             'order' => $order->fresh(['items']),
+            'data' => $order->fresh(['items']),
         ]);
     }
 
@@ -351,6 +353,7 @@ class OrderController extends Controller
             'success' => true,
             'message' => 'Đã gửi minh chứng thanh toán! Admin sẽ duyệt trong 24h.',
             'order' => $order->fresh(['items']),
+            'data' => $order->fresh(['items']),
         ]);
     }
 
@@ -469,6 +472,7 @@ class OrderController extends Controller
             'success' => true,
             'message' => 'Cập nhật trạng thái đơn hàng thành công.',
             'order' => $order->fresh(['items']),
+            'data' => $order->fresh(['items']),
         ]);
     }
 }

@@ -585,17 +585,19 @@ async function loadOrders() {
     }
 
     tbody.innerHTML = data.map(o => {
-      const code = o.orderCode || '#' + o._id.slice(-8).toUpperCase();
-      const oStat = o.orderStatus || (o.status === 'cancelled' ? 'cancelled' : o.status === 'delivered' ? 'delivered' : 'pending');
-      const pStat = o.paymentStatus || (o.status === 'paid' ? 'paid' : 'pending');
-      const itemsSummary = o.items.map(it => `${it.name} (x${it.quantity})`).join('<br>');
-      const mc = o.minecraftUsername || o.user?.minecraftUsername || '—';
+      const code = o.orderCode || o.order_code || (o._id ? '#' + String(o._id).slice(-8).toUpperCase() : '#' + o.id);
+      const oStat = o.orderStatus || o.order_status || (o.status === 'cancelled' ? 'cancelled' : o.status === 'delivered' ? 'delivered' : 'pending');
+      const pStat = o.paymentStatus || o.payment_status || (o.status === 'paid' ? 'paid' : 'pending');
+      const itemsList = o.items || [];
+      const itemsSummary = itemsList.map(it => `${it.name || 'Vật phẩm'} (x${it.quantity || 1})`).join('<br>');
+      const mc = o.minecraftUsername || o.minecraft_username || o.user?.minecraftUsername || o.user?.minecraft_username || '—';
+      const orderId = o._id || o.id;
 
       return `
         <tr>
           <td style="font-family:var(--font-mono);font-size:.78rem;font-weight:700">
             ${code}
-            <div style="font-size:0.68rem;color:var(--text-muted)">ID: ${o._id.slice(-6)}</div>
+            <div style="font-size:0.68rem;color:var(--text-muted)">ID: ${(o._id ? String(o._id).slice(-6) : o.id)}</div>
           </td>
           <td>
             <strong style="color:#fff">${o.user?.username || '—'}</strong><br>
@@ -603,9 +605,9 @@ async function loadOrders() {
             <span style="font-size:.72rem;color:var(--lagoon);font-weight:600">MC: ${mc}</span>
           </td>
           <td style="font-size:.78rem;line-height:1.5">${itemsSummary}</td>
-          <td style="font-weight:800;color:var(--accent);font-family:var(--font-mono);font-size:.95rem">${o.total.toLocaleString('vi-VN')}đ</td>
+          <td style="font-weight:800;color:var(--accent);font-family:var(--font-mono);font-size:.95rem">${(o.total != null ? Number(o.total).toLocaleString('vi-VN') : '0')}đ</td>
           <td>
-            <select onchange="handleAdminStatusChange('${o._id}', 'orderStatus', this.value)" style="background:var(--bg-elevated);border:1px solid var(--border-strong);border-radius:6px;padding:.35rem .5rem;color:var(--text);font-size:.75rem;font-family:inherit">
+            <select onchange="handleAdminStatusChange('${orderId}', 'orderStatus', this.value)" style="background:var(--bg-elevated);border:1px solid var(--border-strong);border-radius:6px;padding:.35rem .5rem;color:var(--text);font-size:.75rem;font-family:inherit">
               <option value="pending"    ${oStat==='pending'   ?'selected':''}>⏳ Chờ xử lý</option>
               <option value="processing" ${oStat==='processing'?'selected':''}>⚙️ Đang xử lý</option>
               <option value="delivered"  ${oStat==='delivered' ?'selected':''}>🎁 Đã giao</option>
@@ -613,7 +615,7 @@ async function loadOrders() {
             </select>
           </td>
           <td>
-            <select onchange="handleAdminStatusChange('${o._id}', 'paymentStatus', this.value)" style="background:var(--bg-elevated);border:1px solid var(--border-strong);border-radius:6px;padding:.35rem .5rem;color:var(--text);font-size:.75rem;font-family:inherit">
+            <select onchange="handleAdminStatusChange('${orderId}', 'paymentStatus', this.value)" style="background:var(--bg-elevated);border:1px solid var(--border-strong);border-radius:6px;padding:.35rem .5rem;color:var(--text);font-size:.75rem;font-family:inherit">
               <option value="pending"  ${pStat==='pending' ?'selected':''}>💳 Chờ TT</option>
               <option value="paid"     ${pStat==='paid'    ?'selected':''}>✅ Đã TT</option>
               <option value="failed"   ${pStat==='failed'  ?'selected':''}>⚠️ Thất bại</option>
@@ -621,7 +623,7 @@ async function loadOrders() {
             </select>
             ${o.paymentProof ? `
               <div style="margin-top:5px">
-                <button type="button" class="btn btn-ghost" style="padding:0.25rem 0.5rem;font-size:0.72rem;border-radius:6px;background:rgba(34,211,238,0.12);color:var(--lagoon);border:1px solid rgba(34,211,238,0.3)" onclick="openProofModal('${o._id}', '${code}', '${o.paymentProof}')">
+                <button type="button" class="btn btn-ghost" style="padding:0.25rem 0.5rem;font-size:0.72rem;border-radius:6px;background:rgba(34,211,238,0.12);color:var(--lagoon);border:1px solid rgba(34,211,238,0.3)" onclick="openProofModal('${orderId}', '${code}', '${o.paymentProof}')">
                   📸 Xem minh chứng
                 </button>
               </div>` : ''}

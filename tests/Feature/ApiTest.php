@@ -279,6 +279,26 @@ class ApiTest extends TestCase
         $response->assertStatus(403);
     }
 
+    public function test_user_can_view_own_order_with_order_and_data_payload(): void
+    {
+        $user = User::where('email', 'player@daotomo.site')->first();
+        $order = Order::create([
+            'order_code' => 'DTM-VIEWTEST',
+            'user_id' => $user->id,
+            'total_amount' => 50000,
+            'order_status' => 'pending',
+            'payment_status' => 'pending',
+        ]);
+
+        $response = $this->actingAs($user)->getJson("/api/orders/{$order->id}");
+        $response->assertStatus(200)
+                 ->assertJson(['success' => true])
+                 ->assertJsonStructure([
+                     'order' => ['id', 'orderCode', 'total'],
+                     'data' => ['id', 'orderCode', 'total'],
+                 ]);
+    }
+
     public function test_user_can_cancel_own_pending_order(): void
     {
         $user = User::where('email', 'player@daotomo.site')->first();
