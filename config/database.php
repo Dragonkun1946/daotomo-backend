@@ -17,14 +17,22 @@ return [
     */
 
     'default' => (function () {
+        $dbUrl = env('DATABASE_URL', env('DB_URL'));
+        if (!empty($dbUrl)) {
+            if (str_starts_with($dbUrl, 'postgres://') || str_starts_with($dbUrl, 'postgresql://')) {
+                return 'pgsql';
+            }
+            if (str_starts_with($dbUrl, 'mysql://')) {
+                return 'mysql';
+            }
+        }
+
         $conn = env('DB_CONNECTION');
-        if (empty($conn) || $conn === 'sqlite') {
-            return 'sqlite';
+        if (!empty($conn) && $conn !== 'sqlite') {
+            return $conn;
         }
-        if ($conn === 'pgsql' && !env('DATABASE_URL') && (!env('DB_HOST') || env('DB_HOST') === '127.0.0.1')) {
-            return 'sqlite';
-        }
-        return $conn;
+
+        return 'sqlite';
     })(),
 
     /*
