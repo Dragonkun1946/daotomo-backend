@@ -31,14 +31,10 @@ if [ -n "$DATABASE_URL" ]; then
     echo "==> PostgreSQL DATABASE_URL detected. Using pgsql."
     export DB_CONNECTION=pgsql
     if [ -f .env ]; then
-        sed -i 's/^DB_CONNECTION=.*/DB_CONNECTION=pgsql/' .env 2>/dev/null || true
-        if ! grep -q "^DB_CONNECTION=" .env; then
-            echo "DB_CONNECTION=pgsql" >> .env
-        fi
-        sed -i 's|^DATABASE_URL=.*|DATABASE_URL="'"$DATABASE_URL"'"|' .env 2>/dev/null || true
-        if ! grep -q "^DATABASE_URL=" .env; then
-            echo "DATABASE_URL=\"$DATABASE_URL\"" >> .env
-        fi
+        sed -i '/^DB_CONNECTION=/d' .env 2>/dev/null || true
+        echo "DB_CONNECTION=pgsql" >> .env
+        sed -i '/^DATABASE_URL=/d' .env 2>/dev/null || true
+        printf 'DATABASE_URL="%s"\n' "$DATABASE_URL" >> .env
     fi
 else
     echo "==> No PostgreSQL DATABASE_URL detected. Configuring SQLite database..."
