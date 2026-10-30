@@ -1,0 +1,1966 @@
+<!DOCTYPE html>
+<html lang="vi" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Báo Cáo Thống Kê & Kế Hoạch Kết Nối Minecraft Server | Đảo Tò Mò</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400;1,600&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root[data-theme="dark"] {
+            --bg-body: #07090e;
+            --bg-sidebar: #0b0f19;
+            --bg-card: #0f172a;
+            --bg-card-hover: #172033;
+            --bg-table-stripe: rgba(255, 255, 255, 0.02);
+            --bg-code: #030712;
+            --text-main: #f1f5f9;
+            --text-muted: #94a3b8;
+            --text-subtle: #64748b;
+            --border: rgba(255, 255, 255, 0.08);
+            --border-hover: rgba(56, 189, 248, 0.35);
+            --primary: #38bdf8;
+            --primary-glow: rgba(56, 189, 248, 0.12);
+            --emerald: #10b981;
+            --emerald-glow: rgba(16, 185, 129, 0.12);
+            --gold: #f59e0b;
+            --gold-glow: rgba(245, 158, 11, 0.12);
+            --purple: #a855f7;
+            --purple-glow: rgba(168, 85, 247, 0.12);
+            --rose: #f43f5e;
+            --rose-glow: rgba(244, 63, 94, 0.12);
+            --card-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+            --header-bg: rgba(11, 15, 25, 0.85);
+        }
+
+        :root[data-theme="light"] {
+            --bg-body: #f8fafc;
+            --bg-sidebar: #ffffff;
+            --bg-card: #ffffff;
+            --bg-card-hover: #f1f5f9;
+            --bg-table-stripe: #f8fafc;
+            --bg-code: #f1f5f9;
+            --text-main: #0f172a;
+            --text-muted: #475569;
+            --text-subtle: #94a3b8;
+            --border: #e2e8f0;
+            --border-hover: #0284c7;
+            --primary: #0284c7;
+            --primary-glow: rgba(2, 132, 199, 0.08);
+            --emerald: #059669;
+            --emerald-glow: rgba(5, 150, 105, 0.08);
+            --gold: #d97706;
+            --gold-glow: rgba(217, 119, 6, 0.08);
+            --purple: #7c3aed;
+            --purple-glow: rgba(124, 58, 237, 0.08);
+            --rose: #e11d48;
+            --rose-glow: rgba(225, 29, 72, 0.08);
+            --card-shadow: 0 4px 15px rgba(0, 0, 0, 0.06);
+            --header-bg: rgba(255, 255, 255, 0.85);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            font-family: 'Be Vietnam Pro', -apple-system, BlinkMacSystemFont, sans-serif;
+            line-height: 1.7;
+            display: flex;
+            min-height: 100vh;
+            overflow-x: hidden;
+            transition: background-color 0.25s, color 0.25s;
+            font-size: 15px;
+        }
+
+        /* Top Progress Bar */
+        #readProgress {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary), var(--emerald));
+            width: 0%;
+            z-index: 9999;
+            transition: width 0.1s;
+        }
+
+        /* Sidebar Navigation */
+        aside {
+            width: 320px;
+            background-color: var(--bg-sidebar);
+            border-right: 1px solid var(--border);
+            height: 100vh;
+            position: sticky;
+            top: 0;
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0;
+            z-index: 100;
+        }
+
+        .sidebar-header {
+            padding: 24px 20px 16px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .project-tag {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--emerald);
+            background: var(--emerald-glow);
+            padding: 4px 10px;
+            border-radius: 6px;
+            display: inline-block;
+            margin-bottom: 10px;
+            font-family: 'JetBrains Mono', monospace;
+            border: 1px solid rgba(16, 185, 129, 0.25);
+        }
+
+        .sidebar-title {
+            font-size: 16px;
+            font-weight: 800;
+            line-height: 1.35;
+            color: var(--text-main);
+        }
+
+        .sidebar-subtitle {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        .search-box {
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 8px 12px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            color: var(--text-main);
+            font-size: 13px;
+            font-family: inherit;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .search-input:focus {
+            border-color: var(--primary);
+        }
+
+        .sidebar-nav {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px 12px;
+        }
+
+        .sidebar-nav::-webkit-scrollbar {
+            width: 5px;
+        }
+
+        .sidebar-nav::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 4px;
+        }
+
+        .nav-group-title {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+            color: var(--text-subtle);
+            padding: 12px 12px 6px;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 12px;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 13.5px;
+            font-weight: 500;
+            border-radius: 6px;
+            transition: all 0.2s;
+            margin-bottom: 2px;
+        }
+
+        .nav-item:hover {
+            color: var(--text-main);
+            background-color: var(--bg-card-hover);
+        }
+
+        .nav-item.active {
+            color: var(--primary);
+            background-color: var(--primary-glow);
+            font-weight: 600;
+            border-left: 3px solid var(--primary);
+        }
+
+        .nav-item .nav-badge {
+            margin-left: auto;
+            font-size: 10px;
+            font-family: 'JetBrains Mono', monospace;
+            padding: 2px 6px;
+            border-radius: 4px;
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-subtle);
+        }
+
+        .sidebar-footer {
+            padding: 16px 20px;
+            border-top: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: var(--bg-sidebar);
+        }
+
+        .theme-toggle-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            padding: 6px 12px;
+            border-radius: 6px;
+            color: var(--text-main);
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .theme-toggle-btn:hover {
+            border-color: var(--primary);
+            background: var(--bg-card-hover);
+        }
+
+        /* Main Content Container */
+        main {
+            flex: 1;
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 40px 48px 120px;
+        }
+
+        @media (max-width: 1024px) {
+            aside {
+                display: none;
+            }
+            main {
+                padding: 24px 20px 80px;
+            }
+        }
+
+        /* Hero / Header Section */
+        .doc-hero {
+            margin-bottom: 40px;
+            padding-bottom: 30px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .hero-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .badge-primary {
+            background: var(--primary-glow);
+            color: var(--primary);
+            border: 1px solid rgba(56, 189, 248, 0.3);
+        }
+
+        .badge-emerald {
+            background: var(--emerald-glow);
+            color: var(--emerald);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+
+        .badge-gold {
+            background: var(--gold-glow);
+            color: var(--gold);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+        }
+
+        .badge-rose {
+            background: var(--rose-glow);
+            color: var(--rose);
+            border: 1px solid rgba(244, 63, 94, 0.3);
+        }
+
+        .badge-purple {
+            background: var(--purple-glow);
+            color: var(--purple);
+            border: 1px solid rgba(168, 85, 247, 0.3);
+        }
+
+        .doc-title {
+            font-size: 32px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            line-height: 1.25;
+            margin-bottom: 12px;
+            background: linear-gradient(135deg, var(--text-main) 60%, var(--primary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .doc-desc {
+            font-size: 16px;
+            color: var(--text-muted);
+            max-width: 860px;
+            line-height: 1.7;
+        }
+
+        /* KPI Quick Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+            gap: 16px;
+            margin: 28px 0;
+        }
+
+        .stat-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            padding: 18px 20px;
+            border-radius: 10px;
+            transition: all 0.2s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+            border-color: var(--border-hover);
+            box-shadow: var(--card-shadow);
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+        }
+
+        .stat-card.c-primary::before { background: var(--primary); }
+        .stat-card.c-emerald::before { background: var(--emerald); }
+        .stat-card.c-gold::before { background: var(--gold); }
+        .stat-card.c-purple::before { background: var(--purple); }
+        .stat-card.c-rose::before { background: var(--rose); }
+
+        .stat-label {
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            color: var(--text-subtle);
+            margin-bottom: 6px;
+        }
+
+        .stat-val {
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--text-main);
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .stat-sub {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        /* Sections & Cards */
+        .section-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 32px 36px;
+            margin-bottom: 40px;
+            box-shadow: var(--card-shadow);
+            transition: border-color 0.2s;
+        }
+
+        .section-card:hover {
+            border-color: var(--border-hover);
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .section-badge {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            background: var(--primary-glow);
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 15px;
+            font-weight: 800;
+            font-family: 'JetBrains Mono', monospace;
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            flex-shrink: 0;
+        }
+
+        .section-title {
+            font-size: 22px;
+            font-weight: 800;
+            letter-spacing: -0.3px;
+            color: var(--text-main);
+        }
+
+        .sub-heading {
+            font-size: 17px;
+            font-weight: 700;
+            color: var(--text-main);
+            margin: 28px 0 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .sub-heading::before {
+            content: '';
+            width: 4px;
+            height: 18px;
+            background: var(--primary);
+            border-radius: 2px;
+            display: inline-block;
+        }
+
+        p {
+            margin-bottom: 14px;
+            color: var(--text-main);
+        }
+
+        ul, ol {
+            margin-bottom: 18px;
+            padding-left: 24px;
+        }
+
+        li {
+            margin-bottom: 6px;
+            color: var(--text-main);
+        }
+
+        /* Callout / Alert Boxes */
+        .alert-box {
+            padding: 16px 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            font-size: 14px;
+            display: flex;
+            gap: 14px;
+            line-height: 1.6;
+            align-items: flex-start;
+        }
+
+        .alert-danger {
+            background: rgba(244, 63, 94, 0.08);
+            border-left: 4px solid var(--rose);
+            color: var(--text-main);
+        }
+        :root[data-theme="light"] .alert-danger {
+            background: #fff1f2;
+            color: #9f1239;
+        }
+
+        .alert-warning {
+            background: rgba(245, 158, 11, 0.08);
+            border-left: 4px solid var(--gold);
+            color: var(--text-main);
+        }
+        :root[data-theme="light"] .alert-warning {
+            background: #fffbeb;
+            color: #92400e;
+        }
+
+        .alert-success {
+            background: rgba(16, 185, 129, 0.08);
+            border-left: 4px solid var(--emerald);
+            color: var(--text-main);
+        }
+        :root[data-theme="light"] .alert-success {
+            background: #ecfdf5;
+            color: #065f46;
+        }
+
+        .alert-info {
+            background: rgba(56, 189, 248, 0.08);
+            border-left: 4px solid var(--primary);
+            color: var(--text-main);
+        }
+        :root[data-theme="light"] .alert-info {
+            background: #f0f9ff;
+            color: #0369a1;
+        }
+
+        .alert-icon {
+            font-size: 18px;
+            line-height: 1;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        /* Tables */
+        .table-responsive {
+            width: 100%;
+            overflow-x: auto;
+            margin: 20px 0 28px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13.5px;
+            text-align: left;
+        }
+
+        th {
+            background-color: rgba(255, 255, 255, 0.03);
+            color: var(--text-muted);
+            font-weight: 700;
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--border);
+            text-transform: uppercase;
+            font-size: 11.5px;
+            letter-spacing: 0.6px;
+            white-space: nowrap;
+        }
+
+        :root[data-theme="light"] th {
+            background-color: #f1f5f9;
+        }
+
+        td {
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--border);
+            vertical-align: middle;
+        }
+
+        tr:nth-child(even) {
+            background-color: var(--bg-table-stripe);
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tr:hover td {
+            background-color: var(--bg-card-hover);
+        }
+
+        /* Interactive Command Box with Click-to-Copy */
+        .cmd-snippet {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--bg-code);
+            border: 1px solid var(--border);
+            padding: 6px 10px;
+            border-radius: 6px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            color: var(--emerald);
+            max-width: 100%;
+            overflow-x: auto;
+        }
+
+        .copy-btn {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+            border-radius: 4px;
+            padding: 3px 8px;
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: inherit;
+            flex-shrink: 0;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .copy-btn:hover {
+            background: var(--primary);
+            color: #000;
+            border-color: var(--primary);
+        }
+
+        .copy-btn.copied {
+            background: var(--emerald);
+            color: #000;
+            border-color: var(--emerald);
+        }
+
+        /* Code Blocks */
+        pre {
+            background: var(--bg-code);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 18px 20px;
+            overflow-x: auto;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12.5px;
+            line-height: 1.6;
+            color: #e2e8f0;
+            margin: 16px 0 24px;
+            position: relative;
+        }
+
+        :root[data-theme="light"] pre {
+            background: #1e293b;
+            color: #f8fafc;
+        }
+
+        pre code {
+            font-family: inherit;
+        }
+
+        .code-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border);
+            border-bottom: none;
+            padding: 8px 16px;
+            border-top-left-radius: 8px;
+            border-top-right-radius: 8px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .code-header + pre {
+            margin-top: 0;
+            border-top-left-radius: 0;
+            border-top-right-radius: 0;
+        }
+
+        code {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            padding: 2px 6px;
+            border-radius: 4px;
+            background: var(--bg-code);
+            color: var(--primary);
+            border: 1px solid var(--border);
+        }
+
+        /* Interactive Steps / Flowchart */
+        .step-container {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            margin: 20px 0;
+        }
+
+        .step-item {
+            display: flex;
+            gap: 16px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            padding: 18px 20px;
+            border-radius: 8px;
+            position: relative;
+            transition: border-color 0.2s;
+        }
+
+        .step-item:hover {
+            border-color: var(--border-hover);
+        }
+
+        .step-num {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--primary-glow);
+            color: var(--primary);
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 14px;
+            flex-shrink: 0;
+            border: 1px solid rgba(56, 189, 248, 0.3);
+        }
+
+        .step-body h4 {
+            font-size: 15px;
+            font-weight: 700;
+            margin-bottom: 6px;
+            color: var(--text-main);
+        }
+
+        .step-body p {
+            font-size: 13.5px;
+            color: var(--text-muted);
+            margin-bottom: 0;
+        }
+
+        /* Floating Back to Top Button */
+        #backToTop {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: #000;
+            border: none;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            font-weight: 800;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            z-index: 1000;
+            transition: transform 0.2s;
+        }
+
+        #backToTop:hover {
+            transform: translateY(-3px);
+        }
+
+        /* Print Styles */
+        @media print {
+            aside, #readProgress, #backToTop, .copy-btn, .search-box, .sidebar-footer {
+                display: none !important;
+            }
+            body {
+                background: #fff !important;
+                color: #000 !important;
+            }
+            main {
+                max-width: 100% !important;
+                padding: 0 !important;
+            }
+            .section-card {
+                border: 1px solid #ddd !important;
+                box-shadow: none !important;
+                page-break-inside: avoid;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Reading Progress Indicator -->
+    <div id="readProgress"></div>
+
+    <!-- Floating Back to Top -->
+    <button id="backToTop" onclick="window.scrollTo({top: 0, behavior: 'smooth'})" title="Về đầu trang">↑</button>
+
+    <!-- Sidebar Sticky Navigation -->
+    <aside>
+        <div class="sidebar-header">
+            <span class="project-tag">AUDIT & KẾ HOẠCH</span>
+            <h1 class="sidebar-title">ĐẢO TÒ MÒ ↔ MINECRAFT</h1>
+            <p class="sidebar-subtitle">Báo cáo khảo sát & Tài liệu kiến trúc</p>
+        </div>
+
+        <div class="search-box">
+            <input type="text" id="filterNav" class="search-input" placeholder="🔍 Tìm mục, lệnh, crate, voucher..." onkeyup="filterNavItems()">
+        </div>
+
+        <nav class="sidebar-nav" id="sidebarNav">
+            <div class="nav-group-title">NỘI DUNG CHÍNH</div>
+            <a href="#overview" class="nav-item active">
+                <span>1. Tổng quan & Hiện trạng</span>
+                <span class="nav-badge">Audit</span>
+            </a>
+            <a href="#mc-stats" class="nav-item">
+                <span>2. Thống kê Server Game</span>
+                <span class="nav-badge">Items</span>
+            </a>
+            <a href="#crates" class="nav-item" style="padding-left: 28px; font-size: 12.5px;">
+                <span>↳ 5 Hòm Rương (Crates)</span>
+            </a>
+            <a href="#vouchers" class="nav-item" style="padding-left: 28px; font-size: 12.5px;">
+                <span>↳ 11 Loại Phiếu (Vouchers)</span>
+            </a>
+            <a href="#mapping-products" class="nav-item" style="padding-left: 28px; font-size: 12.5px;">
+                <span>↳ Map 12 Sản Phẩm Shop</span>
+            </a>
+            <a href="#modules" class="nav-item">
+                <span>3. Kế hoạch 5 Module</span>
+                <span class="nav-badge">5 Mod</span>
+            </a>
+            <a href="#mod-a" class="nav-item" style="padding-left: 28px; font-size: 12.5px;">
+                <span>↳ Module A: Liên kết TK</span>
+            </a>
+            <a href="#mod-b" class="nav-item" style="padding-left: 28px; font-size: 12.5px;">
+                <span>↳ Module B: Điểm danh</span>
+            </a>
+            <a href="#mod-c" class="nav-item" style="padding-left: 28px; font-size: 12.5px;">
+                <span>↳ Module C: Hệ thống Xu</span>
+            </a>
+            <a href="#mod-d" class="nav-item" style="padding-left: 28px; font-size: 12.5px;">
+                <span>↳ Module D: Giao Item</span>
+            </a>
+            <a href="#mod-e" class="nav-item" style="padding-left: 28px; font-size: 12.5px;">
+                <span>↳ Module E: Kiến trúc Bridge</span>
+            </a>
+            <a href="#database-schema" class="nav-item">
+                <span>4. CSDL & Bảng SQL Mới</span>
+                <span class="nav-badge">SQL</span>
+            </a>
+            <a href="#internal-apis" class="nav-item">
+                <span>5. Đặc tả Internal API</span>
+                <span class="nav-badge">REST</span>
+            </a>
+            <a href="#roadmap" class="nav-item">
+                <span>6. Lộ trình 6 Giai đoạn</span>
+                <span class="nav-badge">6 Phase</span>
+            </a>
+            <a href="#security-audits" class="nav-item">
+                <span>7. Lỗ hổng & Bản vá</span>
+                <span class="nav-badge">Security</span>
+            </a>
+        </nav>
+
+        <div class="sidebar-footer">
+            <button class="theme-toggle-btn" onclick="toggleTheme()">
+                <span id="themeIcon">☀️</span>
+                <span id="themeLabel">Chế độ Sáng</span>
+            </button>
+            <span style="font-size: 11px; color: var(--text-subtle);">v2.0 Clean UI</span>
+        </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main>
+        <!-- Hero Header -->
+        <header class="doc-hero">
+            <div class="hero-meta">
+                <span class="badge badge-emerald">● READ-ONLY AUDIT HOÀN TẤT</span>
+                <span class="badge badge-primary">PAPER 1.21.11 BUILD 132</span>
+                <span class="badge badge-purple">LARAVEL 11.31 PHP 8.2+</span>
+                <span class="badge badge-gold">SEPAY VIETQR 24/7</span>
+            </div>
+            <h1 class="doc-title">Báo Cáo Toàn Diện: Thống Kê & Kế Hoạch Kết Nối Website Đảo Tò Mò Với Minecraft Server</h1>
+            <p class="doc-desc">
+                Tài liệu kiến trúc hệ thống chuẩn hóa, phân tích mã nguồn thực tế của hai nền tảng (Website Laravel & Máy chủ Minecraft Paper 1.21.11 Earth Survival). Bản kế hoạch kỹ thuật cung cấp đầy đủ mã nguồn lệnh, đặc tả API, schema cơ sở dữ liệu và 5 module độc lập giúp tự động hóa 100% quá trình liên kết tài khoản, điểm danh, nạp xu và trả vật phẩm game sau thanh toán SePay.
+            </p>
+
+            <!-- Quick KPI Statistics Grid -->
+            <div class="stats-grid">
+                <div class="stat-card c-primary">
+                    <div class="stat-label">Hệ Thống Khảo Sát</div>
+                    <div class="stat-val">2/2</div>
+                    <div class="stat-sub">Website & Minecraft Server</div>
+                </div>
+                <div class="stat-card c-emerald">
+                    <div class="stat-label">Sản Phẩm Shop Map Lệnh</div>
+                    <div class="stat-val">12</div>
+                    <div class="stat-sub">Xu, Rank & Hòm Rương</div>
+                </div>
+                <div class="stat-card c-purple">
+                    <div class="stat-label">Kho Voucher & Crate</div>
+                    <div class="stat-val">16</div>
+                    <div class="stat-sub">5 Crates & 11 Vouchers</div>
+                </div>
+                <div class="stat-card c-gold">
+                    <div class="stat-label">Module Tích Hợp</div>
+                    <div class="stat-val">5</div>
+                    <div class="stat-sub">Khép kín qua Paper Bridge</div>
+                </div>
+                <div class="stat-card c-rose">
+                    <div class="stat-label">Lỗ Hổng Bảo Mật</div>
+                    <div class="stat-val">3</div>
+                    <div class="stat-sub">Đã có phương án khắc phục</div>
+                </div>
+            </div>
+        </header>
+
+        <!-- ==================== PHẦN 1: TỔNG QUAN HIỆN TRẠNG ==================== -->
+        <section id="overview" class="section-card">
+            <div class="section-header">
+                <div class="section-badge">1</div>
+                <h2 class="section-title">Tổng Quan Hiện Trạng Hệ Thống & Kết Quả Kiểm Toán (Audit)</h2>
+            </div>
+
+            <div class="alert-box alert-info">
+                <div class="alert-icon">ℹ️</div>
+                <div>
+                    <strong>Nguyên tắc thực thi:</strong> Toàn bộ quá trình khảo sát được thực hiện ở chế độ <strong>CHỈ ĐỌC (Read-Only)</strong>. Tuyệt đối không can thiệp, không tạo/sửa/xóa file trong source code, không chạy migration và không khởi tạo dịch vụ thật.
+                </div>
+            </div>
+
+            <h3 class="sub-heading">1.1. Khảo Sát Source A — Website Đảo Tò Mò (daotomo-backend)</h3>
+            <p>Hệ thống website thương mại điện tử Đảo Tò Mò được xây dựng bằng framework <strong>Laravel 11.31 (PHP 8.2+)</strong> theo mô hình Clean Architecture:</p>
+            <ul>
+                <li><strong>Kiến trúc phân tầng:</strong> Phân chia rõ ràng giữa Controllers (Api/Admin), Requests (Form Validation), Services (SepayService, OrderService, PasswordResetService, SkinService, DiscordOAuthService), Models và API Resources.</li>
+                <li><strong>Cơ sở dữ liệu (Database):</strong> Gồm 6 bảng cốt lõi (<code>users</code>, <code>products</code>, <code>orders</code>, <code>order_items</code>, <code>payment_transactions</code>, <code>checkins</code>). Trong DatabaseSeeder đã định nghĩa 12 sản phẩm thuộc 3 danh mục (Xu Game, Gói Bậc Rank, Chìa Khóa Rương).</li>
+                <li><strong>Xác thực (Auth):</strong> Laravel Sanctum (Token-based Auth), mã hóa mật khẩu Bcrypt, tích hợp đăng nhập mạng xã hội Discord OAuth2.</li>
+                <li><strong>Cổng thanh toán SePay VietQR:</strong> Tự động sinh mã VietQR NAPAS 24/7 theo đơn hàng, kiểm tra chữ ký HMAC-SHA256, kiểm tra drift thời gian &lt; 300s, cơ chế chống trùng đơn bằng <code>idempotency_key</code> và tự động phục hồi giao dịch.</li>
+                <li><strong>Hệ thống Email đa tầng:</strong> Ưu tiên gửi qua Resend / Brevo HTTPS API Cổng 443 giải quyết triệt để lỗi tường lửa chặn SMTP khi host trên Render.</li>
+                <li><strong>Frontend & 3D WebGL:</strong> Design System 2.0 "Neo-Mythic Island", nhúng trực tiếp Three.js WebGL (<code>skinview3d.bundle.js</code>) để xoay 360 độ skin nhân vật và tự động bóc tách avatar khuôn mặt qua thư viện PHP GD.</li>
+            </ul>
+
+            <h3 class="sub-heading">1.2. Khảo Sát Source B — Máy Chủ Minecraft (Paper 1.21.11 Earth Survival)</h3>
+            <p>Máy chủ Minecraft sử dụng bản cài đặt <strong>Premium Earth Survival Setup V3.7.6 (NitroSetups)</strong>:</p>
+            <ul>
+                <li><strong>Server Core & Engine:</strong> Paper 1.21.11 build 132 (<code>paper-1.21.11-132.jar</code>), vận hành trên môi trường Java 21 LTS (<code>-Xms4G -Xmx8G</code>).</li>
+                <li><strong>Thông số mạng & Định danh:</strong> <code>server-port=25565</code>, <code>online-mode=true</code> (Xác thực tài khoản bản quyền Mojang, người chơi có UUID v4 vĩnh viễn), <code>enable-rcon=false</code> (Cổng RCON bị tắt mặc định vì lý do an ninh).</li>
+                <li><strong>Hệ thống Phân quyền (Permissions):</strong> <code>LuckPerms 5.4</code> (H2 Database) với cây tiến trình rank 5 bậc: <code>knight</code> → <code>lord</code> → <code>paladin</code> → <code>duke</code> → <code>king</code>.</li>
+                <li><strong>Hệ thống Tiền tệ (Economy):</strong> Sử dụng kép giữa <code>Vault</code> + <code>EssentialsX</code> (tiền mặt lưu thông $) và <code>CoinsEngine 2.6</code> (đồng xu đặc quyền <code>coins</code> ⛃ dùng trong <code>/coinshop</code>, lưu tại SQLite <code>data.db</code>).</li>
+                <li><strong>Hệ thống Phần thưởng (Rewards):</strong> <code>ExcellentCrates</code> (5 hòm rương thần), <code>CrazyVouchers</code> (11 phiếu thưởng vật phẩm/quyền lợi), <code>DeluxeMenus</code> (/rewards điểm danh).</li>
+                <li><strong>Hệ thống Bổ trợ:</strong> <code>factoriesitems.sk</code> (Nguyên liệu công nghiệp: Crude Oil, Gasoline, Hydrogen, Uranium), Minepacks (ba lô mở rộng), DeluxeTags (150+ danh hiệu quốc gia), GeyserMC & Floodgate (hỗ trợ người chơi Bedrock di động).</li>
+            </ul>
+
+            <h3 class="sub-heading">1.3. Ma Trận Đánh Giá Tính Năng (Feature Status Matrix)</h3>
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Tính Năng</th>
+                            <th>Thành Phần Phụ Trách</th>
+                            <th>Trạng Thái Thực Tế</th>
+                            <th>Đánh Giá Chi Tiết & Giới Hạn</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Đăng nhập / Đăng ký Web</strong></td>
+                            <td>Sanctum + Discord OAuth</td>
+                            <td><span class="badge badge-emerald">Đã hoạt động</span></td>
+                            <td>Đã hoàn thiện. Tuy nhiên token Discord bị lộ trên query param URL cần sửa.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Giỏ hàng & Tạo đơn hàng</strong></td>
+                            <td>OrderController + Orders DB</td>
+                            <td><span class="badge badge-emerald">Đã hoạt động</span></td>
+                            <td>Tạo đơn chuẩn, lưu trữ quan hệ <code>order_items</code> chính xác.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Thanh toán VietQR SePay</strong></td>
+                            <td>SepayService + Webhook</td>
+                            <td><span class="badge badge-emerald">Đã hoạt động</span></td>
+                            <td>Khách quét mã, Webhook kích hoạt chuyển trạng thái sang <code>paid</code>.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Liên kết TK Minecraft</strong></td>
+                            <td>ProfileController / Web UI</td>
+                            <td><span class="badge badge-gold">Mới có giao diện</span></td>
+                            <td>Chỉ có ô nhập text regex username, không có xác minh OTP, không lưu UUID.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Điểm danh hàng ngày</strong></td>
+                            <td>CheckinController / DeluxeMenus</td>
+                            <td><span class="badge badge-gold">Chạy độc lập</span></td>
+                            <td>Web có điểm danh nhận xu web, game có /rewards. Chưa có sự đồng bộ.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Tự động giao hàng Game</strong></td>
+                            <td>SepayWebhook → Minecraft</td>
+                            <td><span class="badge badge-rose">Chưa triển khai</span></td>
+                            <td>Đơn hàng sau khi thanh toán dừng ở <code>processing</code>, chưa có kết nối sang server Minecraft.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Đồng bộ Số Dư Xu</strong></td>
+                            <td>CoinsEngine ↔ Users DB</td>
+                            <td><span class="badge badge-rose">Chưa triển khai</span></td>
+                            <td>Xu web và CoinsEngine là 2 hệ thống độc lập, chưa có cơ chế bù trừ.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- ==================== PHẦN 2: THỐNG KÊ CHI TIẾT SERVER GAME ==================== -->
+        <section id="mc-stats" class="section-card">
+            <div class="section-header">
+                <div class="section-badge">2</div>
+                <h2 class="section-title">Bản Thống Kê Chi Tiết Cơ Chế, Item, Voucher & Plugin Server Game</h2>
+            </div>
+
+            <!-- 2.1 Crates -->
+            <div id="crates">
+                <h3 class="sub-heading">2.1. Thống Kê 5 Hòm Rương Thần (ExcellentCrates)</h3>
+                <p>Đường dẫn cấu hình: <code>plugins/ExcellentCrates/crates/</code>. Cú pháp cấp chìa khóa từ console: <code>excellentcrates:crate key give &lt;player&gt; &lt;crate&gt; &lt;amount&gt;</code></p>
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>STT</th>
+                                <th>Tên Hòm Rương</th>
+                                <th>Tập Tin Cấu Hình</th>
+                                <th>Phần Thưởng Chứa Bên Trong</th>
+                                <th>Cú Pháp Lệnh Console (Click để chép)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>1</td>
+                                <td><strong>Vote Crate</strong></td>
+                                <td><code>vote.yml</code></td>
+                                <td>Tiền mặt $500 - $2,000, 50 Xu Game, Đá quý, Thức ăn sinh tồn</td>
+                                <td>
+                                    <div class="cmd-snippet">
+                                        <code>excellentcrates:crate key give {player} vote 1</code>
+                                        <button class="copy-btn" onclick="copyCommand(this, 'excellentcrates:crate key give {player} vote 1')">Sao chép</button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>2</td>
+                                <td><strong>Common Crate</strong></td>
+                                <td><code>common.yml</code></td>
+                                <td>Sắt, Vàng, Than, Dụng cụ cơ bản, Ba lô cấp 1, Sách phép ngẫu nhiên</td>
+                                <td>
+                                    <div class="cmd-snippet">
+                                        <code>excellentcrates:crate key give {player} common 1</code>
+                                        <button class="copy-btn" onclick="copyCommand(this, 'excellentcrates:crate key give {player} common 1')">Sao chép</button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>3</td>
+                                <td><strong>Rare Crate</strong></td>
+                                <td><code>rare.yml</code></td>
+                                <td>Kim cương x8, Netherite Ingot, Ba lô cấp 2, 200 Xu Game, Voucher Fly 1h</td>
+                                <td>
+                                    <div class="cmd-snippet">
+                                        <code>excellentcrates:crate key give {player} rare 1</code>
+                                        <button class="copy-btn" onclick="copyCommand(this, 'excellentcrates:crate key give {player} rare 1')">Sao chép</button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>4</td>
+                                <td><strong>Epic Crate</strong></td>
+                                <td><code>epic.yml</code></td>
+                                <td>Trang bị Kim Cương Full Phép Tối Thượng, 500 Xu Game, Ba lô cấp 3, Voucher Repair</td>
+                                <td>
+                                    <div class="cmd-snippet">
+                                        <code>excellentcrates:crate key give {player} epic 1</code>
+                                        <button class="copy-btn" onclick="copyCommand(this, 'excellentcrates:crate key give {player} epic 1')">Sao chép</button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>5</td>
+                                <td><strong>Superior Crate</strong></td>
+                                <td><code>superior.yml</code></td>
+                                <td>Bộ Giáp Thần Thoại Netherite Pro, Vũ khí Huyền thoại, 2,000 Xu Game, Voucher Rank Knight vĩnh viễn</td>
+                                <td>
+                                    <div class="cmd-snippet">
+                                        <code>excellentcrates:crate key give {player} superior 1</code>
+                                        <button class="copy-btn" onclick="copyCommand(this, 'excellentcrates:crate key give {player} superior 1')">Sao chép</button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- 2.2 Vouchers -->
+            <div id="vouchers" style="margin-top: 32px;">
+                <h3 class="sub-heading">2.2. Thống Kê 11 Loại Phiếu Thưởng (CrazyVouchers)</h3>
+                <p>Đường dẫn cấu hình: <code>plugins/CrazyVouchers/Vouchers/</code>. Lệnh phát phiếu: <code>vouchers give &lt;player&gt; &lt;voucher&gt; &lt;amount&gt;</code></p>
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>STT</th>
+                                <th>Mã Voucher (Code)</th>
+                                <th>Phân Loại</th>
+                                <th>Hiệu Ứng / Đặc Quyền Được Cấp Khi Click</th>
+                                <th>Lệnh Console Thực Thi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>1</td>
+                                <td><strong>Knight_Rank</strong></td>
+                                <td>Bậc Rank</td>
+                                <td>Nâng cấp người chơi lên bậc Hiệp Sĩ (Knight) trong LuckPerms</td>
+                                <td>
+                                    <div class="cmd-snippet">
+                                        <code>vouchers give {player} Knight_Rank 1</code>
+                                        <button class="copy-btn" onclick="copyCommand(this, 'vouchers give {player} Knight_Rank 1')">Sao chép</button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>2</td>
+                                <td><strong>Lord_Rank</strong></td>
+                                <td>Bậc Rank</td>
+                                <td>Nâng cấp người chơi lên bậc Lãnh Chúa (Lord)</td>
+                                <td>
+                                    <div class="cmd-snippet">
+                                        <code>vouchers give {player} Lord_Rank 1</code>
+                                        <button class="copy-btn" onclick="copyCommand(this, 'vouchers give {player} Lord_Rank 1')">Sao chép</button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>3</td>
+                                <td><strong>Paladin_Rank</strong></td>
+                                <td>Bậc Rank</td>
+                                <td>Nâng cấp người chơi lên bậc Thánh Kỵ Sĩ (Paladin)</td>
+                                <td>
+                                    <div class="cmd-snippet">
+                                        <code>vouchers give {player} Paladin_Rank 1</code>
+                                        <button class="copy-btn" onclick="copyCommand(this, 'vouchers give {player} Paladin_Rank 1')">Sao chép</button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>4</td>
+                                <td><strong>Duke_Rank</strong></td>
+                                <td>Bậc Rank</td>
+                                <td>Nâng cấp người chơi lên bậc Công Tước (Duke)</td>
+                                <td>
+                                    <div class="cmd-snippet">
+                                        <code>vouchers give {player} Duke_Rank 1</code>
+                                        <button class="copy-btn" onclick="copyCommand(this, 'vouchers give {player} Duke_Rank 1')">Sao chép</button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>5</td>
+                                <td><strong>King_Rank</strong></td>
+                                <td>Bậc Rank</td>
+                                <td>Nâng cấp người chơi lên bậc Hoàng Đế (King) - VIP Cao Nhất</td>
+                                <td>
+                                    <div class="cmd-snippet">
+                                        <code>vouchers give {player} King_Rank 1</code>
+                                        <button class="copy-btn" onclick="copyCommand(this, 'vouchers give {player} King_Rank 1')">Sao chép</button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>6</td>
+                                <td><strong>Fly_Command</strong></td>
+                                <td>Đặc Quyền</td>
+                                <td>Mở quyền sử dụng lệnh <code>/fly</code> (Bay lượn tự do sinh tồn)</td>
+                                <td>
+                                    <div class="cmd-snippet">
+                                        <code>vouchers give {player} Fly_Command 1</code>
+                                        <button class="copy-btn" onclick="copyCommand(this, 'vouchers give {player} Fly_Command 1')">Sao chép</button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>7</td>
+                                <td><strong>Heal_Command</strong></td>
+                                <td>Đặc Quyền</td>
+                                <td>Mở quyền sử dụng lệnh <code>/heal</code> (Hồi đầy máu tức thì)</td>
+                                <td>
+                                    <div class="cmd-snippet">
+                                        <code>vouchers give {player} Heal_Command 1</code>
+                                        <button class="copy-btn" onclick="copyCommand(this, 'vouchers give {player} Heal_Command 1')">Sao chép</button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>8</td>
+                                <td><strong>Feed_Command</strong></td>
+                                <td>Đặc Quyền</td>
+                                <td>Mở quyền sử dụng lệnh <code>/feed</code> (Hồi thanh đói không cần ăn)</td>
+                                <td>
+                                    <div class="cmd-snippet">
+                                        <code>vouchers give {player} Feed_Command 1</code>
+                                        <button class="copy-btn" onclick="copyCommand(this, 'vouchers give {player} Feed_Command 1')">Sao chép</button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>9</td>
+                                <td><strong>Back_Command</strong></td>
+                                <td>Đặc Quyền</td>
+                                <td>Mở quyền sử dụng lệnh <code>/back</code> (Quay lại nơi chết gần nhất)</td>
+                                <td>
+                                    <div class="cmd-snippet">
+                                        <code>vouchers give {player} Back_Command 1</code>
+                                        <button class="copy-btn" onclick="copyCommand(this, 'vouchers give {player} Back_Command 1')">Sao chép</button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>10</td>
+                                <td><strong>Repair_Command</strong></td>
+                                <td>Đặc Quyền</td>
+                                <td>Mở quyền sử dụng lệnh <code>/repair all</code> (Sửa chữa toàn bộ trang bị)</td>
+                                <td>
+                                    <div class="cmd-snippet">
+                                        <code>vouchers give {player} Repair_Command 1</code>
+                                        <button class="copy-btn" onclick="copyCommand(this, 'vouchers give {player} Repair_Command 1')">Sao chép</button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>11</td>
+                                <td><strong>Random_Toolskin</strong></td>
+                                <td>Ngoại Trang</td>
+                                <td>Nhận ngẫu nhiên 1 Toolskin Custom Model 3D độc quyền</td>
+                                <td>
+                                    <div class="cmd-snippet">
+                                        <code>vouchers give {player} Random_Toolskin 1</code>
+                                        <button class="copy-btn" onclick="copyCommand(this, 'vouchers give {player} Random_Toolskin 1')">Sao chép</button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- 2.3 Mapping Products -->
+            <div id="mapping-products" style="margin-top: 32px;">
+                <h3 class="sub-heading">2.3. Bảng Ánh Xạ 12 Sản Phẩm Shop Website Với Lệnh Game Console Tương Ứng</h3>
+                <p>Đây là bảng đối chiếu chính thức giữa 12 mặt hàng đang bán trong <code>DatabaseSeeder.php</code> của Website và chuỗi lệnh console được tự động thực thi trong server game Minecraft:</p>
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Tên Sản Phẩm Website</th>
+                                <th>Mã Slug Web</th>
+                                <th>Giá Niêm Yết</th>
+                                <th>Lệnh Console Minecraft Server Chuẩn Hóa</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>1</td>
+                                <td>Gói 5,000 Xu Game</td>
+                                <td><code>coin-starter</code></td>
+                                <td>10,000 đ</td>
+                                <td>
+                                    <div class="cmd-snippet">
+                                        <code>coins give {player} 5000</code>
+                                        <button class="copy-btn" onclick="copyCommand(this, 'coins give {player} 5000')">Sao chép</button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>2</td>
+                                <td>Gói 30,000 Xu Game</td>
+                                <td><code>coin-popular</code></td>
+                                <td>50,000 đ</td>
+                                <td>
+                                    <div class="cmd-snippet">
+                                        <code>coins give {player} 30000</code>
+                                        <button class="copy-btn" onclick="copyCommand(this, 'coins give {player} 30000')">Sao chép</button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>3</td>
+                                <td>Gói 70,000 Xu Game</td>
+                                <td><code>coin-mega</code></td>
+                                <td>100,000 đ</td>
+                                <td>
+                                    <div class="cmd-snippet">
+                                        <code>coins give {player} 70000</code>
+                                        <button class="copy-btn" onclick="copyCommand(this, 'coins give {player} 70000')">Sao chép</button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>4</td>
+                                <td>Rank Hiệp Sĩ (Knight)</td>
+                                <td><code>rank-knight</code></td>
+                                <td>50,000 đ</td>
+                                <td>
+                                    <div class="cmd-snippet">
+                                        <code>lp user {player} parent add knight</code>
+                                        <button class="copy-btn" onclick="copyCommand(this, 'lp user {player} parent add knight')">Sao chép</button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>5</td>
+                                <td>Rank Lãnh Chúa (Lord)</td>
+                                <td><code>rank-lord</code></td>
+                                <td>100,000 đ</td>
+                                <td>
+                                    <div class="cmd-snippet">
+                                        <code>lp user {player} parent add lord</code>
+                                        <button class="copy-btn" onclick="copyCommand(this, 'lp user {player} parent add lord')">Sao chép</button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>6</td>
+                                <td>Rank Thánh Kỵ Sĩ (Paladin)</td>
+                                <td><code>rank-paladin</code></td>
+                                <td>200,000 đ</td>
+                                <td>
+                                    <div class="cmd-snippet">
+                                        <code>lp user {player} parent add paladin</code>
+                                        <button class="copy-btn" onclick="copyCommand(this, 'lp user {player} parent add paladin')">Sao chép</button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>7</td>
+                                <td>Rank Công Tước (Duke)</td>
+                                <td><code>rank-duke</code></td>
+                                <td>350,000 đ</td>
+                                <td>
+                                    <div class="cmd-snippet">
+                                        <code>lp user {player} parent add duke</code>
+                                        <button class="copy-btn" onclick="copyCommand(this, 'lp user {player} parent add duke')">Sao chép</button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>8</td>
+                                <td>Rank Hoàng Đế (King)</td>
+                                <td><code>rank-king</code></td>
+                                <td>500,000 đ</td>
+                                <td>
+                                    <div class="cmd-snippet">
+                                        <code>lp user {player} parent add king</code>
+                                        <button class="copy-btn" onclick="copyCommand(this, 'lp user {player} parent add king')">Sao chép</button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>9</td>
+                                <td>Key Hòm Bình Chọn x5</td>
+                                <td><code>crate-vote</code></td>
+                                <td>5,000 đ</td>
+                                <td>
+                                    <div class="cmd-snippet">
+                                        <code>excellentcrates:crate key give {player} vote 5</code>
+                                        <button class="copy-btn" onclick="copyCommand(this, 'excellentcrates:crate key give {player} vote 5')">Sao chép</button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>10</td>
+                                <td>Key Hòm Hiếm (Rare) x3</td>
+                                <td><code>crate-rare</code></td>
+                                <td>20,000 đ</td>
+                                <td>
+                                    <div class="cmd-snippet">
+                                        <code>excellentcrates:crate key give {player} rare 3</code>
+                                        <button class="copy-btn" onclick="copyCommand(this, 'excellentcrates:crate key give {player} rare 3')">Sao chép</button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>11</td>
+                                <td>Key Hòm Sử Thi (Epic) x2</td>
+                                <td><code>crate-epic</code></td>
+                                <td>50,000 đ</td>
+                                <td>
+                                    <div class="cmd-snippet">
+                                        <code>excellentcrates:crate key give {player} epic 2</code>
+                                        <button class="copy-btn" onclick="copyCommand(this, 'excellentcrates:crate key give {player} epic 2')">Sao chép</button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>12</td>
+                                <td>Key Hòm Tối Thượng x1</td>
+                                <td><code>crate-superior</code></td>
+                                <td>100,000 đ</td>
+                                <td>
+                                    <div class="cmd-snippet">
+                                        <code>excellentcrates:crate key give {player} superior 1</code>
+                                        <button class="copy-btn" onclick="copyCommand(this, 'excellentcrates:crate key give {player} superior 1')">Sao chép</button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== PHẦN 3: KẾ HOẠCH 5 MODULE TÍCH HỢP ==================== -->
+        <section id="modules" class="section-card">
+            <div class="section-header">
+                <div class="section-badge">3</div>
+                <h2 class="section-title">Kế Hoạch Kỹ Thuật Chi Tiết 5 Module Tích Hợp Độc Lập</h2>
+            </div>
+
+            <!-- MODULE A -->
+            <div id="mod-a">
+                <h3 class="sub-heading">3.1. MODULE A — Xác Thực & Liên Kết Tài Khoản (Account Linking)</h3>
+                <div class="alert-box alert-warning">
+                    <div class="alert-icon">⚠️</div>
+                    <div>
+                        <strong>Rủi ro hiện tại:</strong> Giao diện web hiện tại chỉ cho người dùng tự gõ username text (qua regex). Bất kỳ ai cũng có thể nhập tên tài khoản của người khác hoặc các streamer để nhận đồ, gây gian lận nghiêm trọng. Ngoài ra nếu người chơi đổi tên (Mojang cho phép đổi tên sau 30 ngày), toàn bộ liên kết sẽ bị đứt nếu không lưu <code>UUID</code>.
+                    </div>
+                </div>
+
+                <p><strong>Giải pháp chuẩn hóa: Cơ chế Bắt tay Mã PIN Xác thực 6 Ký tự (In-Game OTP PIN Handshake)</strong></p>
+                <div class="step-container">
+                    <div class="step-item">
+                        <div class="step-num">1</div>
+                        <div class="step-body">
+                            <h4>Người chơi vào Server Game gõ lệnh /link</h4>
+                            <p>Plugin Bridge tiếp nhận, sinh mã PIN ngẫu nhiên 6 ký tự (VD: <code>DTM-8492</code>), lưu vào bộ nhớ đệm (Cache) gắn liền với <code>UUID</code> và <code>Username</code> trong 10 phút.</p>
+                        </div>
+                    </div>
+                    <div class="step-item">
+                        <div class="step-num">2</div>
+                        <div class="step-body">
+                            <h4>Nhập mã PIN trên Website Đảo Tò Mò</h4>
+                            <p>Người chơi đăng nhập tài khoản Web, vào mục "Liên kết Game", nhập mã <code>DTM-8492</code>. Web gửi request lên backend.</p>
+                        </div>
+                    </div>
+                    <div class="step-item">
+                        <div class="step-num">3</div>
+                        <div class="step-body">
+                            <h4>Xác thực và ghi nhận quyền sở hữu</h4>
+                            <p>Backend kiểm tra mã PIN qua Bridge. Sau khi hợp lệ, lưu <code>minecraft_uuid</code> và <code>minecraft_username</code> vào bảng <code>users</code>. Khóa liên kết 1-1 (1 tài khoản web chỉ liên kết 1 UUID Minecraft).</p>
+                        </div>
+                    </div>
+                    <div class="step-item">
+                        <div class="step-num">4</div>
+                        <div class="step-body">
+                            <h4>Bắn thông báo chúc mừng & Phát quà tân thủ</h4>
+                            <p>Server Minecraft gửi tin nhắn chat riêng: <em>"Tài khoản của bạn đã liên kết thành công với website daotomo.site!"</em> và tự động tặng 1 Key Vote Crate.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MODULE B -->
+            <div id="mod-b" style="margin-top: 32px;">
+                <h3 class="sub-heading">3.2. MODULE B — Hệ Thống Điểm Danh Game & Web (Daily Check-in)</h3>
+                <p>Hiện nay máy chủ Minecraft dùng DeluxeMenus <code>/rewards</code> (lưu cooldown qua nhóm tạm LuckPerms), trong khi Website có bảng <code>checkins</code> lưu lịch sử điểm danh nhận xu web.</p>
+                <ul>
+                    <li><strong>Múi giờ & Chu kỳ reset:</strong> Thống nhất múi giờ tiêu chuẩn <code>Asia/Ho_Chi_Minh (UTC+7)</code>. Thời điểm reset là <strong>00:00:00</strong> mỗi ngày.</li>
+                    <li><strong>Cơ chế đồng bộ 2 chiều:</strong>
+                        <br>- Khi điểm danh trên Web: Hệ thống ghi nhận chuỗi ngày (streak), cộng Xu Web, đồng thời tạo một bản ghi giao quà game (VD: 100 Xu hoặc 1 Crate Key) vào hàng đợi.
+                        <br>- Khi điểm danh trong game: Plugin Bridge gửi tín hiệu sync về Web để hiển thị chuỗi ngày trên giao diện người dùng.
+                    </li>
+                    <li><strong>Chống gian lận điểm danh lặp:</strong> Ràng buộc Unique Constraint <code>UNIQUE(user_id, checkin_date)</code> ở tầng Database đảm bảo một ngày chỉ được nhận thưởng một lần duy nhất kể cả khi gửi đồng thời nhiều request.</li>
+                </ul>
+            </div>
+
+            <!-- MODULE C -->
+            <div id="mod-c" style="margin-top: 32px;">
+                <h3 class="sub-heading">3.3. MODULE C — Hệ Thống Tiền Tệ & Xu Trong Game (Currency System)</h3>
+                <div class="alert-box alert-danger">
+                    <div class="alert-icon">🛑</div>
+                    <div>
+                        <strong>Quy tắc bất biến:</strong> Tiền nạp SePay (VND), Xu Website (Web Coins) và Xu Game (CoinsEngine ⛃) là 3 loại tài sản có bản chất hoàn toàn khác nhau. Tuyệt đối không cho phép đổi ngược từ Xu Game thành tiền thật (VND) để tránh rủi ro pháp lý.
+                    </div>
+                </div>
+                <ul>
+                    <li><strong>Nguồn dữ liệu gốc (Single Source of Truth):</strong> Số dư Xu trong game thuộc quyền quản lý tối cao của <code>CoinsEngine</code> (lưu tại SQLite <code>plugins/CoinsEngine/data.db</code>). Website KHÔNG lưu số dư game trực tiếp vào bảng <code>users</code> mà chỉ đóng vai trò ủy quyền thực thi (Granting Authority).</li>
+                    <li><strong>Cơ chế cộng xu an toàn:</strong> Mọi thao tác cộng xu từ Web (do nạp tiền hoặc thưởng nhiệm vụ) đều phát sinh qua lệnh <code>coins give {player} {amount}</code> đính kèm <code>idempotency_key</code> (Mã đơn hàng) để ngăn chặn việc cộng xu 2 lần khi mạng chập chờn.</li>
+                </ul>
+            </div>
+
+            <!-- MODULE D -->
+            <div id="mod-d" style="margin-top: 32px;">
+                <h3 class="sub-heading">3.4. MODULE D — Luồng Thanh Toán SePay & Giao Vật Phẩm Tự Động</h3>
+                <p>Quy trình xử lý một đơn hàng từ lúc quét mã VietQR đến khi nhận được item trong server game:</p>
+
+                <div class="step-container">
+                    <div class="step-item">
+                        <div class="step-num">1</div>
+                        <div class="step-body">
+                            <h4>Khách hàng tạo đơn & Quét mã SePay VietQR 24/7</h4>
+                            <p>Hệ thống bắt buộc khách đã liên kết tài khoản Minecraft (để có <code>minecraft_uuid</code>). Đơn hàng sinh mã nội dung chuyển khoản chuẩn (VD: <code>DTM1024</code>).</p>
+                        </div>
+                    </div>
+                    <div class="step-item">
+                        <div class="step-num">2</div>
+                        <div class="step-body">
+                            <h4>SePay Webhook xác nhận thanh toán hợp lệ</h4>
+                            <p>Hệ thống xác thực chữ ký HMAC-SHA256, chuyển trạng thái <code>payment_status = 'paid'</code>, <code>order_status = 'processing'</code>.</p>
+                        </div>
+                    </div>
+                    <div class="step-item">
+                        <div class="step-num">3</div>
+                        <div class="step-body">
+                            <h4>Đẩy lệnh vào Bảng Hàng Đợi Giao Game (game_delivery_queues)</h4>
+                            <p>Hệ thống tự động phân tách các items trong đơn hàng thành danh sách lệnh console tương ứng (theo Bảng 2.3), gán trạng thái <code>pending</code>.</p>
+                        </div>
+                    </div>
+                    <div class="step-item">
+                        <div class="step-num">4</div>
+                        <div class="step-body">
+                            <h4>Plugin Bridge trên Paper kéo lệnh và thực thi an toàn</h4>
+                            <p>Định kỳ 3 giây, plugin gửi request nội bộ kéo các lệnh đang chờ, chạy trên Bukkit Main Thread.</p>
+                        </div>
+                    </div>
+                    <div class="step-item">
+                        <div class="step-num">5</div>
+                        <div class="step-body">
+                            <h4>Xử lý Người Chơi Offline & Rương Đầy (Edge Cases)</h4>
+                            <p>
+                                <strong>Xu (Coins) & Bậc Rank (LuckPerms):</strong> Hoạt động offline 100% qua UUID! Giao ngay lập tức.
+                                <br><strong>Vật phẩm hòm rương / Physical Item:</strong> Nếu người chơi đang offline hoặc đầy kho đồ, plugin chuyển trạng thái thành <code>waiting_online</code>. Khi người chơi đăng nhập, plugin tự động trao đồ vào hòm thư ảo (Virtual Mailbox), tránh rơi rớt đồ ra đất.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="step-item">
+                        <div class="step-num">6</div>
+                        <div class="step-body">
+                            <h4>Báo cáo Hoàn Tất & Gửi Biên Lai</h4>
+                            <p>Plugin gọi API xác nhận hoàn tất. Đơn hàng chuyển sang <code>order_status = 'completed'</code>, gửi email hóa đơn cho người mua.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MODULE E -->
+            <div id="mod-e" style="margin-top: 32px;">
+                <h3 class="sub-heading">3.5. MODULE E — Kiến Trúc Giao Tiếp Khuyên Dùng (DaoTomoBridge Plugin)</h3>
+                <p>So sánh các phương án kiến trúc kết nối giữa Website và Minecraft Server:</p>
+
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Phương Án</th>
+                                <th>Ưu Điểm</th>
+                                <th>Nhược Điểm / Rủi Ro</th>
+                                <th>Khuyến Nghị</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>1. RCON (Port 25575)</strong></td>
+                                <td>Có sẵn trong Minecraft server mặc định</td>
+                                <td>Bảo mật cực kém (mật khẩu clear-text), dễ bị Brute-force, server hiện đang tắt <code>enable-rcon=false</code>.</td>
+                                <td><span class="badge badge-rose">Tuyệt đối không dùng</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>2. Mở Port Webhook trên Server Game</strong></td>
+                                <td>Phản hồi tức thì (Real-time)</td>
+                                <td>Bắt buộc phải mở Port Forwarding / NAT trên Router máy chủ, nguy cơ bị DDoS làm sập game.</td>
+                                <td><span class="badge badge-gold">Rủi ro cao</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>3. Dùng chung Database MySQL</strong></td>
+                                <td>Không cần viết code mạng</td>
+                                <td>Gây xung đột lock dữ liệu, không bắn được event/thông báo trong game theo thời gian thực.</td>
+                                <td><span class="badge badge-gold">Không linh hoạt</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>4. Outbound Polling Bridge (DaoTomoBridge.jar)</strong></td>
+                                <td><strong>KHÔNG CẦN MỞ BẤT KỲ CỔNG NÀO TRÊN SERVER MINECRAFT</strong>, xuyên qua mọi tường lửa/NAT, bảo mật Bearer Token, chạy lệnh an toàn trên Bukkit Main Thread.</td>
+                                <td>Có độ trễ nhỏ từ 1 - 3 giây (hoàn toàn chấp nhận được trong trải nghiệm game).</td>
+                                <td><span class="badge badge-emerald">KHUYÊN DÙNG SỐ 1</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== PHẦN 4: THIẾT KẾ CSDL & SCHEMA SQL MỚI ==================== -->
+        <section id="database-schema" class="section-card">
+            <div class="section-header">
+                <div class="section-badge">4</div>
+                <h2 class="section-title">Thiết Kế Cơ Sở Dữ Liệu & Bản Di Trú (SQL Schema) Mới</h2>
+            </div>
+
+            <p>Để triển khai kế hoạch trên mà không làm ảnh hưởng đến cấu trúc hiện có của website, hệ thống chỉ cần bổ sung 1 bảng mới <code>game_delivery_queues</code> và thêm các cột định danh vào 2 bảng <code>users</code> và <code>orders</code>:</p>
+
+            <div class="code-header">
+                <span>database/migrations/2026_10_29_add_minecraft_integration_tables.sql</span>
+                <button class="copy-btn" onclick="copyCode(this)">Sao chép SQL</button>
+            </div>
+            <pre><code>-- 1. Bổ sung trường định danh Minecraft vào bảng users
+ALTER TABLE `users` 
+ADD COLUMN `minecraft_uuid` VARCHAR(36) NULL UNIQUE AFTER `email`,
+ADD COLUMN `minecraft_username` VARCHAR(32) NULL AFTER `minecraft_uuid`,
+ADD COLUMN `minecraft_linked_at` TIMESTAMP NULL AFTER `minecraft_username`;
+
+-- 2. Bổ sung trường theo dõi giao hàng vào bảng orders
+ALTER TABLE `orders`
+ADD COLUMN `minecraft_uuid` VARCHAR(36) NULL AFTER `user_id`,
+ADD COLUMN `delivery_status` ENUM('pending', 'delivering', 'completed', 'failed') DEFAULT 'pending' AFTER `order_status`,
+ADD COLUMN `delivered_at` TIMESTAMP NULL AFTER `delivery_status`;
+
+-- 3. Tạo bảng hàng đợi giao vật phẩm trong game (Idempotent Delivery Queue)
+CREATE TABLE `game_delivery_queues` (
+    `id` BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    `order_id` BIGINT UNSIGNED NOT NULL,
+    `order_item_id` BIGINT UNSIGNED NULL,
+    `minecraft_uuid` VARCHAR(36) NOT NULL,
+    `minecraft_username` VARCHAR(32) NOT NULL,
+    `reward_type` ENUM('coin', 'rank', 'crate_key', 'voucher', 'custom_cmd') NOT NULL,
+    `command_payload` VARCHAR(255) NOT NULL,
+    `idempotency_key` VARCHAR(64) NOT NULL UNIQUE,
+    `status` ENUM('pending', 'waiting_online', 'executed', 'failed') DEFAULT 'pending',
+    `retry_count` INT UNSIGNED DEFAULT 0,
+    `error_log` TEXT NULL,
+    `executed_at` TIMESTAMP NULL,
+    `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    CONSTRAINT `fk_delivery_order` FOREIGN KEY (`order_id`) REFERENCES `orders` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- 4. Bảng lưu trữ mã PIN liên kết tài khoản tạm thời
+CREATE TABLE `minecraft_link_tokens` (
+    `id` BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    `minecraft_uuid` VARCHAR(36) NOT NULL,
+    `minecraft_username` VARCHAR(32) NOT NULL,
+    `pin_code` VARCHAR(10) NOT NULL UNIQUE,
+    `expires_at` TIMESTAMP NOT NULL,
+    `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    INDEX `idx_pin_lookup` (`pin_code`, `expires_at`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;</code></pre>
+        </section>
+
+        <!-- ==================== PHẦN 5: ĐẶC TẢ INTERNAL API ==================== -->
+        <section id="internal-apis" class="section-card">
+            <div class="section-header">
+                <div class="section-badge">5</div>
+                <h2 class="section-title">Đặc Tả API Nội Bộ (Internal API Specifications)</h2>
+            </div>
+
+            <p>Tất cả các API giao tiếp giữa Paper Plugin (<code>DaoTomoBridge</code>) và Laravel Backend được đặt tại prefix <code>/api/internal/minecraft/*</code>, được bảo vệ nghiêm ngặt bằng Header <code>X-Bridge-Token: &lt;BRIDGE_SECRET_KEY&gt;</code>:</p>
+
+            <h3 class="sub-heading">5.1. API Tạo Mã PIN Liên Kết: POST /api/internal/minecraft/link/request-pin</h3>
+            <p>Được gọi từ server game khi người chơi gõ lệnh <code>/link</code>:</p>
+            <div class="code-header">
+                <span>Request Payload & Response JSON</span>
+                <button class="copy-btn" onclick="copyCode(this)">Sao chép</button>
+            </div>
+            <pre><code>// POST https://daotomo.site/api/internal/minecraft/link/request-pin
+// Header: X-Bridge-Token: sec_live_99a8b7c6d5e4...
+{
+    "uuid": "456e4567-e89b-12d3-a456-426614174000",
+    "username": "DragonVN"
+}
+
+// Response (200 OK):
+{
+    "success": true,
+    "pin_code": "DTM-8492",
+    "expires_in_seconds": 600,
+    "instructions": "Vui lòng truy cập https://daotomo.site/profile/link-game và nhập mã PIN này trong vòng 10 phút."
+}</code></pre>
+
+            <h3 class="sub-heading">5.2. API Kéo Đơn Hàng Chờ Giao: GET /api/internal/minecraft/deliveries/pending</h3>
+            <p>Được gọi tự động định kỳ 3 giây một lần từ Paper Bridge:</p>
+            <div class="code-header">
+                <span>Response JSON</span>
+                <button class="copy-btn" onclick="copyCode(this)">Sao chép</button>
+            </div>
+            <pre><code>// GET https://daotomo.site/api/internal/minecraft/deliveries/pending?limit=20
+// Header: X-Bridge-Token: sec_live_99a8b7c6d5e4...
+
+// Response (200 OK):
+{
+    "success": true,
+    "count": 2,
+    "deliveries": [
+        {
+            "delivery_id": 105,
+            "order_id": 89,
+            "idempotency_key": "DELIV_ORD89_ITEM1_A9B8",
+            "minecraft_uuid": "456e4567-e89b-12d3-a456-426614174000",
+            "minecraft_username": "DragonVN",
+            "require_online": false,
+            "command": "coins give DragonVN 30000"
+        },
+        {
+            "delivery_id": 106,
+            "order_id": 89,
+            "idempotency_key": "DELIV_ORD89_ITEM2_C7D6",
+            "minecraft_uuid": "456e4567-e89b-12d3-a456-426614174000",
+            "minecraft_username": "DragonVN",
+            "require_online": false,
+            "command": "excellentcrates:crate key give DragonVN epic 2"
+        }
+    ]
+}</code></pre>
+
+            <h3 class="sub-heading">5.3. API Báo Cáo Kết Quả Thực Thi: POST /api/internal/minecraft/deliveries/confirm</h3>
+            <p>Được gọi ngay sau khi server game thực thi lệnh trên Bukkit Main Thread thành công:</p>
+            <div class="code-header">
+                <span>Request Payload</span>
+                <button class="copy-btn" onclick="copyCode(this)">Sao chép</button>
+            </div>
+            <pre><code>// POST https://daotomo.site/api/internal/minecraft/deliveries/confirm
+// Header: X-Bridge-Token: sec_live_99a8b7c6d5e4...
+{
+    "delivery_id": 105,
+    "idempotency_key": "DELIV_ORD89_ITEM1_A9B8",
+    "status": "executed",
+    "server_time": "2026-10-29T14:30:00+07:00",
+    "player_online": true
+}</code></pre>
+        </section>
+
+        <!-- ==================== PHẦN 6: LỘ TRÌNH 6 GIAI ĐOẠN ==================== -->
+        <section id="roadmap" class="section-card">
+            <div class="section-header">
+                <div class="section-badge">6</div>
+                <h2 class="section-title">Lộ Trình Triển Khai Kỹ Thuật 6 Giai Đoạn (Phases 0 - 5)</h2>
+            </div>
+
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Giai Đoạn</th>
+                            <th>Mục Tiêu Trọng Tâm</th>
+                            <th>Công Việc Cụ Thể Phải Làm</th>
+                            <th>Kết Quả Đầu Ra (Deliverables)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Giai đoạn 0</strong></td>
+                            <td>Vá Bảo Mật & Chuẩn Bị</td>
+                            <td>Vá lỗ hổng SePay test bypass, sửa lộ Discord token trên URL, tạo token bí mật <code>BRIDGE_SECRET_KEY</code> trong <code>.env</code>.</td>
+                            <td>Hệ thống an toàn, đóng các cửa sau giả mạo.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Giai đoạn 1</strong></td>
+                            <td>Nâng Cấp CSDL Web</td>
+                            <td>Chạy migration SQL thêm bảng <code>game_delivery_queues</code>, <code>minecraft_link_tokens</code>, update model <code>User</code> và <code>Order</code>.</td>
+                            <td>Database sẵn sàng lưu UUID và hàng đợi lệnh game.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Giai đoạn 2</strong></td>
+                            <td>Phát Triển Plugin Paper Bridge</td>
+                            <td>Code plugin Java 21 <code>DaoTomoBridge.jar</code>: Lệnh <code>/link</code>, Task Polling 3s kéo lệnh, Task Dispatcher chạy main thread.</td>
+                            <td>File <code>DaoTomoBridge.jar</code> đặt trong <code>plugins/</code>.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Giai đoạn 3</strong></td>
+                            <td>Xây Dựng Internal API Web</td>
+                            <td>Tạo controller <code>MinecraftBridgeController.php</code>, cấu hình router với middleware xác thực <code>X-Bridge-Token</code>.</td>
+                            <td>Các endpoint <code>/api/internal/minecraft/*</code> hoạt động.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Giai đoạn 4</strong></td>
+                            <td>Nâng Cấp Giao Diện Web</td>
+                            <td>Tạo modal "Liên kết Minecraft OTP PIN" trên profile, hiển thị trạng thái giao hàng trong chi tiết đơn hàng (<code>/orders</code>).</td>
+                            <td>UI/UX thân thiện, người dùng tự thao tác dễ dàng.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Giai đoạn 5</strong></td>
+                            <td>Kiểm Thử Sandbox & Go-Live</td>
+                            <td>Test luồng: Nạp SePay test 10k → Webhook → Queue → Bridge kéo lệnh → Người chơi nhận 5k Xu và Key hòm trong game.</td>
+                            <td>Hệ thống vận hành trơn tru 100% tự động hóa.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- ==================== PHẦN 7: BÁO CÁO LỖ HỔNG BẢO MẬT ==================== -->
+        <section id="security-audits" class="section-card">
+            <div class="section-header">
+                <div class="section-badge">7</div>
+                <h2 class="section-title">Báo Cáo Lỗ Hổng Bảo Mật Phát Hiện & Phương Án Khắc Phục</h2>
+            </div>
+
+            <div class="alert-box alert-danger">
+                <div class="alert-icon">🚨</div>
+                <div>
+                    <strong>Lỗ hổng 1: Cửa sau Test Probe trong SePay Webhook</strong>
+                    <br>Trong tập tin <code>app/Services/SepayService.php</code>, hàm xác thực webhook có đoạn kiểm tra payload nếu chứa <code>is_test = true</code> thì tự động bỏ qua kiểm tra chữ ký HMAC và API Key. Kẻ xấu có thể lợi dụng để gửi request giả mạo thanh toán thành công miễn phí!
+                    <br><em>Giải pháp:</em> Xóa bỏ hoàn toàn điều kiện này hoặc bọc trong kiểm tra môi trường nghiêm ngặt <code>if (app()->environment('local'))</code>.
+                </div>
+            </div>
+
+            <div class="alert-box alert-warning">
+                <div class="alert-icon">⚠️</div>
+                <div>
+                    <strong>Lỗ hổng 2: Lộ Access Token Discord trên URL chuyển hướng</strong>
+                    <br>Trong <code>DiscordOAuthController.php</code>, khi hoàn tất xác thực Discord, backend chuyển hướng người dùng về frontend với Sanctum Token nằm lộ liễu trên URL query string: <code>/auth/callback?token=1|abcdef...</code>. Token có thể bị rò rỉ qua lịch sử trình duyệt, Proxy logs hoặc Referer header.
+                    <br><em>Giải pháp:</em> Lưu token vào HTTP-Only Cookie hoặc Session tạm thời một lần (Flash Session).
+                </div>
+            </div>
+
+            <div class="alert-box alert-warning">
+                <div class="alert-icon">⚠️</div>
+                <div>
+                    <strong>Lỗ hổng 3: Form liên kết tài khoản không kiểm tra quyền sở hữu</strong>
+                    <br>Trang hồ sơ người dùng chỉ có 1 ô nhập text username và regex <code>^[a-zA-Z0-9_]{3,16}$</code>, không kiểm tra người dùng đó có thực sự sở hữu nick trong Minecraft hay không.
+                    <br><em>Giải pháp:</em> Áp dụng ngay cơ chế <strong>OTP PIN Handshake</strong> (Module A) đã mô tả ở Phần 3.
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer style="margin-top: 60px; padding-top: 24px; border-top: 1px solid var(--border); text-align: center; color: var(--text-subtle); font-size: 13px;">
+            <p>© 2026 Đảo Tò Mò Project • Hệ Thống Máy Chủ Earth Survival 1.21.11 • Tài Liệu Kỹ Thuật Độc Quyền</p>
+            <p style="margin-top: 4px; font-family: 'JetBrains Mono', monospace; font-size: 11.5px;">Bản quyền báo cáo kiểm toán thuộc về Nhóm Kiến Trúc Sư Hệ Thống Đảo Tò Mò</p>
+        </footer>
+    </main>
+
+    <!-- Interactive JavaScript -->
+    <script>
+        // Reading Progress Indicator
+        window.onscroll = function() {
+            let winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+            let height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            let scrolled = (winScroll / height) * 100;
+            document.getElementById("readProgress").style.width = scrolled + "%";
+
+            // Back to top visibility
+            let btt = document.getElementById("backToTop");
+            if (winScroll > 300) {
+                btt.style.display = "flex";
+            } else {
+                btt.style.display = "none";
+            }
+
+            // Active TOC nav link highlight
+            let sections = document.querySelectorAll("section");
+            let scrollPos = window.scrollY + 100;
+
+            sections.forEach(sec => {
+                let top = sec.offsetTop;
+                let height = sec.offsetHeight;
+                let id = sec.getAttribute("id");
+
+                if (scrollPos >= top && scrollPos < top + height) {
+                    document.querySelectorAll("#sidebarNav .nav-item").forEach(a => {
+                        a.classList.remove("active");
+                        if (a.getAttribute("href") === "#" + id) {
+                            a.classList.add("active");
+                        }
+                    });
+                }
+            });
+        };
+
+        // Theme Toggle (Dark / Light)
+        function toggleTheme() {
+            let html = document.documentElement;
+            let currentTheme = html.getAttribute("data-theme");
+            let newTheme = currentTheme === "dark" ? "light" : "dark";
+            html.setAttribute("data-theme", newTheme);
+            localStorage.setItem("theme_pref", newTheme);
+
+            let icon = document.getElementById("themeIcon");
+            let label = document.getElementById("themeLabel");
+            if (newTheme === "light") {
+                icon.textContent = "🌙";
+                label.textContent = "Chế độ Tối";
+            } else {
+                icon.textContent = "☀️";
+                label.textContent = "Chế độ Sáng";
+            }
+        }
+
+        // Restore Theme Preference
+        (function() {
+            let savedTheme = localStorage.getItem("theme_pref");
+            if (savedTheme) {
+                document.documentElement.setAttribute("data-theme", savedTheme);
+                let icon = document.getElementById("themeIcon");
+                let label = document.getElementById("themeLabel");
+                if (icon && label) {
+                    if (savedTheme === "light") {
+                        icon.textContent = "🌙";
+                        label.textContent = "Chế độ Tối";
+                    } else {
+                        icon.textContent = "☀️";
+                        label.textContent = "Chế độ Sáng";
+                    }
+                }
+            }
+        })();
+
+        // Click to Copy Command
+        function copyCommand(btn, text) {
+            navigator.clipboard.writeText(text).then(() => {
+                let originalText = btn.textContent;
+                btn.textContent = "Đã chép! ✓";
+                btn.classList.add("copied");
+                setTimeout(() => {
+                    btn.textContent = originalText;
+                    btn.classList.remove("copied");
+                }, 2000);
+            }).catch(err => {
+                console.error("Lỗi khi sao chép:", err);
+            });
+        }
+
+        // Click to Copy Code Block
+        function copyCode(btn) {
+            let pre = btn.parentElement.nextElementSibling;
+            let code = pre.querySelector("code") ? pre.querySelector("code").innerText : pre.innerText;
+            navigator.clipboard.writeText(code).then(() => {
+                let originalText = btn.textContent;
+                btn.textContent = "Đã chép! ✓";
+                btn.classList.add("copied");
+                setTimeout(() => {
+                    btn.textContent = originalText;
+                    btn.classList.remove("copied");
+                }, 2000);
+            });
+        }
+
+        // Live Search Filter for Navigation
+        function filterNavItems() {
+            let input = document.getElementById("filterNav").value.toLowerCase();
+            let items = document.querySelectorAll("#sidebarNav .nav-item");
+
+            items.forEach(item => {
+                let text = item.textContent.toLowerCase();
+                if (text.includes(input)) {
+                    item.style.display = "flex";
+                } else {
+                    item.style.display = "none";
+                }
+            });
+        }
+    </script>
+</body>
+</html>

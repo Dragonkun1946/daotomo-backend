@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BÁO CÁO TIẾN ĐỘ ĐỒ ÁN - ĐẾN HẾT TUẦN 11</title>
+<style>
+  @page {
+    size: A4 portrait;
+    margin: 15mm 20mm 15mm 25mm;
+  }
+  * {
+    box-sizing: border-box;
+  }
+  body {
+    font-family: 'Times New Roman', Times, serif;
+    font-size: 13pt;
+    line-height: 1.35;
+    color: #111827;
+    background-color: #f3f4f6;
+    margin: 0;
+    padding: 20px;
+  }
+  .no-print-toolbar {
+    max-width: 210mm;
+    margin: 0 auto 15px auto;
+    padding: 12px 20px;
+    background: #1f3864;
+    color: white;
+    border-radius: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+  }
+  .no-print-toolbar button {
+    background: #ffffff;
+    color: #1f3864;
+    border: none;
+    padding: 8px 18px;
+    font-size: 13pt;
+    font-weight: bold;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .no-print-toolbar button:hover {
+    background: #e2e8f0;
+  }
+  .document-container {
+    max-width: 210mm;
+    margin: 0 auto;
+    background: white;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+  }
+  /* COVER PAGE WITH DOUBLE BORDER */
+  .cover-page {
+    width: 210mm;
+    min-height: 297mm;
+    padding: 20mm 20mm;
+    margin: 0 auto 20px auto;
+    background: white;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    page-break-after: always;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    position: relative;
+  }
+  .cover-border-outer {
+    border: 3px double #1f3864;
+    padding: 18mm 15mm;
+    height: 100%;
+    min-height: calc(297mm - 40mm);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    text-align: center;
+    box-sizing: border-box;
+  }
+  .cover-header {
+    margin-bottom: 25px;
+  }
+  .cover-header .inst-top {
+    font-size: 13pt;
+    font-weight: bold;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+  .cover-header .inst-name {
+    font-size: 15pt;
+    font-weight: bold;
+    text-transform: uppercase;
+    color: #1f3864;
+    margin-bottom: 4px;
+  }
+  .cover-header .inst-dept {
+    font-size: 14pt;
+    font-weight: bold;
+    text-transform: uppercase;
+    border-bottom: 2px solid #1f3864;
+    display: inline-block;
+    padding-bottom: 6px;
+  }
+  .cover-title-block {
+    margin: 30px 0;
+  }
+  .cover-report-type {
+    font-size: 22pt;
+    font-weight: bold;
+    color: #1f3864;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .cover-week-tag {
+    font-size: 14pt;
+    font-style: italic;
+    color: #374151;
+    margin-bottom: 30px;
+  }
+  .cover-topic-label {
+    font-size: 13pt;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+  }
+  .cover-topic-name {
+    font-size: 15pt;
+    font-weight: bold;
+    color: #1f3864;
+    text-transform: uppercase;
+    line-height: 1.4;
+    padding: 0 10px;
+  }
+  .cover-info-block {
+    text-align: left;
+    margin: 20px auto 30px auto;
+    width: 90%;
+    font-size: 13pt;
+    line-height: 1.6;
+  }
+  .cover-info-row {
+    margin-bottom: 4px;
+  }
+  .cover-info-label {
+    font-weight: bold;
+  }
+  .cover-footer {
+    text-align: center;
+    font-size: 13pt;
+    font-weight: bold;
+    text-transform: uppercase;
+    color: #1f3864;
+    border-top: 1px solid #cbd5e0;
+    padding-top: 15px;
+  }
+  /* BODY STYLES */
+  .body-content {
+    padding: 25mm 20mm 20mm 30mm;
+  }
+  h1 {
+    font-size: 14pt;
+    font-weight: bold;
+    color: #1f3864;
+    margin-top: 24px;
+    margin-bottom: 8px;
+    border-bottom: 1.5px solid #1f3864;
+    padding-bottom: 3px;
+    page-break-after: avoid;
+  }
+  h2 {
+    font-size: 13pt;
+    font-weight: bold;
+    color: #2e5b88;
+    margin-top: 16px;
+    margin-bottom: 6px;
+    page-break-after: avoid;
+  }
+  p {
+    text-align: justify;
+    margin-top: 0;
+    margin-bottom: 8px;
+    text-indent: 24px;
+  }
+  ul {
+    margin: 6px 0 10px 0;
+    padding-left: 28px;
+  }
+  li {
+    margin-bottom: 5px;
+    text-align: justify;
+  }
+  /* TABLE STYLES */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 12px 0 16px 0;
+    font-size: 10.5pt;
+    page-break-inside: avoid;
+  }
+  th, td {
+    border: 1px solid #a0aec0;
+    padding: 6px 10px;
+    vertical-align: middle;
+  }
+  th {
+    background-color: #d9e2f3;
+    color: #1f3864;
+    font-weight: bold;
+    text-align: center;
+  }
+  tr:nth-child(even) td {
+    background-color: #f8fafc;
+  }
+  .text-center { text-align: center; }
+  .text-right { text-align: right; }
+  .text-left { text-align: left; }
+  .badge-pass {
+    background: #def7ec;
+    color: #03543f;
+    font-weight: bold;
+    padding: 2px 6px;
+    border-radius: 4px;
+    display: inline-block;
+  }
+
+  @media print {
+    body {
+      background: white;
+      padding: 0;
+    }
+    .no-print-toolbar {
+      display: none;
+    }
+    .document-container {
+      box-shadow: none;
+    }
+    .cover-page {
+      box-shadow: none;
+      margin: 0;
+      padding: 10mm 15mm;
+      min-height: 280mm;
+    }
+    .cover-border-outer {
+      min-height: 265mm;
+      padding: 15mm 12mm;
+    }
+    .body-content {
+      padding: 0;
+    }
+    h1 {
+      page-break-before: auto;
+      page-break-after: avoid;
+    }
+    table {
+      page-break-inside: avoid;
+    }
+  }
+</style>
+</head>
+<body>
+
+<div class="no-print-toolbar">
+  <div><strong>Báo cáo Tiến độ Đồ án (Tuần 11)</strong> — Chuẩn hóa thuật ngữ học thuật "Máy chủ trò chơi trực tuyến"</div>
+  <button onclick="window.print()">In hoặc Lưu PDF (Ctrl + P)</button>
+</div>
+
+<div class="cover-page">
+  <div class="cover-border-outer">
+    <div class="cover-header">
+      <div class="inst-top">BỘ GIÁO DỤC VÀ ĐÀO TẠO</div>
+      <div class="inst-name">TRƯỜNG CAO ĐẲNG LÝ TỰ TRỌNG</div>
+      <div class="inst-dept">KHOA CÔNG NGHỆ THÔNG TIN</div>
+    </div>
+
+    <div class="cover-title-block">
+      <div class="cover-report-type">BÁO CÁO TIẾN ĐỘ ĐỒ ÁN</div>
+      <div class="cover-week-tag">(Đến hết Tuần 11)</div>
+
+      <div class="cover-topic-label">ĐỀ TÀI:</div>
+      <div class="cover-topic-name">XÂY DỰNG NỀN TẢNG WEB QUẢN TRỊ TẬP TRUNG VÀ TÍCH HỢP API CHO MÁY CHỦ TRÒ CHƠI TRỰC TUYẾN</div>
+    </div>
+
+    <div class="cover-info-block">
+      <div class="cover-info-row"><span class="cover-info-label">Giảng viên hướng dẫn:</span> Mai Chiếm Tuấn</div>
+      <div class="cover-info-row"><span class="cover-info-label">Sinh viên thực hiện:</span></div>
+      <div class="cover-info-row" style="padding-left: 20px;">1. Nguyễn Trọng Nghĩa &nbsp;&nbsp;&nbsp;&nbsp; MSSV: 25002449</div>
+      <div class="cover-info-row" style="padding-left: 20px;">2. Tống Hoàng Anh Tuấn &nbsp;&nbsp; MSSV: 25002461</div>
+      <div class="cover-info-row"><span class="cover-info-label">Lớp:</span> 25C2-LTM1 · <span class="cover-info-label">Ngành:</span> Lập trình máy tính · <span class="cover-info-label">Khóa:</span> 2025</div>
+      <div class="cover-info-row"><span class="cover-info-label">Học kỳ:</span> Học kỳ 3, năm học 2025 - 2026</div>
+    </div>
+
+    <div class="cover-footer">
+      TP. HỒ CHÍ MINH — NĂM 2026
+    </div>
+  </div>
+</div>
+
+<div class="document-container">
+  <div class="body-content">
+    <h1>1. Giới thiệu</h1>
+    <p>Việc quản lý tài khoản, sản phẩm, đơn hàng và giao dịch bằng các công cụ rời rạc gây khó khăn cho việc theo dõi dữ liệu và đối soát doanh thu. Đề tài xây dựng một nền tảng Web quản trị tập trung, tích hợp cổng thanh toán SePay và lớp API trao đổi dữ liệu với máy chủ trò chơi trực tuyến, giúp ban quản trị theo dõi, xử lý giao dịch tự động và hỗ trợ vận hành người chơi ở mức thông tin tập trung — không xây dựng máy chủ trò chơi từ đầu.</p>
+    <p>Báo cáo này trình bày kết quả thực hiện từ Tuần 8 đến hết Tuần 11 theo đúng lộ trình 15 tuần trong phiếu đăng ký đề tài: hoàn thành module đơn hàng và giao dịch (Tuần 8), tích hợp thanh toán tự động qua SePay (Tuần 9), bước đầu chuẩn hóa cấu trúc dữ liệu kết nối máy chủ game (Tuần 10), và tiến hành đợt tái thiết kế toàn diện giao diện sang phiên bản 2.0 'Neo-Mythic Island', tích hợp Mô hình 3D nhân vật tương tác trực tiếp (Three.js WebGL), tái cấu trúc Clean Architecture và sửa dứt điểm lỗi quên mật khẩu cũng như nâng cấp toàn diện bảo mật hệ thống (Tuần 11).</p>
+
+    <h1>2. Mục tiêu và phạm vi giai đoạn này (Tuần 8 đến Tuần 11)</h1>
+    <ul>
+      <li><strong>Module Đơn hàng & Giao dịch (Tuần 8):</strong> Xây dựng hoàn chỉnh module đơn hàng: tạo đơn, tính giá server-side từ database, chống trùng lặp (idempotency key), hỗ trợ cả thành viên đăng nhập và khách vãng lai.</li>
+      <li><strong>Cổng thanh toán SePay (Tuần 9):</strong> Tích hợp cổng thanh toán trực tuyến SePay: liên kết tài khoản ngân hàng MBBank (0977364711 - NGUYEN TRONG NGHIA), sinh mã VietQR động theo đơn hàng, tiếp nhận webhook tự động gạch nợ, xác thực chữ ký số HMAC-SHA256, chống tấn công phát lại (anti-replay drift &lt; 300s).</li>
+      <li><strong>Chuẩn hóa API Máy chủ Game (Tuần 10):</strong> Thiết kế và mở rộng cấu trúc dữ liệu đơn hàng phục vụ kết nối máy chủ game trực tuyến (<code>game_username</code>, <code>game_reward</code>, trạng thái <code>processing</code>/<code>completed</code>).</li>
+      <li><strong>Đợt tái thiết kế toàn diện Giao diện (UI/UX Rework 2.0):</strong> Thực hiện bước nhảy vọt về mỹ thuật số từ giao diện thô sơ ở mốc Tuần 7 sang hệ thống Design System 'Neo-Mythic Island' hoàn chỉnh trên 9 trang chính; nâng tầm thẩm mỹ gaming hiện đại với hiệu ứng Obsidian Glassmorphism và màu sắc huyền thoại.</li>
+      <li><strong>Tích hợp Mô hình 3D Nhân vật Tương tác (3D Skin Studio):</strong> Tích hợp công nghệ đồ họa Three.js và WebGL (<code>skinview3d</code>) vào website, cho phép hiển thị mô hình 3D nhân vật trong game tương tác 360 độ (xoay, zoom, đổi góc nhìn), hoạt ảnh chuyển động thời gian thực và Studio đổi ngoại trang (skin) trực tuyến kèm bóc tách avatar khuôn mặt 2D tự động.</li>
+      <li><strong>Tái cấu trúc & Sửa lỗi Email Đa tầng (Tuần 11):</strong> Tái cấu trúc mã nguồn theo Domain-Oriented Clean Architecture; sửa dứt điểm lỗi quên mật khẩu qua kiến trúc chuyển phát email đa tầng (Resend/Brevo HTTPS API trên cổng 443 giải quyết triệt để lỗi chặn cổng SMTP của Render).</li>
+      <li><strong>Kiểm thử & Đảm bảo chất lượng:</strong> Thiết lập bộ kiểm thử tự động toàn diện với 71 test cases (243 assertions) đạt tỷ lệ vượt qua 100%.</li>
+    </ul>
+
+    <h1>3. Công nghệ và kiến trúc</h1>
+    <p>Hệ thống tuân thủ công nghệ cốt lõi đã đăng ký trong phiếu đề tài (PHP/Laravel 11, CSDL quan hệ, RESTful API, SePay, Render Cloud). Toàn bộ mã nguồn đã được tái cấu trúc thành công sang mô hình Domain-Oriented Clean Architecture, phân tách rõ ràng trách nhiệm giữa Controllers, Form Requests, Domain Services và Eloquent Models, đồng thời bổ sung thư viện đồ họa 3D WebGL Three.js cho trải nghiệm người dùng vượt trội.</p>
+
+    <table>
+      <thead>
+        <tr>
+          <th style="width: 30%;">Thành phần</th>
+          <th style="width: 70%;">Công nghệ sử dụng & Chi tiết kỹ thuật thực tế</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>Backend Framework</td><td>PHP 8.2+ / Laravel 11.45 (Domain-Oriented Clean Architecture, Action/Service Pattern)</td></tr>
+        <tr><td>Cơ sở dữ liệu (Database)</td><td>SQLite (môi trường Local / Dev / PHPUnit Testing); PostgreSQL (môi trường Production Cloud Render)</td></tr>
+        <tr><td>Frontend Interface</td><td>Blade Template kết hợp Vanilla JavaScript (ES6+), CSS3 Flexbox/Grid, Design System 2.0 'Neo-Mythic Island'</td></tr>
+        <tr><td>Đồ họa 3D & WebGL</td><td>Three.js WebGL Engine, skinview3d bundle, OrbitControls 360 độ, Animation Mixers, Canvas GD Avatar</td></tr>
+        <tr><td>Cổng thanh toán</td><td>SePay VietQR Gateway (MBBank 0977364711 - NGUYEN TRONG NGHIA, Webhook HMAC-SHA256 timestamped)</td></tr>
+        <tr><td>Chuyển phát Email</td><td>Kiến trúc Đa tầng: Resend HTTPS API (cổng 443) &rarr; Brevo HTTPS API &rarr; SMTP Local (giải quyết lỗi Render chặn SMTP)</td></tr>
+        <tr><td>Xác thực & Định danh</td><td>Laravel Sanctum (Token-based Auth), Bcrypt băm mật khẩu, Discord OAuth2 Social Login</td></tr>
+        <tr><td>Môi trường Cloud & Tên miền</td><td>Render Cloud Web Service (PHP Docker container), tên miền chính thức daotomo.site</td></tr>
+        <tr><td>Kiểm thử tự động</td><td>PHPUnit / Pest Framework (71 test cases, 243 assertions, tỷ lệ đạt 100%)</td></tr>
+      </tbody>
+    </table>
+
+    <h2>3.1. Cấu trúc 6 Bảng Cơ sở dữ liệu nghiệp vụ (Database Schema)</h2>
+    <p>Cơ sở dữ liệu của dự án được thiết kế chuẩn hóa theo mô hình quan hệ (RDBMS), hỗ trợ ràng buộc khóa ngoại (Foreign Keys), tính toàn vẹn giao dịch (ACID Transactions) và các chỉ mục duy nhất (Unique Index) chống trùng lặp:</p>
+
+    <table>
+      <thead>
+        <tr>
+          <th style="width: 22%;">Tên bảng</th>
+          <th style="width: 40%;">Khóa chính & Các trường dữ liệu cốt lõi</th>
+          <th style="width: 38%;">Vai trò và ràng buộc nghiệp vụ</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td><code>users</code></td><td><code>id, username, name, email, password, role, game_username, skin_url, avatar, coins, discord_id, bio</code></td><td>Lưu trữ tài khoản người dùng, tên định danh trong game (IGN), số dư xu, liên kết Discord OAuth và quyền Admin/User.</td></tr>
+        <tr><td><code>products</code></td><td><code>id, name, slug, price, original_price, category, image, images, stock_quantity, is_active, featured, game_reward</code></td><td>Quản lý danh mục 12 sản phẩm máy chủ game: gói VIP, tiền tệ, trang bị, hòm kho báu và mã phần thưởng game_reward.</td></tr>
+        <tr><td><code>orders</code></td><td><code>id, order_code, user_id, game_username, total_amount, order_status, payment_status, payment_method, idempotency_key</code></td><td>Quản lý đơn hàng, mã đơn DTM-XXXXXX, tính tiền server-side, chống trùng idempotency và lưu vết status_history.</td></tr>
+        <tr><td><code>order_items</code></td><td><code>id, order_id, product_id, product_name, price, quantity, subtotal</code></td><td>Chi tiết từng sản phẩm trong đơn hàng, lưu snapshot giá và tên sản phẩm tại thời điểm mua tránh sai lệch khi đổi giá.</td></tr>
+        <tr><td><code>payment_transactions</code></td><td><code>id, order_id, sepay_transaction_id, account_number, transfer_amount, code, content, reference_code</code></td><td>Lưu vết toàn bộ giao dịch đối soát từ Webhook SePay, ràng buộc duy nhất reference_code chống tấn công phát lại Replay.</td></tr>
+        <tr><td><code>checkins</code></td><td><code>id, user_id, checkin_date, coins_awarded, streak_day</code></td><td>Quản lý tính năng điểm danh nhận xu hàng ngày, ràng buộc 1 lượt/ngày/user và theo dõi chuỗi ngày liên tiếp (1-7 ngày).</td></tr>
+      </tbody>
+    </table>
+
+    <h2>3.2. Cấu trúc tổ chức mã nguồn Backend sau tái cấu trúc (Tuần 11)</h2>
+    <p>Mô hình phân tầng kiến trúc sau refactor (Domain-Oriented Clean Architecture) tại backend đảm bảo tuân thủ nguyên lý Single Responsibility (SRP), loại bỏ hoàn toàn code chết và phân tách rạch ròi trách nhiệm giữa các tầng:</p>
+
+    <table>
+      <thead>
+        <tr>
+          <th style="width: 35%;">Thư mục / Tệp tin</th>
+          <th style="width: 65%;">Vai trò và trách nhiệm kiến trúc</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td><code>app/Http/Controllers/Api/</code></td><td>Bộ điều khiển chia theo domain nghiệp vụ: Auth, User, Order, Product, Checkin, Payment.</td></tr>
+        <tr><td><code>app/Http/Controllers/Admin/</code></td><td>Bộ điều khiển dành riêng cho quản trị viên: AdminOrderController, AdminProductController.</td></tr>
+        <tr><td><code>app/Services/</code></td><td>Lớp xử lý nghiệp vụ độc lập: OrderService, SepayService, PasswordResetService, DiscordOAuthService, SkinService.</td></tr>
+        <tr><td><code>app/Http/Requests/</code></td><td>BaseApiRequest và các Form Requests chuẩn hóa validate dữ liệu, trả lỗi 422/400 JSON thống nhất.</td></tr>
+        <tr><td><code>app/Http/Resources/</code></td><td>UserResource, OrderResource: chuẩn hóa định dạng dữ liệu JSON trả về cho client frontend.</td></tr>
+        <tr><td><code>app/Models/</code></td><td>Eloquent Models liên kết quan hệ thực thể: User, Product, Order, OrderItem, PaymentTransaction, Checkin.</td></tr>
+        <tr><td><code>public/js/skin-viewer.js & bundle</code></td><td>Động cơ render 3D WebGL Three.js: xoay 360 độ, animation và trích xuất khuôn mặt GD.</td></tr>
+        <tr><td><code>routes/api.php</code></td><td>Khai báo 29 endpoints RESTful phân tầng rõ ràng giữa Public, Protected và Admin.</td></tr>
+        <tr><td><code>tests/Feature/ & Unit/</code></td><td>Bộ 71 kịch bản kiểm thử tự động toàn diện đảm bảo độ ổn định và ngăn ngừa lỗi hồi quy.</td></tr>
+      </tbody>
+    </table>
+
+    <h1>4. Kết quả thực hiện</h1>
+    <h2>4.1. Nâng cấp tài khoản, hồ sơ và đăng nhập Discord</h2>
+    <ul>
+      <li>Đăng ký, đăng nhập bằng email/mật khẩu với thuật toán băm Bcrypt chuẩn bảo mật cao.</li>
+      <li>Tích hợp hoàn chỉnh OAuth2 Discord: chuyển hướng cấp quyền, xử lý callback an toàn, tự động liên kết tài khoản Discord với người dùng hệ thống hoặc tạo tài khoản mới nếu chưa tồn tại.</li>
+      <li>API xem và cập nhật hồ sơ cá nhân (<code>/api/auth/me</code>), cập nhật Tên hiển thị, Tên định danh trong game (IGN - ràng buộc 3–16 ký tự <code>[a-zA-Z0-9_]</code>), Tiểu sử bio và ảnh đại diện.</li>
+      <li>Phân quyền rõ ràng qua middleware <code>AdminMiddleware</code> và <code>auth:sanctum</code>: đảm bảo các thao tác nhạy cảm (quản lý sản phẩm, đối soát giao dịch) chỉ người dùng có quyền Admin mới được thực hiện.</li>
+    </ul>
+
+    <h2>4.2. Module Đơn hàng và Giao dịch hoàn chỉnh (Nội dung Tuần 8)</h2>
+    <ul>
+      <li>Cơ chế tạo đơn hàng an toàn: Toàn bộ đơn giá và thành tiền được tính toán trực tiếp từ cơ sở dữ liệu server-side (<code>OrderService</code>), loại bỏ hoàn toàn rủi ro người dùng can thiệp sửa giá từ trình duyệt.</li>
+      <li>Sinh mã đơn hàng chuẩn format ngân hàng <code>DTM-XXXXXX</code> (ví dụ <code>DTM-3EA3E5</code>, <code>DTM-316C9C</code>) và nội dung chuyển khoản <code>DTM XXXXXX</code>.</li>
+      <li>Bảo vệ giao dịch bằng Database Transaction (<code>DB::transaction</code>): Tự động khóa dòng và rollback nếu có bất kỳ bước xử lý dữ liệu nào bị lỗi, bảo toàn tính nhất quán tuyệt đối.</li>
+      <li>Cơ chế chống gửi trùng lặp (Idempotency Key): Ngăn chặn việc người dùng click đúp hoặc mạng lag dẫn tới tạo nhiều đơn hàng giống nhau.</li>
+      <li>Hỗ trợ tạo đơn hàng linh hoạt cho cả người chơi đã đăng nhập tài khoản lẫn khách vãng lai mua nhanh (<code>/api/orders/guest</code>).</li>
+      <li>Lưu vết lịch sử trạng thái (<code>status_history</code>) dưới dạng JSON: ghi nhận từng bước khởi tạo (pending), đã thanh toán (paid), đang xử lý (processing) và hoàn tất (completed).</li>
+    </ul>
+
+    <h2>4.3. Tích hợp Cổng thanh toán SePay tự động và an toàn (Nội dung Tuần 9)</h2>
+    <ul>
+      <li>Kết nối tự động với tài khoản ngân hàng MBBank (Số tài khoản: <code>0977364711</code> - Chủ tài khoản: <code>NGUYEN TRONG NGHIA</code>).</li>
+      <li>Tự động sinh mã VietQR động theo chuẩn Napas 24/7 chứa chính xác số tiền và mã đơn hàng duy nhất trong nội dung chuyển khoản.</li>
+      <li>Tiếp nhận Webhook SePay theo thời gian thực (<code>/api/webhooks/sepay</code>): Tự động phân tích nội dung giao dịch, khớp mã đơn hàng và gạch nợ tự động trong chưa đầy 3 giây.</li>
+      <li>Bảo mật chữ ký số HMAC-SHA256: Xác thực tính toàn vẹn của webhook từ SePay qua API Key / Secret Key, từ chối mọi yêu cầu giả mạo.</li>
+      <li>Cơ chế chống tấn công phát lại (Anti-Replay Attack): Kiểm tra độ lệch thời gian (drift timestamp &lt; 300 giây) và ràng buộc duy nhất trên mã đối soát ngân hàng (<code>reference_code</code>).</li>
+      <li>Endpoint Polling thời gian thực (<code>GET /api/orders/check-status/{code}</code>): frontend tự động thăm dò mỗi 3 giây và chuyển trạng thái thành công ngay khi có tiền về mà không cần tải lại trang.</li>
+    </ul>
+
+    <h2>4.4. Khắc phục lỗi Quên mật khẩu & Chuyển phát email đa tầng (Nội dung Tuần 11)</h2>
+    <p>Trong quá trình kiểm thử thực tế trên hạ tầng Render Cloud, nhóm phát hiện Render Free Tier chủ động chặn toàn bộ các cổng SMTP truyền thống (cổng 587 và 465) để phòng chống thư rác, dẫn đến việc chức năng quên mật khẩu bị treo kết nối và trả lỗi 504 Gateway Timeout. Nhóm đã nghiên cứu và triển khai thành công kiến trúc chuyển phát email đa tầng (Multi-tier Email Dispatch Architecture):</p>
+    <ul>
+      <li><strong>Tầng 1 (Ưu tiên cao nhất):</strong> Tích hợp trực tiếp Resend REST API qua cổng mạng HTTPS chuẩn (Cổng 443), truyền tải payload JSON mã hóa TLS an toàn mà không bị bất kỳ tường lửa hạ tầng nào chặn.</li>
+      <li><strong>Tầng 2 (Dự phòng tự động):</strong> Tích hợp Brevo REST API qua Cổng 443; nếu Tầng 1 gặp sự cố hạn ngạch hoặc kết nối, hệ thống tự động chuyển sang Brevo trong chưa đầy 1 giây.</li>
+      <li><strong>Tầng 3 (Môi trường cục bộ):</strong> Tự động fallback về SMTP chuẩn khi chạy ở môi trường máy trạm local (Localhost / XAMPP).</li>
+      <li>Token đặt lại mật khẩu được sinh ngẫu nhiên 48-64 ký tự hex, băm SHA-256 lưu trong bảng <code>password_reset_tokens</code> với thời hạn hiệu lực 30-60 phút, tự động hủy bỏ ngay sau lần sử dụng đầu tiên.</li>
+    </ul>
+
+    <h2>4.5. Đợt tái thiết kế toàn diện Giao diện người dùng (UI/UX Rework — Phiên bản 2.0 'Neo-Mythic Island')</h2>
+    <p>Tại mốc Tuần 7, giao diện ban đầu của website mang tính chất nguyên mẫu (prototype) với các bảng dữ liệu tĩnh đơn sắc, màu nền trắng xám đơn điệu, thiếu vắng các hiệu ứng tương tác hiện đại và chưa phản ánh được tinh thần phiêu lưu, kỳ ảo của máy chủ trò chơi trực tuyến. Nhận diện được hạn chế lớn này, sau khi đã ổn định logic thanh toán và đơn hàng ở Tuần 8–9, nhóm đã dành trọn thời gian triển khai một đợt tái thiết kế giao diện toàn diện (Creative Full UI/UX Rework) lên phiên bản 2.0 'Neo-Mythic Island' (Đảo Kỳ Bí):</p>
+    <ul>
+      <li><strong>Định hướng mỹ thuật 'Neo-Mythic Island':</strong> Thay thế bảng màu thô sơ bằng hệ thống màu Obsidian Dark (#05070d, #101524), kết hợp ánh hào quang ngọc lục bảo Mythic Emerald (#10b981), viền kính đại dương Ocean Lagoon Cyan (#22d3ee) và điểm nhấn hoàng gia Relic Gold (#f59e0b). Ứng dụng ngôn ngữ Glassmorphism (kính mờ phủ sương) và viền phát sáng Neon đa tầng.</li>
+      <li><strong>Hệ thống Typography chuẩn Gaming:</strong> Sử dụng cặp phông chữ chuyên biệt: <code>Chakra Petch</code> cho tiêu đề và huy hiệu (hình khối góc cạnh, đậm chất công nghệ và gaming), kết hợp <code>Be Vietnam Pro</code> cho nội dung văn bản (chuẩn hiển thị tiếng Việt sắc nét trên mọi mật độ điểm ảnh) và <code>JetBrains Mono</code> cho các dãy số liệu, mã đơn hàng DTM và tọa độ.</li>
+      <li><strong>Tái thiết kế đồng bộ 9 trang màn hình:</strong> Toàn bộ 9 trang giao diện chính của website đều được thiết kế lại 100% gồm: Trang Chủ (Command HUD trung tâm, trạng thái server realtime, linh vật 3D); Trang Server (Cổng kết nối IP và luật chơi công bằng); Cửa Hàng (Marketplace Grid dạng thẻ bài phát sáng, bộ lọc danh mục và thanh tìm kiếm tức thì); Chi Tiết Sản Phẩm (Bảng thông số quyền lợi in-game và modal mua nhanh); Trang Tài Khoản (HUD 4 ô thông minh, quản lý IGN và Studio 3D); Điểm Danh Nhận Quà (Chuỗi nhiệm vụ 7 ngày rương kho báu); Bản Đồ Vệ Tinh (Dynmap toàn cảnh live); Cộng Đồng Discord (Hub phòng voice và bảng cấp bậc); Trang Quản Trị Admin (Command Center và đồ thị KPI).</li>
+    </ul>
+
+    <h2>4.6. Tích hợp Mô hình 3D Nhân vật tương tác trực tiếp (Interactive 3D Skin Viewer / Studio)</h2>
+    <p>Điểm đột phá công nghệ nổi bật nhất trong đợt nâng cấp giao diện là việc tích hợp thành công Mô hình 3D nhân vật trong game thời gian thực trực tiếp trên trình duyệt Web bằng thư viện <code>skinview3d</code> (xây dựng trên nền tảng Three.js và WebGL):</p>
+    <ul>
+      <li><strong>Tương tác không gian 3 chiều 360 độ (OrbitControls):</strong> Người dùng có thể sử dụng chuột trên máy tính hoặc thao tác chạm cảm ứng trên điện thoại thông minh để xoay nhân vật 360 độ tự do theo mọi góc nhìn, phóng to (zoom in), thu nhỏ (zoom out) và xoay nghiêng camera kiểm tra chi tiết ngoại hình.</li>
+      <li><strong>Hệ thống hoạt ảnh diễn hoạt thời gian thực:</strong> Mô hình 3D được tích hợp sẵn các bộ khung xương hoạt ảnh diễn hoạt mượt mà theo thời gian thực (Real-time Skeletal Animations) bao gồm: Dáng đi bộ (Walking), Chạy nhanh (Running), Đứng thở tự nhiên (Idle breathing), và Vẫy tay chào người chơi (Waving).</li>
+      <li><strong>Quản lý lớp trang phục đa tầng:</strong> Hỗ trợ bật hoặc tắt độc lập lớp áo ngoài (Outer Layer / Hat / Jacket / Armor) để hiển thị chi tiết các phần hoa văn nổi 3D của trang phục nhân vật trong game.</li>
+      <li><strong>3D Skin Studio & Trình xem trước tức thì (Live Preview):</strong> Cho phép người dùng tải lên tệp ngoại trang (Skin) nhân vật 3D định dạng PNG chuẩn (kích thước 64x64 pixel hoặc 64x32 pixel). Khung hiển thị 3D sẽ ngay lập tức ánh xạ chất liệu (texture mapping) lên mô hình để người chơi kiểm tra toàn diện trước khi lưu.</li>
+      <li><strong>Tự động bóc tách Avatar 2D từ Mô hình 3D:</strong> Kết hợp Canvas HTML5 và thư viện đồ họa PHP GD ở Backend để tự động bóc tách vùng khuôn mặt (Face) bao gồm cả lớp mũ/tóc ngoài từ skin 3D để tạo ảnh đại diện (Avatar 2D) đồng bộ cho tài khoản.</li>
+      <li><strong>API Đồng bộ hóa Skin Backend:</strong> Xây dựng API chuyên biệt (<code>POST /api/auth/skin</code>) kết nối với <code>SkinController</code> và <code>SkinService</code>, tự động kiểm tra tính hợp lệ của tệp hình ảnh, lưu trữ an toàn và đồng bộ hóa với máy chủ game trực tuyến.</li>
+    </ul>
+
+    <h2>4.7. Dữ liệu 12 Sản phẩm và Tài khoản demo thực tế trong Cơ sở dữ liệu</h2>
+    <p>Toàn bộ dữ liệu dưới đây được trích xuất trực tiếp từ cơ sở dữ liệu SQLite (<code>database/database.sqlite</code>) và tệp nạp dữ liệu chuẩn <code>DatabaseSeeder.php</code> của máy chủ game Đảo Tò Mò:</p>
+
+    <table>
+      <thead>
+        <tr>
+          <th style="width: 5%;">STT</th>
+          <th style="width: 25%;">Tên gói sản phẩm dịch vụ</th>
+          <th style="width: 12%;">Danh mục</th>
+          <th style="width: 15%;">Giá bán (VNĐ)</th>
+          <th style="width: 15%;">Giá gốc (VNĐ)</th>
+          <th style="width: 28%;">Mã phần thưởng máy chủ (game_reward)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td class="text-center">1</td><td><strong>Gói Tài Khoản Premium</strong></td><td class="text-center">vip</td><td class="text-right">99.000 đ</td><td class="text-right">149.000 đ</td><td><code>game_premium</code></td></tr>
+        <tr><td class="text-center">2</td><td><strong>Gói Cấp Bậc Rank VIP</strong></td><td class="text-center">vip</td><td class="text-right">79.000 đ</td><td class="text-right">109.000 đ</td><td><code>rank_vip</code></td></tr>
+        <tr><td class="text-center">3</td><td><strong>Gói Cấp Bậc Rank Premium</strong></td><td class="text-center">vip</td><td class="text-right">149.000 đ</td><td class="text-right">199.000 đ</td><td><code>rank_premium</code></td></tr>
+        <tr><td class="text-center">4</td><td><strong>Gói 100.000 Coin Trò Chơi</strong></td><td class="text-center">bundle</td><td class="text-right">89.000 đ</td><td class="text-right">100.000 đ</td><td><code>coin_100k</code></td></tr>
+        <tr><td class="text-center">5</td><td><strong>Gói Ngoại Trang 3D (Skin Pack)</strong></td><td class="text-center">cosmetic</td><td class="text-right">49.000 đ</td><td class="text-right">79.000 đ</td><td><code>skin_pack</code></td></tr>
+        <tr><td class="text-center">6</td><td><strong>Hòm Vật Phẩm Epic</strong></td><td class="text-center">crate</td><td class="text-right">29.000 đ</td><td class="text-right">49.000 đ</td><td><code>epic_crate_x1</code></td></tr>
+        <tr><td class="text-center">7</td><td><strong>DaVinci Resolve Basic</strong></td><td class="text-center">bundle</td><td class="text-right">79.000 đ</td><td class="text-right">129.000 đ</td><td><em>(Tài nguyên số biên tập video đồ họa)</em></td></tr>
+        <tr><td class="text-center">8</td><td><strong>Khóa học Lập trình Web cơ bản</strong></td><td class="text-center">bundle</td><td class="text-right">199.000 đ</td><td class="text-right">299.000 đ</td><td><em>(Khóa đào tạo lập trình web trực tuyến)</em></td></tr>
+        <tr><td class="text-center">9</td><td><strong>Khóa học JavaScript</strong></td><td class="text-center">bundle</td><td class="text-right">249.000 đ</td><td class="text-right">349.000 đ</td><td><em>(Khóa đào tạo lập trình JavaScript nâng cao)</em></td></tr>
+        <tr><td class="text-center">10</td><td><strong>Khóa học Python</strong></td><td class="text-center">bundle</td><td class="text-right">229.000 đ</td><td class="text-right">329.000 đ</td><td><em>(Khóa đào tạo lập trình Python căn bản)</em></td></tr>
+        <tr><td class="text-center">11</td><td><strong>Gói Tài Nguyên Trò Chơi (Resource Pack)</strong></td><td class="text-center">cosmetic</td><td class="text-right">59.000 đ</td><td class="text-right">89.000 đ</td><td><code>game_resource_pack</code></td></tr>
+        <tr><td class="text-center">12</td><td><strong>Gói Bản Mở Rộng Modpack Premium</strong></td><td class="text-center">bundle</td><td class="text-right">129.000 đ</td><td class="text-right">179.000 đ</td><td><code>modpack_premium</code></td></tr>
+      </tbody>
+    </table>
+
+    <p>Danh sách tài khoản kiểm thử và demo thực tế trong hệ thống (Tên miền chính thức <code>daotomo.site</code>):</p>
+    <table>
+      <thead>
+        <tr>
+          <th style="width: 20%;">Vai trò</th>
+          <th style="width: 25%;">Email đăng nhập</th>
+          <th style="width: 15%;">Mật khẩu</th>
+          <th style="width: 12%;">Username</th>
+          <th style="width: 15%;">Tên trong game (IGN)</th>
+          <th style="width: 13%;">Số dư Xu</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td class="text-center"><strong>Quản trị viên (Admin)</strong></td><td>admin@daotomo.site</td><td class="text-center"><code>Admin@123456</code></td><td class="text-center">admin</td><td class="text-center">AdminDaoTomo</td><td class="text-right">99.999 Xu</td></tr>
+        <tr><td class="text-center"><strong>Người chơi kiểm thử (User)</strong></td><td>player@daotomo.site</td><td class="text-center"><code>Player@123456</code></td><td class="text-center">DragonPlayer</td><td class="text-center">DragonPlayer</td><td class="text-right">500 Xu</td></tr>
+        <tr><td class="text-center"><strong>Người dùng mẫu (Demo User)</strong></td><td>user@daotomo.site</td><td class="text-center"><code>User@123456</code></td><td class="text-center">demouser</td><td class="text-center">DemoUser</td><td class="text-right">100 Xu</td></tr>
+      </tbody>
+    </table>
+
+    <h1>5. Danh sách 29 API Endpoints thực tế trong source code (routes/api.php)</h1>
+    <p>Toàn bộ 29 endpoints RESTful dưới đây được khai báo trực tiếp trong tệp <code>routes/api.php</code> của mã nguồn hiện tại, phân tách rạch ròi theo phân quyền truy cập:</p>
+
+    <table>
+      <thead>
+        <tr>
+          <th style="width: 12%;">Phương thức</th>
+          <th style="width: 35%;">Endpoint</th>
+          <th style="width: 18%;">Quyền</th>
+          <th style="width: 35%;">Mô tả chức năng chi tiết</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td class="text-center">GET</td><td><code>/api/health</code></td><td class="text-center">Public</td><td>Kiểm tra trạng thái sức khỏe hệ thống, kết nối CSDL và số lượng sản phẩm</td></tr>
+        <tr><td class="text-center">POST</td><td><code>/api/auth/register</code></td><td class="text-center">Public</td><td>Đăng ký tài khoản người dùng mới với validation email và mật khẩu</td></tr>
+        <tr><td class="text-center">POST</td><td><code>/api/auth/login</code></td><td class="text-center">Public</td><td>Đăng nhập hệ thống, sinh Sanctum Bearer Token</td></tr>
+        <tr><td class="text-center">POST</td><td><code>/api/auth/forgot-password</code></td><td class="text-center">Public (Throttle)</td><td>Yêu cầu gửi email đặt lại mật khẩu với kiến trúc đa tầng (giới hạn 5 lần/phút)</td></tr>
+        <tr><td class="text-center">POST</td><td><code>/api/auth/reset-password/{token}</code></td><td class="text-center">Public</td><td>Xác thực token 48 ký tự và cập nhật mật khẩu mới</td></tr>
+        <tr><td class="text-center">GET</td><td><code>/api/auth/discord</code></td><td class="text-center">Public</td><td>Chuyển hướng người dùng sang trang cấp quyền OAuth2 của Discord</td></tr>
+        <tr><td class="text-center">GET</td><td><code>/api/auth/discord/callback</code></td><td class="text-center">Public</td><td>Tiếp nhận authorization code và hoàn tất đăng nhập/liên kết Discord</td></tr>
+        <tr><td class="text-center">GET</td><td><code>/api/auth/me</code></td><td class="text-center">User (Sanctum)</td><td>Lấy toàn bộ thông tin chi tiết hồ sơ cá nhân và trạng thái Discord</td></tr>
+        <tr><td class="text-center">PUT</td><td><code>/api/auth/me</code></td><td class="text-center">User (Sanctum)</td><td>Cập nhật Tên hiển thị, Tên định danh trong game (IGN 3-16 ký tự) và bio cá nhân</td></tr>
+        <tr><td class="text-center">POST</td><td><code>/api/auth/skin</code></td><td class="text-center">User (Sanctum)</td><td>Tải lên / cập nhật Skin 3D nhân vật (PNG 64x64/64x32) và trích xuất avatar GD</td></tr>
+        <tr><td class="text-center">GET</td><td><code>/api/products</code></td><td class="text-center">Public</td><td>Danh sách sản phẩm công khai có phân trang, tìm kiếm từ khóa và lọc danh mục</td></tr>
+        <tr><td class="text-center">GET</td><td><code>/api/products/{id}</code></td><td class="text-center">Public</td><td>Xem thông tin chi tiết một sản phẩm theo ID hoặc slug</td></tr>
+        <tr><td class="text-center">GET</td><td><code>/api/orders/check-status/{code}</code></td><td class="text-center">Public</td><td>Kiểm tra trạng thái thanh toán theo mã đơn hàng DTM (Polling 3s)</td></tr>
+        <tr><td class="text-center">GET</td><td><code>/api/orders/status/{code}</code></td><td class="text-center">Public</td><td>Endpoint alias kiểm tra trạng thái thanh toán đơn hàng</td></tr>
+        <tr><td class="text-center">POST</td><td><code>/api/orders/guest</code></td><td class="text-center">Public</td><td>Tạo đơn hàng nhanh cho khách vãng lai (không cần đăng ký tài khoản)</td></tr>
+        <tr><td class="text-center">POST</td><td><code>/api/orders</code></td><td class="text-center">User (Sanctum)</td><td>Tạo đơn hàng thành viên (tính giá server-side từ DB, chống trùng idempotency)</td></tr>
+        <tr><td class="text-center">GET</td><td><code>/api/orders/my</code></td><td class="text-center">User (Sanctum)</td><td>Xem danh sách lịch sử đơn hàng của cá nhân đã đăng nhập</td></tr>
+        <tr><td class="text-center">GET</td><td><code>/api/orders/{id}</code></td><td class="text-center">User (Sanctum)</td><td>Xem chi tiết một đơn hàng theo ID (chỉ chủ đơn hàng hoặc Admin xem được)</td></tr>
+        <tr><td class="text-center">PUT</td><td><code>/api/orders/{id}/cancel</code></td><td class="text-center">User (Sanctum)</td><td>Hủy đơn hàng khi đơn còn ở trạng thái chờ xử lý (pending)</td></tr>
+        <tr><td class="text-center">PUT</td><td><code>/api/orders/{id}/payment-proof</code></td><td class="text-center">User (Sanctum)</td><td>Người dùng tải lên hình ảnh biên lai / bằng chứng chuyển khoản ngân hàng</td></tr>
+        <tr><td class="text-center">POST</td><td><code>/api/checkin</code></td><td class="text-center">User (Sanctum)</td><td>Điểm danh hàng ngày: nhận xu thưởng và tích lũy chuỗi streak 7 ngày</td></tr>
+        <tr><td class="text-center">GET</td><td><code>/api/checkin/me</code></td><td class="text-center">User (Sanctum)</td><td>Xem lịch sử điểm danh và chuỗi ngày liên tiếp của cá nhân</td></tr>
+        <tr><td class="text-center">MATCH</td><td><code>/api/webhooks/sepay</code></td><td class="text-center">Public (SePay Key)</td><td>Tiếp nhận Webhook SePay tự động gạch nợ (HMAC-SHA256, drift &lt; 300s)</td></tr>
+        <tr><td class="text-center">MATCH</td><td><code>/api/sepay/webhook</code></td><td class="text-center">Public (SePay Key)</td><td>Endpoint alias dự phòng tiếp nhận Webhook SePay</td></tr>
+        <tr><td class="text-center">POST</td><td><code>/api/products</code></td><td class="text-center">Admin</td><td>Thêm mới sản phẩm vào cửa hàng (AdminProductController)</td></tr>
+        <tr><td class="text-center">PUT</td><td><code>/api/products/{id}</code></td><td class="text-center">Admin</td><td>Chỉnh sửa thông tin chi tiết sản phẩm (AdminProductController)</td></tr>
+        <tr><td class="text-center">DELETE</td><td><code>/api/products/{id}</code></td><td class="text-center">Admin</td><td>Xóa sản phẩm khỏi cửa hàng (AdminProductController)</td></tr>
+        <tr><td class="text-center">GET</td><td><code>/api/orders</code></td><td class="Admin">Xem toàn bộ đơn hàng trong hệ thống kèm bộ lọc trạng thái (AdminOrderController)</td></tr>
+        <tr><td class="text-center">PUT</td><td><code>/api/orders/{id}/status</code></td><td class="Admin">Cập nhật trạng thái đơn hàng theo luật State Machine bất biến</td></tr>
+      </tbody>
+    </table>
+
+    <h1>6. Kiểm thử và đánh giá chất lượng (PHPUnit / Pest)</h1>
+    <p>Toàn bộ 71 test cases bao phủ 243 assertions trong mã nguồn hiện tại đã vượt qua 100% (PASS). Kết quả kiểm chứng tự động từ lệnh <code>php artisan test</code> được tổng hợp chi tiết theo 17 nhóm kịch bản nghiệp vụ:</p>
+
+    <table>
+      <thead>
+        <tr>
+          <th style="width: 6%;">STT</th>
+          <th style="width: 32%;">Nội dung kiểm thử</th>
+          <th style="width: 44%;">Kết quả mong đợi</th>
+          <th style="width: 18%;">Kết quả thực tế</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td class="text-center">1</td><td>Kiểm tra sức khỏe hệ thống (/api/health)</td><td>Trả JSON trạng thái DB OK, đếm đúng số sản phẩm, HTTP 200</td><td class="text-center"><span class="badge-pass">ĐẠT (PASS)</span></td></tr>
+        <tr><td class="text-center">2</td><td>Đăng ký tài khoản hợp lệ</td><td>Tạo user mới, mật khẩu băm Bcrypt, trả token Sanctum, HTTP 201</td><td class="text-center"><span class="badge-pass">ĐẠT (PASS)</span></td></tr>
+        <tr><td class="text-center">3</td><td>Đăng nhập đúng tài khoản</td><td>Xác thực thành công, trả token phiên, HTTP 200</td><td class="text-center"><span class="badge-pass">ĐẠT (PASS)</span></td></tr>
+        <tr><td class="text-center">4</td><td>Đăng nhập sai mật khẩu</td><td>Từ chối xác thực, trả HTTP 401 Unauthorized</td><td class="text-center"><span class="badge-pass">ĐẠT (PASS)</span></td></tr>
+        <tr><td class="text-center">5</td><td>Khởi tạo luồng OAuth Discord</td><td>Trả redirect URL hợp lệ đến discord.com, HTTP 200</td><td class="text-center"><span class="badge-pass">ĐẠT (PASS)</span></td></tr>
+        <tr><td class="text-center">6</td><td>Callback Discord hợp lệ</td><td>Tạo/liên kết tài khoản thành công, lưu discord_username, trả token</td><td class="text-center"><span class="badge-pass">ĐẠT (PASS)</span></td></tr>
+        <tr><td class="text-center">7</td><td>Xem và cập nhật hồ sơ cá nhân</td><td>Cập nhật tên, bio, validate chuẩn IGN nhân vật trong game (3-16 ký tự)</td><td class="text-center"><span class="badge-pass">ĐẠT (PASS)</span></td></tr>
+        <tr><td class="text-center">8</td><td>Tải lên Skin 3D & Bóc tách Avatar</td><td>Xác thực định dạng PNG 64x64/64x32, bóc tách khuôn mặt GD, reset Steve</td><td class="text-center"><span class="badge-pass">ĐẠT (PASS)</span></td></tr>
+        <tr><td class="text-center">9</td><td>Gửi email quên mật khẩu hợp lệ</td><td>Sinh token 48 ký tự, gửi mail qua HTTPS API, HTTP 200</td><td class="text-center"><span class="badge-pass">ĐẠT (PASS)</span></td></tr>
+        <tr><td class="text-center">10</td><td>Xác thực token & Đặt lại mật khẩu</td><td>Cập nhật mật khẩu mới, hủy token đã dùng, validate mật khẩu ngắn</td><td class="text-center"><span class="badge-pass">ĐẠT (PASS)</span></td></tr>
+        <tr><td class="text-center">11</td><td>Tạo đơn hàng chuẩn (Server-price)</td><td>Lấy giá từ DB, tính đúng tổng tiền, sinh OrderCode DTM-XXXXXX</td><td class="text-center"><span class="badge-pass">ĐẠT (PASS)</span></td></tr>
+        <tr><td class="text-center">12</td><td>Tạo đơn hàng khách vãng lai</td><td>Hỗ trợ khách mua nhanh không cần đăng nhập tài khoản, HTTP 200</td><td class="text-center"><span class="badge-pass">ĐẠT (PASS)</span></td></tr>
+        <tr><td class="text-center">13</td><td>Chống can thiệp sửa giá đơn hàng</td><td>Server bỏ qua giá client gửi, luôn tự tính giá niêm yết DB</td><td class="text-center"><span class="badge-pass">ĐẠT (PASS)</span></td></tr>
+        <tr><td class="text-center">14</td><td>Chống trùng lặp đơn hàng (Idempotency)</td><td>Gửi 2 request cùng idempotency_key chỉ tạo duy nhất 1 đơn hàng</td><td class="text-center"><span class="badge-pass">ĐẠT (PASS)</span></td></tr>
+        <tr><td class="text-center">15</td><td>Sinh mã VietQR thanh toán SePay</td><td>Tạo QR hợp lệ chứa đúng số tiền và nội dung DTM XXXXXX</td><td class="text-center"><span class="badge-pass">ĐẠT (PASS)</span></td></tr>
+        <tr><td class="text-center">16</td><td>Tiếp nhận Webhook SePay gạch nợ</td><td>Xác thực HMAC đúng, chuyển order sang paid trong 3s, tự phục hồi đơn</td><td class="text-center"><span class="badge-pass">ĐẠT (PASS)</span></td></tr>
+        <tr><td class="text-center">17</td><td>Chống tấn công Replay Webhook</td><td>Chặn request có timestamp lệch &gt;300s hoặc trùng lặp reference_code</td><td class="text-center"><span class="badge-pass">ĐẠT (PASS)</span></td></tr>
+      </tbody>
+    </table>
+
+    <h1>7. Khó khăn và cách giải quyết</h1>
+    <ul>
+      <li><strong>1. Render Free Tier chặn cổng gửi mail SMTP truyền thống:</strong> Khi gọi máy chủ Gmail SMTP qua cổng 587 hoặc 465, kết nối bị treo vô hạn dẫn tới lỗi 504 Gateway Timeout do gói Render Free chặn cổng mail để tránh spam. Nhóm đã giải quyết triệt để bằng cách thiết kế Kiến trúc chuyển phát email đa tầng (Multi-tier Dispatcher): tích hợp trực tiếp Resend REST API và Brevo REST API qua Cổng HTTPS 443, gửi email qua giao thức web an toàn mà không cần mở cổng SMTP.</li>
+      <li><strong>2. Lỗi hiển thị chi tiết đơn hàng (Cannot read properties of undefined reading 'orderCode'):</strong> Do sự không đồng nhất giữa vỏ bọc JSON trả về (<code>order</code> vs <code>data</code>), mã frontend cũ bị lỗi trắng màn hình khi truy cập chi tiết đơn. Nhóm đã cập nhật accessor trong Model <code>Order</code>, đồng thời cấu hình API Resource trả về cả hai khóa <code>order</code> và <code>data</code>, đảm bảo tương thích 100% với cả mã nguồn frontend cũ và mới.</li>
+      <li><strong>3. Xử lý chuẩn hóa và kiểm duyệt texture cho Mô hình 3D (Three.js WebGL):</strong> Tệp ngoại trang (skin) người dùng tải lên thường bị sai kích thước (không phải bội số của 64x64 hoặc 64x32), hoặc chứa mã độc ẩn trong metadata ảnh, gây vỡ mesh mô hình Three.js. Nhóm đã xây dựng bộ kiểm duyệt chặt chẽ trong <code>SkinService</code>: giải mã nhị phân header PNG, kiểm tra kích thước width/height chính xác và chuẩn hóa lại texture trước khi đưa vào renderer WebGL.</li>
+      <li><strong>4. Nguy cơ giả mạo Webhook SePay và tấn công phát lại (Replay Attack):</strong> SePay gửi webhook từ cụm IP động nên không thể chặn theo whitelist IP đơn giản. Nhóm đã triển khai xác thực chữ ký số HMAC-SHA256 kết hợp kiểm tra độ lệch thời gian (timestamp drift dưới 300 giây) và ràng buộc duy nhất (unique constraint) trên mã đối soát ngân hàng (<code>reference_code</code>), loại bỏ hoàn toàn nguy cơ tấn công phát lại.</li>
+      <li><strong>5. Lỗ hổng can thiệp giá từ phía người dùng (Client-side Price Tampering):</strong> Người dùng có thể chỉnh sửa payload request trên trình duyệt để gửi tổng tiền sai lệch. Nhóm đã lập trình lại toàn bộ <code>OrderService</code>, buộc hệ thống phải tự truy vấn giá niêm yết trong cơ sở dữ liệu và tự động nhân với số lượng sản phẩm, loại bỏ triệt để nguy cơ gian lận giá từ phía client.</li>
+    </ul>
+
+    <h1>8. Hạn chế đã biết</h1>
+    <ul>
+      <li><strong>Kết nối trao vật phẩm game:</strong> Module kết nối API máy chủ game trực tuyến hiện mới dừng ở mức thiết kế cấu trúc dữ liệu (<code>game_username</code>, <code>game_reward</code>, trạng thái giao hàng <code>processing</code>), chưa hoàn thiện cầu nối gửi lệnh Socket/RCON trực tiếp vào Console máy chủ game thật (đang trong tiến độ hoàn thiện ở Tuần 12).</li>
+      <li><strong>Tên miền gửi mail Resend:</strong> Tài khoản Resend mới tạo hiện đang dùng tên miền thử nghiệm (<code>onboarding@resend.dev</code>), chỉ gửi được đến email của lập trình viên; cần cấu hình và xác thực bản ghi DNS (DKIM/SPF) cho tên miền chính thức <code>daotomo.site</code> để chuyển phát đến toàn bộ khách hàng tự do.</li>
+    </ul>
+
+    <h1>9. Nội dung chưa thực hiện & Đánh giá tiến độ tổng kết</h1>
+    <p>Đối chiếu với lộ trình 15 tuần đã đăng ký trong phiếu đề tài, bảng dưới đây tổng hợp trạng thái thực hiện chi tiết đến hết Tuần 11 và các nội dung đang tiếp tục triển khai:</p>
+
+    <table>
+      <thead>
+        <tr>
+          <th style="width: 12%;">Tuần</th>
+          <th style="width: 53%;">Nội dung theo kế hoạch đăng ký</th>
+          <th style="width: 35%;">Trạng thái thực tế đến thời điểm hiện tại</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td class="text-center">Tuần 6</td><td>Module tài khoản, xác thực và phân quyền Admin/User</td><td><span class="badge-pass">ĐÃ HOÀN THÀNH (100%)</span> &mdash; Bổ sung OAuth Discord</td></tr>
+        <tr><td class="text-center">Tuần 7</td><td>Module sản phẩm, danh mục, tồn kho và nạp dữ liệu demo</td><td><span class="badge-pass">ĐÃ HOÀN THÀNH (100%)</span> &mdash; Nạp 12 sản phẩm chuẩn vào CSDL</td></tr>
+        <tr><td class="text-center">Tuần 8</td><td>Module đơn hàng, giao dịch, tính giá server và chống trùng lặp</td><td><span class="badge-pass">ĐÃ HOÀN THÀNH (100%)</span> &mdash; Hoàn thiện OrderService an toàn</td></tr>
+        <tr><td class="text-center">Tuần 9</td><td>Tích hợp cổng SePay, sinh VietQR động, Webhook HMAC gạch nợ</td><td><span class="badge-pass">ĐÃ HOÀN THÀNH (100%)</span> &mdash; Tự động hóa gạch nợ thành công</td></tr>
+        <tr><td class="text-center">Tuần 10</td><td>Xây dựng cấu trúc dữ liệu và schema kết nối máy chủ game</td><td><span class="badge-pass">ĐÃ HOÀN THÀNH (85%)</span> &mdash; Chuẩn bị xong game_reward schema</td></tr>
+        <tr><td class="text-center">Tuần 11</td><td>Tái cấu trúc Clean Architecture, sửa lỗi mail đa tầng, UI/UX Rework 2.0 & Mô hình 3D</td><td><span class="badge-pass">ĐÃ HOÀN THÀNH (100%)</span> &mdash; 71/71 tests PASS, 3D Skin Studio</td></tr>
+        <tr><td class="text-center">Tuần 12</td><td>Hoàn thiện lớp API kết nối máy chủ game thật & kiểm thử E2E</td><td><strong>KẾ HOẠCH TUẦN 12</strong> (Đang triển khai Socket/Plugin Webhook)</td></tr>
+        <tr><td class="text-center">Tuần 13</td><td>Tối ưu hóa Dockerfile, Nginx production và tên miền chính thức</td><td><strong>KẾ HOẠCH TUẦN 13</strong> (Triển khai chính thức trên Render)</td></tr>
+        <tr><td class="text-center">Tuần 14</td><td>Soạn thảo tài liệu đặc tả OpenAPI và hoàn thiện quyển báo cáo</td><td><strong>KẾ HOẠCH TUẦN 14</strong> (Tổng hợp báo cáo theo biểu mẫu khoa)</td></tr>
+        <tr><td class="text-center">Tuần 15</td><td>Dựng video demo, slide thuyết trình và bảo vệ đồ án trước HĐ</td><td><strong>KẾ HOẠCH TUẦN 15</strong> (Bảo vệ đồ án tốt nghiệp)</td></tr>
+      </tbody>
+    </table>
+
+    <h1>10. Kế hoạch tiếp theo (Tuần 12 đến Tuần 15)</h1>
+    <ul>
+      <li><strong>Tuần 12: Hoàn thiện Lớp API kết nối Máy chủ Game & Kiểm thử chức năng toàn diện:</strong> Xây dựng cầu nối Socket Webhook hoặc RCON Client để lắng nghe sự kiện đơn hàng thanh toán thành công và tự động phát lệnh trao quyền lợi/vật phẩm ngay lập tức cho người chơi trong game. Xuất Postman Collection kiểm thử tự động toàn bộ luồng từ tạo đơn đến phát quà in-game.</li>
+      <li><strong>Tuần 13: Hoàn thiện Triển khai Cloud trên Render & Tên miền chính thức:</strong> Tối ưu hóa Dockerfile và cấu hình Nginx production trên Render Cloud; trỏ tên miền chính <code>daotomo.site</code> và xác thực chứng chỉ SSL cũng như cấu hình đầy đủ bản ghi DNS cho email doanh nghiệp.</li>
+      <li><strong>Tuần 14: Viết Báo cáo tổng kết, Tài liệu API và Hướng dẫn sử dụng:</strong> Soạn thảo tài liệu đặc tả API chi tiết theo chuẩn OpenAPI/Swagger; hoàn thiện toàn bộ bản thảo quyển báo cáo đồ án tốt nghiệp theo đúng định dạng và quy định chuẩn của Khoa Công nghệ Thông tin.</li>
+      <li><strong>Tuần 15: Chuẩn bị Slide thuyết trình, Video Demo và Bảo vệ đồ án:</strong> Thiết kế slide trình chiếu PowerPoint chuyên nghiệp; dàn dựng video clip demo kịch bản mua sắm thực tế (Chọn gói VIP &rarr; Quét VietQR thanh toán &rarr; Nhận quyền lợi VIP tự động trong máy chủ game và xem Skin 3D) và chuẩn bị bảo vệ trước Hội đồng chấm thi.</li>
+    </ul>
+
+    <h1>11. Kết luận</h1>
+    <p>Tính đến hết Tuần 11, dự án "Xây dựng nền tảng Web quản trị tập trung và tích hợp API cho máy chủ trò chơi trực tuyến" đã hoàn thành xuất sắc các mục tiêu kỹ thuật then chốt: hoàn thiện toàn bộ luồng mua sắm - tạo đơn hàng an toàn, tích hợp cổng thanh toán trực tuyến SePay với xác thực tự động, giải quyết triệt để bài toán chuyển phát email trên môi trường Cloud Render bằng kiến trúc đa tầng, tạo bước nhảy vọt về giao diện người dùng với phiên bản 2.0 Neo-Mythic Island, đưa mô hình đồ họa 3D Three.js tương tác vào trực tiếp trình duyệt, và chuẩn hóa mã nguồn theo mô hình Clean Architecture chuyên nghiệp. Hệ thống đã sẵn sàng bước vào giai đoạn cuối cùng là kết nối trao vật phẩm tự động với máy chủ game trực tuyến và hoàn tất đóng gói sản phẩm.</p>
+  </div>
+</div>
+
+</body>
+</html>

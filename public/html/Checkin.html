@@ -320,6 +320,108 @@
       margin-right: auto;
       line-height: 1.6;
     }
+
+    /* Game Link Box */
+    .game-link-box {
+      padding: 1.6rem 1.85rem;
+      border-radius: var(--radius);
+      margin-bottom: 1.75rem;
+      background: linear-gradient(135deg, rgba(245,158,11,0.08) 0%, rgba(17,22,40,0.95) 100%);
+      border: 1.5px solid rgba(245,158,11,0.35);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    }
+    .game-link-box.linked {
+      background: linear-gradient(135deg, rgba(16,185,129,0.08) 0%, rgba(17,22,40,0.95) 100%);
+      border-color: rgba(16,185,129,0.35);
+    }
+    .game-link-header {
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+      margin-bottom: 0.85rem;
+    }
+    .game-link-header h3 {
+      font-family: var(--font-display);
+      font-size: 1.2rem;
+      font-weight: 800;
+      color: #fbbf24;
+      margin: 0;
+    }
+    .game-link-box.linked .game-link-header h3 {
+      color: #34d399;
+    }
+    .game-link-steps {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.85rem;
+      margin: 1.1rem 0;
+    }
+    @media (max-width: 680px) {
+      .game-link-steps {
+        grid-template-columns: 1fr;
+      }
+    }
+    .step-card {
+      background: rgba(0,0,0,0.25);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: var(--radius-sm);
+      padding: 0.85rem 1rem;
+      font-size: 0.82rem;
+      line-height: 1.45;
+    }
+    .step-card strong {
+      color: #fff;
+      display: block;
+      margin-bottom: 0.25rem;
+    }
+    .step-card code {
+      background: rgba(34,211,238,0.12);
+      color: var(--lagoon);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-family: var(--font-mono);
+      font-size: 0.85em;
+    }
+    .pin-input-group {
+      display: flex;
+      gap: 0.75rem;
+      max-width: 480px;
+      margin-top: 1rem;
+    }
+    .pin-input {
+      flex: 1;
+      padding: 0.75rem 1rem;
+      border-radius: var(--radius-sm);
+      border: 1.5px solid rgba(255,255,255,0.15);
+      background: rgba(0,0,0,0.3);
+      color: #fff;
+      font-family: var(--font-mono);
+      font-size: 1.1rem;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+    .pin-input:focus {
+      outline: none;
+      border-color: var(--lagoon);
+      box-shadow: 0 0 12px rgba(34,211,238,0.3);
+    }
+    .btn-pin-submit {
+      padding: 0.75rem 1.4rem;
+      border-radius: var(--radius-sm);
+      background: linear-gradient(135deg, #f59e0b, #d97706);
+      color: #fff;
+      font-weight: 700;
+      font-size: 0.9rem;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      white-space: nowrap;
+    }
+    .btn-pin-submit:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 15px rgba(245,158,11,0.4);
+    }
   </style>
 </head>
 <body>
@@ -356,11 +458,11 @@
           <!-- Slide 1 -->
           <div class="carousel-slide">
             <div class="milestone-slide-card">
-              <div class="milestone-icon-wrap">🔥</div>
+              <div class="milestone-icon-wrap" style="background:rgba(34,211,238,0.18); border-color:rgba(34,211,238,0.4);">🗝️</div>
               <div class="milestone-info">
-                <h4>Chuỗi 3 Ngày — Khởi Động Tân Thủ</h4>
-                <p>Nhận ngay 10.000 Xu Đảo Tò Mò và 10 quả pháo hoa sự kiện rực rỡ.</p>
-                <span class="milestone-reward-tag">+10,000 Xu • 10x Fireworks</span>
+                <h4>Quà Điểm Danh Mỗi Ngày — 10 Chìa Khóa Rare</h4>
+                <p>Mỗi ngày điểm danh nhận ngay 10 chìa khóa Rare mở rương hiếm ingame và tích lũy chuỗi BXH!</p>
+                <span class="milestone-reward-tag" style="background:rgba(34,211,238,0.15); border-color:rgba(34,211,238,0.35); color:#67e8f9;">+10x Rare Crate Keys • Xu Đảo Ingame</span>
               </div>
             </div>
           </div>
@@ -413,6 +515,51 @@
 
     <!-- Shown when logged in -->
     <div id="logged-in-box" class="hidden">
+      <!-- Game Link Card (Mandatory before checkin) -->
+      <div class="game-link-box reveal" id="game-link-card">
+        <div id="game-link-unlinked">
+          <div class="game-link-header">
+            <span style="font-size:1.5rem">⚠️</span>
+            <div>
+              <h3>Yêu Cầu Liên Kết Nhân Vật Ingame Trước Khi Điểm Danh</h3>
+              <p style="color:#fbbf24; font-size:0.88rem; margin:0;">Mỗi tài khoản Web chỉ được liên kết 1 tài khoản Game duy nhất để nhận 10 Chìa Khóa Rare & Xu Đảo.</p>
+            </div>
+          </div>
+          <div class="game-link-steps">
+            <div class="step-card">
+              <strong>Bước 1: Vào Game</strong>
+              <span>Đăng nhập vào server Minecraft qua IP máy chủ</span>
+            </div>
+            <div class="step-card">
+              <strong>Bước 2: Lấy Mã PIN</strong>
+              <span>Gõ lệnh <code>/link</code> trong game để nhận mã PIN liên kết (hạn 10 phút)</span>
+            </div>
+            <div class="step-card">
+              <strong>Bước 3: Nhập Mã & Xác Nhận</strong>
+              <span>Điền mã PIN vào ô bên dưới rồi nhấn Xác Nhận để hoàn tất</span>
+            </div>
+          </div>
+          <form class="pin-input-group" onsubmit="handleLinkGameSubmit(event)">
+            <input type="text" id="game-pin-input" class="pin-input" placeholder="VD: DTM-A1B2" maxlength="12" required autocomplete="off">
+            <button type="submit" class="btn-pin-submit" id="btn-submit-pin">Xác Nhận Liên Kết</button>
+          </form>
+          <p id="game-link-msg" style="font-size:0.85rem; color:#94a3b8; margin:0.6rem 0 0;"></p>
+        </div>
+
+        <div id="game-link-linked" class="hidden">
+          <div class="game-link-header">
+            <span style="font-size:1.5rem">🎮</span>
+            <div>
+              <h3>Đã Liên Kết Nhân Vật Ingame Thành Công</h3>
+              <p style="color:#94a3b8; font-size:0.88rem; margin:0;">Tên nhân vật nhận quà: <strong style="color:#34d399; font-size:1.05rem;" id="linked-ign-text">—</strong></p>
+            </div>
+          </div>
+          <p style="font-size:0.85rem; color:#94a3b8; margin:0.5rem 0 0;">
+            Quà điểm danh (<strong>10 Chìa Khóa Rare</strong> & <strong>Xu Đảo</strong>) sẽ tự động giao thẳng vào hòm đồ của nhân vật này mỗi khi bạn bấm Điểm Danh.
+          </p>
+        </div>
+      </div>
+
       <div class="checkin-stats reveal">
         <div class="card checkin-stat">
           <span class="num"><span class="flame-icon">🔥</span> <span id="stat-streak">0</span></span>
@@ -506,7 +653,80 @@ function renderCalendar(dates) {
   document.getElementById('calendar-grid').innerHTML = html;
 }
 
+let currentUser = null;
+
+async function syncUserGameLink() {
+  try {
+    const res = await api.getMe();
+    currentUser = res?.data || res || null;
+    if (currentUser) {
+      api.setUser(currentUser);
+    }
+  } catch (e) {
+    currentUser = api.getUser();
+  }
+
+  const isLinked = Boolean(currentUser && (currentUser.isGameLinked || currentUser.minecraftUuid));
+  const card = document.getElementById('game-link-card');
+  const unlinkedBox = document.getElementById('game-link-unlinked');
+  const linkedBox = document.getElementById('game-link-linked');
+  const ignText = document.getElementById('linked-ign-text');
+  const checkinBtn = document.getElementById('checkin-btn');
+  const checkinNote = document.getElementById('checkin-note');
+
+  if (isLinked) {
+    if (card) card.classList.add('linked');
+    if (unlinkedBox) unlinkedBox.classList.add('hidden');
+    if (linkedBox) linkedBox.classList.remove('hidden');
+    if (ignText) ignText.textContent = currentUser.minecraftUsername || 'Nhân vật Minecraft';
+  } else {
+    if (card) card.classList.remove('linked');
+    if (unlinkedBox) unlinkedBox.classList.remove('hidden');
+    if (linkedBox) linkedBox.classList.add('hidden');
+    if (checkinBtn && !checkinBtn.disabled) {
+      checkinBtn.disabled = true;
+      checkinBtn.textContent = '🔒 Cần Liên Kết Game Trước Khi Điểm Danh';
+      if (checkinNote) {
+        checkinNote.innerHTML = '<span style="color:#fbbf24">⚠️ Bạn chưa liên kết tài khoản in-game! Hãy vào game gõ <code>/link</code> để lấy mã PIN xác nhận ở khung phía trên.</span>';
+      }
+    }
+  }
+  return isLinked;
+}
+
+async function handleLinkGameSubmit(event) {
+  event.preventDefault();
+  const input = document.getElementById('game-pin-input');
+  const submitBtn = document.getElementById('btn-submit-pin');
+  const msgEl = document.getElementById('game-link-msg');
+  const pin = input.value.trim().toUpperCase();
+
+  if (!pin) return;
+
+  submitBtn.disabled = true;
+  submitBtn.textContent = 'Đang xử lý...';
+  if (msgEl) msgEl.textContent = '';
+
+  try {
+    const res = await api.linkGame(pin);
+    const data = res?.data || res || {};
+    api.showToast(data.message || 'Liên kết nhân vật Minecraft thành công!', 'success');
+    input.value = '';
+    await syncUserGameLink();
+    await loadCheckinState();
+  } catch (err) {
+    api.showToast(err.message || 'Mã PIN không đúng hoặc đã hết hạn!', 'error');
+    if (msgEl) {
+      msgEl.innerHTML = `<span style="color:#ef4444">❌ ${err.message || 'Mã PIN không đúng hoặc đã hết hạn! Vui lòng vào game gõ /link lấy mã mới.'}</span>`;
+    }
+  } finally {
+    submitBtn.disabled = false;
+    submitBtn.textContent = 'Xác Nhận Liên Kết';
+  }
+}
+
 async function loadCheckinState() {
+  const isLinked = await syncUserGameLink();
   try {
     const res = await api.getMyCheckins();
     const data = res?.data || res || {};
@@ -522,14 +742,22 @@ async function loadCheckinState() {
 
     const btn = document.getElementById('checkin-btn');
     const note = document.getElementById('checkin-note');
+
+    if (!isLinked) {
+      btn.disabled = true;
+      btn.textContent = '🔒 Cần Liên Kết Game Trước Khi Điểm Danh';
+      note.innerHTML = '<span style="color:#fbbf24">⚠️ Vui lòng liên kết nhân vật game bằng mã PIN (lệnh <code>/link</code>) trước khi điểm danh nhận 10 Chìa Khóa Rare!</span>';
+      return;
+    }
+
     if (isChecked) {
       btn.disabled = true;
       btn.textContent = '✅ Đã Điểm Danh Hôm Nay';
       note.textContent = 'Chúc mừng bạn! Hãy quay lại vào ngày mai để tiếp tục giữ vững chuỗi nhé.';
     } else {
       btn.disabled = false;
-      btn.textContent = '⚡ Điểm Danh Hôm Nay';
-      note.textContent = 'Điểm danh đều đặn mỗi 24 giờ để không bị gián đoạn chuỗi ngày và nhận tối đa phần thưởng!';
+      btn.textContent = '⚡ Điểm Danh Nhận 10 Chìa Khóa Rare';
+      note.textContent = 'Mỗi ngày điểm danh nhận ngay 10 Chìa Khóa Rare và Xu Đảo chuyển thẳng vào tài khoản game!';
     }
   } catch (e) {
     document.getElementById('checkin-note').textContent = 'Không thể tải dữ liệu điểm danh: ' + (e.message || '');
@@ -537,6 +765,16 @@ async function loadCheckinState() {
 }
 
 async function doCheckin() {
+  if (!currentUser || (!currentUser.isGameLinked && !currentUser.minecraftUuid)) {
+    api.showToast('Bạn phải liên kết tài khoản Minecraft ingame trước khi điểm danh!', 'error');
+    const pinInput = document.getElementById('game-pin-input');
+    if (pinInput) {
+      pinInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      pinInput.focus();
+    }
+    return;
+  }
+
   const btn = document.getElementById('checkin-btn');
   btn.disabled = true;
   const original = btn.textContent;
@@ -562,8 +800,9 @@ async function doCheckin() {
       window.SoundFX.playSuccess();
     }
 
+    const successMsg = data.message || res.message || 'Điểm danh thành công! Bạn nhận được 10 Chìa Khóa Rare!';
     if (typeof api.showToast === 'function') {
-      api.showToast(data.message || res.message || 'Điểm danh thành công! +1 chuỗi ngày', 'success');
+      api.showToast(successMsg, 'success');
     }
   } catch (e) {
     document.getElementById('checkin-note').textContent = e.message;

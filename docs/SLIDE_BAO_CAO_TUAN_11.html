@@ -1,0 +1,1233 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Slide Báo Cáo Tiến Độ Đồ Án - Tuần 11 | Đảo Tò Mò</title>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Be+Vietnam+Pro:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <style>
+        :root {
+            --bg-abyss: #05070f;
+            --bg-surface: #0a0f1d;
+            --bg-card: rgba(15, 23, 42, 0.75);
+            --bg-card-hover: rgba(30, 41, 59, 0.9);
+            --border-glass: rgba(56, 189, 248, 0.2);
+            --border-glow: rgba(16, 185, 129, 0.4);
+            --primary-cyan: #38bdf8;
+            --primary-emerald: #10b981;
+            --accent-gold: #f59e0b;
+            --accent-purple: #a855f7;
+            --accent-rose: #f43f5e;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --font-heading: 'Chakra Petch', sans-serif;
+            --font-body: 'Be Vietnam Pro', sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        body {
+            background-color: var(--bg-abyss);
+            color: var(--text-main);
+            font-family: var(--font-body);
+            overflow: hidden;
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        /* Ambient Dynamic Background */
+        .ambient-mesh {
+            position: absolute;
+            inset: 0;
+            background: 
+                radial-gradient(circle at 12% 18%, rgba(56, 189, 248, 0.12) 0%, transparent 45%),
+                radial-gradient(circle at 88% 82%, rgba(16, 185, 129, 0.12) 0%, transparent 45%),
+                radial-gradient(circle at 50% 50%, rgba(168, 85, 247, 0.08) 0%, transparent 60%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* 16:9 Aspect Ratio Presentation Deck */
+        .slide-deck {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            max-width: calc(100vh * 16 / 9);
+            max-height: calc(100vw * 9 / 16);
+            aspect-ratio: 16 / 9;
+            background: rgba(10, 15, 29, 0.92);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.8), 0 0 40px rgba(56, 189, 248, 0.1);
+            z-index: 10;
+        }
+
+        /* Slides */
+        .slide {
+            position: absolute;
+            inset: 0;
+            padding: 38px 52px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            opacity: 0;
+            visibility: hidden;
+            transform: scale(0.985) translateY(12px);
+            transition: all 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+            overflow: hidden;
+        }
+
+        .slide.active {
+            opacity: 1;
+            visibility: visible;
+            transform: scale(1) translateY(0);
+        }
+
+        /* Slide Header */
+        .slide-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 16px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            padding-bottom: 12px;
+        }
+
+        .slide-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-family: var(--font-mono);
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--primary-cyan);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            background: rgba(56, 189, 248, 0.12);
+            padding: 3px 12px;
+            border-radius: 20px;
+            border: 1px solid rgba(56, 189, 248, 0.25);
+            margin-bottom: 5px;
+        }
+
+        .slide-title {
+            font-family: var(--font-heading);
+            font-size: 30px;
+            font-weight: 700;
+            line-height: 1.2;
+            background: linear-gradient(135deg, #ffffff 30%, #94a3b8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .slide-title span {
+            background: linear-gradient(135deg, var(--primary-cyan) 0%, var(--primary-emerald) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .slide-subtitle {
+            font-size: 13.5px;
+            color: var(--text-muted);
+            margin-top: 3px;
+        }
+
+        /* Slide Body Content */
+        .slide-body {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        /* Slide Footer */
+        .slide-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 10px;
+            border-top: 1px solid rgba(255, 255, 255, 0.06);
+            font-size: 11.5px;
+            color: var(--text-muted);
+            font-family: var(--font-mono);
+        }
+
+        /* Cards & Grids */
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 22px;
+            height: 100%;
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 18px;
+        }
+
+        .grid-4 {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+        }
+
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-glass);
+            border-radius: 12px;
+            padding: 20px;
+            backdrop-filter: blur(16px);
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: linear-gradient(to bottom, var(--primary-cyan), transparent);
+            opacity: 0.6;
+        }
+
+        .card:hover {
+            border-color: var(--primary-cyan);
+            box-shadow: 0 8px 24px -6px rgba(56, 189, 248, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .card-emerald::before { background: linear-gradient(to bottom, var(--primary-emerald), transparent); }
+        .card-gold::before { background: linear-gradient(to bottom, var(--accent-gold), transparent); }
+        .card-purple::before { background: linear-gradient(to bottom, var(--accent-purple), transparent); }
+        .card-rose::before { background: linear-gradient(to bottom, var(--accent-rose), transparent); }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 10px;
+        }
+
+        .card-icon {
+            width: 34px;
+            height: 34px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 17px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .card-title {
+            font-family: var(--font-heading);
+            font-size: 17px;
+            font-weight: 700;
+            color: #ffffff;
+        }
+
+        .card-desc {
+            font-size: 13px;
+            color: var(--text-muted);
+            line-height: 1.55;
+        }
+
+        .card-desc strong {
+            color: #ffffff;
+        }
+
+        /* Metric Numbers */
+        .metric-card {
+            text-align: center;
+            padding: 16px 14px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-glass);
+            border-radius: 12px;
+            backdrop-filter: blur(16px);
+        }
+
+        .metric-val {
+            font-family: var(--font-heading);
+            font-size: 36px;
+            font-weight: 700;
+            line-height: 1;
+            margin-bottom: 6px;
+            background: linear-gradient(135deg, var(--primary-cyan), var(--primary-emerald));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .metric-label {
+            font-size: 12.5px;
+            font-weight: 600;
+            color: #ffffff;
+            margin-bottom: 3px;
+        }
+
+        .metric-sub {
+            font-size: 11px;
+            color: var(--text-muted);
+            font-family: var(--font-mono);
+        }
+
+        /* Timeline / Stepper */
+        .timeline-container {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 14px;
+            position: relative;
+        }
+
+        .timeline-step {
+            background: var(--bg-card);
+            border: 1px solid var(--border-glass);
+            border-radius: 10px;
+            padding: 16px;
+            position: relative;
+        }
+
+        .timeline-badge {
+            font-family: var(--font-mono);
+            font-size: 10.5px;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 4px;
+            background: rgba(56, 189, 248, 0.15);
+            color: var(--primary-cyan);
+            display: inline-block;
+            margin-bottom: 8px;
+        }
+
+        .timeline-title {
+            font-family: var(--font-heading);
+            font-size: 14.5px;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 6px;
+        }
+
+        .timeline-text {
+            font-size: 11.5px;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+
+        /* Controls & Navigation */
+        .nav-progress {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-cyan), var(--primary-emerald));
+            width: 10%;
+            transition: width 0.35s ease;
+            z-index: 1000;
+            box-shadow: 0 0 10px var(--primary-cyan);
+        }
+
+        .controls-pill {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            background: rgba(15, 23, 42, 0.92);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(20px);
+            padding: 6px 18px;
+            border-radius: 40px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+        }
+
+        .ctrl-btn {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #ffffff;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 15px;
+            transition: all 0.2s ease;
+        }
+
+        .ctrl-btn:hover {
+            background: var(--primary-cyan);
+            color: #05070f;
+            border-color: var(--primary-cyan);
+            transform: scale(1.08);
+        }
+
+        .slide-indicator {
+            font-family: var(--font-mono);
+            font-size: 12.5px;
+            font-weight: 600;
+            color: var(--text-muted);
+            min-width: 55px;
+            text-align: center;
+        }
+
+        .slide-indicator span {
+            color: #ffffff;
+        }
+
+        .fullscreen-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 13px;
+            padding: 4px 8px;
+            border-radius: 6px;
+            transition: color 0.2s;
+        }
+
+        .fullscreen-btn:hover {
+            color: #fff;
+        }
+
+        /* Pill tags */
+        .badge {
+            display: inline-block;
+            font-size: 11px;
+            font-family: var(--font-mono);
+            padding: 2px 8px;
+            border-radius: 4px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            color: #cbd5e1;
+        }
+
+        .badge-cyan { background: rgba(56, 189, 248, 0.15); color: var(--primary-cyan); border-color: rgba(56, 189, 248, 0.3); }
+        .badge-emerald { background: rgba(16, 185, 129, 0.15); color: var(--primary-emerald); border-color: rgba(16, 185, 129, 0.3); }
+        .badge-gold { background: rgba(245, 158, 11, 0.15); color: var(--accent-gold); border-color: rgba(245, 158, 11, 0.3); }
+        .badge-purple { background: rgba(168, 85, 247, 0.15); color: var(--accent-purple); border-color: rgba(168, 85, 247, 0.3); }
+
+        /* Code Box */
+        .code-box {
+            background: #090d16;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 12px 14px;
+            font-family: var(--font-mono);
+            font-size: 11.5px;
+            line-height: 1.55;
+            color: #38bdf8;
+            overflow-x: auto;
+        }
+
+        /* Chart Canvas wrapper */
+        .chart-box {
+            position: relative;
+            width: 100%;
+            height: 200px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Top Progress Bar -->
+    <div class="nav-progress" id="progressBar"></div>
+    <div class="ambient-mesh"></div>
+
+    <!-- 16:9 Slide Deck -->
+    <div class="slide-deck" id="slideDeck">
+
+        <!-- ==================== SLIDE 1: COVER ==================== -->
+        <div class="slide active" data-slide="1">
+            <div class="slide-header" style="border: none; margin-bottom: 0;">
+                <div>
+                    <span class="slide-tag">BÁO CÁO TIẾN ĐỘ ĐỒ ÁN • ĐẾN HẾT TUẦN 11</span>
+                    <p style="font-size: 12.5px; color: var(--text-muted); font-family: var(--font-mono);">TRƯỜNG CAO ĐẲNG LÝ TỰ TRỌNG TP.HCM • KHOA CÔNG NGHỆ THÔNG TIN</p>
+                </div>
+                <span class="badge badge-cyan">Học kỳ 3 (2025 - 2026)</span>
+            </div>
+
+            <div class="slide-body" style="align-items: center; text-align: center; gap: 16px;">
+                <div style="max-width: 920px;">
+                    <h1 style="font-family: var(--font-heading); font-size: 34px; line-height: 1.25; margin-bottom: 10px; color: #ffffff;">
+                        XÂY DỰNG NỀN TẢNG WEB QUẢN TRỊ TẬP TRUNG VÀ TÍCH HỢP API CHO <span style="background: linear-gradient(135deg, var(--primary-cyan), var(--primary-emerald)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">MÁY CHỦ TRÒ CHƠI TRỰC TUYẾN</span>
+                    </h1>
+                    <p style="font-size: 15px; color: var(--text-muted); max-width: 820px; margin: 0 auto; line-height: 1.6;">
+                        Số hóa quy trình vận hành: Tạo đơn hàng chuẩn hóa server-side, Cổng thanh toán tự động SePay VietQR trong 3 giây, Mô hình 3D tương tác WebGL và Lớp API kết nối máy chủ trò chơi.
+                    </p>
+                </div>
+
+                <div class="grid-3" style="width: 100%; max-width: 860px; margin-top: 6px;">
+                    <div class="card" style="padding: 14px 18px; text-align: left;">
+                        <div style="font-size: 11px; color: var(--primary-cyan); font-family: var(--font-mono); font-weight: 600;">GIẢNG VIÊN HƯỚNG DẪN</div>
+                        <div style="font-size: 15.5px; font-weight: 700; color: #fff; margin-top: 3px;">ThS. Mai Chiếm Tuấn</div>
+                        <div style="font-size: 11.5px; color: var(--text-muted); margin-top: 2px;">Khoa Công nghệ Thông tin</div>
+                    </div>
+                    <div class="card" style="padding: 14px 18px; text-align: left;">
+                        <div style="font-size: 11px; color: var(--primary-emerald); font-family: var(--font-mono); font-weight: 600;">SINH VIÊN THỰC HIỆN 1</div>
+                        <div style="font-size: 15.5px; font-weight: 700; color: #fff; margin-top: 3px;">Nguyễn Trọng Nghĩa</div>
+                        <div style="font-size: 11.5px; color: var(--text-muted); margin-top: 2px;">MSSV: 25002449 • Lớp 25C2-LTM1</div>
+                    </div>
+                    <div class="card" style="padding: 14px 18px; text-align: left;">
+                        <div style="font-size: 11px; color: var(--accent-gold); font-family: var(--font-mono); font-weight: 600;">SINH VIÊN THỰC HIỆN 2</div>
+                        <div style="font-size: 15.5px; font-weight: 700; color: #fff; margin-top: 3px;">Tống Hoàng Anh Tuấn</div>
+                        <div style="font-size: 11.5px; color: var(--text-muted); margin-top: 2px;">MSSV: 25002461 • Lớp 25C2-LTM1</div>
+                    </div>
+                </div>
+
+                <div style="display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; margin-top: 2px;">
+                    <span class="badge badge-cyan">Laravel 11.31 Clean Architecture</span>
+                    <span class="badge badge-emerald">SePay VietQR 3s Auto-Pay</span>
+                    <span class="badge badge-gold">Three.js 3D WebGL Studio</span>
+                    <span class="badge badge-purple">Resend/Brevo HTTPS Cổng 443</span>
+                    <span class="badge">Design System 2.0</span>
+                </div>
+            </div>
+
+            <div class="slide-footer">
+                <span>Dự án: Đảo Tò Mò (daotomo.site)</span>
+                <span>TP. Hồ Chí Minh, Khóa 2025</span>
+            </div>
+        </div>
+
+        <!-- ==================== SLIDE 2: PROBLEM & OBJECTIVES ==================== -->
+        <div class="slide" data-slide="2">
+            <div class="slide-header">
+                <div>
+                    <span class="slide-tag">BỐI CẢNH & ĐẶT VẤN ĐỀ</span>
+                    <h2 class="slide-title">Từ Thách Thức Thực Tế Đến <span>Mục Tiêu Tuần 8 - 11</span></h2>
+                    <p class="slide-subtitle">Chuyển đổi quy trình quản trị máy chủ game thủ công sang nền tảng tự động hóa khép kín</p>
+                </div>
+                <span class="badge badge-cyan">Phân Tích Bối Cảnh</span>
+            </div>
+
+            <div class="slide-body">
+                <div class="grid-2">
+                    <!-- Left: Problem -->
+                    <div class="card card-rose">
+                        <div class="card-header">
+                            <div class="card-icon" style="color: var(--accent-rose);">⚠️</div>
+                            <div>
+                                <h3 class="card-title">Hiện Trạng & Nỗi Đau (What Is)</h3>
+                                <p style="font-size: 11.5px; color: var(--text-muted);">Mô hình vận hành thủ công của máy chủ game</p>
+                            </div>
+                        </div>
+                        <div style="display: flex; flex-direction: column; gap: 11px;">
+                            <div style="display: flex; gap: 10px;">
+                                <span style="color: var(--accent-rose); font-weight: bold; font-size: 15px;">✕</span>
+                                <p class="card-desc"><strong>Thanh toán thủ công chậm trễ:</strong> Người chơi gửi ảnh biên lai qua mạng xã hội, quản trị viên phải đối soát thủ công bằng mắt dẫn đến quá tải.</p>
+                            </div>
+                            <div style="display: flex; gap: 10px;">
+                                <span style="color: var(--accent-rose); font-weight: bold; font-size: 15px;">✕</span>
+                                <p class="card-desc"><strong>Gian lận biên lai giả:</strong> Kẻ xấu dùng công cụ làm giả hóa đơn chuyển khoản (fake bill) để lừa lấy gói tài nguyên hoặc vật phẩm giá trị cao.</p>
+                            </div>
+                            <div style="display: flex; gap: 10px;">
+                                <span style="color: var(--accent-rose); font-weight: bold; font-size: 15px;">✕</span>
+                                <p class="card-desc"><strong>Dữ liệu phân tán, thiếu an toàn:</strong> Thông tin người dùng, đơn hàng, xu thưởng lưu rời rạc; chưa có cơ chế chống trùng đơn (idempotency).</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right: Objective -->
+                    <div class="card card-emerald">
+                        <div class="card-header">
+                            <div class="card-icon" style="color: var(--primary-emerald);">🎯</div>
+                            <div>
+                                <h3 class="card-title">Mục Tiêu Đạt Được (What Could Be)</h3>
+                                <p style="font-size: 11.5px; color: var(--text-muted);">Trọng tâm đã giải quyết hoàn tất từ Tuần 8 đến Tuần 11</p>
+                            </div>
+                        </div>
+                        <div style="display: flex; flex-direction: column; gap: 11px;">
+                            <div style="display: flex; gap: 10px;">
+                                <span style="color: var(--primary-emerald); font-weight: bold; font-size: 15px;">✓</span>
+                                <p class="card-desc"><strong>Tự động hóa SePay VietQR:</strong> Sinh mã QR NAPAS 24/7 kèm số tiền chính xác, xác thực chữ ký HMAC-SHA256, kích hoạt trong 3 giây.</p>
+                            </div>
+                            <div style="display: flex; gap: 10px;">
+                                <span style="color: var(--primary-emerald); font-weight: bold; font-size: 15px;">✓</span>
+                                <p class="card-desc"><strong>Toàn vẹn giá trị đơn hàng:</strong> Giá sản phẩm tính tuyệt đối server-side từ database; chống tạo trùng đơn lặp với <code>idempotency_key</code>.</p>
+                            </div>
+                            <div style="display: flex; gap: 10px;">
+                                <span style="color: var(--primary-emerald); font-weight: bold; font-size: 15px;">✓</span>
+                                <p class="card-desc"><strong>Chuẩn bị Lớp API Game:</strong> Thiết kế cấu trúc dữ liệu người chơi trong game (<code>game_username</code>, <code>game_reward</code>) phục vụ kết nối máy chủ.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="slide-footer">
+                <span>Trực quan hóa lộ trình: Đồ án Đảo Tò Mò</span>
+                <span>Tiến độ giai đoạn: Tuần 8 ➔ Tuần 11</span>
+            </div>
+        </div>
+
+        <!-- ==================== SLIDE 3: METRICS DASHBOARD ==================== -->
+        <div class="slide" data-slide="3">
+            <div class="slide-header">
+                <div>
+                    <span class="slide-tag">CHỈ SỐ ĐO LƯỜNG KỸ THUẬT</span>
+                    <h2 class="slide-title">Bảng Chỉ Số KPI & <span>Kiểm Thử Thực Nghiệm</span></h2>
+                    <p class="slide-subtitle">Dữ liệu thực chứng trích xuất từ source code, test suite PHPUnit và cơ sở dữ liệu</p>
+                </div>
+                <span class="badge badge-emerald">100% Pass Rate</span>
+            </div>
+
+            <div class="slide-body">
+                <div class="grid-4" style="margin-bottom: 16px;">
+                    <div class="metric-card">
+                        <div class="metric-val">71/71</div>
+                        <div class="metric-label">Tests Đạt Tuyệt Đối</div>
+                        <div class="metric-sub">243 assertions • 2.60s runtime</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-val" style="background: linear-gradient(135deg, var(--primary-cyan), #60a5fa); -webkit-background-clip: text;">29</div>
+                        <div class="metric-label">RESTful API Endpoints</div>
+                        <div class="metric-sub">Sanctum Token & Admin Gates</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-val" style="background: linear-gradient(135deg, var(--accent-gold), #f97316); -webkit-background-clip: text;">12</div>
+                        <div class="metric-label">Sản Phẩm Trong CSDL</div>
+                        <div class="metric-sub">DatabaseSeeder chuẩn hóa</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-val" style="background: linear-gradient(135deg, var(--accent-purple), #ec4899); -webkit-background-clip: text;">3s</div>
+                        <div class="metric-label">Polling VietQR Realtime</div>
+                        <div class="metric-sub">Tự động gạch nợ tức thì</div>
+                    </div>
+                </div>
+
+                <div class="card" style="padding: 14px 18px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                        <span style="font-family: var(--font-heading); font-size: 14.5px; font-weight: 700; color: #fff;">Tiến Trình Mở Rộng API & Bộ Kiểm Thử Tự Động (Tuần 7 ➔ Tuần 11)</span>
+                        <span style="font-size: 11.5px; font-family: var(--font-mono); color: var(--text-muted);">Đơn vị: Số lượng kiểm thử & Endpoints</span>
+                    </div>
+                    <div class="chart-box">
+                        <canvas id="chartProgress"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div class="slide-footer">
+                <span>Xác minh bằng: php artisan test (Laravel 11.31)</span>
+                <span>Database: database/database.sqlite</span>
+            </div>
+        </div>
+
+        <!-- ==================== SLIDE 4: SYSTEM ARCHITECTURE ==================== -->
+        <div class="slide" data-slide="4">
+            <div class="slide-header">
+                <div>
+                    <span class="slide-tag">KIẾN TRÚC & CƠ SỞ DỮ LIỆU</span>
+                    <h2 class="slide-title">Mô Hình <span>Domain-Oriented Clean Architecture</span></h2>
+                    <p class="slide-subtitle">Tách bạch trách nhiệm giữa Controllers, Services, Form Requests và Database Schema</p>
+                </div>
+                <span class="badge badge-cyan">Laravel 11 Clean Pattern</span>
+            </div>
+
+            <div class="slide-body">
+                <div class="grid-2">
+                    <!-- Left: Layers -->
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-icon" style="color: var(--primary-cyan);">🏛️</div>
+                            <div>
+                                <h3 class="card-title">Kiến Trúc Phân Tầng Backend</h3>
+                                <p style="font-size: 11.5px; color: var(--text-muted);">app/Http & app/Services</p>
+                            </div>
+                        </div>
+                        <div style="display: flex; flex-direction: column; gap: 9px;">
+                            <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); padding: 9px 12px; border-radius: 8px;">
+                                <div style="font-size: 11.5px; font-weight: 700; color: var(--primary-cyan); font-family: var(--font-mono);">1. HTTP ROUTING & CONTROLLERS</div>
+                                <div style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">Tiếp nhận request, phân quyền Sanctum/Admin, trả dữ liệu JSON.</div>
+                            </div>
+                            <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); padding: 9px 12px; border-radius: 8px;">
+                                <div style="font-size: 11.5px; font-weight: 700; color: var(--primary-emerald); font-family: var(--font-mono);">2. FORM REQUESTS VALIDATION</div>
+                                <div style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">Xác thực dữ liệu tập trung qua BaseApiRequest, trả mã 422 chuẩn.</div>
+                            </div>
+                            <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); padding: 9px 12px; border-radius: 8px;">
+                                <div style="font-size: 11.5px; font-weight: 700; color: var(--accent-gold); font-family: var(--font-mono);">3. SERVICE BUSINESS LAYER</div>
+                                <div style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">Tách rời logic nghiệp vụ: SepayService, OrderService, SkinService, PasswordResetService.</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right: DB Schema -->
+                    <div class="card card-purple">
+                        <div class="card-header">
+                            <div class="card-icon" style="color: var(--accent-purple);">🗄️</div>
+                            <div>
+                                <h3 class="card-title">Cơ Sở Dữ Liệu 6 Bảng Cốt Lõi</h3>
+                                <p style="font-size: 11.5px; color: var(--text-muted);">Mô hình quan hệ RDBMS chuẩn ACID</p>
+                            </div>
+                        </div>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                            <div style="background: rgba(255,255,255,0.03); padding: 8px 10px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.06);">
+                                <strong style="color: var(--primary-cyan); font-family: var(--font-mono); font-size: 12.5px;">users</strong>
+                                <p style="font-size: 11px; color: var(--text-muted); margin-top: 1px;">Tài khoản, <code>game_username</code>, coins, avatar, Discord OAuth2.</p>
+                            </div>
+                            <div style="background: rgba(255,255,255,0.03); padding: 8px 10px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.06);">
+                                <strong style="color: var(--primary-emerald); font-family: var(--font-mono); font-size: 12.5px;">products</strong>
+                                <p style="font-size: 11px; color: var(--text-muted); margin-top: 1px;">12 sản phẩm game, giá gốc/bán, <code>game_reward</code>.</p>
+                            </div>
+                            <div style="background: rgba(255,255,255,0.03); padding: 8px 10px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.06);">
+                                <strong style="color: var(--accent-gold); font-family: var(--font-mono); font-size: 12.5px;">orders</strong>
+                                <p style="font-size: 11px; color: var(--text-muted); margin-top: 1px;">Mã DTM-XXXXXX, tính tiền server-side, idempotency.</p>
+                            </div>
+                            <div style="background: rgba(255,255,255,0.03); padding: 8px 10px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.06);">
+                                <strong style="color: var(--accent-purple); font-family: var(--font-mono); font-size: 12.5px;">order_items</strong>
+                                <p style="font-size: 11px; color: var(--text-muted); margin-top: 1px;">Snapshot giá và tên sản phẩm tại thời điểm mua.</p>
+                            </div>
+                            <div style="background: rgba(255,255,255,0.03); padding: 8px 10px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.06);">
+                                <strong style="color: var(--accent-rose); font-family: var(--font-mono); font-size: 12.5px;">payment_tx</strong>
+                                <p style="font-size: 11px; color: var(--text-muted); margin-top: 1px;">Lưu vết Webhook SePay, chống Replay Attack.</p>
+                            </div>
+                            <div style="background: rgba(255,255,255,0.03); padding: 8px 10px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.06);">
+                                <strong style="color: #38bdf8; font-family: var(--font-mono); font-size: 12.5px;">checkins</strong>
+                                <p style="font-size: 11px; color: var(--text-muted); margin-top: 1px;">Điểm danh nhận xu, theo dõi chuỗi streak 7 ngày.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="slide-footer">
+                <span>Tương thích ngược: Duy trì trường _id cho Frontend JavaScript</span>
+                <span>Chuẩn hóa: Không còn từ khóa hardcode riêng lẻ</span>
+            </div>
+        </div>
+
+        <!-- ==================== SLIDE 5: UI/UX REWORK 2.0 ==================== -->
+        <div class="slide" data-slide="5">
+            <div class="slide-header">
+                <div>
+                    <span class="slide-tag">BƯỚC NHẢY VỌT GIAO DIỆN</span>
+                    <h2 class="slide-title">Tái Thiết Kế Toàn Diện <span>Design System 2.0</span></h2>
+                    <p class="slide-subtitle">Chuyển đổi từ Prototype Tuần 7 sang phong cách "Neo-Mythic Island" huyền ảo chuẩn gaming</p>
+                </div>
+                <span class="badge badge-gold">UI/UX Transformation</span>
+            </div>
+
+            <div class="slide-body">
+                <div class="grid-2">
+                    <!-- Before -->
+                    <div class="card card-rose">
+                        <div class="card-header">
+                            <div class="card-icon" style="color: var(--accent-rose);">⏪</div>
+                            <div>
+                                <h3 class="card-title">Giao Diện Tuần 7 (Prototype)</h3>
+                                <p style="font-size: 11.5px; color: var(--text-muted);">Phiên bản nguyên mẫu ban đầu</p>
+                            </div>
+                        </div>
+                        <ul style="list-style: none; display: flex; flex-direction: column; gap: 9px; font-size: 12.5px; color: var(--text-muted);">
+                            <li>• <strong>Bố cục bảng tĩnh đơn điệu:</strong> Màu nền xám trắng văn phòng, thiếu tính kỳ ảo của game.</li>
+                            <li>• <strong>Thiếu vắng tương tác:</strong> Không có hiệu ứng phản hồi trạng thái thanh toán thời gian thực.</li>
+                            <li>• <strong>Đồ họa phẳng 2D:</strong> Chỉ xem được ảnh skin dạng PNG 2D, không quan sát được góc nghiêng.</li>
+                        </ul>
+                    </div>
+
+                    <!-- After -->
+                    <div class="card card-cyan">
+                        <div class="card-header">
+                            <div class="card-icon" style="color: var(--primary-cyan);">✨</div>
+                            <div>
+                                <h3 class="card-title">Giao Diện Tuần 11 (Neo-Mythic Island)</h3>
+                                <p style="font-size: 11.5px; color: var(--text-muted);">Design System 3 lớp hoàn chỉnh trên 9 trang</p>
+                            </div>
+                        </div>
+                        <ul style="list-style: none; display: flex; flex-direction: column; gap: 9px; font-size: 12.5px; color: var(--text-muted);">
+                            <li>• <strong>Bảng màu Gaming Huyền Bí:</strong> Nền Obsidian Dark (<code>#05070d</code>), ngọc lục bảo Emerald và viền kính Cyan Glassmorphism.</li>
+                            <li>• <strong>Typography Chuẩn Gaming:</strong> <code>Chakra Petch</code> (tiêu đề góc cạnh) + <code>Be Vietnam Pro</code> (văn bản tiếng Việt) + <code>JetBrains Mono</code>.</li>
+                            <li>• <strong>Đồng bộ 9 màn hình HUD:</strong> Trang chủ, Cửa hàng thẻ bài, Đơn hàng, Hồ sơ 4-Tile, Bản đồ thế giới và Quản trị Admin.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="slide-footer">
+                <span>Áp dụng đồng bộ: Store.html, Account.html, ProductDetail.html, Admin.html</span>
+                <span>Chuẩn hiển thị: Tối ưu trên cả Mobile & Desktop</span>
+            </div>
+        </div>
+
+        <!-- ==================== SLIDE 6: 3D MODEL & SKIN STUDIO ==================== -->
+        <div class="slide" data-slide="6">
+            <div class="slide-header">
+                <div>
+                    <span class="slide-tag">ĐỒ HỌA 3D & TƯƠNG TÁC THỜI GIAN THỰC</span>
+                    <h2 class="slide-title">Tích Hợp <span>Mô Hình 3D Nhân Vật (Three.js WebGL)</span></h2>
+                    <p class="slide-subtitle">Nhúng trực tiếp skinview3d engine: Tương tác 360 độ, chuyển động mượt mà và trích xuất avatar</p>
+                </div>
+                <span class="badge badge-purple">Three.js WebGL Engine</span>
+            </div>
+
+            <div class="slide-body">
+                <div class="grid-3">
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-icon" style="color: var(--primary-cyan);">🔄</div>
+                            <h3 class="card-title">Tương Tác 360°</h3>
+                        </div>
+                        <p class="card-desc">
+                            Tích hợp điều khiển <strong>OrbitControls</strong>: Cho phép dùng chuột hoặc cảm ứng di động xoay 360 độ nhân vật, phóng to/thu nhỏ và nghiêng camera mượt mà.
+                        </p>
+                    </div>
+
+                    <div class="card card-emerald">
+                        <div class="card-header">
+                            <div class="card-icon" style="color: var(--primary-emerald);">🏃</div>
+                            <h3 class="card-title">Diễn Hoạt Thời Gian Thực</h3>
+                        </div>
+                        <p class="card-desc">
+                            Hỗ trợ 4 trạng thái chuyển động tự nhiên: <strong>Walking</strong> (Đi bộ), <strong>Running</strong> (Chạy), <strong>Idle</strong> (Thở nhẹ nhàng) và <strong>Waving</strong> (Vẫy tay chào).
+                        </p>
+                    </div>
+
+                    <div class="card card-gold">
+                        <div class="card-header">
+                            <div class="card-icon" style="color: var(--accent-gold);">🎭</div>
+                            <h3 class="card-title">Lớp Áo Ngoài & Avatar GD</h3>
+                        </div>
+                        <p class="card-desc">
+                            Bật/tắt lớp áo ngoài 3D (Outer Layer). Kết hợp Canvas HTML5 và <strong>PHP GD Backend</strong> tự động bóc tách khuôn mặt và lớp mũ làm avatar tài khoản sắc nét.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="card card-purple" style="margin-top: 14px; padding: 12px 18px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <strong style="color: #fff; font-size: 13.5px;">API Đồng Bộ Ngoại Trang 3D:</strong>
+                            <span style="color: var(--text-muted); font-size: 12.5px; margin-left: 8px;"><code>POST /api/user/skin</code> & <code>POST /api/user/skin/reset</code></span>
+                        </div>
+                        <span class="badge badge-purple">Tự Động Render Live Preview</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="slide-footer">
+                <span>Frontend: public/js/skin-viewer.js & bundle</span>
+                <span>Backend: App\Services\SkinService.php & SkinController.php</span>
+            </div>
+        </div>
+
+        <!-- ==================== SLIDE 7: SEPAY PAYMENT FLOW ==================== -->
+        <div class="slide" data-slide="7">
+            <div class="slide-header">
+                <div>
+                    <span class="slide-tag">MODULE THANH TOÁN TỰ ĐỘNG</span>
+                    <h2 class="slide-title">Cổng Thanh Toán <span>SePay VietQR & Webhook HMAC-SHA256</span></h2>
+                    <p class="slide-subtitle">Tự động hóa 100% quy trình từ tạo đơn, quét mã ngân hàng, đối soát và kích hoạt trong 3s</p>
+                </div>
+                <span class="badge badge-emerald">VietQR NAPAS 24/7</span>
+            </div>
+
+            <div class="slide-body">
+                <div class="timeline-container" style="margin-bottom: 16px;">
+                    <div class="timeline-step">
+                        <span class="timeline-badge">BƯỚC 1</span>
+                        <h4 class="timeline-title">Khởi Tạo Đơn Hàng</h4>
+                        <p class="timeline-text">Backend tính tổng tiền từ CSDL, sinh mã <code>DTM-XXXXXX</code> và khóa chống trùng <code>idempotency_key</code>.</p>
+                    </div>
+                    <div class="timeline-step">
+                        <span class="timeline-badge">BƯỚC 2</span>
+                        <h4 class="timeline-title">Sinh Mã VietQR</h4>
+                        <p class="timeline-text">Tạo mã QR SePay/VietQR chuẩn NAPAS chứa số tiền và nội dung chuyển khoản <code>DTM XXXXXX</code>.</p>
+                    </div>
+                    <div class="timeline-step">
+                        <span class="timeline-badge">BƯỚC 3</span>
+                        <h4 class="timeline-title">Webhook & Chữ Ký Số</h4>
+                        <p class="timeline-text">SePay bắn Webhook về <code>/api/webhooks/sepay</code>, Backend kiểm tra chữ ký HMAC-SHA256 và timestamp drift < 300s.</p>
+                    </div>
+                    <div class="timeline-step">
+                        <span class="timeline-badge">BƯỚC 4</span>
+                        <h4 class="timeline-title">Đối Soát & Kích Hoạt</h4>
+                        <p class="timeline-text">Chuyển trạng thái <code>paid</code>, frontend Polling 3s nhận diện thành công ngay lập tức.</p>
+                    </div>
+                </div>
+
+                <div class="grid-2">
+                    <div class="card card-emerald" style="padding: 14px 16px;">
+                        <strong style="color: #fff; font-size: 13.5px;">🛡️ Cơ Chế Tự Phục Hồi (Auto-Recovery):</strong>
+                        <p style="font-size: 12px; color: var(--text-muted); margin-top: 3px; line-height: 1.5;">
+                            Nếu người mua chuyển khoản đúng cú pháp nhưng do mạng lag đơn chưa kịp lưu DB, Webhook SePay tự động phát hiện mã đơn, khởi tạo đơn bù và đánh dấu đã thanh toán thành công.
+                        </p>
+                    </div>
+                    <div class="card card-cyan" style="padding: 14px 16px;">
+                        <strong style="color: #fff; font-size: 13.5px;">⚡ Chống Tấn Công Phát Lại (Anti-Replay):</strong>
+                        <p style="font-size: 12px; color: var(--text-muted); margin-top: 3px; line-height: 1.5;">
+                            Khóa duy nhất <code>reference_code</code> trên bảng <code>payment_transactions</code> cùng xác thực chữ ký có thời hạn ngăn chặn kẻ gian bắt trộm gói tin để gian lận.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="slide-footer">
+                <span>Tài khoản đối soát: MBBank (0977364711 - NGUYEN TRONG NGHIA)</span>
+                <span>Gạch nợ tự động: HMAC-SHA256 Signature Verified</span>
+            </div>
+        </div>
+
+        <!-- ==================== SLIDE 8: EMAIL ARCHITECTURE ==================== -->
+        <div class="slide" data-slide="8">
+            <div class="slide-header">
+                <div>
+                    <span class="slide-tag">GIẢI QUYẾT SỰ CỐ CLOUD</span>
+                    <h2 class="slide-title">Kiến Trúc <span>Chuyển Phát Email Đa Tầng (HTTPS Cổng 443)</span></h2>
+                    <p class="slide-subtitle">Khắc phục triệt để lỗi Render Free Tier chặn cổng SMTP dẫn đến treo 504 Gateway Timeout</p>
+                </div>
+                <span class="badge badge-rose">Sự Cố & Khắc Phục</span>
+            </div>
+
+            <div class="slide-body">
+                <div class="grid-2">
+                    <!-- Issue -->
+                    <div class="card card-rose">
+                        <div class="card-header">
+                            <div class="card-icon" style="color: var(--accent-rose);">🛑</div>
+                            <div>
+                                <h3 class="card-title">Vấn Đề Phát Hiện Trên Render</h3>
+                                <p style="font-size: 11.5px; color: var(--text-muted);">Lỗi gửi email quên mật khẩu</p>
+                            </div>
+                        </div>
+                        <p class="card-desc" style="margin-bottom: 8px;">
+                            Trên môi trường Cloud Render, toàn bộ các cổng SMTP truyền thống (<strong>25, 465, 587</strong>) bị tường lửa chặn hoàn toàn.
+                        </p>
+                        <div class="code-box" style="color: #f43f5e; border-color: rgba(244, 63, 94, 0.3);">
+                            Connection to tcp://smtp.gmail.com:587 timed out<br>
+                            HTTP 504 Gateway Timeout (Nginx treo quá 60 giây)
+                        </div>
+                    </div>
+
+                    <!-- Fix -->
+                    <div class="card card-emerald">
+                        <div class="card-header">
+                            <div class="card-icon" style="color: var(--primary-emerald);">🚀</div>
+                            <div>
+                                <h3 class="card-title">Kiến Trúc Đa Tầng Cứu Cánh</h3>
+                                <p style="font-size: 11.5px; color: var(--text-muted);">App\Services\PasswordResetService.php</p>
+                            </div>
+                        </div>
+                        <div style="display: flex; flex-direction: column; gap: 8px; font-size: 12.5px;">
+                            <div style="background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.25); padding: 8px 12px; border-radius: 6px;">
+                                <strong style="color: var(--primary-emerald);">Tầng 1 (Ưu tiên):</strong> Gửi qua <strong>Resend / Brevo HTTPS API</strong> trên <strong>Cổng 443</strong> (không bao giờ bị chặn trên Cloud).
+                            </div>
+                            <div style="background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.06); padding: 8px 12px; border-radius: 6px; color: var(--text-muted);">
+                                <strong style="color: #fff;">Tầng 2 (Fallback):</strong> Tự động chuyển về SMTP tiêu chuẩn nếu chạy ở máy trạm dev.
+                            </div>
+                            <div style="background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.06); padding: 8px 12px; border-radius: 6px; color: var(--text-muted);">
+                                <strong style="color: #fff;">Bảo Mật:</strong> Token ngẫu nhiên 48 ký tự, giới hạn trong 30 phút, chống brute-force.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="slide-footer">
+                <span>Xác nhận kiểm thử: POST /api/auth/forgot-password thành công 100%</span>
+                <span>Template: ResetPasswordMail.php (HTML thương hiệu)</span>
+            </div>
+        </div>
+
+        <!-- ==================== SLIDE 9: VERIFICATION & AUDIT ==================== -->
+        <div class="slide" data-slide="9">
+            <div class="slide-header">
+                <div>
+                    <span class="slide-tag">ĐỐI SOÁT & KIỂM CHỨNG TOÀN DIỆN</span>
+                    <h2 class="slide-title">Kết Quả <span>Kiểm Toán Mã Nguồn & Độ Phủ Test</span></h2>
+                    <p class="slide-subtitle">Kiểm tra nghiêm ngặt tính toàn vẹn dữ liệu và an ninh hệ thống trước khi sang Tuần 12</p>
+                </div>
+                <span class="badge badge-cyan">Quality Assurance</span>
+            </div>
+
+            <div class="slide-body">
+                <div class="grid-2">
+                    <!-- Left: Doughnut Chart -->
+                    <div class="card" style="align-items: center; justify-content: center;">
+                        <div style="font-family: var(--font-heading); font-size: 14.5px; font-weight: 700; color: #fff; margin-bottom: 10px;">
+                            Phân Bổ 71 Bài Kiểm Thử Theo Module Nghiệp Vụ
+                        </div>
+                        <div style="position: relative; width: 190px; height: 190px;">
+                            <canvas id="chartModules"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Right: Checklist -->
+                    <div class="card card-cyan">
+                        <div class="card-header">
+                            <div class="card-icon" style="color: var(--primary-cyan);">📋</div>
+                            <div>
+                                <h3 class="card-title">Hạng Mục Kiểm Chứng Thực Tế</h3>
+                                <p style="font-size: 11.5px; color: var(--text-muted);">Đạt chuẩn tiêu chí xuất sắc</p>
+                            </div>
+                        </div>
+                        <div style="display: flex; flex-direction: column; gap: 7px; font-size: 12.5px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 5px;">
+                                <span>1. Xác thực Sanctum & Phân quyền Admin</span>
+                                <span class="badge badge-emerald">ĐẠT (100%)</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 5px;">
+                                <span>2. Tạo đơn & Tính giá Server-side (Idempotent)</span>
+                                <span class="badge badge-emerald">ĐẠT (100%)</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 5px;">
+                                <span>3. Webhook SePay VietQR (HMAC-SHA256)</span>
+                                <span class="badge badge-emerald">ĐẠT (100%)</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 5px;">
+                                <span>4. Quên mật khẩu Resend/Brevo Cổng 443</span>
+                                <span class="badge badge-emerald">ĐẠT (100%)</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 5px;">
+                                <span>5. 3D Skin Studio & Render Avatar GD</span>
+                                <span class="badge badge-emerald">ĐẠT (100%)</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <span>6. Điểm danh streak 7 ngày nhận Xu</span>
+                                <span class="badge badge-emerald">ĐẠT (100%)</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="slide-footer">
+                <span>Toàn bộ 71 test cases chạy tự động bằng Pest/PHPUnit</span>
+                <span>Không có lỗi bảo mật hay xung đột thư viện</span>
+            </div>
+        </div>
+
+        <!-- ==================== SLIDE 10: ROADMAP & CONCLUSION ==================== -->
+        <div class="slide" data-slide="10">
+            <div class="slide-header">
+                <div>
+                    <span class="slide-tag">KẾ HOẠCH BỨC PHÁ & KẾT LUẬN</span>
+                    <h2 class="slide-title">Lộ Trình 4 Tuần Nước Rút <span>(Tuần 12 ➔ Tuần 15)</span></h2>
+                    <p class="slide-subtitle">Hoàn thiện kết nối trao vật phẩm game thực tế và chuẩn bị bảo vệ đồ án tốt nghiệp</p>
+                </div>
+                <span class="badge badge-gold">Roadmap to Final</span>
+            </div>
+
+            <div class="slide-body">
+                <div class="timeline-container" style="margin-bottom: 16px;">
+                    <div class="timeline-step">
+                        <span class="timeline-badge" style="background: rgba(56, 189, 248, 0.2); color: var(--primary-cyan);">TUẦN 12</span>
+                        <h4 class="timeline-title">API Máy Chủ Game</h4>
+                        <p class="timeline-text">Xây dựng Mock Server API & Plugin Webhook tự động phát lệnh trao quyền lợi/vật phẩm trong game khi đơn hàng thanh toán thành công.</p>
+                    </div>
+                    <div class="timeline-step">
+                        <span class="timeline-badge" style="background: rgba(16, 185, 129, 0.2); color: var(--primary-emerald);">TUẦN 13</span>
+                        <h4 class="timeline-title">Triển Khai Render</h4>
+                        <p class="timeline-text">Tối ưu Dockerfile, Nginx production và kiểm thử tải trên Cloud Render với tên miền chính thức <code>daotomo.site</code>.</p>
+                    </div>
+                    <div class="timeline-step">
+                        <span class="timeline-badge" style="background: rgba(245, 158, 11, 0.2); color: var(--accent-gold);">TUẦN 14</span>
+                        <h4 class="timeline-title">Báo Cáo Tổng Kết</h4>
+                        <p class="timeline-text">Biên soạn tài liệu đặc tả OpenAPI 3.1 chi tiết và hoàn thiện cuốn báo cáo đồ án theo đúng biểu mẫu của nhà trường.</p>
+                    </div>
+                    <div class="timeline-step">
+                        <span class="timeline-badge" style="background: rgba(168, 85, 247, 0.2); color: var(--accent-purple);">TUẦN 15</span>
+                        <h4 class="timeline-title">Bảo Vệ Đồ Án</h4>
+                        <p class="timeline-text">Dựng video demo thực tế (Mua hàng ➔ Quét VietQR ➔ Kích hoạt vật phẩm in-game) và thuyết trình trước Hội đồng chấm thi.</p>
+                    </div>
+                </div>
+
+                <div class="card card-gold" style="text-align: center; padding: 18px;">
+                    <h3 style="font-family: var(--font-heading); font-size: 20px; color: #fff; margin-bottom: 5px;">
+                        CẢM ƠN THẦY VÀ HỘI ĐỒNG ĐÃ LẮNG NGHE BÁO CÁO!
+                    </h3>
+                    <p style="font-size: 13.5px; color: var(--text-muted);">
+                        Nhóm kính mời Giảng viên hướng dẫn và Quý Thầy Cô đặt câu hỏi nhận xét, góp ý.
+                    </p>
+                </div>
+            </div>
+
+            <div class="slide-footer">
+                <span>Nhóm sinh viên: Nguyễn Trọng Nghĩa & Tống Hoàng Anh Tuấn</span>
+                <span>Hội đồng Khoa CNTT - Khóa 2025</span>
+            </div>
+        </div>
+
+    </div><!-- /.slide-deck -->
+
+    <!-- Floating Navigation Controls -->
+    <div class="controls-pill">
+        <button class="ctrl-btn" onclick="prevSlide()" title="Slide trước (Mũi tên trái)">‹</button>
+        <div class="slide-indicator"><span id="currentSlide">1</span> / <span id="totalSlides">10</span></div>
+        <button class="ctrl-btn" onclick="nextSlide()" title="Slide sau (Mũi tên phải/Space)">›</button>
+        <button class="fullscreen-btn" onclick="toggleFullscreen()" title="Toàn màn hình (Phím F)">⛶ Toàn màn hình</button>
+    </div>
+
+    <script>
+        let current = 1;
+        const slides = document.querySelectorAll('.slide');
+        const total = slides.length;
+        document.getElementById('totalSlides').textContent = total;
+
+        function showSlide(n) {
+            if (n < 1) n = 1;
+            if (n > total) n = total;
+            current = n;
+
+            slides.forEach((slide, idx) => {
+                slide.classList.toggle('active', idx === n - 1);
+            });
+
+            document.getElementById('currentSlide').textContent = n;
+            document.getElementById('progressBar').style.width = (n / total * 100) + '%';
+
+            // Trigger Chart Render when slide becomes active
+            if (n === 3) initProgressChart();
+            if (n === 9) initModuleChart();
+        }
+
+        function nextSlide() { showSlide(current + 1); }
+        function prevSlide() { showSlide(current - 1); }
+
+        function toggleFullscreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(err => console.log(err));
+            } else {
+                if (document.exitFullscreen) document.exitFullscreen();
+            }
+        }
+
+        // Keyboard Controls
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') {
+                e.preventDefault();
+                nextSlide();
+            } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
+                e.preventDefault();
+                prevSlide();
+            } else if (e.key === 'f' || e.key === 'F') {
+                toggleFullscreen();
+            } else if (e.key === 'Home') {
+                showSlide(1);
+            } else if (e.key === 'End') {
+                showSlide(total);
+            }
+        });
+
+        // Charts
+        let progressChartInstance = null;
+        let moduleChartInstance = null;
+
+        function initProgressChart() {
+            if (progressChartInstance) return;
+            const ctx = document.getElementById('chartProgress');
+            if (!ctx) return;
+            progressChartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['Tuần 7 (Clone)', 'Tuần 8 (Đơn hàng)', 'Tuần 9 (SePay QR)', 'Tuần 10 (3D & Email)', 'Tuần 11 (Tích hợp & QA)'],
+                    datasets: [
+                        {
+                            label: 'Số Bài Kiểm Thử (Unit/Feature Tests)',
+                            data: [12, 32, 48, 62, 71],
+                            borderColor: '#10b981',
+                            backgroundColor: 'rgba(16, 185, 129, 0.15)',
+                            fill: true,
+                            tension: 0.35,
+                            borderWidth: 3,
+                            pointRadius: 5,
+                            pointBackgroundColor: '#10b981'
+                        },
+                        {
+                            label: 'Số Lượng RESTful API Endpoints',
+                            data: [6, 14, 21, 26, 29],
+                            borderColor: '#38bdf8',
+                            backgroundColor: 'transparent',
+                            borderWidth: 3,
+                            borderDash: [5, 5],
+                            pointRadius: 5,
+                            pointBackgroundColor: '#38bdf8'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: '#cbd5e1',
+                                font: { family: 'Be Vietnam Pro', size: 12 }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                            ticks: { color: '#94a3b8', font: { family: 'Be Vietnam Pro' } }
+                        },
+                        y: {
+                            grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                            ticks: { color: '#94a3b8', font: { family: 'JetBrains Mono' } }
+                        }
+                    }
+                }
+            });
+        }
+
+        function initModuleChart() {
+            if (moduleChartInstance) return;
+            const ctx = document.getElementById('chartModules');
+            if (!ctx) return;
+            moduleChartInstance = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Đơn hàng & Idempotency', 'SePay & Webhook', 'Sanctum & Discord Auth', '3D WebGL & Checkin', 'Admin & API Endpoints'],
+                    datasets: [{
+                        data: [20, 18, 13, 11, 9],
+                        backgroundColor: [
+                            '#38bdf8',
+                            '#10b981',
+                            '#f59e0b',
+                            '#a855f7',
+                            '#f43f5e'
+                        ],
+                        borderWidth: 0,
+                        hoverOffset: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    cutout: '72%'
+                }
+            });
+        }
+
+        // Initialize on Slide 1
+        showSlide(1);
+    </script>
+</body>
+</html>

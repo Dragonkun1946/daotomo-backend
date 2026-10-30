@@ -18,6 +18,8 @@ class User extends Authenticatable
         'password',
         'role',
         'minecraft_username',
+        'minecraft_uuid',
+        'game_linked_at',
         'skin_url',
         'avatar',
         'coins',
@@ -36,6 +38,8 @@ class User extends Authenticatable
 
     protected $appends = [
         'minecraftUsername',
+        'minecraftUuid',
+        'isGameLinked',
         'skinUrl',
         'discordId',
         'discordUsername',
@@ -47,6 +51,7 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'reset_password_expire' => 'datetime',
+            'game_linked_at' => 'datetime',
             'password' => 'hashed',
             'coins' => 'integer',
         ];
@@ -56,6 +61,16 @@ class User extends Authenticatable
     public function getMinecraftUsernameAttribute(): string
     {
         return $this->attributes['minecraft_username'] ?? '';
+    }
+
+    public function getMinecraftUuidAttribute(): string
+    {
+        return $this->attributes['minecraft_uuid'] ?? '';
+    }
+
+    public function getIsGameLinkedAttribute(): bool
+    {
+        return !empty($this->attributes['minecraft_uuid']);
     }
 
     public function getSkinUrlAttribute(): string

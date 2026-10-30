@@ -34,6 +34,8 @@ class DatabaseSeeder extends Seeder
                 'password' => Hash::make('Player@123456'),
                 'role' => 'user',
                 'minecraft_username' => 'DragonPlayer',
+                'minecraft_uuid' => 'f3a6472e-8958-4588-aaa4-e365c774dbfd',
+                'game_linked_at' => now(),
                 'skin_url' => '/img/steve.png',
                 'coins' => 500,
             ]

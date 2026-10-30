@@ -12,6 +12,8 @@ use App\Http\Controllers\Api\Order\OrderController;
 use App\Http\Controllers\Api\Admin\AdminOrderController;
 use App\Http\Controllers\Api\Checkin\CheckinController;
 use App\Http\Controllers\Api\Payment\SepayWebhookController;
+use App\Http\Controllers\Api\User\GameLinkController;
+use App\Http\Controllers\Api\Internal\InternalMinecraftBridgeController;
 use App\Http\Middleware\AdminMiddleware;
 
 // ─── Health Check ─────────────────────────────────────────────────────────────
@@ -82,6 +84,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/checkin', [CheckinController::class, 'store']);
     Route::get('/checkin/me', [CheckinController::class, 'me']);
 
+    // Game Account Linking (1-to-1 PIN Handshake)
+    Route::post('/user/game-link', [GameLinkController::class, 'linkGame']);
+    Route::delete('/user/game-link', [GameLinkController::class, 'unlinkGame']);
+
     // ─── Admin Only Routes ────────────────────────────────────────────────────
     Route::middleware(AdminMiddleware::class)->group(function () {
         Route::post('/products', [AdminProductController::class, 'store']);
@@ -91,4 +97,13 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/orders', [AdminOrderController::class, 'index']);
         Route::put('/orders/{id}/status', [AdminOrderController::class, 'updateStatus']);
     });
+});
+
+// ─── Internal Minecraft Bridge Routes (Protected by Bridge Token) ─────────────
+Route::prefix('internal/minecraft')->group(function () {
+    Route::post('/link/request-pin', [InternalMinecraftBridgeController::class, 'requestLinkPin']);
+    Route::get('/deliveries/pending', [InternalMinecraftBridgeController::class, 'getPendingDeliveries']);
+    Route::post('/deliveries/confirm', [InternalMinecraftBridgeController::class, 'confirmDeliveries']);
+    Route::get('/leaderboard/streaks', [InternalMinecraftBridgeController::class, 'getStreaksLeaderboard']);
+    Route::get('/player/{identifier}/streak', [InternalMinecraftBridgeController::class, 'getPlayerStreak']);
 });

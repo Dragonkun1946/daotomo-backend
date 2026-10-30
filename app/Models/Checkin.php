@@ -35,12 +35,12 @@ class Checkin extends Model
 
     public function getCoinsAwardedAttribute(): int
     {
-        return (int) ($this->coins_awarded ?? 100);
+        return (int) ($this->attributes['coins_awarded'] ?? 100);
     }
 
     public function getStreakDayAttribute(): int
     {
-        return (int) ($this->streak_day ?? 1);
+        return (int) ($this->attributes['streak_day'] ?? 1);
     }
 
     public function user()

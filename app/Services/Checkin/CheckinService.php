@@ -12,6 +12,18 @@ class CheckinService
      */
     public function checkin(User $user): array
     {
+        // 0. Bắt buộc tài khoản web phải liên kết với tài khoản Minecraft in-game
+        if (empty($user->minecraft_username) && empty($user->minecraft_uuid)) {
+            return [
+                'status' => 400,
+                'data' => [
+                    'success' => false,
+                    'message' => 'Bạn cần liên kết tài khoản Minecraft trước khi điểm danh! Hãy vào game gõ /link để lấy mã PIN.',
+                    'requires_link' => true,
+                ],
+            ];
+        }
+
         $today = now()->toDateString();
 
         $already = Checkin::where('user_id', $user->id)
@@ -45,11 +57,32 @@ class CheckinService
 
         $user->increment('coins', $coinsAwarded);
 
+        // Tự động đẩy phần thưởng 10 Chìa Khóa Rare và Xu vào hàng đợi thực thi in-game
+        $targetIgn = $user->minecraft_username ?: $user->username;
+        \App\Models\GameDeliveryQueue::create([
+            'user_id' => $user->id,
+            'game_username' => $targetIgn,
+            'game_uuid' => $user->minecraft_uuid,
+            'command' => "excellentcrates:crate key give {$targetIgn} rare 10",
+            'type' => 'checkin_reward',
+            'status' => 'pending',
+        ]);
+
+        \App\Models\GameDeliveryQueue::create([
+            'user_id' => $user->id,
+            'game_username' => $targetIgn,
+            'game_uuid' => $user->minecraft_uuid,
+            'command' => "coins give {$targetIgn} {$coinsAwarded}",
+            'type' => 'checkin_reward',
+            'status' => 'pending',
+        ]);
+
         $payload = [
             'success' => true,
-            'message' => "Điểm danh ngày {$streak} thành công! Nhận được {$coinsAwarded} xu Đảo 🏝️",
+            'message' => "Điểm danh ngày {$streak} thành công! Nhận được {$coinsAwarded} xu Đảo và 10 Chìa Khóa Hiếm (Rare Key) in-game! 🏝️🎁",
             'streak' => $streak,
             'coinsAwarded' => $coinsAwarded,
+            'rareKeysAwarded' => 10,
             'userCoins' => (int) $user->fresh()->coins,
             'checkedToday' => true,
             'checkedInToday' => true,
