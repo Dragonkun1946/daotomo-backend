@@ -99,20 +99,48 @@ return [
             ]) : [],
         ],
 
-        'pgsql' => [
-            'driver' => 'pgsql',
-            'url' => env('DATABASE_URL', env('DB_URL')),
-            'host' => env('DB_HOST', '127.0.0.1'),
-            'port' => env('DB_PORT', '5432'),
-            'database' => env('DB_DATABASE', 'laravel'),
-            'username' => env('DB_USERNAME', 'root'),
-            'password' => env('DB_PASSWORD', ''),
-            'charset' => env('DB_CHARSET', 'utf8'),
-            'prefix' => '',
-            'prefix_indexes' => true,
-            'search_path' => 'public',
-            'sslmode' => 'prefer',
-        ],
+        'pgsql' => (function () {
+            $rawUrl = env('DATABASE_URL', env('DB_URL'));
+            $base = [
+                'driver' => 'pgsql',
+                'host' => env('DB_HOST', '127.0.0.1'),
+                'port' => env('DB_PORT', '5432'),
+                'database' => env('DB_DATABASE', 'laravel'),
+                'username' => env('DB_USERNAME', 'root'),
+                'password' => env('DB_PASSWORD', ''),
+                'charset' => env('DB_CHARSET', 'utf8'),
+                'prefix' => '',
+                'prefix_indexes' => true,
+                'search_path' => 'public',
+                'sslmode' => 'prefer',
+            ];
+
+            if (!$rawUrl) {
+                return $base;
+            }
+
+            // Normalize Neon & cloud Postgres URLs:
+            // Strip any endpoint=...$ prefixes from password if present
+            $cleanUrl = preg_replace('/(:endpoint%3D[^%]+%24)/i', ':', $rawUrl);
+            $cleanUrl = preg_replace('/(:endpoint=[^$@]+\\$)/i', ':', $cleanUrl);
+
+            $parser = new \Illuminate\Database\ConfigurationUrlParser();
+            $parsed = $parser->parseConfiguration($cleanUrl);
+            $merged = array_merge($base, $parsed);
+            unset($merged['url']);
+
+            // If Neon host, append endpoint option in host for libpq compatibility across platforms
+            if (isset($merged['host']) && str_contains($merged['host'], '.neon.tech')) {
+                if (preg_match('/^(ep-[a-z0-9-]+?)(?:-pooler)?\./i', $merged['host'], $m)) {
+                    $endpointId = $m[1];
+                    if (!str_contains($merged['host'], 'options=')) {
+                        $merged['host'] .= ";options='endpoint={$endpointId}'";
+                    }
+                }
+            }
+
+            return $merged;
+        })(),
 
         'sqlsrv' => [
             'driver' => 'sqlsrv',
