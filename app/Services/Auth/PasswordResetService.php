@@ -135,9 +135,30 @@ class PasswordResetService
                     ];
                 }
 
-                Log::error('[Password Reset] Resend API error: ' . $resendRes->body());
+                $resData = $resendRes->json();
+                $resendErrMsg = $resData['message'] ?? $resendRes->body();
+                Log::error('[Password Reset] Resend API error: ' . $resendErrMsg);
+
+                if (empty($brevoKey)) {
+                    return [
+                        'status' => 400,
+                        'data' => [
+                            'success' => false,
+                            'message' => 'Lỗi dịch vụ Resend: ' . $resendErrMsg,
+                        ],
+                    ];
+                }
             } catch (\Throwable $re) {
                 Log::error('[Password Reset] Resend API exception: ' . $re->getMessage());
+                if (empty($brevoKey)) {
+                    return [
+                        'status' => 400,
+                        'data' => [
+                            'success' => false,
+                            'message' => 'Lỗi kết nối Resend API: ' . $re->getMessage(),
+                        ],
+                    ];
+                }
             }
         }
 

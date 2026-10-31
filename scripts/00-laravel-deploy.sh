@@ -26,6 +26,14 @@ if [ -z "$APP_KEY" ]; then
     php artisan key:generate --force
 fi
 
+# Ensure cache store is file to avoid pooler transaction locks
+if [ -f .env ]; then
+    sed -i 's/^CACHE_STORE=.*/CACHE_STORE=file/' .env 2>/dev/null || true
+    if ! grep -q "^CACHE_STORE=" .env; then
+        echo "CACHE_STORE=file" >> .env
+    fi
+fi
+
 # Auto-detect database connection
 if [ -n "$DATABASE_URL" ]; then
     echo "==> PostgreSQL DATABASE_URL detected. Using pgsql."
