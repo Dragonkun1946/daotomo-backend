@@ -470,61 +470,71 @@ class SepayService
             ];
         }
 
-        // 7. Atomic DB Transaction with concurrency lock
+        // 7. Atomic confirmation and delivery (Pooler-safe independent execution)
         try {
-            DB::transaction(function () use ($order, $payload, $sepayId, $transferAmount, $content, $codeParam) {
-                // Pessimistic lock for update
-                $lockedOrder = Order::where('id', $order->id)->lockForUpdate()->first();
-
-                if ($lockedOrder->payment_status === 'paid') {
-                    return;
-                }
-
-                // Create Payment Transaction (enforcing UNIQUE sepay_transaction_id constraint)
-                PaymentTransaction::create([
-                    'order_id' => $lockedOrder->id,
-                    'sepay_transaction_id' => $sepayId,
-                    'gateway' => $payload['gateway'] ?? null,
-                    'transaction_date' => $payload['transactionDate'] ?? null,
-                    'account_number' => $payload['accountNumber'] ?? null,
-                    'sub_account' => $payload['subAccount'] ?? null,
-                    'transfer_type' => 'in',
-                    'transfer_amount' => $transferAmount,
-                    'accumulated' => isset($payload['accumulated']) ? (float) $payload['accumulated'] : null,
-                    'code' => $codeParam,
-                    'content' => $content,
-                    'reference_code' => $payload['referenceCode'] ?? null,
-                    'description' => $payload['description'] ?? null,
-                    'status' => 'success',
-                    'raw_payload' => $payload,
-                ]);
-
-                // Update Order status history and flags
-                $history = $lockedOrder->status_history ?? [];
-                $history[] = [
-                    'status' => 'paid',
-                    'timestamp' => now()->toIso8601String(),
-                    'note' => "Xác nhận thanh toán tự động thành công qua SePay (GD: {$sepayId}, Ngân hàng: " . ($payload['gateway'] ?? 'N/A') . ", Số tiền: " . number_format($transferAmount) . "đ)",
+            $freshOrder = Order::find($order->id);
+            if (!$freshOrder) {
+                return [
+                    'status' => 404,
+                    'success' => false,
+                    'message' => "Không tìm thấy đơn hàng #{$order->id}",
                 ];
+            }
 
-                $lockedOrder->update([
-                    'payment_status' => 'paid',
-                    'order_status' => in_array($lockedOrder->order_status, ['delivered', 'completed']) ? $lockedOrder->order_status : 'processing',
-                    'status' => 'paid',
-                    'status_history' => $history,
-                ]);
+            if ($freshOrder->payment_status === 'paid') {
+                return [
+                    'status' => 200,
+                    'success' => true,
+                    'message' => "Đơn hàng {$freshOrder->order_code} đã được thanh toán trước đó (Idempotent)",
+                    'order_code' => $freshOrder->order_code,
+                    'transaction_id' => $sepayId,
+                ];
+            }
 
-                // Auto-queue game delivery commands for Minecraft bridge
-                app(\App\Services\Order\OrderDeliveryService::class)->queueDeliveries($lockedOrder);
+            // Create Payment Transaction (enforcing UNIQUE sepay_transaction_id constraint)
+            PaymentTransaction::create([
+                'order_id' => $freshOrder->id,
+                'sepay_transaction_id' => $sepayId,
+                'gateway' => $payload['gateway'] ?? null,
+                'transaction_date' => $payload['transactionDate'] ?? null,
+                'account_number' => $payload['accountNumber'] ?? null,
+                'sub_account' => $payload['subAccount'] ?? null,
+                'transfer_type' => 'in',
+                'transfer_amount' => $transferAmount,
+                'accumulated' => isset($payload['accumulated']) ? (float) $payload['accumulated'] : null,
+                'code' => $codeParam,
+                'content' => $content,
+                'reference_code' => $payload['referenceCode'] ?? null,
+                'description' => $payload['description'] ?? null,
+                'status' => 'success',
+                'raw_payload' => $payload,
+            ]);
 
-                Log::info("[SePay Webhook] Order {$lockedOrder->order_code} successfully marked PAID via SePay TX {$sepayId} ({$transferAmount} VND)");
-            });
+            // Update Order status history and flags
+            $history = $freshOrder->status_history ?? [];
+            $history[] = [
+                'status' => 'paid',
+                'timestamp' => now()->toIso8601String(),
+                'note' => "Xác nhận thanh toán tự động thành công qua SePay (GD: {$sepayId}, Ngân hàng: " . ($payload['gateway'] ?? 'N/A') . ", Số tiền: " . number_format($transferAmount) . "đ)",
+            ];
+
+            $freshOrder->update([
+                'payment_status' => 'paid',
+                'order_status' => in_array($freshOrder->order_status, ['delivered', 'completed']) ? $freshOrder->order_status : 'processing',
+                'status' => 'paid',
+                'status_history' => $history,
+            ]);
+
+            // Auto-queue game delivery commands for Minecraft bridge
+            app(\App\Services\Order\OrderDeliveryService::class)->queueDeliveries($freshOrder);
+
+            Log::info("[SePay Webhook] Order {$freshOrder->order_code} successfully marked PAID via SePay TX {$sepayId} ({$transferAmount} VND)");
 
             return [
                 'status' => 200,
                 'success' => true,
                 'message' => 'Xác nhận thanh toán SePay thành công',
-                'order_code' => $order->order_code,
+                'order_code' => $freshOrder->order_code,
                 'transaction_id' => $sepayId,
                 'amount' => $transferAmount,
             ];
