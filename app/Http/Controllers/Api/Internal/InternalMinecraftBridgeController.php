@@ -115,7 +115,7 @@ class InternalMinecraftBridgeController extends Controller
             return response()->json(['success' => false, 'message' => 'Unauthorized bridge token.'], 401);
         }
 
-        $ids = $request->input('ids', []);
+        $ids = $request->input('ids', $request->input('delivery_ids', []));
         if (!is_array($ids) || empty($ids)) {
             return response()->json(['success' => false, 'message' => 'No delivery IDs provided.'], 400);
         }
