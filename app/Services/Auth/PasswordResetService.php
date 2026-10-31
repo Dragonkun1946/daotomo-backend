@@ -80,20 +80,20 @@ class PasswordResetService
             if (config('app.debug') || app()->environment('local')) {
                 Log::info("[Password Reset Dev Link]: {$resetUrl}");
                 return [
-                    'status' => 503,
+                    'status' => 400,
                     'data' => [
                         'success' => false,
-                        'message' => 'Máy chủ chưa được kết nối SMTP (MAIL_MAILER hiện là "' . $defaultMailer . '"). Vui lòng cấu hình tài khoản SMTP hoặc RESEND_API_KEY trong biến môi trường để gửi thư đến hộp thư.',
+                        'message' => 'Máy chủ chưa được kết nối gửi thư (MAIL_MAILER hiện là "' . $defaultMailer . '"). Vui lòng cấu hình RESEND_API_KEY trong Environment của Render để gửi email đến hộp thư.',
                         'dev_reset_url' => $resetUrl,
                     ],
                 ];
             }
 
             return [
-                'status' => 503,
+                'status' => 400,
                 'data' => [
                     'success' => false,
-                    'message' => 'Hệ thống gửi email chưa được cấu hình máy chủ SMTP trên máy chủ (Render). Vui lòng thông báo cho quản trị viên thêm biến môi trường RESEND_API_KEY hoặc SMTP.',
+                    'message' => 'Chức năng gửi email chưa được cấu hình máy chủ gửi thư trên Render. Vui lòng thêm biến môi trường RESEND_API_KEY trên Render để gửi email.',
                 ],
             ];
         }
@@ -212,7 +212,7 @@ class PasswordResetService
             $isPortBlocked = str_contains($msg, 'timed out') || str_contains($msg, 'Connection refused') || str_contains($msg, 'Operation timed out');
             if ($isPortBlocked) {
                 return [
-                    'status' => 500,
+                    'status' => 400,
                     'data' => [
                         'success' => false,
                         'message' => 'Không thể kết nối đến máy chủ SMTP (kết nối bị quá hạn). Lưu ý: Render gói Free chặn các cổng SMTP 587/465. Vui lòng cấu hình biến RESEND_API_KEY trên Render để gửi email qua giao thức HTTPS (Cổng 443).',
@@ -221,10 +221,10 @@ class PasswordResetService
             }
 
             return [
-                'status' => 500,
+                'status' => 400,
                 'data' => [
                     'success' => false,
-                    'message' => 'Hệ thống đang gặp sự cố khi gửi email đặt lại mật khẩu. Vui lòng thử lại sau hoặc liên hệ quản trị viên.',
+                    'message' => 'Hệ thống đang gặp sự cố khi gửi email đặt lại mật khẩu: ' . $msg,
                 ],
             ];
         }

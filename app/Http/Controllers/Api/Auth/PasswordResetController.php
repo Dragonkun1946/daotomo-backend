@@ -22,8 +22,16 @@ class PasswordResetController extends Controller
      */
     public function forgotPassword(ForgotPasswordRequest $request): JsonResponse
     {
-        $result = $this->passwordResetService->sendResetLink($request->validated('email'));
-        return response()->json($result['data'], $result['status']);
+        try {
+            $result = $this->passwordResetService->sendResetLink($request->validated('email'));
+            return response()->json($result['data'], $result['status']);
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::error('[ForgotPassword Error] ' . $e->getMessage() . "\n" . $e->getTraceAsString());
+            return response()->json([
+                'success' => false,
+                'message' => 'Lỗi hệ thống khi yêu cầu đặt lại mật khẩu: ' . $e->getMessage(),
+            ], 500);
+        }
     }
 
     /**
@@ -31,7 +39,15 @@ class PasswordResetController extends Controller
      */
     public function resetPassword(ResetPasswordRequest $request, string $token): JsonResponse
     {
-        $result = $this->passwordResetService->resetPassword($token, $request->validated('password'));
-        return response()->json($result['data'], $result['status']);
+        try {
+            $result = $this->passwordResetService->resetPassword($token, $request->validated('password'));
+            return response()->json($result['data'], $result['status']);
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::error('[ResetPassword Error] ' . $e->getMessage() . "\n" . $e->getTraceAsString());
+            return response()->json([
+                'success' => false,
+                'message' => 'Lỗi hệ thống khi đặt lại mật khẩu: ' . $e->getMessage(),
+            ], 500);
+        }
     }
 }

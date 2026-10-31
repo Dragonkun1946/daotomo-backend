@@ -25,4 +25,19 @@ return Application::configure(basePath: dirname(__DIR__))
         $exceptions->shouldRenderJsonWhen(function ($request, $e) {
             return $request->is('api/*') || $request->expectsJson();
         });
+
+        $exceptions->render(function (\Throwable $e, \Illuminate\Http\Request $request) {
+            if ($e instanceof \Illuminate\Auth\AuthenticationException || $e instanceof \Illuminate\Validation\ValidationException) {
+                return null; // Let Laravel handle 401 and 422 standard responses
+            }
+
+            if ($request->is('api/*') || $request->expectsJson()) {
+                $status = method_exists($e, 'getStatusCode') ? $e->getStatusCode() : 500;
+                return response()->json([
+                    'success' => false,
+                    'message' => $e->getMessage() ?: 'Đã xảy ra lỗi trên máy chủ.',
+                    'error_type' => class_basename($e),
+                ], $status);
+            }
+        });
     })->create();
