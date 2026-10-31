@@ -658,7 +658,7 @@ let currentUser = null;
 async function syncUserGameLink() {
   try {
     const res = await api.getMe();
-    currentUser = res?.data || res || null;
+    currentUser = res?.user || res?.data?.user || res?.data || res || null;
     if (currentUser) {
       api.setUser(currentUser);
     }
@@ -666,7 +666,7 @@ async function syncUserGameLink() {
     currentUser = api.getUser();
   }
 
-  const isLinked = Boolean(currentUser && (currentUser.isGameLinked || currentUser.minecraftUuid));
+  const isLinked = Boolean(currentUser && (currentUser.isGameLinked || currentUser.minecraftUuid || currentUser.is_game_linked || currentUser.minecraft_uuid));
   const card = document.getElementById('game-link-card');
   const unlinkedBox = document.getElementById('game-link-unlinked');
   const linkedBox = document.getElementById('game-link-linked');
@@ -678,7 +678,7 @@ async function syncUserGameLink() {
     if (card) card.classList.add('linked');
     if (unlinkedBox) unlinkedBox.classList.add('hidden');
     if (linkedBox) linkedBox.classList.remove('hidden');
-    if (ignText) ignText.textContent = currentUser.minecraftUsername || 'Nhân vật Minecraft';
+    if (ignText) ignText.textContent = currentUser.minecraftUsername || currentUser.minecraft_username || 'Nhân vật Minecraft';
   } else {
     if (card) card.classList.remove('linked');
     if (unlinkedBox) unlinkedBox.classList.remove('hidden');
@@ -715,6 +715,11 @@ async function handleLinkGameSubmit(event) {
     await syncUserGameLink();
     await loadCheckinState();
   } catch (err) {
+    // If account was already linked to this player, refresh state immediately
+    if (err.message && err.message.includes('liên kết')) {
+      await syncUserGameLink();
+      await loadCheckinState();
+    }
     api.showToast(err.message || 'Mã PIN không đúng hoặc đã hết hạn!', 'error');
     if (msgEl) {
       msgEl.innerHTML = `<span style="color:#ef4444">❌ ${err.message || 'Mã PIN không đúng hoặc đã hết hạn! Vui lòng vào game gõ /link lấy mã mới.'}</span>`;
@@ -765,7 +770,8 @@ async function loadCheckinState() {
 }
 
 async function doCheckin() {
-  if (!currentUser || (!currentUser.isGameLinked && !currentUser.minecraftUuid)) {
+  const isLinked = Boolean(currentUser && (currentUser.isGameLinked || currentUser.minecraftUuid || currentUser.is_game_linked || currentUser.minecraft_uuid));
+  if (!currentUser || !isLinked) {
     api.showToast('Bạn phải liên kết tài khoản Minecraft ingame trước khi điểm danh!', 'error');
     const pinInput = document.getElementById('game-pin-input');
     if (pinInput) {

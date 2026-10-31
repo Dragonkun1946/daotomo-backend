@@ -17,9 +17,11 @@ class ProfileController extends Controller
     public function me(Request $request): JsonResponse
     {
         $user = $request->user();
+        $userData = (new UserResource($user))->toArray($request);
         return response()->json([
             'success' => true,
-            'user' => (new UserResource($user))->toArray($request),
+            'user' => $userData,
+            'data' => $userData,
         ]);
     }
 

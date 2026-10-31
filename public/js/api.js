@@ -323,7 +323,14 @@ const api = {
     api.request('/auth/register', { method:'POST', body: JSON.stringify({ username, email, password, minecraftUsername: mc }) }),
   login: (email, password) =>
     api.request('/auth/login', { method:'POST', body: JSON.stringify({ email, password }) }),
-  getMe: () => api.request('/auth/me'),
+  getMe: async () => {
+    const res = await api.request('/auth/me');
+    const u = res?.user || res?.data || res;
+    if (u && typeof u === 'object' && (u.id || u.username)) {
+      api.setUser(u);
+    }
+    return res;
+  },
   updateMe: (data) =>
     api.request('/auth/me', { method: 'PUT', body: JSON.stringify(data) }),
   forgotPassword: (email) =>

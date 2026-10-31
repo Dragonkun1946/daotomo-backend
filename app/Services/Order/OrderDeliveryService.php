@@ -83,7 +83,7 @@ class OrderDeliveryService
             $rankTitle = ucfirst($rankName);
 
             return [
-                "lp user {$player} parent settrack rank {$rankName}",
+                "lp user {$player} parent set {$rankName}",
                 "broadcast &e&lĐẢO TÒ MÒ &8» &fNgười chơi &a{$player} &fvừa mở khóa thành công &b&lRank {$rankTitle}! &fCảm ơn bạn đã ủng hộ máy chủ!",
             ];
         }

@@ -54,11 +54,11 @@ class OrderDeliveryTest extends TestCase
 
         $this->assertGreaterThan(0, $queued);
 
-        // Verify LuckPerms settrack command exists in queue
+        // Verify LuckPerms set parent command exists in queue
         $this->assertDatabaseHas('game_delivery_queue', [
             'order_id' => $order->id,
             'game_username' => 'StevePro',
-            'command' => 'lp user StevePro parent settrack rank knight',
+            'command' => 'lp user StevePro parent set knight',
             'type' => 'order_delivery',
             'status' => 'pending',
         ]);

@@ -151,10 +151,7 @@ class OrderService
 
         $finalMcUsername = !empty($minecraftUsername) ? $minecraftUsername : ($user->minecraft_username ?? '');
 
-        $order = DB::transaction(function () use (
-            $user, $orderCode, $finalMcUsername, $note, $paymentMethod,
-            $totalAmount, $transferContent, $idempotencyKey, $orderItemsData
-        ) {
+        try {
             $createdOrder = Order::create([
                 'order_code' => $orderCode,
                 'user_id' => $user->id,
@@ -181,8 +178,18 @@ class OrderService
                 OrderItem::create($data);
             }
 
-            return $createdOrder->fresh(['items']);
-        });
+            $order = $createdOrder->fresh(['items']);
+        } catch (\Throwable $e) {
+            if (isset($createdOrder) && $createdOrder->id) {
+                try {
+                    OrderItem::where('order_id', $createdOrder->id)->delete();
+                    $createdOrder->delete();
+                } catch (\Throwable $ignored) {
+                    // Suppress secondary rollback errors
+                }
+            }
+            throw $e;
+        }
 
         return [
             'status' => 201,
