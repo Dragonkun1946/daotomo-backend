@@ -15,6 +15,11 @@ class GameLinkController extends Controller
      */
     public function linkGame(Request $request): JsonResponse
     {
+        // Tương thích cả hai key 'pin' hoặc 'pin_code'
+        if (!$request->has('pin') && $request->has('pin_code')) {
+            $request->merge(['pin' => $request->input('pin_code')]);
+        }
+
         $request->validate([
             'pin' => 'required|string|min:4|max:16',
         ], [

@@ -385,7 +385,7 @@ const api = {
   submitPaymentProof: (id, paymentProof, note='') =>
     api.request(`/orders/${id}/payment-proof`, { method: 'PUT', body: JSON.stringify({ paymentProof, note }) }),
   linkGame: (pinCode) =>
-    api.request('/user/game-link', { method: 'POST', body: JSON.stringify({ pin_code: pinCode }) }),
+    api.request('/user/game-link', { method: 'POST', body: JSON.stringify({ pin: pinCode, pin_code: pinCode }) }),
   unlinkGame: () =>
     api.request('/user/game-link', { method: 'DELETE' }),
   checkinToday: () => api.request('/checkin', { method: 'POST' }),
