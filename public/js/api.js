@@ -387,6 +387,16 @@ const api = {
   },
   updateOrderStatus: (id, payload) =>
     api.request(`/orders/${id}/status`, { method: 'PUT', body: JSON.stringify(payload) }),
+  adminMarkPaidAndDeliver: (orderId, force=false) =>
+    api.request(`/admin/orders/${orderId}/deliver`, { method: 'POST', body: JSON.stringify({ force }) }),
+  getAdminUsers: (params={}) => {
+    const qs = new URLSearchParams(params).toString();
+    return api.request(`/admin/users${qs ? '?'+qs : ''}`);
+  },
+  adminChangePassword: (userId, newPassword) =>
+    api.request(`/admin/users/${userId}/password`, { method: 'PUT', body: JSON.stringify({ password: newPassword, new_password: newPassword }) }),
+  adminUnlinkGame: (userId) =>
+    api.request(`/admin/users/${userId}/unlink`, { method: 'POST' }),
   cancelOrder: (id, reason='') =>
     api.request(`/orders/${id}/cancel`, { method: 'PUT', body: JSON.stringify({ reason }) }),
   submitPaymentProof: (id, paymentProof, note='') =>

@@ -10,6 +10,7 @@ use App\Http\Controllers\Api\Product\ProductController;
 use App\Http\Controllers\Api\Admin\AdminProductController;
 use App\Http\Controllers\Api\Order\OrderController;
 use App\Http\Controllers\Api\Admin\AdminOrderController;
+use App\Http\Controllers\Api\Admin\AdminUserController;
 use App\Http\Controllers\Api\Checkin\CheckinController;
 use App\Http\Controllers\Api\Payment\SepayWebhookController;
 use App\Http\Controllers\Api\User\GameLinkController;
@@ -90,12 +91,22 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // ─── Admin Only Routes ────────────────────────────────────────────────────
     Route::middleware(AdminMiddleware::class)->group(function () {
+        // Products
         Route::post('/products', [AdminProductController::class, 'store']);
         Route::put('/products/{id}', [AdminProductController::class, 'update']);
         Route::delete('/products/{id}', [AdminProductController::class, 'destroy']);
 
+        // Orders Management & Delivery
         Route::get('/orders', [AdminOrderController::class, 'index']);
         Route::put('/orders/{id}/status', [AdminOrderController::class, 'updateStatus']);
+        Route::post('/orders/{id}/deliver', [AdminOrderController::class, 'markPaidAndDeliver']);
+        Route::post('/admin/orders/{id}/deliver', [AdminOrderController::class, 'markPaidAndDeliver']);
+
+        // Users Management (List, Change Password, Unlink Minecraft)
+        Route::get('/admin/users', [AdminUserController::class, 'index']);
+        Route::put('/admin/users/{id}/password', [AdminUserController::class, 'changePassword']);
+        Route::post('/admin/users/{id}/unlink', [AdminUserController::class, 'unlinkGame']);
+        Route::delete('/admin/users/{id}/link', [AdminUserController::class, 'unlinkGame']);
     });
 });
 

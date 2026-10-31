@@ -47,12 +47,14 @@ class Order extends Model
         'sepayQrUrl',
         'qrUrl',
         'qrOnlyUrl',
+        'deliveryStatus',
     ];
 
     public function toArray()
     {
         $array = parent::toArray();
         $array['_id'] = (string) ($this->id ?? '');
+        $array['deliveryStatus'] = $this->delivery_status;
         return $array;
     }
 
@@ -158,6 +160,19 @@ class Order extends Model
         return $this->getQrOnlyUrlAttribute();
     }
 
+    public function getDeliveryStatusAttribute(): string
+    {
+        $deliveries = $this->relationLoaded('deliveries') ? $this->deliveries : $this->deliveries()->get();
+        if ($deliveries->isEmpty()) {
+            return 'not_queued';
+        }
+        $pending = $deliveries->where('status', 'pending')->count();
+        if ($pending > 0) {
+            return 'pending';
+        }
+        return 'completed';
+    }
+
     public function user()
     {
         return $this->belongsTo(User::class);
@@ -171,5 +186,10 @@ class Order extends Model
     public function transactions()
     {
         return $this->hasMany(PaymentTransaction::class);
+    }
+
+    public function deliveries()
+    {
+        return $this->hasMany(GameDeliveryQueue::class, 'order_id');
     }
 }

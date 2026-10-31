@@ -11,15 +11,17 @@ class OrderDeliveryService
     /**
      * Queue in-game commands for paid order.
      */
-    public function queueDeliveries(Order $order): int
+    public function queueDeliveries(Order $order, bool $force = false): int
     {
         // Must be paid
         if ($order->payment_status !== 'paid') {
             return 0;
         }
 
-        // Idempotency: if deliveries already exist for this order, do not duplicate
-        if (GameDeliveryQueue::where('order_id', $order->id)->exists()) {
+        // Idempotency: if deliveries already exist for this order, do not duplicate unless force requested
+        if ($force) {
+            GameDeliveryQueue::where('order_id', $order->id)->where('status', 'pending')->delete();
+        } elseif (GameDeliveryQueue::where('order_id', $order->id)->exists()) {
             Log::info("[OrderDelivery] Order {$order->order_code} already has delivery queue entries. Skipping.");
             return 0;
         }

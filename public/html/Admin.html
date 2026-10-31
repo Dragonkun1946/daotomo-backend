@@ -8,7 +8,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@600;700;800&family=Be+Vietnam+Pro:wght@300;400;500;700;800;900&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/css/global.css">
   <style>
-    .admin-wrap { max-width: 1050px; margin: 0 auto; padding: 2rem 1.25rem 3rem; }
+    .admin-wrap { max-width: 1100px; margin: 0 auto; padding: 2rem 1.25rem 3rem; }
     .admin-header {
       display: flex; align-items: center; justify-content: space-between;
       margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem;
@@ -25,6 +25,7 @@
       font-size: 0.9rem; font-weight: 700; color: var(--text-muted);
       background: none; border-bottom: 3px solid transparent;
       transition: all var(--ease); margin-bottom: -1px; font-family: var(--font-heading);
+      cursor: pointer;
     }
     .tab-btn.active { color: var(--lagoon); border-bottom-color: var(--lagoon); }
 
@@ -38,7 +39,6 @@
       margin-bottom: 2rem;
     }
     .form-card h2 { font-size: 1.05rem; font-weight: 800; margin-bottom: 1.25rem; color: var(--lagoon); font-family: var(--font-heading); }
-
 
     .form-grid {
       display: grid; grid-template-columns: 1fr;
@@ -70,19 +70,19 @@
     }
     .img-preview img { width: 100%; height: 100%; object-fit: cover; }
 
-    /* ── Product list ── */
-    .product-table { width: 100%; border-collapse: collapse; }
-    .product-table th {
+    /* ── Tables ── */
+    .product-table, .orders-table { width: 100%; border-collapse: collapse; }
+    .product-table th, .orders-table th {
       text-align: left; font-size: 0.75rem; font-weight: 700;
       color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px;
       padding: 0.75rem 1rem; border-bottom: 1px solid var(--border);
     }
-    .product-table td {
+    .product-table td, .orders-table td {
       padding: 0.875rem 1rem; border-bottom: 1px solid var(--border);
-      font-size: 0.875rem; vertical-align: middle;
+      font-size: 0.84rem; vertical-align: middle;
     }
-    .product-table tr:last-child td { border-bottom: none; }
-    .product-table tr:hover td { background: rgba(255,255,255,0.02); }
+    .product-table tr:last-child td, .orders-table tr:last-child td { border-bottom: none; }
+    .product-table tr:hover td, .orders-table tr:hover td { background: rgba(255,255,255,0.02); }
 
     .product-table .prod-img {
       width: 44px; height: 44px; border-radius: 8px;
@@ -92,11 +92,17 @@
     .product-table .prod-name { font-weight: 700; }
     .product-table .prod-price { color: var(--accent); font-weight: 800; font-family: var(--font-mono); }
 
-    .action-btns { display: flex; gap: 0.4rem; }
-    .btn-edit { padding: 0.35rem 0.75rem; border-radius: 6px; font-size: 0.75rem; font-weight: 700; background: rgba(108,99,255,0.15); color: #a78bfa; transition: all var(--ease); }
+    .action-btns { display: flex; gap: 0.4rem; flex-wrap: wrap; }
+    .btn-edit { padding: 0.35rem 0.75rem; border-radius: 6px; font-size: 0.75rem; font-weight: 700; background: rgba(108,99,255,0.15); color: #a78bfa; transition: all var(--ease); border:1px solid rgba(108,99,255,0.25); cursor:pointer; }
     .btn-edit:hover { background: rgba(108,99,255,0.25); }
-    .btn-del  { padding: 0.35rem 0.75rem; border-radius: 6px; font-size: 0.75rem; font-weight: 700; background: rgba(239,68,68,0.12); color: #f87171; transition: all var(--ease); }
+    .btn-del  { padding: 0.35rem 0.75rem; border-radius: 6px; font-size: 0.75rem; font-weight: 700; background: rgba(239,68,68,0.12); color: #f87171; transition: all var(--ease); border:1px solid rgba(239,68,68,0.25); cursor:pointer; }
     .btn-del:hover  { background: rgba(239,68,68,0.22); }
+    .btn-deliver {
+      padding: 0.35rem 0.75rem; border-radius: 6px; font-size: 0.75rem; font-weight: 700;
+      background: linear-gradient(135deg, #059669, #10b981); color: #fff;
+      border: none; cursor: pointer; transition: all var(--ease); display: inline-flex; align-items: center; gap: 4px;
+    }
+    .btn-deliver:hover { filter: brightness(1.15); transform: translateY(-1px); }
 
     .stock-toggle {
       display: inline-flex; align-items: center; gap: 0.4rem;
@@ -106,20 +112,14 @@
     .in-stock    { background: rgba(16,185,129,0.15); color: #34d399; }
     .out-of-stock{ background: rgba(239,68,68,0.15);  color: #f87171; }
 
-    /* Orders table */
-    .orders-table { width: 100%; border-collapse: collapse; }
-    .orders-table th { text-align:left; font-size:0.75rem; font-weight:700; color:var(--text-muted); text-transform:uppercase; padding:0.75rem 1rem; border-bottom:1px solid var(--border); }
-    .orders-table td { padding:0.875rem 1rem; border-bottom:1px solid var(--border); font-size:0.82rem; }
-    .orders-table tr:last-child td { border-bottom:none; }
-
     .no-data { text-align:center; padding:3rem; color:var(--text-muted); font-size:0.875rem; }
 
-    /* Modal edit */
+    /* Modals */
     .modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.8); z-index:2000; align-items:center; justify-content:center; padding:1rem; }
     .modal-overlay.open { display:flex; }
     .modal { background:var(--bg-card); border:1px solid var(--border); border-radius:var(--radius-lg); padding:1.75rem; width:100%; max-width:500px; animation:slideUp .25s ease; }
     @keyframes slideUp { from{transform:translateY(20px);opacity:0} to{transform:translateY(0);opacity:1} }
-    .modal h2 { font-size:1.1rem; font-weight:800; margin-bottom:1.25rem; }
+    .modal h2 { font-size:1.1rem; font-weight:800; margin-bottom:1.25rem; font-family:var(--font-heading); }
   </style>
 </head>
 <body>
@@ -145,7 +145,7 @@
     <div class="admin-header">
       <div>
         <h1>⚙️ Trang Admin</h1>
-        <p class="text-muted" style="font-size:.85rem">Quản lý sản phẩm và đơn hàng</p>
+        <p class="text-muted" style="font-size:.85rem">Quản trị sản phẩm, đơn hàng và tài khoản người dùng</p>
       </div>
       <a href="/html/Store.html" class="btn btn-ghost" style="font-size:.85rem">← Về cửa hàng</a>
     </div>
@@ -176,11 +176,11 @@
       <div class="tab-bar">
         <button class="tab-btn active" onclick="switchTab('products')">📦 Sản phẩm</button>
         <button class="tab-btn" onclick="switchTab('orders')">🧾 Đơn hàng</button>
+        <button class="tab-btn" onclick="switchTab('users')">👥 Tài khoản</button>
       </div>
 
       <!-- PRODUCTS TAB -->
       <div class="tab-panel active" id="tab-products">
-
         <!-- Add product form -->
         <div class="form-card">
           <h2>➕ Thêm sản phẩm mới</h2>
@@ -216,7 +216,7 @@
             </div>
             <div class="form-group">
               <label>Phần thưởng game</label>
-              <input class="input" type="text" id="p-reward" placeholder="VD: epic_crate_x1">
+              <input class="input" type="text" id="p-reward" placeholder="VD: epic_crate_x1, rank_knight">
             </div>
             <div class="form-group">
               <label>Nổi bật?</label>
@@ -291,16 +291,62 @@
                   <th>Tổng tiền</th>
                   <th>Trạng thái đơn</th>
                   <th>Thanh toán</th>
+                  <th>Giao đồ game</th>
                   <th>Ngày</th>
                 </tr>
               </thead>
               <tbody id="orders-tbody">
+                <tr><td colspan="8" class="no-data"><div class="spinner"></div></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- USERS TAB -->
+      <div class="tab-panel" id="tab-users">
+        <div class="form-card" style="padding:0;overflow:hidden">
+          <div style="padding:1.25rem 1.75rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.75rem">
+            <div>
+              <h2 style="margin:0">👥 Quản lý tài khoản người dùng</h2>
+              <div id="admin-user-alert" style="margin-top:0.4rem"></div>
+            </div>
+            <div style="display:flex;gap:0.5rem;align-items:center;flex-wrap:wrap">
+              <input type="text" id="user-search-input" placeholder="Tìm username/email/MC IGN..." class="input" style="padding:0.4rem 0.75rem;font-size:0.8rem;width:220px" onkeydown="if(event.key==='Enter')loadUsers()">
+              <select id="user-filter-role" class="input" style="padding:0.4rem 0.75rem;font-size:0.8rem;width:130px" onchange="loadUsers()">
+                <option value="all">👑 Mọi vai trò</option>
+                <option value="admin">Admin</option>
+                <option value="user">Member</option>
+              </select>
+              <select id="user-filter-linked" class="input" style="padding:0.4rem 0.75rem;font-size:0.8rem;width:150px" onchange="loadUsers()">
+                <option value="">🔗 Mọi liên kết</option>
+                <option value="yes">✅ Đã link MC</option>
+                <option value="no">⚪ Chưa link MC</option>
+              </select>
+              <button class="btn btn-ghost" style="font-size:.8rem;padding:.4rem .875rem" onclick="loadUsers()">🔄 Tải lại</button>
+            </div>
+          </div>
+          <div style="overflow-x:auto">
+            <table class="orders-table">
+              <thead>
+                <tr>
+                  <th>Tài khoản</th>
+                  <th>Email</th>
+                  <th>Vai trò</th>
+                  <th>Liên kết Minecraft</th>
+                  <th>Số dư</th>
+                  <th>Ngày tạo</th>
+                  <th>Hành động</th>
+                </tr>
+              </thead>
+              <tbody id="users-tbody">
                 <tr><td colspan="7" class="no-data"><div class="spinner"></div></td></tr>
               </tbody>
             </table>
           </div>
         </div>
       </div>
+
     </div>
   </div>
 </div>
@@ -341,8 +387,31 @@
     </div>
     <div id="proof-order-code" style="font-size:0.85rem;color:var(--text);margin-bottom:1rem"></div>
     <div style="display:flex;gap:0.75rem">
-      <button class="btn btn-primary" id="proof-approve-btn" style="flex:1" onclick="approveCurrentProof()">✅ Duyệt: Đã Thanh Toán</button>
+      <button class="btn btn-primary" id="proof-approve-btn" style="flex:1" onclick="approveCurrentProof()">✅ Duyệt: Đã Thanh Toán & Giao Đồ</button>
       <button class="btn btn-ghost" onclick="closeProofModal()">Đóng</button>
+    </div>
+  </div>
+</div>
+
+<!-- Password Reset Modal for Admin -->
+<div class="modal-overlay" id="password-modal">
+  <div class="modal" style="max-width:440px;text-align:left">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
+      <h2 style="margin:0;font-size:1.15rem;font-family:var(--font-heading)">🔑 Đổi mật khẩu tài khoản</h2>
+      <button onclick="closePasswordModal()" style="background:none;border:none;color:var(--text-muted);font-size:1.3rem;cursor:pointer">✕</button>
+    </div>
+    <div id="password-modal-msg"></div>
+    <input type="hidden" id="pwd-user-id">
+    <div style="margin-bottom:1rem;font-size:0.85rem">
+      Đang đổi mật khẩu cho: <strong id="pwd-username" style="color:var(--lagoon)">—</strong>
+    </div>
+    <div class="form-group" style="margin-bottom:1.25rem">
+      <label>Mật khẩu mới *</label>
+      <input type="text" id="pwd-new-input" class="input" placeholder="Nhập mật khẩu mới (tối thiểu 6 ký tự)" autocomplete="off">
+    </div>
+    <div style="display:flex;gap:0.75rem">
+      <button class="btn btn-primary" id="btn-save-pwd" style="flex:1" onclick="submitChangePassword()">💾 Lưu mật khẩu</button>
+      <button class="btn btn-ghost" onclick="closePasswordModal()">Huỷ</button>
     </div>
   </div>
 </div>
@@ -363,8 +432,6 @@
 <script>
 const API_ADMIN = typeof API !== 'undefined' ? API : '/api';
 const catLabel = { crate:'📦 Hòm', cosmetic:'✨ Cosmetic', pet:'🐾 Pet', key:'🗝️ Key', bundle:'🎒 Bundle', vip:'👑 VIP' };
-const statusLabel = { pending:'⏳ Chờ TT', paid:'✅ Đã TT', delivered:'🎁 Đã giao', cancelled:'❌ Đã huỷ' };
-const statusClass = { pending:'badge-gold', paid:'badge-green', delivered:'badge-purple', cancelled:'badge-red' };
 
 /* ── Auth check ── */
 document.addEventListener('DOMContentLoaded', async () => {
@@ -381,6 +448,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
     document.getElementById('admin-content').classList.remove('hidden');
     loadProducts();
+    // Load background stats
+    loadOrders();
   } catch(e) {
     document.getElementById('auth-check').classList.remove('hidden');
   }
@@ -388,10 +457,15 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 /* ── Tabs ── */
 function switchTab(name) {
-  document.querySelectorAll('.tab-btn').forEach((b,i) => b.classList.toggle('active', ['products','orders'][i] === name));
+  const tabs = ['products', 'orders', 'users'];
+  document.querySelectorAll('.tab-btn').forEach((b, i) => b.classList.toggle('active', tabs[i] === name));
   document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
-  document.getElementById('tab-' + name).classList.add('active');
+  const panel = document.getElementById('tab-' + name);
+  if (panel) panel.classList.add('active');
+
   if (name === 'orders') loadOrders();
+  if (name === 'users') loadUsers();
+  if (name === 'products') loadProducts();
 }
 
 /* ── Image preview ── */
@@ -420,7 +494,7 @@ async function addProduct() {
   const reward   = document.getElementById('p-reward').value.trim();
   const featured = document.getElementById('p-featured').value === 'true';
 
-  if (!name || !price || !desc || !image) {
+  if (!name || isNaN(price) || !desc || !image) {
     document.getElementById('form-msg').innerHTML = '<div class="alert alert-error">Vui lòng điền đầy đủ thông tin bắt buộc (*).</div>';
     return;
   }
@@ -467,8 +541,8 @@ async function loadProducts() {
         <td><span class="stock-toggle ${p.inStock ? 'in-stock' : 'out-of-stock'}">${p.inStock ? '✅ Còn hàng' : '❌ Hết hàng'}</span></td>
         <td>
           <div class="action-btns">
-            <button class="btn-edit" onclick="openEdit('${p._id}','${p.name}',${p.price},'${p.description}','${p.image}',${p.inStock})">✏️ Sửa</button>
-            <button class="btn-del"  onclick="deleteProduct('${p._id}','${p.name}')">🗑️ Xoá</button>
+            <button class="btn-edit" onclick="openEdit('${p._id || p.id}','${p.name}',${p.price},'${p.description}','${p.image}',${p.inStock})">✏️ Sửa</button>
+            <button class="btn-del"  onclick="deleteProduct('${p._id || p.id}','${p.name}')">🗑️ Xoá</button>
           </div>
         </td>
       </tr>
@@ -531,9 +605,6 @@ async function saveEdit() {
 }
 
 /* ── Load orders ── */
-const adminOrderStatusLabel = { pending:'⏳ Chờ xử lý', processing:'⚙️ Đang xử lý', delivered:'🎁 Đã giao', cancelled:'❌ Đã huỷ' };
-const adminPaymentStatusLabel = { pending:'💳 Chờ TT', paid:'✅ Đã TT', failed:'⚠️ Thất bại', refunded:'↩️ Đã hoàn tiền' };
-
 let activeProofOrderId = null;
 
 function openProofModal(orderId, code, url) {
@@ -550,13 +621,13 @@ function closeProofModal() {
 
 async function approveCurrentProof() {
   if (!activeProofOrderId) return;
-  await handleAdminStatusChange(activeProofOrderId, 'paymentStatus', 'paid');
+  await adminQuickApproveAndDeliver(activeProofOrderId, 'đã chọn', false);
   closeProofModal();
 }
 
 async function loadOrders() {
   const tbody = document.getElementById('orders-tbody');
-  tbody.innerHTML = '<tr><td colspan="7" class="no-data"><div class="spinner"></div></td></tr>';
+  tbody.innerHTML = '<tr><td colspan="8" class="no-data"><div class="spinner"></div></td></tr>';
   try {
     const statusVal = document.getElementById('order-filter-status')?.value || '';
     const searchVal = document.getElementById('order-search-input')?.value?.trim() || '';
@@ -564,13 +635,20 @@ async function loadOrders() {
     if (statusVal) params.status = statusVal;
     if (searchVal) params.search = searchVal;
 
-    const { data } = await api.getAllOrders(params);
+    const res = await api.getAllOrders(params);
+    const data = res.data || res.orders || (Array.isArray(res) ? res : []);
 
-    // Compute KPI stats
-    if (data) {
-      const totalRev = data.filter(o => o.paymentStatus === 'paid' || o.status === 'paid').reduce((s, o) => s + (o.total || 0), 0);
-      const pendingCount = data.filter(o => (o.orderStatus || 'pending') === 'pending' || (o.paymentStatus || 'pending') === 'pending').length;
-      
+    // Update KPI stats
+    if (res.stats) {
+      const kpiRev = document.getElementById('kpi-revenue');
+      const kpiOrd = document.getElementById('kpi-orders');
+      const kpiPen = document.getElementById('kpi-pending');
+      if (kpiRev) kpiRev.textContent = Number(res.stats.total_revenue || 0).toLocaleString('vi-VN') + 'đ';
+      if (kpiOrd) kpiOrd.textContent = res.stats.total_orders || 0;
+      if (kpiPen) kpiPen.textContent = res.stats.pending_orders || 0;
+    } else if (data) {
+      const totalRev = data.filter(o => o.paymentStatus === 'paid' || o.payment_status === 'paid' || o.status === 'paid').reduce((s, o) => s + (Number(o.total || o.total_amount) || 0), 0);
+      const pendingCount = data.filter(o => (o.paymentStatus || o.payment_status || o.status) === 'pending').length;
       const kpiRev = document.getElementById('kpi-revenue');
       const kpiOrd = document.getElementById('kpi-orders');
       const kpiPen = document.getElementById('kpi-pending');
@@ -580,7 +658,7 @@ async function loadOrders() {
     }
 
     if (!data || !data.length) {
-      tbody.innerHTML = '<tr><td colspan="7" class="no-data">Không có đơn hàng nào phù hợp.</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="8" class="no-data">Không có đơn hàng nào phù hợp.</td></tr>';
       return;
     }
 
@@ -588,10 +666,39 @@ async function loadOrders() {
       const code = o.orderCode || o.order_code || (o._id ? '#' + String(o._id).slice(-8).toUpperCase() : '#' + o.id);
       const oStat = o.orderStatus || o.order_status || (o.status === 'cancelled' ? 'cancelled' : o.status === 'delivered' ? 'delivered' : 'pending');
       const pStat = o.paymentStatus || o.payment_status || (o.status === 'paid' ? 'paid' : 'pending');
+      const dStat = o.deliveryStatus || o.delivery_status || 'not_queued';
       const itemsList = o.items || [];
-      const itemsSummary = itemsList.map(it => `${it.name || 'Vật phẩm'} (x${it.quantity || 1})`).join('<br>');
+      const itemsSummary = itemsList.map(it => `${(it.product?.name || it.name || 'Vật phẩm')} (x${it.quantity || 1})`).join('<br>');
       const mc = o.minecraftUsername || o.minecraft_username || o.user?.minecraftUsername || o.user?.minecraft_username || '—';
       const orderId = o._id || o.id;
+
+      // Delivery Badge & Action
+      let deliveryUI = '';
+      if (pStat === 'pending') {
+        deliveryUI = `
+          <button class="btn-deliver" onclick="adminQuickApproveAndDeliver('${orderId}', '${code}', false)">
+            ⚡ Duyệt & Giao đồ
+          </button>
+        `;
+      } else if (pStat === 'paid') {
+        if (dStat === 'completed' || oStat === 'delivered') {
+          deliveryUI = `
+            <span class="stock-toggle in-stock" style="font-size:0.72rem">🎁 Đã giao game</span>
+            <div style="margin-top:4px">
+              <button class="btn btn-ghost" style="padding:0.2rem 0.45rem;font-size:0.68rem;border-radius:4px" onclick="adminQuickApproveAndDeliver('${orderId}', '${code}', true)">🚀 Giao lại</button>
+            </div>
+          `;
+        } else {
+          deliveryUI = `
+            <span class="stock-toggle" style="background:rgba(251,191,36,0.15);color:#fbbf24;font-size:0.72rem">⏳ Chờ server kéo</span>
+            <div style="margin-top:4px">
+              <button class="btn btn-ghost" style="padding:0.2rem 0.45rem;font-size:0.68rem;border-radius:4px" onclick="adminQuickApproveAndDeliver('${orderId}', '${code}', true)">🚀 Giao lại</button>
+            </div>
+          `;
+        }
+      } else {
+        deliveryUI = `<span style="font-size:0.75rem;color:var(--text-muted)">—</span>`;
+      }
 
       return `
         <tr>
@@ -602,10 +709,10 @@ async function loadOrders() {
           <td>
             <strong style="color:#fff">${o.user?.username || '—'}</strong><br>
             <span style="font-size:.72rem;color:var(--text-muted)">${o.user?.email || ''}</span><br>
-            <span style="font-size:.72rem;color:var(--lagoon);font-weight:600">MC: ${mc}</span>
+            <span style="font-size:.72rem;color:var(--lagoon);font-weight:700">🎮 MC: ${mc}</span>
           </td>
-          <td style="font-size:.78rem;line-height:1.5">${itemsSummary}</td>
-          <td style="font-weight:800;color:var(--accent);font-family:var(--font-mono);font-size:.95rem">${(o.total != null ? Number(o.total).toLocaleString('vi-VN') : '0')}đ</td>
+          <td style="font-size:.78rem;line-height:1.5">${itemsSummary || 'Vật phẩm'}</td>
+          <td style="font-weight:800;color:var(--accent);font-family:var(--font-mono);font-size:.95rem">${(o.total != null ? Number(o.total).toLocaleString('vi-VN') : (o.total_amount != null ? Number(o.total_amount).toLocaleString('vi-VN') : '0'))}đ</td>
           <td>
             <select onchange="handleAdminStatusChange('${orderId}', 'orderStatus', this.value)" style="background:var(--bg-elevated);border:1px solid var(--border-strong);border-radius:6px;padding:.35rem .5rem;color:var(--text);font-size:.75rem;font-family:inherit">
               <option value="pending"    ${oStat==='pending'   ?'selected':''}>⏳ Chờ xử lý</option>
@@ -628,12 +735,38 @@ async function loadOrders() {
                 </button>
               </div>` : ''}
           </td>
-          <td style="font-size:.75rem;color:var(--text-muted)">${new Date(o.createdAt).toLocaleDateString('vi-VN')}</td>
+          <td>${deliveryUI}</td>
+          <td style="font-size:.75rem;color:var(--text-muted)">${new Date(o.createdAt || o.created_at).toLocaleDateString('vi-VN')}</td>
         </tr>
       `;
     }).join('');
   } catch(e) {
-    tbody.innerHTML = `<tr><td colspan="7" class="no-data">❌ ${e.message}</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="8" class="no-data">❌ ${e.message}</td></tr>`;
+  }
+}
+
+/* ── Admin Fast Approve & In-Game Deliver ── */
+async function adminQuickApproveAndDeliver(orderId, orderCode, force = false) {
+  const actionText = force ? `Giao lại đồ in-game cho đơn [${orderCode}]` : `Duyệt đã thanh toán và tiến hành giao đồ in-game cho đơn [${orderCode}]`;
+  if (!confirm(`Bạn có chắc muốn ${actionText}?`)) return;
+
+  const alertEl = document.getElementById('admin-order-alert');
+  if (alertEl) alertEl.innerHTML = '<span style="font-size:0.75rem;color:var(--lagoon)">⚡ Đang xử lý và gửi lệnh giao đồ...</span>';
+
+  try {
+    const res = await api.adminMarkPaidAndDeliver(orderId, force);
+    if (window.SoundFX) SoundFX.playSuccess();
+    if (typeof api.showToast === 'function') api.showToast(res.message || 'Giao đồ thành công!', 'success');
+    if (alertEl) {
+      alertEl.innerHTML = `<span style="font-size:0.78rem;color:#34d399">✅ ${res.message || 'Thành công!'}</span>`;
+      setTimeout(() => { if (alertEl) alertEl.innerHTML = ''; }, 4000);
+    }
+    loadOrders();
+  } catch (e) {
+    if (window.SoundFX) SoundFX.playError();
+    if (typeof api.showToast === 'function') api.showToast(e.message, 'error');
+    else alert('❌ Lỗi: ' + e.message);
+    if (alertEl) alertEl.innerHTML = `<span style="font-size:0.78rem;color:#f87171">❌ ${e.message}</span>`;
   }
 }
 
@@ -660,12 +793,167 @@ async function handleAdminStatusChange(id, field, value) {
   }
 }
 
+/* ═══════════════════════════════════════════════════════════
+   USERS MANAGEMENT (Tài khoản, Đổi MK, Gỡ liên kết Minecraft)
+═══════════════════════════════════════════════════════════ */
+async function loadUsers() {
+  const tbody = document.getElementById('users-tbody');
+  tbody.innerHTML = '<tr><td colspan="7" class="no-data"><div class="spinner"></div></td></tr>';
+
+  try {
+    const search = document.getElementById('user-search-input')?.value?.trim() || '';
+    const role = document.getElementById('user-filter-role')?.value || 'all';
+    const linked = document.getElementById('user-filter-linked')?.value || '';
+
+    const params = {};
+    if (search) params.search = search;
+    if (role && role !== 'all') params.role = role;
+    if (linked) params.linked = linked;
+
+    const res = await api.getAdminUsers(params);
+    const users = res.data || res.users || (Array.isArray(res) ? res : []);
+
+    if (!users.length) {
+      tbody.innerHTML = '<tr><td colspan="7" class="no-data">Không tìm thấy tài khoản người dùng nào.</td></tr>';
+      return;
+    }
+
+    tbody.innerHTML = users.map(u => {
+      const uid = u.id || u._id;
+      const ign = u.minecraftUsername || u.minecraft_username || '';
+      const uuid = u.minecraftUuid || u.minecraft_uuid || '';
+      const avatarSrc = u.avatar || (ign ? `https://mc-heads.net/avatar/${ign}/32` : '/img/steve.png');
+
+      let linkCell = '';
+      if (ign) {
+        linkCell = `
+          <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
+            <img src="https://mc-heads.net/avatar/${ign}/20" style="width:20px;height:20px;border-radius:3px;vertical-align:middle" onerror="this.style.display='none'">
+            <strong style="color:var(--lagoon);font-size:.82rem">${ign}</strong>
+            <button class="btn btn-ghost" style="padding:0.2rem 0.5rem;font-size:0.68rem;color:#f87171;border:1px solid rgba(239,68,68,0.25);background:rgba(239,68,68,0.1);border-radius:4px" onclick="adminUnlinkUser('${uid}', '${u.username}', '${ign}')">
+              🔓 Gỡ link
+            </button>
+          </div>
+          ${uuid ? `<div style="font-size:0.68rem;color:var(--text-muted);font-family:var(--font-mono)">${uuid.slice(0, 14)}...</div>` : ''}
+        `;
+      } else {
+        linkCell = `<span style="font-size:0.75rem;color:var(--text-muted)">⚪ Chưa liên kết</span>`;
+      }
+
+      return `
+        <tr>
+          <td>
+            <div style="display:flex;align-items:center;gap:8px">
+              <img src="${avatarSrc}" style="width:32px;height:32px;border-radius:6px;object-fit:cover;border:1px solid var(--border)" onerror="this.src='/img/steve.png'">
+              <div>
+                <strong style="color:#fff">${u.username}</strong>
+                ${u.name ? `<div style="font-size:0.7rem;color:var(--text-muted)">${u.name}</div>` : ''}
+              </div>
+            </div>
+          </td>
+          <td style="font-size:.78rem;color:var(--text-muted)">${u.email}</td>
+          <td>
+            <span class="stock-toggle ${u.role === 'admin' ? 'out-of-stock' : 'in-stock'}" style="font-size:0.72rem">
+              ${u.role === 'admin' ? '👑 Admin' : '👤 Thành viên'}
+            </span>
+          </td>
+          <td>${linkCell}</td>
+          <td style="font-family:var(--font-mono);font-weight:700;color:var(--accent);font-size:.85rem">${(u.coins || 0).toLocaleString('vi-VN')} C</td>
+          <td style="font-size:.75rem;color:var(--text-muted)">${new Date(u.created_at || u.createdAt).toLocaleDateString('vi-VN')}</td>
+          <td>
+            <div class="action-btns">
+              <button class="btn-edit" onclick="openPasswordModal('${uid}', '${u.username}')">🔑 Đổi MK</button>
+              ${ign ? `<button class="btn-del" onclick="adminUnlinkUser('${uid}', '${u.username}', '${ign}')">🔓 Gỡ</button>` : ''}
+            </div>
+          </td>
+        </tr>
+      `;
+    }).join('');
+  } catch (e) {
+    tbody.innerHTML = `<tr><td colspan="7" class="no-data">❌ ${e.message}</td></tr>`;
+  }
+}
+
+/* ── Change Password Modal ── */
+function openPasswordModal(userId, username) {
+  document.getElementById('pwd-user-id').value = userId;
+  document.getElementById('pwd-username').textContent = username;
+  document.getElementById('pwd-new-input').value = '';
+  document.getElementById('password-modal-msg').innerHTML = '';
+  document.getElementById('password-modal').classList.add('open');
+  document.getElementById('pwd-new-input').focus();
+}
+
+function closePasswordModal() {
+  document.getElementById('password-modal').classList.remove('open');
+  document.getElementById('pwd-user-id').value = '';
+}
+
+async function submitChangePassword() {
+  const userId = document.getElementById('pwd-user-id').value;
+  const newPass = document.getElementById('pwd-new-input').value.trim();
+  const msgBox = document.getElementById('password-modal-msg');
+  const btn = document.getElementById('btn-save-pwd');
+
+  if (!newPass || newPass.length < 6) {
+    msgBox.innerHTML = '<div class="alert alert-error" style="margin-bottom:1rem;font-size:0.8rem">Mật khẩu mới phải có ít nhất 6 ký tự.</div>';
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = 'Đang lưu...';
+  msgBox.innerHTML = '';
+
+  try {
+    const res = await api.adminChangePassword(userId, newPass);
+    if (window.SoundFX) SoundFX.playSuccess();
+    if (typeof api.showToast === 'function') api.showToast(res.message || 'Đã đổi mật khẩu thành công!', 'success');
+    closePasswordModal();
+    loadUsers();
+  } catch (e) {
+    if (window.SoundFX) SoundFX.playError();
+    msgBox.innerHTML = `<div class="alert alert-error" style="margin-bottom:1rem;font-size:0.8rem">❌ ${e.message}</div>`;
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '💾 Lưu mật khẩu';
+  }
+}
+
+/* ── Unlink Minecraft Account ── */
+async function adminUnlinkUser(userId, username, mcIgn) {
+  if (!confirm(`Xác nhận gỡ liên kết nhân vật Minecraft [${mcIgn}] khỏi tài khoản [${username}]?`)) {
+    return;
+  }
+
+  const alertEl = document.getElementById('admin-user-alert');
+  if (alertEl) alertEl.innerHTML = '<span style="font-size:0.75rem;color:var(--lagoon)">Đang gỡ liên kết...</span>';
+
+  try {
+    const res = await api.adminUnlinkGame(userId);
+    if (window.SoundFX) SoundFX.playSuccess();
+    if (typeof api.showToast === 'function') api.showToast(res.message || 'Đã gỡ liên kết thành công!', 'success');
+    if (alertEl) {
+      alertEl.innerHTML = `<span style="font-size:0.78rem;color:#34d399">✅ ${res.message || 'Đã gỡ liên kết!'}</span>`;
+      setTimeout(() => { if (alertEl) alertEl.innerHTML = ''; }, 3000);
+    }
+    loadUsers();
+  } catch (e) {
+    if (window.SoundFX) SoundFX.playError();
+    if (typeof api.showToast === 'function') api.showToast(e.message, 'error');
+    else alert('❌ Lỗi: ' + e.message);
+    if (alertEl) alertEl.innerHTML = `<span style="font-size:0.78rem;color:#f87171">❌ ${e.message}</span>`;
+  }
+}
+
 /* ── Close modals on overlay click ── */
 document.getElementById('edit-modal').addEventListener('click', e => {
   if (e.target === e.currentTarget) closeEdit();
 });
 document.getElementById('proof-modal').addEventListener('click', e => {
   if (e.target === e.currentTarget) closeProofModal();
+});
+document.getElementById('password-modal').addEventListener('click', e => {
+  if (e.target === e.currentTarget) closePasswordModal();
 });
 </script>
 </body>
