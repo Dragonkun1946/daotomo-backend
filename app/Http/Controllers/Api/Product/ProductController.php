@@ -17,7 +17,12 @@ class ProductController extends Controller
         $query = Product::where('is_active', true);
 
         if ($request->has('category') && !empty($request->input('category')) && $request->input('category') !== 'all') {
-            $query->where('category', $request->input('category'));
+            $cat = strtolower((string) $request->input('category'));
+            if (in_array($cat, ['vip', 'rank'])) {
+                $query->whereIn('category', ['vip', 'rank']);
+            } else {
+                $query->where('category', $request->input('category'));
+            }
         }
 
         if ($request->has('search') && !empty($request->input('search'))) {

@@ -65,55 +65,89 @@ class DatabaseSeeder extends Seeder
 
         $products = [
             [
-                'name' => 'Minecraft Premium',
-                'slug' => 'minecraft-premium',
-                'short_description' => 'Gói Premium nâng cấp trải nghiệm chơi Minecraft trên server Đảo Tò Mò.',
-                'description' => 'Minecraft Premium dành cho người chơi muốn mở khóa các quyền lợi và tiện ích cao cấp trên server. Gói gồm quyền truy cập các tính năng Premium theo cấu hình của server và hỗ trợ ưu tiên cho người sở hữu.',
-                'price' => 99000,
-                'original_price' => 149000,
-                'image' => $img('Minecraft Premium'),
-                'images' => $gallery('Minecraft Premium'),
+                'name' => 'Rank Knight',
+                'slug' => 'rank-knight',
+                'short_description' => 'Rank khởi đầu dành cho tân thủ Đảo Tò Mò với bộ đặc quyền tiện ích.',
+                'description' => 'Rank Knight cung cấp 3 sethome, kit Knight định kỳ, các lệnh tiện ích /workbench, /disposal, /near và icon Rank Knight độc quyền trên chat & tab.',
+                'price' => 39000,
+                'original_price' => 59000,
+                'image' => $img('Rank Knight'),
+                'images' => $gallery('Rank Knight'),
                 'category' => 'vip',
                 'in_stock' => true,
-                'stock_quantity' => 100,
+                'stock_quantity' => 999,
                 'is_active' => true,
                 'featured' => true,
                 'sort_order' => 1,
-                'game_reward' => 'minecraft_premium',
+                'game_reward' => 'rank_knight',
             ],
             [
-                'name' => 'Minecraft Rank VIP',
-                'slug' => 'minecraft-rank-vip',
-                'short_description' => 'Rank VIP cho người chơi muốn có thêm quyền lợi và hiệu ứng nổi bật.',
-                'description' => 'Rank VIP là lựa chọn cân bằng cho người chơi thường xuyên tham gia server. Sản phẩm cung cấp bộ quyền lợi VIP, hiệu ứng và tiện ích trong game theo cấu hình hiện tại của Đảo Tò Mò.',
-                'price' => 79000,
-                'original_price' => 109000,
-                'image' => $img('Minecraft Rank VIP'),
-                'images' => $gallery('Minecraft Rank VIP'),
+                'name' => 'Rank Legend',
+                'slug' => 'rank-legend',
+                'short_description' => 'Rank Huyền Thoại với quyền lợi bay fly, hồi phục và nhiều sethome hơn.',
+                'description' => 'Rank Legend mở khóa 5 sethome, kit Legend chiến binh, lệnh /feed, /fly, /hat và biểu tượng Rank Legend rực rỡ.',
+                'price' => 59000,
+                'original_price' => 89000,
+                'image' => $img('Rank Legend'),
+                'images' => $gallery('Rank Legend'),
                 'category' => 'vip',
                 'in_stock' => true,
-                'stock_quantity' => 100,
+                'stock_quantity' => 999,
                 'is_active' => true,
                 'featured' => true,
                 'sort_order' => 2,
-                'game_reward' => 'rank_vip',
+                'game_reward' => 'rank_legend',
             ],
             [
-                'name' => 'Minecraft Rank Premium',
-                'slug' => 'minecraft-rank-premium',
-                'short_description' => 'Rank cao cấp với nhiều đặc quyền hơn Rank VIP.',
-                'description' => 'Rank Premium dành cho người muốn nâng cấp trải nghiệm server với nhiều đặc quyền hơn. Gói phù hợp để làm quà tặng hoặc sử dụng lâu dài trong cộng đồng Đảo Tò Mò.',
-                'price' => 149000,
-                'original_price' => 199000,
-                'image' => $img('Minecraft Rank Premium'),
-                'images' => $gallery('Minecraft Rank Premium'),
+                'name' => 'Rank Master',
+                'slug' => 'rank-master',
+                'short_description' => 'Bậc thầy sinh tồn với kho đồ Enderchest di động và lệnh /back tức thì.',
+                'description' => 'Rank Master cho phép lưu 7 sethome, kit Master vũ khí giáp vip, lệnh /enderchest, /back, /heal và icon Rank Master uy lực.',
+                'price' => 79000,
+                'original_price' => 119000,
+                'image' => $img('Rank Master'),
+                'images' => $gallery('Rank Master'),
                 'category' => 'vip',
                 'in_stock' => true,
-                'stock_quantity' => 75,
+                'stock_quantity' => 999,
                 'is_active' => true,
                 'featured' => true,
                 'sort_order' => 3,
-                'game_reward' => 'rank_premium',
+                'game_reward' => 'rank_master',
+            ],
+            [
+                'name' => 'Rank Overlord',
+                'slug' => 'rank-overlord',
+                'short_description' => 'Bá chủ Đảo Tò Mò với đặc quyền sửa đồ repair all và thời tiết riêng.',
+                'description' => 'Rank Overlord sở hữu 10 sethome, kit Overlord siêu cấp, lệnh /repair, /pweather, /ptime, /fly tốc độ cao và huy hiệu Overlord bá đạo.',
+                'price' => 109000,
+                'original_price' => 159000,
+                'image' => $img('Rank Overlord'),
+                'images' => $gallery('Rank Overlord'),
+                'category' => 'vip',
+                'in_stock' => true,
+                'stock_quantity' => 999,
+                'is_active' => true,
+                'featured' => true,
+                'sort_order' => 4,
+                'game_reward' => 'rank_overlord',
+            ],
+            [
+                'name' => 'Rank God',
+                'slug' => 'rank-god',
+                'short_description' => 'Rank Tối Thượng Thần Thánh với toàn bộ đặc quyền cao cấp nhất server.',
+                'description' => 'Rank God mở khóa 15 sethome, kit God thần thánh, toàn quyền fly, repair all, đổi màu tên, nick name và biểu tượng Thần Vương độc nhất vô nhị.',
+                'price' => 159000,
+                'original_price' => 229000,
+                'image' => $img('Rank God'),
+                'images' => $gallery('Rank God'),
+                'category' => 'vip',
+                'in_stock' => true,
+                'stock_quantity' => 999,
+                'is_active' => true,
+                'featured' => true,
+                'sort_order' => 5,
+                'game_reward' => 'rank_god',
             ],
             [
                 'name' => 'Gói Coin Minecraft 100K',
@@ -129,7 +163,7 @@ class DatabaseSeeder extends Seeder
                 'stock_quantity' => 200,
                 'is_active' => true,
                 'featured' => false,
-                'sort_order' => 4,
+                'sort_order' => 6,
                 'game_reward' => 'coin_100k',
             ],
             [
@@ -146,7 +180,7 @@ class DatabaseSeeder extends Seeder
                 'stock_quantity' => 100,
                 'is_active' => true,
                 'featured' => false,
-                'sort_order' => 5,
+                'sort_order' => 7,
                 'game_reward' => 'skin_pack',
             ],
             [
@@ -163,7 +197,7 @@ class DatabaseSeeder extends Seeder
                 'stock_quantity' => 150,
                 'is_active' => true,
                 'featured' => false,
-                'sort_order' => 6,
+                'sort_order' => 8,
                 'game_reward' => 'epic_crate_x1',
             ],
             [
@@ -180,7 +214,7 @@ class DatabaseSeeder extends Seeder
                 'stock_quantity' => 50,
                 'is_active' => true,
                 'featured' => false,
-                'sort_order' => 7,
+                'sort_order' => 9,
                 'game_reward' => '',
             ],
             [
@@ -197,7 +231,7 @@ class DatabaseSeeder extends Seeder
                 'stock_quantity' => 999,
                 'is_active' => true,
                 'featured' => true,
-                'sort_order' => 8,
+                'sort_order' => 10,
                 'game_reward' => '',
             ],
             [
@@ -214,7 +248,7 @@ class DatabaseSeeder extends Seeder
                 'stock_quantity' => 999,
                 'is_active' => true,
                 'featured' => true,
-                'sort_order' => 9,
+                'sort_order' => 11,
                 'game_reward' => '',
             ],
             [
@@ -231,7 +265,7 @@ class DatabaseSeeder extends Seeder
                 'stock_quantity' => 999,
                 'is_active' => true,
                 'featured' => false,
-                'sort_order' => 10,
+                'sort_order' => 12,
                 'game_reward' => '',
             ],
             [
@@ -248,7 +282,7 @@ class DatabaseSeeder extends Seeder
                 'stock_quantity' => 100,
                 'is_active' => true,
                 'featured' => false,
-                'sort_order' => 11,
+                'sort_order' => 13,
                 'game_reward' => 'minecraft_resource_pack',
             ],
             [
@@ -265,17 +299,20 @@ class DatabaseSeeder extends Seeder
                 'stock_quantity' => 80,
                 'is_active' => true,
                 'featured' => true,
-                'sort_order' => 12,
+                'sort_order' => 14,
                 'game_reward' => 'modpack_premium',
             ],
         ];
 
-        $originalSlugs = array_column($products, 'slug');
+        $targetSlugs = array_column($products, 'slug');
 
-        // Clean up any placeholder products that are not part of the original 12 and have no orders
-        Product::whereNotIn('slug', $originalSlugs)
+        // Clean up or deactivate old products not in the new catalog
+        Product::whereNotIn('slug', $targetSlugs)
             ->whereDoesntHave('orderItems')
             ->delete();
+
+        Product::whereNotIn('slug', $targetSlugs)
+            ->update(['is_active' => false]);
 
         foreach ($products as $p) {
             Product::updateOrCreate(

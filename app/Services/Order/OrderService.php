@@ -366,6 +366,10 @@ class OrderService
 
         $order->update($updates);
 
+        if (($updates['payment_status'] ?? null) === 'paid' || ($updates['status'] ?? null) === 'paid') {
+            app(\App\Services\Order\OrderDeliveryService::class)->queueDeliveries($order);
+        }
+
         $fresh = $order->fresh(['items']);
 
         return [

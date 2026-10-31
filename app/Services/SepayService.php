@@ -514,6 +514,9 @@ class SepayService
                     'status_history' => $history,
                 ]);
 
+                // Auto-queue game delivery commands for Minecraft bridge
+                app(\App\Services\Order\OrderDeliveryService::class)->queueDeliveries($lockedOrder);
+
                 Log::info("[SePay Webhook] Order {$lockedOrder->order_code} successfully marked PAID via SePay TX {$sepayId} ({$transferAmount} VND)");
             });
 
