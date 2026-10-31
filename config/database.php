@@ -129,8 +129,8 @@ return [
             $merged = array_merge($base, $parsed);
             unset($merged['url']);
 
-            // If Neon host, append endpoint option in host for libpq compatibility across platforms
-            if (isset($merged['host']) && str_contains($merged['host'], '.neon.tech')) {
+            // Only on Windows where libpq lacks SNI support do we need the endpoint option
+            if (PHP_OS_FAMILY === 'Windows' && isset($merged['host']) && str_contains($merged['host'], '.neon.tech')) {
                 if (preg_match('/^(ep-[a-z0-9-]+?)(?:-pooler)?\./i', $merged['host'], $m)) {
                     $endpointId = $m[1];
                     if (!str_contains($merged['host'], 'options=')) {
