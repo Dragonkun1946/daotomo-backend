@@ -927,54 +927,215 @@ footer {
 }
 
 /* ═══════════════════════════════════════════════════════════
-   FLOATING 3D SKIN MASCOT BUTTON
+   UNIFIED FLOATING ACTION WIDGET (Bottom-Right FAB)
+   - Sound FX Toggle
+   - 3D Skin Viewer Modal Trigger
+   - Admin Dashboard Link (Strictly admin-only)
 ═══════════════════════════════════════════════════════════ */
 .floating-skin-btn {
+  display: none !important;
+}
+
+.dtm-fab-widget {
   position: fixed;
-  bottom: 1.5rem;
-  left: 1.5rem;
-  z-index: 9990;
+  bottom: 22px;
+  right: 22px;
+  z-index: 99990;
+  display: flex;
+  flex-direction: column-reverse;
+  align-items: flex-end;
+  gap: 10px;
+  font-family: var(--font-body, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif);
+  user-select: none;
+}
+
+/* Main Trigger Button */
+.dtm-fab-trigger {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, rgba(23, 30, 54, 0.95) 0%, rgba(13, 18, 36, 0.98) 100%);
+  border: 1.5px solid rgba(34, 211, 238, 0.5);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.55), 0 0 18px rgba(34, 211, 238, 0.35);
+  cursor: pointer;
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.65rem 1.15rem;
-  background: linear-gradient(135deg, rgba(23, 30, 54, 0.92) 0%, rgba(13, 18, 36, 0.96) 100%);
-  border: 1.5px solid rgba(34, 211, 238, 0.4);
-  border-radius: 9999px;
+  justify-content: center;
+  position: relative;
+  transition: all 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+  color: #22d3ee;
+  outline: none;
+}
+
+.dtm-fab-trigger:hover {
+  transform: translateY(-2px) scale(1.08);
+  border-color: #38bdf8;
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.65), 0 0 25px rgba(34, 211, 238, 0.6);
   color: #ffffff;
-  font-family: var(--font-display);
-  font-size: 0.85rem;
-  font-weight: 700;
-  cursor: pointer;
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5), 0 0 20px rgba(34, 211, 238, 0.25);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
-.floating-skin-btn:hover {
-  transform: translateY(-3px) scale(1.05);
-  border-color: var(--lagoon);
-  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.6), 0 0 25px rgba(34, 211, 238, 0.45);
-  color: var(--lagoon);
-}
-.floating-skin-icon {
-  font-size: 1.25rem;
+
+.dtm-fab-trigger .dtm-fab-icon {
+  font-size: 1.35rem;
+  transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.2s ease;
   line-height: 1;
 }
-.floating-skin-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: #22d3ee;
-  box-shadow: 0 0 8px #22d3ee;
-  animation: badgePulse 1.8s infinite;
+
+.dtm-fab-trigger .dtm-fab-icon-close {
+  display: none;
 }
+
+.dtm-fab-widget.open .dtm-fab-trigger {
+  border-color: #f43f5e;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.55), 0 0 16px rgba(244, 63, 94, 0.35);
+  color: #f43f5e;
+}
+
+.dtm-fab-widget.open .dtm-fab-trigger .dtm-fab-icon-main {
+  display: none;
+}
+
+.dtm-fab-widget.open .dtm-fab-trigger .dtm-fab-icon-close {
+  display: inline-block;
+}
+
+/* Pulsing Status Dot */
+.dtm-fab-pulse {
+  position: absolute;
+  top: 1px;
+  right: 1px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #22c55e;
+  border: 2px solid #0d1224;
+  box-shadow: 0 0 8px #22c55e;
+  animation: dtmPulse 2s infinite ease-in-out;
+}
+
+@keyframes dtmPulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.25); opacity: 0.65; }
+}
+
+/* Menu Popover */
+.dtm-fab-menu {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(12px) scale(0.94);
+  transform-origin: bottom right;
+  transition: all 0.24s cubic-bezier(0.16, 1, 0.3, 1);
+  min-width: 220px;
+  background: rgba(13, 18, 36, 0.94);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 16px;
+  padding: 8px;
+  box-shadow: 0 22px 45px rgba(0, 0, 0, 0.65), 0 0 25px rgba(34, 211, 238, 0.15);
+}
+
+.dtm-fab-widget.open .dtm-fab-menu {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0) scale(1);
+}
+
+/* Action Items */
+.dtm-fab-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  color: #e2e8f0;
+  font-size: 0.86rem;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.18s ease;
+  width: 100%;
+  box-sizing: border-box;
+  text-align: left;
+}
+
+.dtm-fab-item:hover {
+  background: rgba(34, 211, 238, 0.12);
+  border-color: rgba(34, 211, 238, 0.35);
+  color: #38bdf8;
+  transform: translateX(-2px);
+}
+
+.dtm-fab-item-icon {
+  font-size: 1.15rem;
+  width: 24px;
+  text-align: center;
+  flex-shrink: 0;
+  line-height: 1;
+}
+
+.dtm-fab-item-label {
+  flex-grow: 1;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.dtm-fab-item-tag {
+  font-size: 0.68rem;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.08);
+  color: #94a3b8;
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+}
+
+.dtm-fab-item.active .dtm-fab-item-tag {
+  background: rgba(34, 197, 94, 0.2);
+  color: #4ade80;
+}
+
+.dtm-fab-item.muted .dtm-fab-item-tag {
+  background: rgba(239, 68, 68, 0.2);
+  color: #f87171;
+}
+
+/* Admin Item Distinctive Gold Glow */
+.dtm-fab-item.admin-item {
+  background: linear-gradient(135deg, rgba(234, 179, 8, 0.14) 0%, rgba(249, 115, 22, 0.08) 100%);
+  border: 1px solid rgba(234, 179, 8, 0.35);
+  color: #fef08a;
+}
+
+.dtm-fab-item.admin-item:hover {
+  background: linear-gradient(135deg, rgba(234, 179, 8, 0.26) 0%, rgba(249, 115, 22, 0.18) 100%);
+  border-color: #facc15;
+  color: #ffffff;
+  box-shadow: 0 0 14px rgba(250, 204, 21, 0.4);
+}
+
+.dtm-fab-item.admin-item .dtm-fab-item-tag {
+  background: rgba(234, 179, 8, 0.25);
+  color: #fde047;
+  border: 1px solid rgba(234, 179, 8, 0.4);
+}
+
 @media (max-width: 640px) {
-  .floating-skin-btn {
-    bottom: 1rem;
-    left: 1rem;
-    padding: 0.55rem 0.9rem;
-    font-size: 0.78rem;
+  .dtm-fab-widget {
+    bottom: 16px;
+    right: 16px;
+  }
+  .dtm-fab-trigger {
+    width: 48px;
+    height: 48px;
+  }
+  .dtm-fab-menu {
+    min-width: 195px;
   }
 }
 

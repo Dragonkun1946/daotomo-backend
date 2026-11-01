@@ -614,25 +614,12 @@
   window.closeSkinModal = closeSkinModal;
 
   /* ═══════════════════════════════════════════════════════════
-     FLOATING 3D MASCOT BUTTON (Global site helper)
+     FLOATING 3D MASCOT BUTTON (Migrated into unified FAB)
   ═══════════════════════════════════════════════════════════ */
   function initFloatingSkinButton() {
-    if (document.getElementById('floating-skin-btn')) return;
-
-    const btn = document.createElement('button');
-    btn.id = 'floating-skin-btn';
-    btn.className = 'floating-skin-btn';
-    btn.setAttribute('aria-label', 'Xem mô hình 3D nhân vật Minecraft');
-    btn.setAttribute('title', 'Mô hình 3D Skin Minecraft');
-    btn.innerHTML = `
-      <span class="floating-skin-icon">🧍</span>
-      <span class="floating-skin-text">Skin 3D</span>
-      <span class="floating-skin-dot"></span>
-    `;
-    btn.addEventListener('click', () => {
-      openSkinModal();
-    });
-    document.body.appendChild(btn);
+    // Clean up any legacy button if present
+    const legacy = document.getElementById('floating-skin-btn');
+    if (legacy) legacy.remove();
   }
 
   /* ═══════════════════════════════════════════════════════════

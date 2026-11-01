@@ -251,11 +251,17 @@ const api = {
   setUser:    (user) => {
     if (user) {
       localStorage.setItem('dtm_user', JSON.stringify(user));
+      try { window.dispatchEvent(new CustomEvent('daotomo:auth-changed', { detail: { user } })); } catch (e) {}
     }
   },
   isLoggedIn: () => {
     const t = localStorage.getItem('dtm_token');
     return !!t && t !== 'null' && t !== 'undefined' && t !== 'false' && t.trim() !== '';
+  },
+  isAdmin: () => {
+    if (!api.isLoggedIn()) return false;
+    const u = api.getUser();
+    return !!(u && (u.role === 'admin' || u.is_admin || u.role === 'ADMIN'));
   },
   setSession(token, user) {
     if (token) localStorage.setItem('dtm_token', token);
@@ -269,6 +275,7 @@ const api = {
     try {
       const skinUrl = (user && user.skinUrl) || localStorage.getItem('dtm_custom_skin') || '/img/steve.png';
       window.dispatchEvent(new CustomEvent('daotomo:skin-updated', { detail: { skinUrl } }));
+      window.dispatchEvent(new CustomEvent('daotomo:auth-changed', { detail: { user } }));
     } catch (e) {}
   },
   clearSession() {
@@ -277,6 +284,7 @@ const api = {
     localStorage.removeItem('dtm_custom_skin');
     try {
       window.dispatchEvent(new CustomEvent('daotomo:skin-updated', { detail: { skinUrl: '/img/steve.png' } }));
+      window.dispatchEvent(new CustomEvent('daotomo:auth-changed', { detail: { user: null } }));
     } catch (e) {}
   },
   showToast,
@@ -584,7 +592,7 @@ function initCommandPalette() {
 }
 
 /* ═══════════════════════════════════════════════════════════
-   NAVBAR ACTIONS INJECTION (Sound Toggle & Command Button)
+   NAVBAR & FLOATING ACTION DOCK (Sound, Skin 3D, Admin)
 ═══════════════════════════════════════════════════════════ */
 function updateSoundBtn() {
   const btn = document.getElementById('btn-sound-toggle');
@@ -592,6 +600,15 @@ function updateSoundBtn() {
     btn.innerHTML = SoundFX.enabled ? '🔊' : '🔇';
     btn.title = SoundFX.enabled ? 'Tắt âm thanh hiệu ứng' : 'Bật âm thanh hiệu ứng';
     btn.classList.toggle('active', SoundFX.enabled);
+  }
+  const dockIcon = document.getElementById('dtm-fab-sound-icon');
+  const dockTag = document.getElementById('dtm-fab-sound-tag');
+  const dockBtn = document.getElementById('dtm-fab-sound-btn');
+  if (dockIcon && dockTag && dockBtn) {
+    dockIcon.textContent = SoundFX.enabled ? '🔊' : '🔇';
+    dockTag.textContent = SoundFX.enabled ? 'BẬT' : 'TẮT';
+    dockBtn.classList.toggle('active', SoundFX.enabled);
+    dockBtn.classList.toggle('muted', !SoundFX.enabled);
   }
 }
 
@@ -615,23 +632,138 @@ function initNavbarActions() {
     });
     group.appendChild(cmdBtn);
 
-    // Sound toggle button
-    const soundBtn = document.createElement('button');
-    soundBtn.id = 'btn-sound-toggle';
-    soundBtn.className = 'nav-action-btn';
-    soundBtn.setAttribute('aria-label', 'Bật / tắt âm thanh');
-    soundBtn.addEventListener('click', () => {
-      const state = SoundFX.toggle();
-      updateSoundBtn();
-      showToast(state ? '🔊 Âm thanh giao diện đã BẬT' : '🔇 Âm thanh giao diện đã TẮT', 'info');
-    });
-    group.appendChild(soundBtn);
-
     // Append to nav (order is controlled by CSS flexbox)
     nav.appendChild(group);
-
-    updateSoundBtn();
   }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   UNIFIED FLOATING ACTION WIDGET (Bottom-Right FAB)
+   - Bật / Tắt Âm thanh
+   - Xem & Tuỳ chỉnh Mô hình Skin 3D
+   - Trang Quản Trị Hệ Thống (Chỉ Admin mới thấy)
+═══════════════════════════════════════════════════════════ */
+function initFloatingActionWidget() {
+  if (document.getElementById('dtm-fab-widget')) return;
+
+  // Clean up any legacy left-pinned skin button
+  const oldBtn = document.getElementById('floating-skin-btn');
+  if (oldBtn) oldBtn.remove();
+
+  const widget = document.createElement('div');
+  widget.id = 'dtm-fab-widget';
+  widget.className = 'dtm-fab-widget';
+  widget.setAttribute('aria-label', 'Tiện ích Đảo Tò Mò');
+
+  widget.innerHTML = `
+    <!-- Action Menu Popover -->
+    <div class="dtm-fab-menu" id="dtm-fab-menu" role="menu">
+      <!-- Sound Toggle -->
+      <button class="dtm-fab-item ${SoundFX.enabled ? 'active' : 'muted'}" id="dtm-fab-sound-btn" type="button" title="Bật / Tắt âm thanh hiệu ứng" role="menuitem">
+        <span class="dtm-fab-item-icon" id="dtm-fab-sound-icon">${SoundFX.enabled ? '🔊' : '🔇'}</span>
+        <span class="dtm-fab-item-label">Âm thanh</span>
+        <span class="dtm-fab-item-tag" id="dtm-fab-sound-tag">${SoundFX.enabled ? 'BẬT' : 'TẮT'}</span>
+      </button>
+
+      <!-- 3D Skin Viewer -->
+      <button class="dtm-fab-item" id="dtm-fab-skin-btn" type="button" title="Xem mô hình nhân vật Minecraft 3D" role="menuitem">
+        <span class="dtm-fab-item-icon">🧍</span>
+        <span class="dtm-fab-item-label">Skin 3D</span>
+        <span class="dtm-fab-item-tag">3D</span>
+      </button>
+
+      <!-- Admin Dashboard (Strictly for user.role === 'admin') -->
+      <a href="/html/Admin.html" class="dtm-fab-item admin-item" id="dtm-fab-admin-btn" style="display:none;" title="Trang Quản Trị Hệ Thống (Dành riêng cho Admin)" role="menuitem">
+        <span class="dtm-fab-item-icon">🛡️</span>
+        <span class="dtm-fab-item-label">Quản Trị</span>
+        <span class="dtm-fab-item-tag">ADMIN</span>
+      </a>
+    </div>
+
+    <!-- Main Floating Trigger Button -->
+    <button class="dtm-fab-trigger" id="dtm-fab-trigger" type="button" aria-expanded="false" aria-label="Mở tiện ích nhanh" title="Menu Tiện ích Đảo Tò Mò">
+      <span class="dtm-fab-icon dtm-fab-icon-main">⚡</span>
+      <span class="dtm-fab-icon dtm-fab-icon-close">✕</span>
+      <span class="dtm-fab-pulse" title="Hệ thống Online"></span>
+    </button>
+  `;
+
+  document.body.appendChild(widget);
+
+  const trigger = document.getElementById('dtm-fab-trigger');
+  const soundBtn = document.getElementById('dtm-fab-sound-btn');
+  const skinBtn = document.getElementById('dtm-fab-skin-btn');
+  const adminBtn = document.getElementById('dtm-fab-admin-btn');
+
+  function toggleMenu(forceOpen = null) {
+    const isOpen = forceOpen !== null ? forceOpen : !widget.classList.contains('open');
+    widget.classList.toggle('open', isOpen);
+    trigger.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+  }
+
+  trigger.addEventListener('click', (e) => {
+    e.stopPropagation();
+    SoundFX.playClick();
+    toggleMenu();
+  });
+
+  // Sound toggle button click
+  soundBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    const state = SoundFX.toggle();
+    updateSoundBtn();
+    showToast(state ? '🔊 Âm thanh giao diện đã BẬT' : '🔇 Âm thanh giao diện đã TẮT', 'info');
+  });
+
+  // Skin 3D button click
+  skinBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    SoundFX.playClick();
+    toggleMenu(false);
+    if (typeof window.openSkinModal === 'function') {
+      window.openSkinModal();
+    } else {
+      window.location.href = '/html/Account.html';
+    }
+  });
+
+  // Close when clicking outside or pressing Escape
+  document.addEventListener('click', (e) => {
+    if (!widget.contains(e.target) && widget.classList.contains('open')) {
+      toggleMenu(false);
+    }
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && widget.classList.contains('open')) {
+      toggleMenu(false);
+    }
+  });
+
+  // Admin button visibility check
+  function updateAdminVisibility() {
+    const u = api.getUser();
+    const isAdmin = api.isLoggedIn() && u && (u.role === 'admin' || u.is_admin || u.role === 'ADMIN');
+    if (adminBtn) {
+      adminBtn.style.display = isAdmin ? 'flex' : 'none';
+    }
+  }
+
+  updateAdminVisibility();
+
+  // If logged in, also verify role via /auth/me to stay strictly synced
+  if (api.isLoggedIn()) {
+    api.getMe().then(({ user }) => {
+      if (user) {
+        api.setUser(user);
+        updateAdminVisibility();
+      }
+    }).catch(() => {});
+  }
+
+  // React to login/logout/profile update events
+  window.addEventListener('storage', updateAdminVisibility);
+  window.addEventListener('daotomo:auth-changed', updateAdminVisibility);
 }
 
 /* ═══════════════════════════════════════════════════════════
@@ -820,6 +952,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   /* ── Initialize engines ── */
   initNavbarActions();
+  initFloatingActionWidget();
   initCommandPalette();
   initHeroParticles();
   init3DTilt();
