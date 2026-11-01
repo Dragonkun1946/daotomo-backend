@@ -98,6 +98,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
         // Orders Management & Delivery
         Route::get('/orders', [AdminOrderController::class, 'index']);
+        Route::get('/admin/orders', [AdminOrderController::class, 'index']);
         Route::put('/orders/{id}/status', [AdminOrderController::class, 'updateStatus']);
         Route::post('/orders/{id}/deliver', [AdminOrderController::class, 'markPaidAndDeliver']);
         Route::post('/admin/orders/{id}/deliver', [AdminOrderController::class, 'markPaidAndDeliver']);
