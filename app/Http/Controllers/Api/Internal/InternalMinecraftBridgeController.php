@@ -202,4 +202,58 @@ class InternalMinecraftBridgeController extends Controller
             'is_linked' => !empty($user->minecraft_uuid),
         ]);
     }
+
+    /**
+     * Synchronize player coins from Minecraft server to Web database.
+     */
+    public function syncCoins(Request $request): JsonResponse
+    {
+        if (!$this->authenticateBridge($request)) {
+            return response()->json(['success' => false, 'message' => 'Unauthorized bridge token.'], 401);
+        }
+
+        $players = $request->input('players', []);
+        if (empty($players) && ($request->has('coins') || $request->has('coin'))) {
+            $players = [[
+                'uuid' => $request->input('uuid') ?: $request->input('minecraft_uuid'),
+                'username' => $request->input('username') ?: $request->input('minecraft_username'),
+                'coins' => $request->input('coins', $request->input('coin', 0)),
+            ]];
+        }
+
+        $updated = 0;
+        $results = [];
+
+        foreach ($players as $p) {
+            $uuid = trim((string) ($p['uuid'] ?? ''));
+            $username = trim((string) ($p['username'] ?? ''));
+            $coins = (int) ($p['coins'] ?? 0);
+
+            $user = null;
+            if (!empty($uuid)) {
+                $user = User::where('minecraft_uuid', $uuid)->first();
+            }
+            if (!$user && !empty($username)) {
+                $user = User::where('minecraft_username', $username)->first();
+            }
+
+            if ($user) {
+                $user->coins = $coins;
+                $user->save();
+                $updated++;
+                $results[] = [
+                    'username' => $user->username,
+                    'minecraft_username' => $user->minecraft_username,
+                    'coins' => $user->coins,
+                ];
+            }
+        }
+
+        return response()->json([
+            'success' => true,
+            'updated' => $updated,
+            'players' => $results,
+            'message' => "Đã đồng bộ xu thành công cho {$updated} người chơi.",
+        ]);
+    }
 }

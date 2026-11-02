@@ -118,4 +118,5 @@ Route::prefix('internal/minecraft')->group(function () {
     Route::post('/deliveries/confirm', [InternalMinecraftBridgeController::class, 'confirmDeliveries']);
     Route::get('/leaderboard/streaks', [InternalMinecraftBridgeController::class, 'getStreaksLeaderboard']);
     Route::get('/player/{identifier}/streak', [InternalMinecraftBridgeController::class, 'getPlayerStreak']);
+    Route::post('/sync-coins', [InternalMinecraftBridgeController::class, 'syncCoins']);
 });
