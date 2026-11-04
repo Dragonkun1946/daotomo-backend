@@ -654,9 +654,10 @@ function initFloatingActionWidget() {
   widget.id = 'dtm-fab-widget';
   widget.className = 'dtm-fab-widget';
   widget.setAttribute('aria-label', 'Tiện ích Đảo Tò Mò');
+  widget.style.cssText = 'position:fixed !important;bottom:22px !important;right:22px !important;z-index:99990 !important;width:52px !important;height:52px !important;display:block !important;pointer-events:none !important;margin:0 !important;padding:0 !important;transform:none !important;';
 
   widget.innerHTML = `
-    <!-- Action Menu Popover -->
+    <!-- Action Menu Popover (Opens upwards above trigger) -->
     <div class="dtm-fab-menu" id="dtm-fab-menu" role="menu">
       <!-- Sound Toggle -->
       <button class="dtm-fab-item ${SoundFX.enabled ? 'active' : 'muted'}" id="dtm-fab-sound-btn" type="button" title="Bật / Tắt âm thanh hiệu ứng" role="menuitem">
@@ -680,10 +681,18 @@ function initFloatingActionWidget() {
       </a>
     </div>
 
-    <!-- Main Floating Trigger Button -->
+    <!-- Main Floating Trigger Button (Squircle matching user design) -->
     <button class="dtm-fab-trigger" id="dtm-fab-trigger" type="button" aria-expanded="false" aria-label="Mở tiện ích nhanh" title="Menu Tiện ích Đảo Tò Mò">
-      <span class="dtm-fab-icon dtm-fab-icon-main">⚡</span>
-      <span class="dtm-fab-icon dtm-fab-icon-close">✕</span>
+      <span class="dtm-fab-icon dtm-fab-icon-main">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="#fbbf24" stroke="#d97706" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M13 2L3 14h8l-2 8 11-12h-8l3-8z"/>
+        </svg>
+      </span>
+      <span class="dtm-fab-icon dtm-fab-icon-close">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M18 6 6 18M6 6l12 12"/>
+        </svg>
+      </span>
       <span class="dtm-fab-pulse" title="Hệ thống Online"></span>
     </button>
   `;
