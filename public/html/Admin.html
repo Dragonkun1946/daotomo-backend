@@ -352,25 +352,41 @@
       <div class="tab-panel" id="tab-tickets">
         <div class="form-card">
           <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.75rem;margin-bottom:1rem">
-            <h2 style="margin:0">🔗 Cấu hình Discord Ticket Webhook & Zalo Hỗ Trợ</h2>
-            <span id="support-webhook-status" class="stock-toggle out-of-stock">⏳ Đang kiểm tra...</span>
+            <h2 style="margin:0">🎫 Cấu hình Bot Tickets v2 (Discord) & Zalo Hỗ Trợ</h2>
+            <span id="support-webhook-status" class="stock-toggle in-stock">⏳ Đang kiểm tra...</span>
           </div>
           <p style="font-size:0.82rem;color:var(--text-muted);margin-bottom:1rem;line-height:1.5">
-            Hướng dẫn lấy Discord Webhook: Mở kênh <strong>#ticket</strong> hoặc <strong>#ho-tro</strong> trên Discord → <em>Chỉnh sửa kênh → Tích hợp (Integrations) → Webhooks → Webhook mới → Sao chép URL Webhook</em> và dán vào ô bên dưới.
+            Khi dùng bot <strong>Tickets v2</strong>, người chơi bấm icon Ticket trên web sẽ mở thẳng tới <strong>Kênh đặt bảng Panel Tickets v2</strong> trong Discord để tạo phòng hỗ trợ 1-1 ngay trên server của bạn.
           </p>
           <div id="support-settings-msg" style="margin-bottom:0.85rem"></div>
           <div class="form-grid">
             <div class="form-group full">
-              <label>Discord Ticket Webhook URL</label>
-              <input class="input" type="url" id="support-webhook-input" placeholder="https://discord.com/api/webhooks/123456789/xxxxxxxxx (Để trống nếu không muốn đổi URL hiện tại)">
+              <label>Link Kênh Panel Tickets v2 (Discord Channel URL hoặc Invite URL)</label>
+              <input class="input" type="url" id="support-ticket-channel-input" placeholder="https://discord.com/channels/1381315355317899314/1485265083918713063">
             </div>
-            <div class="form-group full">
+            <div class="form-group">
+              <label>Hành vi khi bấm nút tròn Discord Ticket</label>
+              <select class="input" id="support-ticket-mode-select">
+                <option value="direct_channel">🔗 Mở thẳng kênh Tickets v2 trong Discord</option>
+                <option value="modal">📋 Mở Form Ticket trên web (+ nút vào Discord)</option>
+              </select>
+            </div>
+            <div class="form-group">
               <label>Link Zalo Hỗ Trợ (nút tròn Zalo)</label>
               <input class="input" type="url" id="support-zalo-input" placeholder="https://zalo.me/0977364711">
             </div>
+            <div class="form-group full">
+              <details style="background:rgba(255,255,255,0.02);border:1px dashed var(--border);border-radius:10px;padding:0.75rem 1rem">
+                <summary style="cursor:pointer;font-size:0.82rem;font-weight:700;color:var(--text-muted)">⚙️ Tuỳ chọn nâng cao: Discord Webhook URL (chỉ cần khi dùng chế độ Form Web)</summary>
+                <div style="margin-top:0.75rem">
+                  <label style="font-size:0.78rem;color:var(--text-muted)">Discord Ticket Webhook URL</label>
+                  <input class="input" type="url" id="support-webhook-input" placeholder="https://discord.com/api/webhooks/123456789/xxxxxxxxx (Để trống nếu không muốn đổi URL hiện tại)" style="margin-top:0.3rem">
+                </div>
+              </details>
+            </div>
             <div class="form-group full" style="display:flex;gap:0.75rem;flex-wrap:wrap;margin-top:0.25rem">
               <button class="btn btn-primary" id="btn-save-support-cfg" onclick="saveSupportSettings()">💾 Lưu Cấu Hình</button>
-              <button class="btn btn-ghost" id="btn-test-webhook" onclick="testDiscordWebhook()">🧪 Gửi Thử Vào Discord</button>
+              <button class="btn btn-ghost" id="btn-test-webhook" onclick="testDiscordWebhook()">🧪 Gửi Thử Webhook</button>
             </div>
           </div>
         </div>
@@ -492,7 +508,7 @@
   <div class="footer-bottom">© 2026 Đảo Tò Mò</div>
 </footer>
 
-<script src="/js/api.js?v=2.3"></script>
+<script src="/js/api.js?v=2.4"></script>
 <script src="/js/skinview3d.bundle.js"></script>
 <script src="/js/skin-viewer.js"></script>
 <script>
@@ -1047,17 +1063,28 @@ async function loadTickets() {
     const res = await api.getAdminTickets(params);
     const settings = res.settings || {};
     const statusBadge = document.getElementById('support-webhook-status');
+    const channelInput = document.getElementById('support-ticket-channel-input');
+    const modeSelect = document.getElementById('support-ticket-mode-select');
     const zaloInput = document.getElementById('support-zalo-input');
     const webhookInput = document.getElementById('support-webhook-input');
 
     if (statusBadge) {
-      if (settings.webhook_configured) {
+      if (settings.ticket_mode === 'direct_channel') {
         statusBadge.className = 'stock-toggle in-stock';
-        statusBadge.textContent = '✅ Đã kết nối Webhook: ' + (settings.webhook_masked || '');
+        statusBadge.textContent = '🎫 Tickets v2: Mở thẳng kênh Discord';
+      } else if (settings.webhook_configured) {
+        statusBadge.className = 'stock-toggle in-stock';
+        statusBadge.textContent = '✅ Form Web + Webhook: ' + (settings.webhook_masked || '');
       } else {
         statusBadge.className = 'stock-toggle out-of-stock';
-        statusBadge.textContent = '⚠️ Chưa cấu hình Discord Webhook';
+        statusBadge.textContent = '⚠️ Form Web (Chưa gắn Webhook)';
       }
+    }
+    if (channelInput && settings.ticket_channel_url && !channelInput.value) {
+      channelInput.value = settings.ticket_channel_url;
+    }
+    if (modeSelect && settings.ticket_mode) {
+      modeSelect.value = settings.ticket_mode;
     }
     if (zaloInput && settings.zalo_url && !zaloInput.value) {
       zaloInput.value = settings.zalo_url;
@@ -1128,6 +1155,8 @@ async function handleTicketStatusChange(id, status) {
 }
 
 async function saveSupportSettings() {
+  const channelUrl = document.getElementById('support-ticket-channel-input')?.value?.trim() || '';
+  const ticketMode = document.getElementById('support-ticket-mode-select')?.value || 'direct_channel';
   const webhookUrl = document.getElementById('support-webhook-input')?.value?.trim() || '';
   const zaloUrl = document.getElementById('support-zalo-input')?.value?.trim() || '';
   const msgBox = document.getElementById('support-settings-msg');
@@ -1138,7 +1167,8 @@ async function saveSupportSettings() {
   msgBox.innerHTML = '';
 
   try {
-    const payload = {};
+    const payload = { discord_ticket_mode: ticketMode };
+    if (channelUrl) payload.discord_ticket_channel_url = channelUrl;
     if (webhookUrl) payload.discord_ticket_webhook_url = webhookUrl;
     if (zaloUrl) payload.zalo_url = zaloUrl;
 

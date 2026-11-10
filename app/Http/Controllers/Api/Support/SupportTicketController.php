@@ -20,7 +20,7 @@ class SupportTicketController extends Controller
     }
 
     /**
-     * Public support config (Zalo URL, Discord invite link, whether webhook is configured).
+     * Public support config (Zalo URL, Tickets v2 channel link, ticket mode, webhook state).
      */
     public function publicConfig(): JsonResponse
     {
@@ -30,6 +30,8 @@ class SupportTicketController extends Controller
             'success' => true,
             'zaloUrl' => $this->discordService->resolveZaloUrl(),
             'discordInviteUrl' => $this->discordService->resolveDiscordInviteUrl(),
+            'ticketChannelUrl' => $this->discordService->resolveTicketChannelUrl(),
+            'ticketMode' => $this->discordService->resolveTicketMode(),
             'webhookConfigured' => $webhookUrl !== '' && $this->discordService->isValidDiscordWebhookUrl($webhookUrl),
         ]);
     }

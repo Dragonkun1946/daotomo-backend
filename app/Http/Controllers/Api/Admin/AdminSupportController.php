@@ -67,6 +67,8 @@ class AdminSupportController extends Controller
                 'webhook_masked' => $this->discordService->maskWebhookUrl($webhookUrl),
                 'zalo_url' => $this->discordService->resolveZaloUrl(),
                 'discord_invite_url' => $this->discordService->resolveDiscordInviteUrl(),
+                'ticket_channel_url' => $this->discordService->resolveTicketChannelUrl(),
+                'ticket_mode' => $this->discordService->resolveTicketMode(),
             ],
         ]);
     }
@@ -104,16 +106,42 @@ class AdminSupportController extends Controller
     }
 
     /**
-     * Update Discord ticket webhook URL and Zalo URL dynamically.
+     * Update Discord Tickets v2 channel link, click mode, webhook URL, and Zalo URL dynamically.
      */
     public function updateSettings(Request $request): JsonResponse
     {
+        $channelInput = $request->has('discord_ticket_channel_url')
+            ? trim((string) $request->input('discord_ticket_channel_url', ''))
+            : null;
+        $modeInput = $request->has('discord_ticket_mode')
+            ? trim((string) $request->input('discord_ticket_mode', ''))
+            : null;
         $webhookInput = $request->has('discord_ticket_webhook_url')
             ? trim((string) $request->input('discord_ticket_webhook_url', ''))
             : null;
         $zaloInput = $request->has('zalo_url')
             ? trim((string) $request->input('zalo_url', ''))
             : null;
+
+        if ($channelInput !== null && $channelInput !== '') {
+            if (!$this->discordService->isValidDiscordChannelOrInviteUrl($channelInput)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Link kênh Tickets v2 phải là link Discord hợp lệ (https://discord.com/channels/... hoặc https://discord.gg/...).',
+                ], 422);
+            }
+            AppSetting::setValue('discord_ticket_channel_url', $channelInput);
+        }
+
+        if ($modeInput !== null && $modeInput !== '') {
+            if (!in_array($modeInput, ['direct_channel', 'modal'], true)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Chế độ nút Ticket không hợp lệ (chỉ nhận direct_channel hoặc modal).',
+                ], 422);
+            }
+            AppSetting::setValue('discord_ticket_mode', $modeInput);
+        }
 
         if ($webhookInput !== null && $webhookInput !== '') {
             if (!$this->discordService->isValidDiscordWebhookUrl($webhookInput)) {
@@ -141,11 +169,13 @@ class AdminSupportController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Đã lưu cấu hình hỗ trợ Discord & Zalo!',
+            'message' => 'Đã lưu cấu hình Tickets v2 & Zalo thành công!',
             'settings' => [
                 'webhook_configured' => $currentWebhook !== '' && $this->discordService->isValidDiscordWebhookUrl($currentWebhook),
                 'webhook_masked' => $this->discordService->maskWebhookUrl($currentWebhook),
                 'zalo_url' => $this->discordService->resolveZaloUrl(),
+                'ticket_channel_url' => $this->discordService->resolveTicketChannelUrl(),
+                'ticket_mode' => $this->discordService->resolveTicketMode(),
             ],
         ]);
     }

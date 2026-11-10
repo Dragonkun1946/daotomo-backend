@@ -561,7 +561,12 @@ function initCommandPalette() {
     } else if (item.action === 'open_skin_viewer') {
       if (window.openSkinModal) window.openSkinModal();
     } else if (item.action === 'open_support_ticket') {
-      if (window.openSupportTicketModal) window.openSupportTicketModal();
+      if (DTM_SUPPORT_STATE.ticketMode === 'modal' && window.openSupportTicketModal) {
+        window.openSupportTicketModal();
+      } else {
+        const ticketUrl = DTM_SUPPORT_STATE.ticketChannelUrl || DTM_SUPPORT_STATE.discordInviteUrl;
+        window.open(ticketUrl, '_blank', 'noopener,noreferrer');
+      }
     } else if (item.action === 'open_zalo') {
       const zaloLink = document.getElementById('dtm-fab-zalo-btn')?.href || 'https://zalo.me/0977364711';
       window.open(zaloLink, '_blank', 'noopener,noreferrer');
@@ -618,6 +623,8 @@ function initCommandPalette() {
 const DTM_SUPPORT_STATE = {
   zaloUrl: 'https://zalo.me/0977364711',
   discordInviteUrl: 'https://discord.gg/rNQ6ytnSg',
+  ticketChannelUrl: 'https://discord.com/channels/1381315355317899314/1485265083918713063',
+  ticketMode: 'direct_channel',
   webhookConfigured: false,
 };
 
@@ -721,14 +728,14 @@ function initFloatingActionWidget() {
         </span>
       </a>
 
-      <!-- Discord Support Ticket Modal Trigger -->
-      <button class="dtm-fab-item discord-ticket-item" id="dtm-fab-ticket-btn" type="button" data-tooltip="Tạo Ticket Hỗ Trợ Discord" title="Tạo Ticket Hỗ Trợ Discord" aria-label="Tạo Ticket Hỗ Trợ Discord" role="menuitem">
+      <!-- Discord Support Ticket (Tickets v2 Channel / Modal) -->
+      <a href="${DTM_SUPPORT_STATE.ticketChannelUrl}" target="_blank" rel="noopener noreferrer" class="dtm-fab-item discord-ticket-item" id="dtm-fab-ticket-btn" data-tooltip="Tạo Ticket Discord (Tickets v2)" title="Tạo Ticket Discord (Tickets v2)" aria-label="Tạo Ticket Discord (Tickets v2)" role="menuitem">
         <span class="dtm-fab-item-icon">
           <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
             <path d="M19.27 5.33C17.94 4.71 16.5 4.26 15 4a.09.09 0 0 0-.07.03c-.18.33-.39.76-.53 1.09a16.09 16.09 0 0 0-4.8 0c-.14-.34-.35-.76-.54-1.09-.01-.02-.04-.03-.07-.03-1.5.26-2.93.71-4.27 1.33-.01 0-.02.01-.03.02-2.72 4.07-3.47 8.03-3.1 11.95 0 .02.01.04.03.05 1.8 1.32 3.53 2.12 5.24 2.65.03.01.06 0 .07-.02.4-.55.76-1.13 1.07-1.74.02-.04 0-.08-.04-.09-.57-.22-1.11-.48-1.64-.78-.04-.02-.04-.08-.01-.11.11-.08.22-.17.33-.25.02-.02.05-.02.07-.01 3.44 1.57 7.15 1.57 10.55 0 .02-.01.05-.01.07.01.11.09.22.17.33.26.04.03.04.09-.01.11-.52.31-1.07.56-1.64.78-.04.01-.05.06-.04.09.32.61.68 1.19 1.07 1.74.03.01.06.02.09.01 1.72-.53 3.45-1.33 5.25-2.65.02-.01.03-.03.03-.05.44-4.53-.73-8.46-3.1-11.95-.01-.01-.02-.02-.04-.02ZM8.52 14.91c-1.03 0-1.89-.95-1.89-2.12s.84-2.12 1.89-2.12c1.06 0 1.9.96 1.89 2.12 0 1.17-.84 2.12-1.89 2.12Zm6.97 0c-1.03 0-1.89-.95-1.89-2.12s.84-2.12 1.89-2.12c1.06 0 1.9.96 1.89 2.12 0 1.17-.83 2.12-1.89 2.12Z"/>
           </svg>
         </span>
-      </button>
+      </a>
 
       <!-- Admin Dashboard (Strictly for user.role === 'admin') -->
       <a href="/html/Admin.html" class="dtm-fab-item admin-item" id="dtm-fab-admin-btn" style="display:none;" data-tooltip="Trang Quản Trị (Admin)" title="Trang Quản Trị Hệ Thống (Dành riêng cho Admin)" aria-label="Trang Quản Trị" role="menuitem">
@@ -805,13 +812,14 @@ function initFloatingActionWidget() {
     });
   }
 
-  // Discord Support Ticket Modal trigger click
+  // Discord Support Ticket click: opens Tickets v2 channel directly, or web modal if configured
   if (ticketBtn) {
     ticketBtn.addEventListener('click', (e) => {
-      e.stopPropagation();
       SoundFX.playClick();
       toggleMenu(false);
-      if (typeof window.openSupportTicketModal === 'function') {
+      if (DTM_SUPPORT_STATE.ticketMode === 'modal' && typeof window.openSupportTicketModal === 'function') {
+        e.preventDefault();
+        e.stopPropagation();
         window.openSupportTicketModal();
       }
     });
@@ -841,7 +849,7 @@ function initFloatingActionWidget() {
 
   updateAdminVisibility();
 
-  // Sync public support config (Zalo link & Discord invite link)
+  // Sync public support config (Zalo link, Tickets v2 channel URL & mode)
   api.getSupportConfig().then((cfg) => {
     if (!cfg || !cfg.success) return;
     if (cfg.zaloUrl) {
@@ -852,8 +860,15 @@ function initFloatingActionWidget() {
     }
     if (cfg.discordInviteUrl) {
       DTM_SUPPORT_STATE.discordInviteUrl = cfg.discordInviteUrl;
+    }
+    if (cfg.ticketChannelUrl) {
+      DTM_SUPPORT_STATE.ticketChannelUrl = cfg.ticketChannelUrl;
+      if (ticketBtn) ticketBtn.href = cfg.ticketChannelUrl;
       const modalDiscord = document.getElementById('dtm-ticket-quick-discord');
-      if (modalDiscord) modalDiscord.href = cfg.discordInviteUrl;
+      if (modalDiscord) modalDiscord.href = cfg.ticketChannelUrl;
+    }
+    if (cfg.ticketMode === 'direct_channel' || cfg.ticketMode === 'modal') {
+      DTM_SUPPORT_STATE.ticketMode = cfg.ticketMode;
     }
     DTM_SUPPORT_STATE.webhookConfigured = !!cfg.webhookConfigured;
   }).catch(() => {});
@@ -947,8 +962,8 @@ function initSupportTicketModal() {
       </div>
 
       <div class="dtm-ticket-quick-links">
-        <a id="dtm-ticket-quick-discord" class="dtm-ticket-quick-btn discord" href="${DTM_SUPPORT_STATE.discordInviteUrl}" target="_blank" rel="noopener noreferrer">
-          💬 Vào Server Discord
+        <a id="dtm-ticket-quick-discord" class="dtm-ticket-quick-btn discord" href="${DTM_SUPPORT_STATE.ticketChannelUrl}" target="_blank" rel="noopener noreferrer">
+          🎫 Mở Kênh Tickets v2
         </a>
         <a id="dtm-ticket-quick-zalo" class="dtm-ticket-quick-btn zalo" href="${DTM_SUPPORT_STATE.zaloUrl}" target="_blank" rel="noopener noreferrer">
           📱 Nhắn Zalo Admin

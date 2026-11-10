@@ -22,6 +22,8 @@ class SupportTicketTest extends TestCase
                 'success' => true,
                 'zaloUrl' => 'https://zalo.me/0977364711',
                 'discordInviteUrl' => 'https://discord.gg/rNQ6ytnSg',
+                'ticketChannelUrl' => 'https://discord.com/channels/1381315355317899314/1485265083918713063',
+                'ticketMode' => 'direct_channel',
                 'webhookConfigured' => false,
             ]);
     }
@@ -158,10 +160,26 @@ class SupportTicketTest extends TestCase
             ])
             ->assertStatus(422);
 
+        // Invalid non-discord ticket channel URL and mode must be rejected
+        $this->withHeader('Authorization', 'Bearer ' . $token)
+            ->putJson('/api/admin/support/settings', [
+                'discord_ticket_channel_url' => 'https://evil.example.com/channels/1/2',
+            ])
+            ->assertStatus(422);
+
+        $this->withHeader('Authorization', 'Bearer ' . $token)
+            ->putJson('/api/admin/support/settings', [
+                'discord_ticket_mode' => 'invalid_mode',
+            ])
+            ->assertStatus(422);
+
         $validWebhook = 'https://discord.com/api/webhooks/987654321098765432/SecretTokenValue999';
+        $customChannelUrl = 'https://discord.com/channels/1381315355317899314/1485265083918719999';
         $this->withHeader('Authorization', 'Bearer ' . $token)
             ->putJson('/api/admin/support/settings', [
                 'discord_ticket_webhook_url' => $validWebhook,
+                'discord_ticket_channel_url' => $customChannelUrl,
+                'discord_ticket_mode' => 'modal',
                 'zalo_url' => 'https://zalo.me/0977364711',
             ])
             ->assertStatus(200)
@@ -169,8 +187,19 @@ class SupportTicketTest extends TestCase
                 'success' => true,
                 'settings' => [
                     'webhook_configured' => true,
+                    'ticket_channel_url' => $customChannelUrl,
+                    'ticket_mode' => 'modal',
                     'zalo_url' => 'https://zalo.me/0977364711',
                 ],
+            ]);
+
+        $this->getJson('/api/support/config')
+            ->assertStatus(200)
+            ->assertJson([
+                'success' => true,
+                'ticketChannelUrl' => $customChannelUrl,
+                'ticketMode' => 'modal',
+                'webhookConfigured' => true,
             ]);
 
         $this->withHeader('Authorization', 'Bearer ' . $token)

@@ -40,6 +40,8 @@ return [
         'client_secret' => env('DISCORD_CLIENT_SECRET'),
         'redirect' => env('DISCORD_CALLBACK_URL'),
         'ticket_webhook_url' => env('DISCORD_TICKET_WEBHOOK_URL'),
+        'ticket_channel_url' => env('DISCORD_TICKET_CHANNEL_URL', 'https://discord.com/channels/1381315355317899314/1485265083918713063'),
+        'ticket_mode' => env('DISCORD_TICKET_MODE', 'direct_channel'),
         'invite_url' => env('DISCORD_INVITE_URL', 'https://discord.gg/rNQ6ytnSg'),
     ],
 

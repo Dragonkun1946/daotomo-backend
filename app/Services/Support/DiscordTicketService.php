@@ -43,6 +43,39 @@ class DiscordTicketService
         return trim((string) config('services.discord.invite_url', 'https://discord.gg/rNQ6ytnSg'));
     }
 
+    public function resolveTicketChannelUrl(): string
+    {
+        $dbUrl = trim((string) AppSetting::getValue('discord_ticket_channel_url', ''));
+        if ($dbUrl !== '') {
+            return $dbUrl;
+        }
+
+        return trim((string) config(
+            'services.discord.ticket_channel_url',
+            'https://discord.com/channels/1381315355317899314/1485265083918713063'
+        ));
+    }
+
+    public function resolveTicketMode(): string
+    {
+        $dbMode = trim((string) AppSetting::getValue('discord_ticket_mode', ''));
+        if (in_array($dbMode, ['direct_channel', 'modal'], true)) {
+            return $dbMode;
+        }
+
+        $cfgMode = trim((string) config('services.discord.ticket_mode', 'direct_channel'));
+        return in_array($cfgMode, ['direct_channel', 'modal'], true) ? $cfgMode : 'direct_channel';
+    }
+
+    public function isValidDiscordChannelOrInviteUrl(string $url): bool
+    {
+        $url = trim($url);
+        return (bool) preg_match(
+            '#^https://((canary|ptb)\.)?(discord|discordapp)\.com/(channels/\d+/\d+(/\d+)?|invite/[A-Za-z0-9-]+)/?$#',
+            $url
+        ) || (bool) preg_match('#^https://discord\.gg/[A-Za-z0-9-]+/?$#', $url);
+    }
+
     public function isValidDiscordWebhookUrl(string $url): bool
     {
         return (bool) preg_match(
