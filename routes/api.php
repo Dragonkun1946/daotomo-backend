@@ -11,8 +11,10 @@ use App\Http\Controllers\Api\Admin\AdminProductController;
 use App\Http\Controllers\Api\Order\OrderController;
 use App\Http\Controllers\Api\Admin\AdminOrderController;
 use App\Http\Controllers\Api\Admin\AdminUserController;
+use App\Http\Controllers\Api\Admin\AdminSupportController;
 use App\Http\Controllers\Api\Checkin\CheckinController;
 use App\Http\Controllers\Api\Payment\SepayWebhookController;
+use App\Http\Controllers\Api\Support\SupportTicketController;
 use App\Http\Controllers\Api\User\GameLinkController;
 use App\Http\Controllers\Api\Internal\InternalMinecraftBridgeController;
 use App\Http\Middleware\AdminMiddleware;
@@ -63,6 +65,10 @@ Route::get('/orders/check-status/{code}', [OrderController::class, 'showByCode']
 Route::get('/orders/status/{code}', [OrderController::class, 'showByCode']);
 Route::post('/orders/guest', [OrderController::class, 'storeGuest']);
 
+// ─── Public Support & Discord Ticket Routes ──────────────────────────────────
+Route::get('/support/config', [SupportTicketController::class, 'publicConfig']);
+Route::middleware('throttle:6,1')->post('/tickets', [SupportTicketController::class, 'store']);
+
 // ─── SePay Webhook Endpoints ──────────────────────────────────────────────────
 Route::match(['GET', 'POST'], '/webhooks/sepay', [SepayWebhookController::class, 'handleWebhook']);
 Route::match(['GET', 'POST'], '/sepay/webhook', [SepayWebhookController::class, 'handleWebhook']);
@@ -84,6 +90,9 @@ Route::middleware('auth:sanctum')->group(function () {
     // Checkin daily
     Route::post('/checkin', [CheckinController::class, 'store']);
     Route::get('/checkin/me', [CheckinController::class, 'me']);
+
+    // Support Tickets (Authenticated User History)
+    Route::get('/tickets/my', [SupportTicketController::class, 'myTickets']);
 
     // Game Account Linking (1-to-1 PIN Handshake)
     Route::post('/user/game-link', [GameLinkController::class, 'linkGame']);
@@ -108,6 +117,12 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put('/admin/users/{id}/password', [AdminUserController::class, 'changePassword']);
         Route::post('/admin/users/{id}/unlink', [AdminUserController::class, 'unlinkGame']);
         Route::delete('/admin/users/{id}/link', [AdminUserController::class, 'unlinkGame']);
+
+        // Support Tickets & Discord Webhook Management
+        Route::get('/admin/tickets', [AdminSupportController::class, 'index']);
+        Route::put('/admin/tickets/{id}', [AdminSupportController::class, 'updateStatus']);
+        Route::put('/admin/support/settings', [AdminSupportController::class, 'updateSettings']);
+        Route::post('/admin/support/test-webhook', [AdminSupportController::class, 'testWebhook']);
     });
 });
 

@@ -418,6 +418,20 @@ const api = {
   getCheckinStatus: () => api.request('/checkin/me'),
   updateSkin: (skinData, skinUrl) =>
     api.request('/auth/skin', { method: 'POST', body: JSON.stringify({ skinData, skinUrl }) }),
+  getSupportConfig: () => api.request('/support/config'),
+  createSupportTicket: (payload) =>
+    api.request('/tickets', { method: 'POST', body: JSON.stringify(payload) }),
+  getMyTickets: () => api.request('/tickets/my'),
+  getAdminTickets: (params = {}) => {
+    const qs = new URLSearchParams(params).toString();
+    return api.request(`/admin/tickets${qs ? '?' + qs : ''}`);
+  },
+  adminUpdateTicket: (id, payload) =>
+    api.request(`/admin/tickets/${id}`, { method: 'PUT', body: JSON.stringify(payload) }),
+  adminUpdateSupportSettings: (payload) =>
+    api.request('/admin/support/settings', { method: 'PUT', body: JSON.stringify(payload) }),
+  adminTestSupportWebhook: (discord_ticket_webhook_url = '') =>
+    api.request('/admin/support/test-webhook', { method: 'POST', body: JSON.stringify({ discord_ticket_webhook_url }) }),
   getActiveSkinUrl: () => {
     const customSkin = localStorage.getItem('dtm_custom_skin');
     if (customSkin) return customSkin;
@@ -442,6 +456,8 @@ const COMMAND_ITEMS = [
   { icon: '🎮', title: 'Sao Chép IP Server (play.daotomo.net)', type: 'action', action: 'copy_ip' },
   { icon: '🗺️', title: 'Bản Đồ Thế Giới & Tọa Độ Địa Danh', type: 'link', url: '/html/Map.html' },
   { icon: '💬', title: 'Cộng Đồng Discord — Voice, Chat & Event', type: 'link', url: '/html/Discord.html' },
+  { icon: '🎫', title: 'Tạo Ticket Hỗ Trợ Discord — Gửi BQT xử lý', type: 'action', action: 'open_support_ticket' },
+  { icon: '📱', title: 'Nhắn Tin Hỗ Trợ Qua Zalo (0977364711)', type: 'action', action: 'open_zalo' },
   { icon: '📅', title: 'Điểm Danh Hằng Ngày — Tích chuỗi nhận quà', type: 'link', url: '/html/Checkin.html' },
   { icon: '📦', title: 'Lịch Sử Đơn Hàng & Tài Khoản Của Tôi', type: 'link', url: '/html/Account.html' },
   { icon: '🧍', title: 'Mô Hình Nhân Vật 3D — Xoay & tương tác skin Minecraft', type: 'action', action: 'open_skin_viewer' },
@@ -544,6 +560,11 @@ function initCommandPalette() {
       updateSoundBtn();
     } else if (item.action === 'open_skin_viewer') {
       if (window.openSkinModal) window.openSkinModal();
+    } else if (item.action === 'open_support_ticket') {
+      if (window.openSupportTicketModal) window.openSupportTicketModal();
+    } else if (item.action === 'open_zalo') {
+      const zaloLink = document.getElementById('dtm-fab-zalo-btn')?.href || 'https://zalo.me/0977364711';
+      window.open(zaloLink, '_blank', 'noopener,noreferrer');
     }
   }
 
@@ -594,6 +615,19 @@ function initCommandPalette() {
 /* ═══════════════════════════════════════════════════════════
    NAVBAR & FLOATING ACTION DOCK (Sound, Skin 3D, Admin)
 ═══════════════════════════════════════════════════════════ */
+const DTM_SUPPORT_STATE = {
+  zaloUrl: 'https://zalo.me/0977364711',
+  discordInviteUrl: 'https://discord.gg/rNQ6ytnSg',
+  webhookConfigured: false,
+};
+
+function getSoundSvg(enabled) {
+  if (enabled) {
+    return `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>`;
+  }
+  return `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg>`;
+}
+
 function updateSoundBtn() {
   const btn = document.getElementById('btn-sound-toggle');
   if (btn) {
@@ -602,11 +636,13 @@ function updateSoundBtn() {
     btn.classList.toggle('active', SoundFX.enabled);
   }
   const dockIcon = document.getElementById('dtm-fab-sound-icon');
-  const dockTag = document.getElementById('dtm-fab-sound-tag');
   const dockBtn = document.getElementById('dtm-fab-sound-btn');
-  if (dockIcon && dockTag && dockBtn) {
-    dockIcon.textContent = SoundFX.enabled ? '🔊' : '🔇';
-    dockTag.textContent = SoundFX.enabled ? 'BẬT' : 'TẮT';
+  if (dockIcon && dockBtn) {
+    const label = SoundFX.enabled ? 'Âm thanh: BẬT' : 'Âm thanh: TẮT';
+    dockIcon.innerHTML = getSoundSvg(SoundFX.enabled);
+    dockBtn.setAttribute('data-tooltip', label);
+    dockBtn.setAttribute('title', label);
+    dockBtn.setAttribute('aria-label', label);
     dockBtn.classList.toggle('active', SoundFX.enabled);
     dockBtn.classList.toggle('muted', !SoundFX.enabled);
   }
@@ -639,9 +675,7 @@ function initNavbarActions() {
 
 /* ═══════════════════════════════════════════════════════════
    UNIFIED FLOATING ACTION WIDGET (Bottom-Right FAB)
-   - Bật / Tắt Âm thanh
-   - Xem & Tuỳ chỉnh Mô hình Skin 3D
-   - Trang Quản Trị Hệ Thống (Chỉ Admin mới thấy)
+   - Circular Popup Stack: Âm thanh, Skin 3D, Zalo, Ticket Discord, Admin
 ═══════════════════════════════════════════════════════════ */
 function initFloatingActionWidget() {
   if (document.getElementById('dtm-fab-widget')) return;
@@ -656,28 +690,53 @@ function initFloatingActionWidget() {
   widget.setAttribute('aria-label', 'Tiện ích Đảo Tò Mò');
   widget.style.cssText = 'position:fixed !important;bottom:22px !important;right:22px !important;z-index:99990 !important;width:52px !important;height:52px !important;display:block !important;pointer-events:none !important;margin:0 !important;padding:0 !important;transform:none !important;';
 
+  const soundLabel = SoundFX.enabled ? 'Âm thanh: BẬT' : 'Âm thanh: TẮT';
+
   widget.innerHTML = `
-    <!-- Action Menu Popover (Opens upwards above trigger) -->
+    <!-- Action Menu Popover (Circular icon buttons stacked above trigger) -->
     <div class="dtm-fab-menu" id="dtm-fab-menu" role="menu">
       <!-- Sound Toggle -->
-      <button class="dtm-fab-item ${SoundFX.enabled ? 'active' : 'muted'}" id="dtm-fab-sound-btn" type="button" title="Bật / Tắt âm thanh hiệu ứng" role="menuitem">
-        <span class="dtm-fab-item-icon" id="dtm-fab-sound-icon">${SoundFX.enabled ? '🔊' : '🔇'}</span>
-        <span class="dtm-fab-item-label">Âm thanh</span>
-        <span class="dtm-fab-item-tag" id="dtm-fab-sound-tag">${SoundFX.enabled ? 'BẬT' : 'TẮT'}</span>
+      <button class="dtm-fab-item sound-item ${SoundFX.enabled ? 'active' : 'muted'}" id="dtm-fab-sound-btn" type="button" data-tooltip="${soundLabel}" title="${soundLabel}" aria-label="${soundLabel}" role="menuitem">
+        <span class="dtm-fab-item-icon" id="dtm-fab-sound-icon">${getSoundSvg(SoundFX.enabled)}</span>
       </button>
 
       <!-- 3D Skin Viewer -->
-      <button class="dtm-fab-item" id="dtm-fab-skin-btn" type="button" title="Xem mô hình nhân vật Minecraft 3D" role="menuitem">
-        <span class="dtm-fab-item-icon">🧍</span>
-        <span class="dtm-fab-item-label">Skin 3D</span>
-        <span class="dtm-fab-item-tag">3D</span>
+      <button class="dtm-fab-item skin-item" id="dtm-fab-skin-btn" type="button" data-tooltip="Mô hình Skin 3D" title="Mô hình Skin 3D" aria-label="Mô hình Skin 3D" role="menuitem">
+        <span class="dtm-fab-item-icon">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+            <polyline points="3.27 6.96 12 12.01 20.73 6.96"/>
+            <line x1="12" y1="22.08" x2="12" y2="12"/>
+          </svg>
+        </span>
+      </button>
+
+      <!-- Zalo Direct Support -->
+      <a href="${DTM_SUPPORT_STATE.zaloUrl}" target="_blank" rel="noopener noreferrer" class="dtm-fab-item zalo-item" id="dtm-fab-zalo-btn" data-tooltip="Chat Zalo (0977364711)" title="Chat Zalo (0977364711)" aria-label="Chat Zalo" role="menuitem">
+        <span class="dtm-fab-item-icon">
+          <svg viewBox="0 0 24 24" width="24" height="24" fill="none">
+            <path d="M12 2C6.2 2 1.5 6.18 1.5 11.34c0 2.82 1.4 5.36 3.6 7.06-.16 1.44-.7 2.8-1.56 3.82-.2.24 0 .62.32.56 1.74-.28 3.44-.94 4.76-1.86 1.08.28 2.22.44 3.38.44 5.8 0 10.5-4.18 10.5-9.34S17.8 2 12 2Z" fill="#ffffff"/>
+            <text x="12" y="14.2" text-anchor="middle" fill="#0068ff" font-family="Arial, Helvetica, sans-serif" font-weight="900" font-size="8.2" letter-spacing="-0.2">Zalo</text>
+          </svg>
+        </span>
+      </a>
+
+      <!-- Discord Support Ticket Modal Trigger -->
+      <button class="dtm-fab-item discord-ticket-item" id="dtm-fab-ticket-btn" type="button" data-tooltip="Tạo Ticket Hỗ Trợ Discord" title="Tạo Ticket Hỗ Trợ Discord" aria-label="Tạo Ticket Hỗ Trợ Discord" role="menuitem">
+        <span class="dtm-fab-item-icon">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+            <path d="M19.27 5.33C17.94 4.71 16.5 4.26 15 4a.09.09 0 0 0-.07.03c-.18.33-.39.76-.53 1.09a16.09 16.09 0 0 0-4.8 0c-.14-.34-.35-.76-.54-1.09-.01-.02-.04-.03-.07-.03-1.5.26-2.93.71-4.27 1.33-.01 0-.02.01-.03.02-2.72 4.07-3.47 8.03-3.1 11.95 0 .02.01.04.03.05 1.8 1.32 3.53 2.12 5.24 2.65.03.01.06 0 .07-.02.4-.55.76-1.13 1.07-1.74.02-.04 0-.08-.04-.09-.57-.22-1.11-.48-1.64-.78-.04-.02-.04-.08-.01-.11.11-.08.22-.17.33-.25.02-.02.05-.02.07-.01 3.44 1.57 7.15 1.57 10.55 0 .02-.01.05-.01.07.01.11.09.22.17.33.26.04.03.04.09-.01.11-.52.31-1.07.56-1.64.78-.04.01-.05.06-.04.09.32.61.68 1.19 1.07 1.74.03.01.06.02.09.01 1.72-.53 3.45-1.33 5.25-2.65.02-.01.03-.03.03-.05.44-4.53-.73-8.46-3.1-11.95-.01-.01-.02-.02-.04-.02ZM8.52 14.91c-1.03 0-1.89-.95-1.89-2.12s.84-2.12 1.89-2.12c1.06 0 1.9.96 1.89 2.12 0 1.17-.84 2.12-1.89 2.12Zm6.97 0c-1.03 0-1.89-.95-1.89-2.12s.84-2.12 1.89-2.12c1.06 0 1.9.96 1.89 2.12 0 1.17-.83 2.12-1.89 2.12Z"/>
+          </svg>
+        </span>
       </button>
 
       <!-- Admin Dashboard (Strictly for user.role === 'admin') -->
-      <a href="/html/Admin.html" class="dtm-fab-item admin-item" id="dtm-fab-admin-btn" style="display:none;" title="Trang Quản Trị Hệ Thống (Dành riêng cho Admin)" role="menuitem">
-        <span class="dtm-fab-item-icon">🛡️</span>
-        <span class="dtm-fab-item-label">Quản Trị</span>
-        <span class="dtm-fab-item-tag">ADMIN</span>
+      <a href="/html/Admin.html" class="dtm-fab-item admin-item" id="dtm-fab-admin-btn" style="display:none;" data-tooltip="Trang Quản Trị (Admin)" title="Trang Quản Trị Hệ Thống (Dành riêng cho Admin)" aria-label="Trang Quản Trị" role="menuitem">
+        <span class="dtm-fab-item-icon">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+          </svg>
+        </span>
       </a>
     </div>
 
@@ -702,6 +761,8 @@ function initFloatingActionWidget() {
   const trigger = document.getElementById('dtm-fab-trigger');
   const soundBtn = document.getElementById('dtm-fab-sound-btn');
   const skinBtn = document.getElementById('dtm-fab-skin-btn');
+  const zaloBtn = document.getElementById('dtm-fab-zalo-btn');
+  const ticketBtn = document.getElementById('dtm-fab-ticket-btn');
   const adminBtn = document.getElementById('dtm-fab-admin-btn');
 
   function toggleMenu(forceOpen = null) {
@@ -736,6 +797,26 @@ function initFloatingActionWidget() {
     }
   });
 
+  // Zalo link click
+  if (zaloBtn) {
+    zaloBtn.addEventListener('click', () => {
+      SoundFX.playClick();
+      toggleMenu(false);
+    });
+  }
+
+  // Discord Support Ticket Modal trigger click
+  if (ticketBtn) {
+    ticketBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      SoundFX.playClick();
+      toggleMenu(false);
+      if (typeof window.openSupportTicketModal === 'function') {
+        window.openSupportTicketModal();
+      }
+    });
+  }
+
   // Close when clicking outside or pressing Escape
   document.addEventListener('click', (e) => {
     if (!widget.contains(e.target) && widget.classList.contains('open')) {
@@ -760,6 +841,23 @@ function initFloatingActionWidget() {
 
   updateAdminVisibility();
 
+  // Sync public support config (Zalo link & Discord invite link)
+  api.getSupportConfig().then((cfg) => {
+    if (!cfg || !cfg.success) return;
+    if (cfg.zaloUrl) {
+      DTM_SUPPORT_STATE.zaloUrl = cfg.zaloUrl;
+      if (zaloBtn) zaloBtn.href = cfg.zaloUrl;
+      const modalZalo = document.getElementById('dtm-ticket-quick-zalo');
+      if (modalZalo) modalZalo.href = cfg.zaloUrl;
+    }
+    if (cfg.discordInviteUrl) {
+      DTM_SUPPORT_STATE.discordInviteUrl = cfg.discordInviteUrl;
+      const modalDiscord = document.getElementById('dtm-ticket-quick-discord');
+      if (modalDiscord) modalDiscord.href = cfg.discordInviteUrl;
+    }
+    DTM_SUPPORT_STATE.webhookConfigured = !!cfg.webhookConfigured;
+  }).catch(() => {});
+
   // If logged in, also verify role via /auth/me to stay strictly synced
   if (api.isLoggedIn()) {
     api.getMe().then(({ user }) => {
@@ -773,6 +871,205 @@ function initFloatingActionWidget() {
   // React to login/logout/profile update events
   window.addEventListener('storage', updateAdminVisibility);
   window.addEventListener('daotomo:auth-changed', updateAdminVisibility);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   DISCORD SUPPORT TICKET MODAL (Submit ticket -> Discord Webhook)
+═══════════════════════════════════════════════════════════ */
+function initSupportTicketModal() {
+  if (document.getElementById('dtm-ticket-backdrop')) return;
+
+  const backdrop = document.createElement('div');
+  backdrop.id = 'dtm-ticket-backdrop';
+  backdrop.className = 'dtm-ticket-backdrop';
+  backdrop.innerHTML = `
+    <div class="dtm-ticket-card" role="dialog" aria-modal="true" aria-labelledby="dtm-ticket-title">
+      <div class="dtm-ticket-header">
+        <div>
+          <h2 id="dtm-ticket-title">🎫 Tạo Ticket Hỗ Trợ Discord</h2>
+          <p>Gửi yêu cầu trực tiếp tới kênh #ho-tro của Đội ngũ BQT Đảo Tò Mò</p>
+        </div>
+        <button type="button" class="dtm-ticket-close" id="dtm-ticket-close-btn" aria-label="Đóng">✕</button>
+      </div>
+
+      <div id="dtm-ticket-form-wrap">
+        <div class="dtm-ticket-field">
+          <label for="dtm-tk-category">Chủ đề cần hỗ trợ *</label>
+          <select id="dtm-tk-category" class="dtm-ticket-select">
+            <option value="payment">💳 Nạp Xu / Đơn Hàng / VietQR</option>
+            <option value="bug">🐛 Báo Lỗi Game / Website</option>
+            <option value="report">⚖️ Tố Cáo Vi Phạm / Hack</option>
+            <option value="account">🔐 Tài Khoản / Liên Kết / Quên Mật Khẩu</option>
+            <option value="other">💬 Thắc Mắc Khác / Góp Ý</option>
+          </select>
+        </div>
+
+        <div class="dtm-ticket-grid-2">
+          <div class="dtm-ticket-field">
+            <label for="dtm-tk-mc">Tên Minecraft (IGN)</label>
+            <input type="text" id="dtm-tk-mc" class="dtm-ticket-input" placeholder="VD: SteveVN">
+          </div>
+          <div class="dtm-ticket-field">
+            <label for="dtm-tk-discord">Discord của bạn (để BQT tag)</label>
+            <input type="text" id="dtm-tk-discord" class="dtm-ticket-input" placeholder="VD: @tenban">
+          </div>
+        </div>
+
+        <div class="dtm-ticket-field">
+          <label for="dtm-tk-subject">Tiêu đề ngắn *</label>
+          <input type="text" id="dtm-tk-subject" class="dtm-ticket-input" placeholder="VD: Đã chuyển khoản nhưng chưa nhận được Rank">
+        </div>
+
+        <div class="dtm-ticket-field">
+          <label for="dtm-tk-message">Nội dung chi tiết *</label>
+          <textarea id="dtm-tk-message" class="dtm-ticket-textarea" placeholder="Mô tả chi tiết sự cố, mã đơn hàng (#DTM-...) hoặc thời gian xảy ra để Admin xử lý nhanh nhất..."></textarea>
+        </div>
+
+        <div id="dtm-tk-error" style="margin-bottom:0.75rem;"></div>
+
+        <button type="button" id="dtm-tk-submit-btn" class="btn btn-primary btn-full" style="background:linear-gradient(135deg,#5865f2,#4752c4);box-shadow:0 6px 20px rgba(88,101,242,0.4);">
+          📨 Gửi Ticket Hỗ Trợ Ngay
+        </button>
+      </div>
+
+      <div id="dtm-ticket-success-wrap" style="display:none;text-align:center;padding:0.5rem 0;">
+        <div style="font-size:2.6rem;margin-bottom:0.4rem;">🎫</div>
+        <h3 style="color:#fff;font-family:var(--font-display);font-size:1.2rem;margin-bottom:0.35rem;">Đã Gửi Ticket Thành Công!</h3>
+        <div style="display:inline-flex;align-items:center;gap:0.5rem;padding:0.4rem 0.9rem;border-radius:9999px;background:rgba(88,101,242,0.18);border:1px solid rgba(129,140,248,0.45);color:#c7d2fe;font-family:var(--font-mono);font-weight:800;margin:0.5rem 0;">
+          <span id="dtm-tk-res-code">#TK-000000</span>
+          <button type="button" id="dtm-tk-copy-code" style="background:none;border:none;color:#38bdf8;cursor:pointer;font-size:0.8rem;font-weight:700;">📋 Chép</button>
+        </div>
+        <p id="dtm-tk-res-desc" style="font-size:0.86rem;color:#cbd5e1;line-height:1.55;margin:0.6rem 0 1rem;"></p>
+        <div style="display:flex;gap:0.65rem;justify-content:center;flex-wrap:wrap;">
+          <button type="button" id="dtm-tk-new-btn" class="btn btn-ghost" style="font-size:0.84rem;">➕ Gửi Ticket Khác</button>
+          <button type="button" id="dtm-tk-done-btn" class="btn btn-primary" style="font-size:0.84rem;">Đóng Lại</button>
+        </div>
+      </div>
+
+      <div class="dtm-ticket-quick-links">
+        <a id="dtm-ticket-quick-discord" class="dtm-ticket-quick-btn discord" href="${DTM_SUPPORT_STATE.discordInviteUrl}" target="_blank" rel="noopener noreferrer">
+          💬 Vào Server Discord
+        </a>
+        <a id="dtm-ticket-quick-zalo" class="dtm-ticket-quick-btn zalo" href="${DTM_SUPPORT_STATE.zaloUrl}" target="_blank" rel="noopener noreferrer">
+          📱 Nhắn Zalo Admin
+        </a>
+      </div>
+    </div>
+  `;
+
+  document.body.appendChild(backdrop);
+
+  const closeBtn = document.getElementById('dtm-ticket-close-btn');
+  const formWrap = document.getElementById('dtm-ticket-form-wrap');
+  const successWrap = document.getElementById('dtm-ticket-success-wrap');
+  const submitBtn = document.getElementById('dtm-tk-submit-btn');
+  const errBox = document.getElementById('dtm-tk-error');
+
+  function openModal(prefillCategory = null) {
+    const user = api.getUser();
+    const mcEl = document.getElementById('dtm-tk-mc');
+    const dcEl = document.getElementById('dtm-tk-discord');
+    const catEl = document.getElementById('dtm-tk-category');
+
+    if (user) {
+      if (mcEl && !mcEl.value) mcEl.value = user.minecraftUsername || user.minecraft_username || '';
+      if (dcEl && !dcEl.value) dcEl.value = user.discordUsername || user.discord_username || '';
+    }
+    if (prefillCategory && catEl) catEl.value = prefillCategory;
+
+    errBox.innerHTML = '';
+    formWrap.style.display = 'block';
+    successWrap.style.display = 'none';
+    backdrop.classList.add('open');
+    SoundFX.playPing();
+    setTimeout(() => document.getElementById('dtm-tk-subject')?.focus(), 80);
+  }
+
+  function closeModal() {
+    backdrop.classList.remove('open');
+  }
+
+  backdrop.addEventListener('click', (e) => {
+    if (e.target === backdrop) closeModal();
+  });
+  closeBtn?.addEventListener('click', closeModal);
+  document.getElementById('dtm-tk-done-btn')?.addEventListener('click', closeModal);
+  document.getElementById('dtm-tk-new-btn')?.addEventListener('click', () => {
+    document.getElementById('dtm-tk-subject').value = '';
+    document.getElementById('dtm-tk-message').value = '';
+    openModal();
+  });
+
+  document.getElementById('dtm-tk-copy-code')?.addEventListener('click', () => {
+    const code = document.getElementById('dtm-tk-res-code')?.textContent || '';
+    navigator.clipboard.writeText(code).then(() => {
+      SoundFX.playSuccess();
+      showToast('Đã sao chép mã ticket ' + code, 'success');
+    }).catch(() => {});
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && backdrop.classList.contains('open')) {
+      closeModal();
+    }
+  });
+
+  submitBtn?.addEventListener('click', async () => {
+    const category = document.getElementById('dtm-tk-category').value;
+    const minecraftUsername = document.getElementById('dtm-tk-mc').value.trim();
+    const discordUsername = document.getElementById('dtm-tk-discord').value.trim();
+    const subject = document.getElementById('dtm-tk-subject').value.trim();
+    const message = document.getElementById('dtm-tk-message').value.trim();
+
+    errBox.innerHTML = '';
+    if (subject.length < 4) {
+      errBox.innerHTML = '<div class="alert alert-error" style="font-size:0.82rem;margin:0;">⚠️ Tiêu đề hỗ trợ phải có ít nhất 4 ký tự.</div>';
+      SoundFX.playError();
+      return;
+    }
+    if (message.length < 10) {
+      errBox.innerHTML = '<div class="alert alert-error" style="font-size:0.82rem;margin:0;">⚠️ Vui lòng mô tả chi tiết sự cố (ít nhất 10 ký tự).</div>';
+      SoundFX.playError();
+      return;
+    }
+
+    submitBtn.disabled = true;
+    submitBtn.textContent = '⏳ Đang gửi Ticket...';
+
+    try {
+      const res = await api.createSupportTicket({
+        category,
+        minecraft_username: minecraftUsername,
+        discord_username: discordUsername,
+        subject,
+        message,
+      });
+
+      const code = res.ticket_code || res.data?.ticket_code || 'TK-NEW';
+      document.getElementById('dtm-tk-res-code').textContent = '#' + code;
+      document.getElementById('dtm-tk-res-desc').textContent = res.discord_dispatched
+        ? 'Thông tin Ticket của bạn đã được đẩy thẳng vào kênh hỗ trợ trên Discord của Admin! Bạn có thể tham gia Discord hoặc nhắn Zalo bên dưới để theo dõi trực tiếp.'
+        : 'Ticket của bạn đã được lưu lại trên hệ thống cho Admin xử lý. Bạn cũng có thể bấm vào Discord hoặc Zalo bên dưới để được hỗ trợ ngay lập tức.';
+
+      formWrap.style.display = 'none';
+      successWrap.style.display = 'block';
+      document.getElementById('dtm-tk-subject').value = '';
+      document.getElementById('dtm-tk-message').value = '';
+
+      SoundFX.playSuccess();
+      ConfettiFX.fire(window.innerWidth / 2, window.innerHeight * 0.45, 50);
+      showToast(res.message || 'Gửi Ticket thành công!', 'success');
+    } catch (e) {
+      SoundFX.playError();
+      errBox.innerHTML = `<div class="alert alert-error" style="font-size:0.82rem;margin:0;">❌ ${e.message}</div>`;
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.textContent = '📨 Gửi Ticket Hỗ Trợ Ngay';
+    }
+  });
+
+  window.openSupportTicketModal = openModal;
+  window.closeSupportTicketModal = closeModal;
 }
 
 /* ═══════════════════════════════════════════════════════════
@@ -962,6 +1259,7 @@ document.addEventListener('DOMContentLoaded', () => {
   /* ── Initialize engines ── */
   initNavbarActions();
   initFloatingActionWidget();
+  initSupportTicketModal();
   initCommandPalette();
   initHeroParticles();
   init3DTilt();

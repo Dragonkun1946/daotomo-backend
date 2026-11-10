@@ -1025,28 +1025,26 @@ footer {
   50% { transform: scale(1.25); opacity: 0.65; }
 }
 
-/* Menu Popover (Opens Upwards Above Trigger) */
+/* Menu Popover (Floating Circular Icon Stack Above Trigger) */
 .dtm-fab-menu {
   position: absolute;
   bottom: calc(100% + 12px);
   right: 0;
+  width: 52px;
   display: flex;
   flex-direction: column;
-  gap: 7px;
-  min-width: 220px;
-  background: rgba(13, 18, 36, 0.96);
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
-  border: 1px solid rgba(34, 211, 238, 0.3);
-  border-radius: 16px;
-  padding: 8px;
-  box-shadow: 0 22px 45px rgba(0, 0, 0, 0.7), 0 0 25px rgba(34, 211, 238, 0.2);
-  
+  align-items: center;
+  gap: 10px;
+  padding: 0;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+
   opacity: 0;
   visibility: hidden;
   pointer-events: none;
-  transform: translateY(10px) scale(0.92);
-  transform-origin: bottom right;
+  transform: translateY(12px) scale(0.88);
+  transform-origin: bottom center;
   transition: opacity 0.22s cubic-bezier(0.16, 1, 0.3, 1),
               transform 0.22s cubic-bezier(0.16, 1, 0.3, 1),
               visibility 0.22s;
@@ -1059,86 +1057,135 @@ footer {
   transform: translateY(0) scale(1);
 }
 
-/* Action Items */
+/* Circular Action Icon Buttons */
 .dtm-fab-item {
+  position: relative;
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 8px 12px;
-  border-radius: 10px;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  justify-content: center;
+  width: 46px;
+  height: 46px;
+  padding: 0;
+  border-radius: 50%;
+  background: linear-gradient(135deg, rgba(20, 27, 50, 0.96) 0%, rgba(11, 16, 32, 0.98) 100%);
+  border: 1.5px solid rgba(255, 255, 255, 0.16);
   color: #e2e8f0;
-  font-size: 0.86rem;
-  font-weight: 600;
   text-decoration: none;
   cursor: pointer;
-  transition: all 0.18s ease;
-  width: 100%;
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+              border-color 0.2s ease,
+              box-shadow 0.2s ease,
+              background 0.2s ease,
+              color 0.2s ease;
   box-sizing: border-box;
-  text-align: left;
+  outline: none;
 }
 
 .dtm-fab-item:hover {
-  background: rgba(34, 211, 238, 0.12);
-  border-color: rgba(34, 211, 238, 0.35);
+  transform: scale(1.1) translateY(-1px);
+  border-color: #22d3ee;
   color: #38bdf8;
-  transform: translateX(-2px);
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.65), 0 0 16px rgba(34, 211, 238, 0.45);
+}
+
+.dtm-fab-item[data-tooltip]::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  right: calc(100% + 12px);
+  top: 50%;
+  transform: translateY(-50%) translateX(6px);
+  padding: 5px 11px;
+  border-radius: 9999px;
+  background: rgba(10, 14, 28, 0.96);
+  border: 1px solid rgba(34, 211, 238, 0.35);
+  color: #f8fafc;
+  font-size: 0.76rem;
+  font-weight: 700;
+  white-space: nowrap;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.55);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.18s ease, transform 0.18s ease;
+}
+
+.dtm-fab-item[data-tooltip]:hover::after,
+.dtm-fab-item[data-tooltip]:focus-visible::after {
+  opacity: 1;
+  transform: translateY(-50%) translateX(0);
 }
 
 .dtm-fab-item-icon {
-  font-size: 1.15rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   width: 24px;
-  text-align: center;
-  flex-shrink: 0;
+  height: 24px;
+  font-size: 1.2rem;
   line-height: 1;
 }
 
-.dtm-fab-item-label {
-  flex-grow: 1;
-  text-align: left;
-  white-space: nowrap;
-}
-
-.dtm-fab-item-tag {
-  font-size: 0.68rem;
-  font-weight: 700;
-  padding: 2px 7px;
-  border-radius: 9999px;
-  background: rgba(255, 255, 255, 0.08);
-  color: #94a3b8;
-  letter-spacing: 0.03em;
-  white-space: nowrap;
-}
-
-.dtm-fab-item.active .dtm-fab-item-tag {
-  background: rgba(34, 197, 94, 0.2);
+/* Sound Circle Accent */
+.dtm-fab-item.sound-item.active {
+  border-color: rgba(34, 197, 94, 0.55);
   color: #4ade80;
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.55), 0 0 12px rgba(34, 197, 94, 0.25);
 }
 
-.dtm-fab-item.muted .dtm-fab-item-tag {
-  background: rgba(239, 68, 68, 0.2);
+.dtm-fab-item.sound-item.muted {
+  border-color: rgba(239, 68, 68, 0.5);
   color: #f87171;
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.55), 0 0 12px rgba(239, 68, 68, 0.2);
+}
+
+/* Skin 3D Circle Accent */
+.dtm-fab-item.skin-item {
+  border-color: rgba(34, 211, 238, 0.45);
+  color: #38bdf8;
+}
+
+/* Zalo Circle Accent */
+.dtm-fab-item.zalo-item {
+  background: linear-gradient(135deg, #0068ff 0%, #0052cc 100%);
+  border-color: rgba(96, 165, 250, 0.75);
+  color: #ffffff;
+  box-shadow: 0 8px 22px rgba(0, 104, 255, 0.35);
+}
+
+.dtm-fab-item.zalo-item:hover {
+  border-color: #93c5fd;
+  color: #ffffff;
+  box-shadow: 0 10px 26px rgba(0, 104, 255, 0.55), 0 0 18px rgba(59, 130, 246, 0.5);
+}
+
+/* Discord Support Ticket Circle Accent */
+.dtm-fab-item.discord-ticket-item {
+  background: linear-gradient(135deg, #5865f2 0%, #4752c4 100%);
+  border-color: rgba(165, 180, 252, 0.7);
+  color: #ffffff;
+  box-shadow: 0 8px 22px rgba(88, 101, 242, 0.38);
+}
+
+.dtm-fab-item.discord-ticket-item:hover {
+  border-color: #c7d2fe;
+  color: #ffffff;
+  box-shadow: 0 10px 26px rgba(88, 101, 242, 0.58), 0 0 18px rgba(129, 140, 248, 0.55);
 }
 
 /* Admin Item Distinctive Gold Glow */
 .dtm-fab-item.admin-item {
-  background: linear-gradient(135deg, rgba(234, 179, 8, 0.14) 0%, rgba(249, 115, 22, 0.08) 100%);
-  border: 1px solid rgba(234, 179, 8, 0.35);
-  color: #fef08a;
+  background: linear-gradient(135deg, rgba(234, 179, 8, 0.24) 0%, rgba(249, 115, 22, 0.16) 100%);
+  border-color: rgba(234, 179, 8, 0.55);
+  color: #fde047;
 }
 
 .dtm-fab-item.admin-item:hover {
-  background: linear-gradient(135deg, rgba(234, 179, 8, 0.26) 0%, rgba(249, 115, 22, 0.18) 100%);
+  background: linear-gradient(135deg, rgba(234, 179, 8, 0.36) 0%, rgba(249, 115, 22, 0.24) 100%);
   border-color: #facc15;
   color: #ffffff;
-  box-shadow: 0 0 14px rgba(250, 204, 21, 0.4);
-}
-
-.dtm-fab-item.admin-item .dtm-fab-item-tag {
-  background: rgba(234, 179, 8, 0.25);
-  color: #fde047;
-  border: 1px solid rgba(234, 179, 8, 0.4);
+  box-shadow: 0 0 16px rgba(250, 204, 21, 0.5);
 }
 
 @media (max-width: 640px) {
@@ -1154,9 +1201,208 @@ footer {
     border-radius: 12px;
   }
   .dtm-fab-menu {
-    min-width: 195px;
-    right: 0;
+    width: 48px;
+    gap: 8px;
   }
+  .dtm-fab-item {
+    width: 42px;
+    height: 42px;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   DISCORD SUPPORT TICKET MODAL
+═══════════════════════════════════════════════════════════ */
+.dtm-ticket-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(4, 6, 14, 0.85);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  z-index: 10006;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.22s ease;
+}
+
+.dtm-ticket-backdrop.open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.dtm-ticket-card {
+  width: 100%;
+  max-width: 510px;
+  max-height: 92vh;
+  overflow-y: auto;
+  background: linear-gradient(145deg, #13182e 0%, #0c1020 100%);
+  border: 1px solid rgba(88, 101, 242, 0.45);
+  border-radius: var(--radius-lg, 18px);
+  box-shadow: 0 25px 70px rgba(0, 0, 0, 0.8), 0 0 32px rgba(88, 101, 242, 0.28);
+  padding: 1.25rem 1.4rem;
+  color: #e2e8f0;
+  transform: translateY(16px) scale(0.96);
+  transition: transform 0.24s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.dtm-ticket-backdrop.open .dtm-ticket-card {
+  transform: translateY(0) scale(1);
+}
+
+.dtm-ticket-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.9rem;
+  padding-bottom: 0.7rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.dtm-ticket-header h2 {
+  font-family: var(--font-display, 'Chakra Petch', sans-serif);
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: #fff;
+  margin: 0 0 0.2rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.dtm-ticket-header p {
+  font-size: 0.8rem;
+  color: var(--text-muted, #94a3b8);
+  margin: 0;
+}
+
+.dtm-ticket-close {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #94a3b8;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.18s ease;
+}
+
+.dtm-ticket-close:hover {
+  background: rgba(244, 63, 94, 0.2);
+  border-color: rgba(244, 63, 94, 0.45);
+  color: #fda4af;
+}
+
+.dtm-ticket-grid-2 {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.75rem;
+}
+
+@media (min-width: 500px) {
+  .dtm-ticket-grid-2 {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.dtm-ticket-field {
+  margin-bottom: 0.65rem;
+}
+
+.dtm-ticket-field label {
+  display: block;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #cbd5e1;
+  margin-bottom: 0.3rem;
+}
+
+.dtm-ticket-input,
+.dtm-ticket-select,
+.dtm-ticket-textarea {
+  width: 100%;
+  box-sizing: border-box;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 10px;
+  padding: 0.58rem 0.85rem;
+  color: #fff;
+  font-size: 0.86rem;
+  font-family: inherit;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.dtm-ticket-select option {
+  background: #13182e;
+  color: #f8fafc;
+}
+
+.dtm-ticket-input:focus,
+.dtm-ticket-select:focus,
+.dtm-ticket-textarea:focus {
+  outline: none;
+  border-color: #818cf8;
+  box-shadow: 0 0 0 3px rgba(88, 101, 242, 0.2);
+}
+
+.dtm-ticket-textarea {
+  min-height: 82px;
+  resize: vertical;
+  line-height: 1.5;
+}
+
+.dtm-ticket-quick-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin-top: 0.8rem;
+  padding-top: 0.75rem;
+  border-top: 1px dashed rgba(255, 255, 255, 0.1);
+}
+
+.dtm-ticket-quick-btn {
+  flex: 1;
+  min-width: 140px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  padding: 0.55rem 0.85rem;
+  border-radius: 10px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.dtm-ticket-quick-btn.zalo {
+  background: rgba(0, 104, 255, 0.15);
+  border: 1px solid rgba(0, 104, 255, 0.4);
+  color: #60a5fa;
+}
+
+.dtm-ticket-quick-btn.zalo:hover {
+  background: #0068ff;
+  color: #fff;
+}
+
+.dtm-ticket-quick-btn.discord {
+  background: rgba(88, 101, 242, 0.15);
+  border: 1px solid rgba(88, 101, 242, 0.4);
+  color: #a5b4fc;
+}
+
+.dtm-ticket-quick-btn.discord:hover {
+  background: #5865f2;
+  color: #fff;
 }
 
 /* ═══════════════════════════════════════════════════════════

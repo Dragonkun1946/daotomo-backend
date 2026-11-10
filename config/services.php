@@ -39,6 +39,12 @@ return [
         'client_id' => env('DISCORD_CLIENT_ID'),
         'client_secret' => env('DISCORD_CLIENT_SECRET'),
         'redirect' => env('DISCORD_CALLBACK_URL'),
+        'ticket_webhook_url' => env('DISCORD_TICKET_WEBHOOK_URL'),
+        'invite_url' => env('DISCORD_INVITE_URL', 'https://discord.gg/rNQ6ytnSg'),
+    ],
+
+    'support' => [
+        'zalo_url' => env('SUPPORT_ZALO_URL', 'https://zalo.me/0977364711'),
     ],
 
     'sepay' => [

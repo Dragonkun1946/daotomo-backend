@@ -6,7 +6,7 @@
   <title>Admin — Đảo Tò Mò</title>
   <link rel="icon" type="image/x-icon" href="/img/favicon.ico">
   <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@600;700;800&family=Be+Vietnam+Pro:wght@300;400;500;700;800;900&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/css/global.css?v=2.2">
+  <link rel="stylesheet" href="/css/global.css?v=2.3">
   <style>
     .admin-wrap { max-width: 1100px; margin: 0 auto; padding: 2rem 1.25rem 3rem; }
     .admin-header {
@@ -177,6 +177,7 @@
         <button class="tab-btn active" onclick="switchTab('products')">📦 Sản phẩm</button>
         <button class="tab-btn" onclick="switchTab('orders')">🧾 Đơn hàng</button>
         <button class="tab-btn" onclick="switchTab('users')">👥 Tài khoản</button>
+        <button class="tab-btn" onclick="switchTab('tickets')">🎫 Ticket Hỗ Trợ</button>
       </div>
 
       <!-- PRODUCTS TAB -->
@@ -347,6 +348,71 @@
         </div>
       </div>
 
+      <!-- TICKETS & DISCORD WEBHOOK TAB -->
+      <div class="tab-panel" id="tab-tickets">
+        <div class="form-card">
+          <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.75rem;margin-bottom:1rem">
+            <h2 style="margin:0">🔗 Cấu hình Discord Ticket Webhook & Zalo Hỗ Trợ</h2>
+            <span id="support-webhook-status" class="stock-toggle out-of-stock">⏳ Đang kiểm tra...</span>
+          </div>
+          <p style="font-size:0.82rem;color:var(--text-muted);margin-bottom:1rem;line-height:1.5">
+            Hướng dẫn lấy Discord Webhook: Mở kênh <strong>#ticket</strong> hoặc <strong>#ho-tro</strong> trên Discord → <em>Chỉnh sửa kênh → Tích hợp (Integrations) → Webhooks → Webhook mới → Sao chép URL Webhook</em> và dán vào ô bên dưới.
+          </p>
+          <div id="support-settings-msg" style="margin-bottom:0.85rem"></div>
+          <div class="form-grid">
+            <div class="form-group full">
+              <label>Discord Ticket Webhook URL</label>
+              <input class="input" type="url" id="support-webhook-input" placeholder="https://discord.com/api/webhooks/123456789/xxxxxxxxx (Để trống nếu không muốn đổi URL hiện tại)">
+            </div>
+            <div class="form-group full">
+              <label>Link Zalo Hỗ Trợ (nút tròn Zalo)</label>
+              <input class="input" type="url" id="support-zalo-input" placeholder="https://zalo.me/0977364711">
+            </div>
+            <div class="form-group full" style="display:flex;gap:0.75rem;flex-wrap:wrap;margin-top:0.25rem">
+              <button class="btn btn-primary" id="btn-save-support-cfg" onclick="saveSupportSettings()">💾 Lưu Cấu Hình</button>
+              <button class="btn btn-ghost" id="btn-test-webhook" onclick="testDiscordWebhook()">🧪 Gửi Thử Vào Discord</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-card" style="padding:0;overflow:hidden">
+          <div style="padding:1.25rem 1.75rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.75rem">
+            <div>
+              <h2 style="margin:0">🎫 Danh sách Ticket từ người chơi</h2>
+              <div id="admin-ticket-alert" style="margin-top:0.4rem"></div>
+            </div>
+            <div style="display:flex;gap:0.5rem;align-items:center;flex-wrap:wrap">
+              <input type="text" id="ticket-search-input" placeholder="Tìm mã #TK / tiêu đề / MC..." class="input" style="padding:0.4rem 0.75rem;font-size:0.8rem;width:210px" onkeydown="if(event.key==='Enter')loadTickets()">
+              <select id="ticket-filter-status" class="input" style="padding:0.4rem 0.75rem;font-size:0.8rem;width:155px" onchange="loadTickets()">
+                <option value="all">🎯 Tất cả trạng thái</option>
+                <option value="open">🟢 Mới gửi (open)</option>
+                <option value="in_progress">🟡 Đang xử lý</option>
+                <option value="resolved">✅ Đã giải quyết</option>
+                <option value="closed">🔒 Đã đóng</option>
+              </select>
+              <button class="btn btn-ghost" style="font-size:.8rem;padding:.4rem .875rem" onclick="loadTickets()">🔄 Tải lại</button>
+            </div>
+          </div>
+          <div style="overflow-x:auto">
+            <table class="orders-table">
+              <thead>
+                <tr>
+                  <th>Mã Ticket</th>
+                  <th>Người gửi</th>
+                  <th>Chủ đề & Nội dung</th>
+                  <th>Discord</th>
+                  <th>Trạng thái</th>
+                  <th>Ngày gửi</th>
+                </tr>
+              </thead>
+              <tbody id="tickets-tbody">
+                <tr><td colspan="6" class="no-data"><div class="spinner"></div></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
     </div>
   </div>
 </div>
@@ -426,7 +492,7 @@
   <div class="footer-bottom">© 2026 Đảo Tò Mò</div>
 </footer>
 
-<script src="/js/api.js?v=2.2"></script>
+<script src="/js/api.js?v=2.3"></script>
 <script src="/js/skinview3d.bundle.js"></script>
 <script src="/js/skin-viewer.js"></script>
 <script>
@@ -457,7 +523,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 /* ── Tabs ── */
 function switchTab(name) {
-  const tabs = ['products', 'orders', 'users'];
+  const tabs = ['products', 'orders', 'users', 'tickets'];
   document.querySelectorAll('.tab-btn').forEach((b, i) => b.classList.toggle('active', tabs[i] === name));
   document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
   const panel = document.getElementById('tab-' + name);
@@ -466,6 +532,7 @@ function switchTab(name) {
   if (name === 'orders') loadOrders();
   if (name === 'users') loadUsers();
   if (name === 'products') loadProducts();
+  if (name === 'tickets') loadTickets();
 }
 
 /* ── Image preview ── */
@@ -942,6 +1009,172 @@ async function adminUnlinkUser(userId, username, mcIgn) {
     if (typeof api.showToast === 'function') api.showToast(e.message, 'error');
     else alert('❌ Lỗi: ' + e.message);
     if (alertEl) alertEl.innerHTML = `<span style="font-size:0.78rem;color:#f87171">❌ ${e.message}</span>`;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   SUPPORT TICKETS & DISCORD WEBHOOK SETTINGS
+═══════════════════════════════════════════════════════════ */
+const ticketCatLabels = {
+  payment: '💳 Nạp Xu / QR',
+  bug: '🐛 Báo Lỗi',
+  report: '⚖️ Tố Cáo',
+  account: '🔐 Tài Khoản',
+  other: '💬 Khác',
+};
+
+function escapeTicketHtml(str) {
+  return String(str ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+async function loadTickets() {
+  const tbody = document.getElementById('tickets-tbody');
+  if (!tbody) return;
+  tbody.innerHTML = '<tr><td colspan="6" class="no-data"><div class="spinner"></div></td></tr>';
+
+  try {
+    const search = document.getElementById('ticket-search-input')?.value?.trim() || '';
+    const status = document.getElementById('ticket-filter-status')?.value || 'all';
+    const params = {};
+    if (search) params.search = search;
+    if (status && status !== 'all') params.status = status;
+
+    const res = await api.getAdminTickets(params);
+    const settings = res.settings || {};
+    const statusBadge = document.getElementById('support-webhook-status');
+    const zaloInput = document.getElementById('support-zalo-input');
+    const webhookInput = document.getElementById('support-webhook-input');
+
+    if (statusBadge) {
+      if (settings.webhook_configured) {
+        statusBadge.className = 'stock-toggle in-stock';
+        statusBadge.textContent = '✅ Đã kết nối Webhook: ' + (settings.webhook_masked || '');
+      } else {
+        statusBadge.className = 'stock-toggle out-of-stock';
+        statusBadge.textContent = '⚠️ Chưa cấu hình Discord Webhook';
+      }
+    }
+    if (zaloInput && settings.zalo_url && !zaloInput.value) {
+      zaloInput.value = settings.zalo_url;
+    }
+    if (webhookInput && settings.webhook_configured && settings.webhook_masked) {
+      webhookInput.placeholder = 'Đang dùng: ' + settings.webhook_masked + ' (Nhập URL mới để thay thế)';
+    }
+
+    const tickets = res.data || res.tickets || [];
+    if (!tickets.length) {
+      tbody.innerHTML = '<tr><td colspan="6" class="no-data">Chưa có ticket hỗ trợ nào.</td></tr>';
+      return;
+    }
+
+    tbody.innerHTML = tickets.map(tk => {
+      const cat = ticketCatLabels[tk.category] || tk.category;
+      const mc = tk.minecraft_username ? `🎮 ${escapeTicketHtml(tk.minecraft_username)}` : '';
+      const dc = tk.discord_username ? `💬 ${escapeTicketHtml(tk.discord_username)}` : '';
+      const webU = tk.user ? `👤 ${escapeTicketHtml(tk.user.username)}` : 'Khách';
+      const senderLines = [webU, mc, dc].filter(Boolean).join('<br>');
+      const discordFlag = tk.discord_dispatched
+        ? '<span class="stock-toggle in-stock">✅ Đã đẩy Discord</span>'
+        : `<span class="stock-toggle out-of-stock" title="${escapeTicketHtml(tk.discord_error || 'Chưa cấu hình Webhook')}">⚠️ Lưu DB</span>`;
+
+      return `
+        <tr>
+          <td style="font-family:var(--font-mono);font-weight:800;color:var(--lagoon);white-space:nowrap">#${escapeTicketHtml(tk.ticket_code)}</td>
+          <td style="font-size:0.78rem;line-height:1.45">${senderLines}</td>
+          <td style="max-width:340px">
+            <div style="font-size:0.72rem;font-weight:700;color:#a5b4fc;margin-bottom:2px">${escapeTicketHtml(cat)}</div>
+            <div style="font-weight:700;color:#fff;margin-bottom:3px">${escapeTicketHtml(tk.subject)}</div>
+            <div style="font-size:0.78rem;color:var(--text-muted);white-space:pre-wrap;word-break:break-word">${escapeTicketHtml(tk.message)}</div>
+          </td>
+          <td>${discordFlag}</td>
+          <td>
+            <select class="input" style="padding:0.35rem 0.55rem;font-size:0.78rem;min-width:130px" onchange="handleTicketStatusChange(${tk.id}, this.value)">
+              <option value="open" ${tk.status === 'open' ? 'selected' : ''}>🟢 Mới gửi</option>
+              <option value="in_progress" ${tk.status === 'in_progress' ? 'selected' : ''}>🟡 Đang xử lý</option>
+              <option value="resolved" ${tk.status === 'resolved' ? 'selected' : ''}>✅ Đã giải quyết</option>
+              <option value="closed" ${tk.status === 'closed' ? 'selected' : ''}>🔒 Đã đóng</option>
+            </select>
+          </td>
+          <td style="font-size:0.75rem;color:var(--text-muted);white-space:nowrap">${new Date(tk.created_at).toLocaleString('vi-VN')}</td>
+        </tr>
+      `;
+    }).join('');
+  } catch (e) {
+    tbody.innerHTML = `<tr><td colspan="6" class="no-data">❌ ${escapeTicketHtml(e.message)}</td></tr>`;
+  }
+}
+
+async function handleTicketStatusChange(id, status) {
+  const alertEl = document.getElementById('admin-ticket-alert');
+  if (alertEl) alertEl.innerHTML = '<span style="font-size:0.75rem;color:var(--lagoon)">Đang cập nhật...</span>';
+  try {
+    const res = await api.adminUpdateTicket(id, { status });
+    if (window.SoundFX) SoundFX.playSuccess();
+    if (typeof api.showToast === 'function') api.showToast(res.message || 'Đã cập nhật ticket!', 'success');
+    if (alertEl) {
+      alertEl.innerHTML = `<span style="font-size:0.78rem;color:#34d399">✅ ${escapeTicketHtml(res.message)}</span>`;
+      setTimeout(() => { if (alertEl) alertEl.innerHTML = ''; }, 3000);
+    }
+  } catch (e) {
+    if (window.SoundFX) SoundFX.playError();
+    if (typeof api.showToast === 'function') api.showToast(e.message, 'error');
+    if (alertEl) alertEl.innerHTML = `<span style="font-size:0.78rem;color:#f87171">❌ ${escapeTicketHtml(e.message)}</span>`;
+  }
+}
+
+async function saveSupportSettings() {
+  const webhookUrl = document.getElementById('support-webhook-input')?.value?.trim() || '';
+  const zaloUrl = document.getElementById('support-zalo-input')?.value?.trim() || '';
+  const msgBox = document.getElementById('support-settings-msg');
+  const btn = document.getElementById('btn-save-support-cfg');
+
+  btn.disabled = true;
+  btn.textContent = 'Đang lưu...';
+  msgBox.innerHTML = '';
+
+  try {
+    const payload = {};
+    if (webhookUrl) payload.discord_ticket_webhook_url = webhookUrl;
+    if (zaloUrl) payload.zalo_url = zaloUrl;
+
+    const res = await api.adminUpdateSupportSettings(payload);
+    if (window.SoundFX) SoundFX.playSuccess();
+    msgBox.innerHTML = `<div class="alert alert-success" style="margin:0">✅ ${escapeTicketHtml(res.message)}</div>`;
+    document.getElementById('support-webhook-input').value = '';
+    loadTickets();
+  } catch (e) {
+    if (window.SoundFX) SoundFX.playError();
+    msgBox.innerHTML = `<div class="alert alert-error" style="margin:0">❌ ${escapeTicketHtml(e.message)}</div>`;
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '💾 Lưu Cấu Hình';
+  }
+}
+
+async function testDiscordWebhook() {
+  const webhookUrl = document.getElementById('support-webhook-input')?.value?.trim() || '';
+  const msgBox = document.getElementById('support-settings-msg');
+  const btn = document.getElementById('btn-test-webhook');
+
+  btn.disabled = true;
+  btn.textContent = '⏳ Đang gửi thử...';
+  msgBox.innerHTML = '';
+
+  try {
+    const res = await api.adminTestSupportWebhook(webhookUrl);
+    if (window.SoundFX) SoundFX.playSuccess();
+    msgBox.innerHTML = `<div class="alert alert-success" style="margin:0">✅ ${escapeTicketHtml(res.message)}</div>`;
+  } catch (e) {
+    if (window.SoundFX) SoundFX.playError();
+    msgBox.innerHTML = `<div class="alert alert-error" style="margin:0">❌ ${escapeTicketHtml(e.message)}</div>`;
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '🧪 Gửi Thử Vào Discord';
   }
 }
 
