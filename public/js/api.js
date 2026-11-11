@@ -681,6 +681,69 @@ function initNavbarActions() {
 }
 
 /* ═══════════════════════════════════════════════════════════
+   GLOBAL SUPPORT NOTICE BAR (Light-red banner across all pages)
+═══════════════════════════════════════════════════════════ */
+function initSupportNoticeBar() {
+  if (document.getElementById('dtm-support-notice')) return;
+  const nav = document.querySelector('nav');
+  if (!nav || !document.body) return;
+
+  const createNoticeSegment = (isClone = false) => {
+    const seg = document.createElement('div');
+    seg.className = isClone ? 'dtm-support-notice-seg is-clone' : 'dtm-support-notice-seg';
+    if (isClone) seg.setAttribute('aria-hidden', 'true');
+
+    const badge = document.createElement('span');
+    badge.className = 'dtm-notice-badge';
+    badge.textContent = '⚠️ Lưu ý';
+
+    const text = document.createElement('span');
+    text.className = 'dtm-notice-text';
+
+    const dcLink = document.createElement('a');
+    dcLink.className = 'dtm-notice-link dtm-notice-discord-link';
+    dcLink.href = DTM_SUPPORT_STATE.ticketChannelUrl;
+    dcLink.target = '_blank';
+    dcLink.rel = 'noopener noreferrer';
+    dcLink.textContent = 'kênh Discord';
+    if (!isClone) dcLink.id = 'dtm-notice-discord-link';
+    else dcLink.tabIndex = -1;
+
+    const zaloLink = document.createElement('a');
+    zaloLink.className = 'dtm-notice-link dtm-notice-zalo-link';
+    zaloLink.href = DTM_SUPPORT_STATE.zaloUrl;
+    zaloLink.target = '_blank';
+    zaloLink.rel = 'noopener noreferrer';
+    zaloLink.textContent = 'Zalo';
+    if (!isClone) zaloLink.id = 'dtm-notice-zalo-link';
+    else zaloLink.tabIndex = -1;
+
+    text.append('Tạo ticket tại ', dcLink, ' hoặc gửi tin nhắn qua ', zaloLink, ' để được hỗ trợ.');
+    seg.append(badge, text);
+    return seg;
+  };
+
+  const bar = document.createElement('div');
+  bar.id = 'dtm-support-notice';
+  bar.className = 'dtm-support-notice';
+  bar.setAttribute('role', 'region');
+  bar.setAttribute('aria-label', 'Lưu ý hỗ trợ');
+
+  const viewport = document.createElement('div');
+  viewport.className = 'dtm-support-notice-viewport';
+
+  const track = document.createElement('div');
+  track.className = 'dtm-support-notice-track';
+  track.append(createNoticeSegment(false), createNoticeSegment(true));
+
+  viewport.appendChild(track);
+  bar.appendChild(viewport);
+
+  nav.insertAdjacentElement('afterend', bar);
+  document.body.classList.add('dtm-has-notice');
+}
+
+/* ═══════════════════════════════════════════════════════════
    UNIFIED FLOATING ACTION WIDGET (Bottom-Right FAB)
    - Circular Popup Stack: Âm thanh, Skin 3D, Zalo, Ticket Discord, Admin
 ═══════════════════════════════════════════════════════════ */
@@ -857,6 +920,7 @@ function initFloatingActionWidget() {
       if (zaloBtn) zaloBtn.href = cfg.zaloUrl;
       const modalZalo = document.getElementById('dtm-ticket-quick-zalo');
       if (modalZalo) modalZalo.href = cfg.zaloUrl;
+      document.querySelectorAll('.dtm-notice-zalo-link').forEach((el) => { el.href = cfg.zaloUrl; });
     }
     if (cfg.discordInviteUrl) {
       DTM_SUPPORT_STATE.discordInviteUrl = cfg.discordInviteUrl;
@@ -866,6 +930,7 @@ function initFloatingActionWidget() {
       if (ticketBtn) ticketBtn.href = cfg.ticketChannelUrl;
       const modalDiscord = document.getElementById('dtm-ticket-quick-discord');
       if (modalDiscord) modalDiscord.href = cfg.ticketChannelUrl;
+      document.querySelectorAll('.dtm-notice-discord-link').forEach((el) => { el.href = cfg.ticketChannelUrl; });
     }
     if (cfg.ticketMode === 'direct_channel' || cfg.ticketMode === 'modal') {
       DTM_SUPPORT_STATE.ticketMode = cfg.ticketMode;
@@ -1273,6 +1338,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   /* ── Initialize engines ── */
   initNavbarActions();
+  initSupportNoticeBar();
   initFloatingActionWidget();
   initSupportTicketModal();
   initCommandPalette();
