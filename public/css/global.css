@@ -107,7 +107,6 @@ h1, h2, h3, h4, .font-heading {
   --shadow-lg:    0 20px 60px rgba(0,0,0,0.5);
 
   --nav-h:        64px;
-  --notice-h:     0px;
 
   /* Motion — one shared vocabulary for every page */
   --ease:         0.2s ease;
@@ -320,7 +319,7 @@ nav {
   #nav-list { order: 4; }
 }
 
-.page-body { padding-top: calc(var(--nav-h) + var(--notice-h, 0px)); min-height: 100vh; }
+.page-body { padding-top: var(--nav-h); min-height: 100vh; }
 
 /* ── Buttons ── */
 .btn {
@@ -1758,98 +1757,57 @@ footer {
 }
 
 /* ═══════════════════════════════════════════════════════════
-   GLOBAL SUPPORT NOTICE BAR (Light-red strip across all pages)
+   GLOBAL SUPPORT NOTICE BAR (Light-red card above Footer)
 ═══════════════════════════════════════════════════════════ */
-body.dtm-has-notice {
-  --notice-h: 36px;
+.dtm-support-notice-wrap {
+  max-width: 1100px;
+  margin: 2.5rem auto 0;
+  padding: 0 1.25rem;
 }
-body.dtm-has-notice .hero {
-  padding-top: calc(var(--nav-h) + var(--notice-h) + 1.5rem);
+
+body.dtm-has-notice footer {
+  margin-top: 1.5rem;
 }
 
 .dtm-support-notice {
-  position: fixed;
-  top: var(--nav-h);
-  left: 0;
-  right: 0;
-  height: var(--notice-h, 36px);
-  z-index: 995;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(90deg, rgba(127, 29, 29, 0.28) 0%, rgba(220, 38, 38, 0.18) 50%, rgba(127, 29, 29, 0.28) 100%), rgba(18, 12, 22, 0.88);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border-bottom: 1px solid rgba(248, 113, 113, 0.32);
-  box-shadow: 0 4px 18px rgba(239, 68, 68, 0.1);
-  overflow: hidden;
-  padding: 0 1rem;
-}
-
-.dtm-support-notice::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(90deg, transparent 0%, rgba(254, 202, 202, 0.08) 50%, transparent 100%);
-  transform: translateX(-100%);
-  animation: dtmNoticeShimmer 7s ease-in-out infinite;
-  pointer-events: none;
-}
-
-@keyframes dtmNoticeShimmer {
-  0% { transform: translateX(-100%); }
-  60%, 100% { transform: translateX(100%); }
-}
-
-.dtm-support-notice-viewport {
-  width: 100%;
-  max-width: 1180px;
-  overflow: hidden;
-  position: relative;
-  z-index: 1;
-}
-
-.dtm-support-notice-track {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-}
-
-.dtm-support-notice-seg {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  white-space: nowrap;
-  font-size: 0.81rem;
-  font-weight: 500;
-  color: #fecaca;
-  letter-spacing: 0.01em;
-}
-
-.dtm-support-notice-seg.is-clone {
-  display: none;
+  flex-wrap: wrap;
+  gap: 0.5rem 0.75rem;
+  background: rgba(239, 68, 68, 0.08);
+  border: 1px solid rgba(248, 113, 113, 0.28);
+  border-radius: var(--radius);
+  padding: 0.85rem 1.25rem;
+  font-size: 0.86rem;
+  line-height: 1.55;
+  color: #fca5a5;
+  text-align: center;
+  box-shadow: 0 4px 20px rgba(239, 68, 68, 0.06);
 }
 
 .dtm-notice-badge {
   display: inline-flex;
   align-items: center;
   gap: 0.25rem;
-  padding: 0.1rem 0.5rem;
+  padding: 0.14rem 0.6rem;
   border-radius: 9999px;
-  background: rgba(239, 68, 68, 0.22);
-  border: 1px solid rgba(248, 113, 113, 0.42);
-  color: #fca5a5;
-  font-size: 0.68rem;
+  background: rgba(239, 68, 68, 0.16);
+  border: 1px solid rgba(248, 113, 113, 0.36);
+  color: #fecaca;
+  font-size: 0.7rem;
   font-weight: 800;
   letter-spacing: 0.04em;
   text-transform: uppercase;
   flex-shrink: 0;
 }
 
+.dtm-notice-text {
+  font-weight: 500;
+}
+
 .dtm-notice-link {
-  color: #fff1f2;
+  color: #ffe4e6;
   font-weight: 700;
   text-decoration: underline;
   text-decoration-color: rgba(254, 202, 202, 0.65);
@@ -1862,47 +1820,12 @@ body.dtm-has-notice .hero {
   text-decoration-color: #ffffff;
 }
 
-@keyframes dtmNoticeMarquee {
-  0% { transform: translateX(0); }
-  100% { transform: translateX(-50%); }
-}
-
-@media (max-width: 767px) {
+@media (max-width: 640px) {
   .dtm-support-notice {
-    padding: 0;
     justify-content: flex-start;
-  }
-  .dtm-support-notice-track {
-    justify-content: flex-start;
-    width: max-content;
-    animation: dtmNoticeMarquee 18s linear infinite;
-  }
-  .dtm-support-notice:hover .dtm-support-notice-track,
-  .dtm-support-notice:focus-within .dtm-support-notice-track {
-    animation-play-state: paused;
-  }
-  .dtm-support-notice-seg {
-    padding: 0 1.5rem;
-    font-size: 0.78rem;
-  }
-  .dtm-support-notice-seg.is-clone {
-    display: inline-flex;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .dtm-support-notice-track {
-    animation: none !important;
-    width: 100%;
-    justify-content: center;
-  }
-  .dtm-support-notice-seg.is-clone {
-    display: none !important;
-  }
-  .dtm-support-notice-seg {
-    white-space: normal;
-    text-align: center;
-    padding: 0.25rem 0.5rem;
+    text-align: left;
+    padding: 0.8rem 1rem;
+    font-size: 0.83rem;
   }
 }
 

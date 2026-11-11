@@ -681,47 +681,15 @@ function initNavbarActions() {
 }
 
 /* ═══════════════════════════════════════════════════════════
-   GLOBAL SUPPORT NOTICE BAR (Light-red banner across all pages)
+   GLOBAL SUPPORT NOTICE BAR (Light-red card above Footer)
 ═══════════════════════════════════════════════════════════ */
 function initSupportNoticeBar() {
   if (document.getElementById('dtm-support-notice')) return;
-  const nav = document.querySelector('nav');
-  if (!nav || !document.body) return;
+  const footer = document.querySelector('footer');
+  if (!footer || !footer.parentNode) return;
 
-  const createNoticeSegment = (isClone = false) => {
-    const seg = document.createElement('div');
-    seg.className = isClone ? 'dtm-support-notice-seg is-clone' : 'dtm-support-notice-seg';
-    if (isClone) seg.setAttribute('aria-hidden', 'true');
-
-    const badge = document.createElement('span');
-    badge.className = 'dtm-notice-badge';
-    badge.textContent = '⚠️ Lưu ý';
-
-    const text = document.createElement('span');
-    text.className = 'dtm-notice-text';
-
-    const dcLink = document.createElement('a');
-    dcLink.className = 'dtm-notice-link dtm-notice-discord-link';
-    dcLink.href = DTM_SUPPORT_STATE.ticketChannelUrl;
-    dcLink.target = '_blank';
-    dcLink.rel = 'noopener noreferrer';
-    dcLink.textContent = 'kênh Discord';
-    if (!isClone) dcLink.id = 'dtm-notice-discord-link';
-    else dcLink.tabIndex = -1;
-
-    const zaloLink = document.createElement('a');
-    zaloLink.className = 'dtm-notice-link dtm-notice-zalo-link';
-    zaloLink.href = DTM_SUPPORT_STATE.zaloUrl;
-    zaloLink.target = '_blank';
-    zaloLink.rel = 'noopener noreferrer';
-    zaloLink.textContent = 'Zalo';
-    if (!isClone) zaloLink.id = 'dtm-notice-zalo-link';
-    else zaloLink.tabIndex = -1;
-
-    text.append('Tạo ticket tại ', dcLink, ' hoặc gửi tin nhắn qua ', zaloLink, ' để được hỗ trợ.');
-    seg.append(badge, text);
-    return seg;
-  };
+  const wrap = document.createElement('div');
+  wrap.className = 'dtm-support-notice-wrap';
 
   const bar = document.createElement('div');
   bar.id = 'dtm-support-notice';
@@ -729,17 +697,34 @@ function initSupportNoticeBar() {
   bar.setAttribute('role', 'region');
   bar.setAttribute('aria-label', 'Lưu ý hỗ trợ');
 
-  const viewport = document.createElement('div');
-  viewport.className = 'dtm-support-notice-viewport';
+  const badge = document.createElement('span');
+  badge.className = 'dtm-notice-badge';
+  badge.textContent = '⚠️ Lưu ý';
 
-  const track = document.createElement('div');
-  track.className = 'dtm-support-notice-track';
-  track.append(createNoticeSegment(false), createNoticeSegment(true));
+  const text = document.createElement('span');
+  text.className = 'dtm-notice-text';
 
-  viewport.appendChild(track);
-  bar.appendChild(viewport);
+  const dcLink = document.createElement('a');
+  dcLink.id = 'dtm-notice-discord-link';
+  dcLink.className = 'dtm-notice-link dtm-notice-discord-link';
+  dcLink.href = DTM_SUPPORT_STATE.ticketChannelUrl;
+  dcLink.target = '_blank';
+  dcLink.rel = 'noopener noreferrer';
+  dcLink.textContent = 'kênh Discord';
 
-  nav.insertAdjacentElement('afterend', bar);
+  const zaloLink = document.createElement('a');
+  zaloLink.id = 'dtm-notice-zalo-link';
+  zaloLink.className = 'dtm-notice-link dtm-notice-zalo-link';
+  zaloLink.href = DTM_SUPPORT_STATE.zaloUrl;
+  zaloLink.target = '_blank';
+  zaloLink.rel = 'noopener noreferrer';
+  zaloLink.textContent = 'Zalo';
+
+  text.append('Tạo ticket tại ', dcLink, ' hoặc gửi tin nhắn qua ', zaloLink, ' để được hỗ trợ.');
+  bar.append(badge, text);
+  wrap.appendChild(bar);
+
+  footer.parentNode.insertBefore(wrap, footer);
   document.body.classList.add('dtm-has-notice');
 }
 
