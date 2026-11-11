@@ -729,6 +729,84 @@ function initSupportNoticeBar() {
 }
 
 /* ═══════════════════════════════════════════════════════════
+   UNIFIED MODERN FOOTER (Consistent across all 9 pages)
+═══════════════════════════════════════════════════════════ */
+function initGlobalFooter() {
+  const footer = document.querySelector('footer');
+  if (!footer || footer.dataset.dtmEnhanced === '1') return;
+  footer.dataset.dtmEnhanced = '1';
+
+  footer.innerHTML = `
+    <div class="footer-grid">
+      <div class="footer-col">
+        <div class="footer-brand-head">
+          <img class="footer-brand-logo" src="/img/logo.jpg" alt="Đảo Tò Mò Logo">
+          <div>
+            <div class="footer-brand-title">Đảo Tò Mò</div>
+            <div class="footer-brand-sub">Survival • Làng Rắn Mới</div>
+          </div>
+        </div>
+        <p>Cộng đồng Minecraft sinh tồn nơi mọi người cùng khám phá, xây dựng, giao thương và giải trí mỗi ngày.</p>
+        <div class="social-row">
+          <a class="social-btn discord" href="/html/Discord.html" title="Tham gia Discord" aria-label="Discord">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19.27 5.33C17.94 4.71 16.5 4.26 15 4a.09.09 0 0 0-.07.03c-.18.33-.39.76-.53 1.09a16.09 16.09 0 0 0-4.8 0c-.14-.34-.35-.76-.54-1.09-.01-.02-.04-.03-.07-.03-1.5.26-2.93.71-4.27 1.33-.01 0-.02.01-.03.02-2.72 4.07-3.47 8.03-3.1 11.95 0 .02.01.04.03.05 1.8 1.32 3.53 2.12 5.24 2.65.03.01.06 0 .07-.02.4-.55.76-1.13 1.07-1.74.02-.04 0-.08-.04-.09-.57-.22-1.11-.48-1.64-.78-.04-.02-.04-.08-.01-.11.11-.08.22-.17.33-.25.02-.02.05-.02.07-.01 3.44 1.57 7.15 1.57 10.55 0 .02-.01.05-.01.07.01.11.09.22.17.33.26.04.03.04.09-.01.11-.52.31-1.07.56-1.64.78-.04.01-.05.06-.04.09.32.61.68 1.19 1.07 1.74.03.01.06.02.09.01 1.72-.53 3.45-1.33 5.25-2.65.02-.01.03-.03.03-.05.44-4.53-.73-8.46-3.1-11.95-.01-.01-.02-.02-.04-.02ZM8.52 14.91c-1.03 0-1.89-.95-1.89-2.12s.84-2.12 1.89-2.12c1.06 0 1.9.96 1.89 2.12 0 1.17-.84 2.12-1.89 2.12Zm6.97 0c-1.03 0-1.89-.95-1.89-2.12s.84-2.12 1.89-2.12c1.06 0 1.9.96 1.89 2.12 0 1.17-.83 2.12-1.89 2.12Z"/></svg>
+          </a>
+          <a class="social-btn facebook" href="https://www.facebook.com/DragonKun1946" target="_blank" rel="noopener noreferrer" title="Facebook Admin" aria-label="Facebook">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M14 13.5h2.5l1-4H14v-2c0-1.03 0-2 2-2h1.5V2.14c-.326-.043-1.557-.14-2.857-.14C11.928 2 10 3.657 10 6.7v2.8H7v4h3V22h4v-8.5Z"/></svg>
+          </a>
+          <a class="social-btn zalo dtm-footer-zalo-link" href="${DTM_SUPPORT_STATE.zaloUrl}" target="_blank" rel="noopener noreferrer" title="Nhắn Zalo Admin" aria-label="Zalo">
+            <svg viewBox="0 0 24 24" fill="none">
+              <path d="M12 3C6.75 3 2.5 6.8 2.5 11.5c0 2.56 1.27 4.86 3.27 6.41-.14 1.3-.64 2.54-1.42 3.46-.18.22 0 .56.29.51 1.58-.25 3.12-.85 4.32-1.69.98.26 2.01.4 3.04.4 5.25 0 9.5-3.8 9.5-8.5S17.25 3 12 3Z" fill="currentColor"/>
+              <text x="12" y="14.2" text-anchor="middle" fill="#07090f" font-family="Arial, Helvetica, sans-serif" font-weight="900" font-size="7.4" letter-spacing="-0.2">Zalo</text>
+            </svg>
+          </a>
+        </div>
+      </div>
+
+      <div class="footer-col">
+        <h3>Khám Phá</h3>
+        <div class="footer-links">
+          <a href="/index.html">Trang chủ</a>
+          <a href="/html/Server.html">Thông tin Server</a>
+          <a href="/html/Map.html">Bản đồ Đảo</a>
+          <a href="/html/Store.html">Cửa hàng VIP</a>
+        </div>
+      </div>
+
+      <div class="footer-col">
+        <h3>Tiện Ích & Hỗ Trợ</h3>
+        <div class="footer-links">
+          <a href="/html/Checkin.html">Điểm danh hằng ngày</a>
+          <a href="/html/Account.html">Tài khoản & Skin 3D</a>
+          <a class="dtm-footer-ticket-link" href="${DTM_SUPPORT_STATE.ticketChannelUrl}" target="_blank" rel="noopener noreferrer">Tạo Ticket Discord</a>
+          <a class="dtm-footer-zalo-link" href="${DTM_SUPPORT_STATE.zaloUrl}" target="_blank" rel="noopener noreferrer">Nhắn Zalo hỗ trợ</a>
+        </div>
+      </div>
+
+      <div class="footer-col">
+        <h3>Kết Nối Server</h3>
+        <div class="footer-server-card">
+          <div class="footer-server-status">
+            <span class="footer-status-dot"></span>
+            <span>ONLINE • JAVA 1.21.4</span>
+          </div>
+          <button type="button" class="footer-ip-btn" data-copy="play.daotomo.net" data-copied-label="<span>play.daotomo.net</span><span class=&quot;footer-ip-pill&quot;>✓ Đã chép!</span>" title="Bấm để sao chép IP server">
+            <span>play.daotomo.net</span>
+            <span class="footer-ip-pill">Sao chép</span>
+          </button>
+          <p class="footer-server-note">Hỗ trợ nhanh qua kênh Ticket Discord & Zalo Admin.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <span>© 2026 Đảo Tò Mò. All rights reserved.</span>
+      <span>Server Minecraft Sinh Tồn Việt Nam</span>
+    </div>
+  `;
+}
+
+/* ═══════════════════════════════════════════════════════════
    UNIFIED FLOATING ACTION WIDGET (Bottom-Right FAB)
    - Circular Popup Stack: Âm thanh, Skin 3D, Zalo, Ticket Discord, Admin
 ═══════════════════════════════════════════════════════════ */
@@ -905,7 +983,7 @@ function initFloatingActionWidget() {
       if (zaloBtn) zaloBtn.href = cfg.zaloUrl;
       const modalZalo = document.getElementById('dtm-ticket-quick-zalo');
       if (modalZalo) modalZalo.href = cfg.zaloUrl;
-      document.querySelectorAll('.dtm-notice-zalo-link').forEach((el) => { el.href = cfg.zaloUrl; });
+      document.querySelectorAll('.dtm-notice-zalo-link, .dtm-footer-zalo-link').forEach((el) => { el.href = cfg.zaloUrl; });
     }
     if (cfg.discordInviteUrl) {
       DTM_SUPPORT_STATE.discordInviteUrl = cfg.discordInviteUrl;
@@ -915,7 +993,7 @@ function initFloatingActionWidget() {
       if (ticketBtn) ticketBtn.href = cfg.ticketChannelUrl;
       const modalDiscord = document.getElementById('dtm-ticket-quick-discord');
       if (modalDiscord) modalDiscord.href = cfg.ticketChannelUrl;
-      document.querySelectorAll('.dtm-notice-discord-link').forEach((el) => { el.href = cfg.ticketChannelUrl; });
+      document.querySelectorAll('.dtm-notice-discord-link, .dtm-footer-ticket-link').forEach((el) => { el.href = cfg.ticketChannelUrl; });
     }
     if (cfg.ticketMode === 'direct_channel' || cfg.ticketMode === 'modal') {
       DTM_SUPPORT_STATE.ticketMode = cfg.ticketMode;
@@ -1295,6 +1373,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }, { threshold: 0.5 });
     counters.forEach(el => ioCount.observe(el));
   }
+
+  /* ── Unify modern footer before binding [data-copy] handlers ── */
+  initGlobalFooter();
 
   /* ── Copy-to-clipboard: <button data-copy="play.daotomo.net"> ── */
   document.querySelectorAll('[data-copy]').forEach(btn => {
