@@ -218,7 +218,7 @@
       display: inline-flex; align-items: center; gap: 0.45rem;
       white-space: nowrap;
     }
-    .mc-link-cell { display: flex; flex-direction: column; gap: 2px; }
+    .mc-link-cell { display: flex; flex-direction: column; align-items: flex-start; gap: 3px; }
     .mc-link-main {
       display: inline-flex; align-items: center; gap: 6px;
       white-space: nowrap;
@@ -1046,25 +1046,31 @@ async function loadUsers() {
       const uid = u.id || u._id;
       const ign = u.minecraftUsername || u.minecraft_username || '';
       const uuid = u.minecraftUuid || u.minecraft_uuid || '';
-      const avatarSrc = u.avatar || (ign ? `https://mc-heads.net/avatar/${encodeURIComponent(ign)}/32` : '/img/steve.png');
+      const isLinked = Boolean(uuid || u.isGameLinked || u.is_game_linked);
+      const avatarSrc = u.avatar || (isLinked && ign ? `https://mc-heads.net/avatar/${encodeURIComponent(ign)}/32` : '/img/steve.png');
       const safeUser = escapeTicketHtml(u.username || '');
       const safeName = escapeTicketHtml(u.name || '');
       const safeEmail = escapeTicketHtml(u.email || '');
       const safeIgn = escapeTicketHtml(ign);
 
       let linkCell = '';
-      if (ign) {
+      if (isLinked) {
         linkCell = `
           <div class="mc-link-cell">
             <div class="mc-link-main">
-              <img src="https://mc-heads.net/avatar/${encodeURIComponent(ign)}/20" style="width:20px;height:20px;border-radius:4px;border:1px solid rgba(255,255,255,0.12)" onerror="this.style.display='none'">
-              <strong style="color:var(--lagoon);font-size:0.83rem">${safeIgn}</strong>
+              <img src="https://mc-heads.net/avatar/${encodeURIComponent(ign || u.username)}/20" style="width:20px;height:20px;border-radius:4px;border:1px solid rgba(255,255,255,0.12)" onerror="this.style.display='none'">
+              <strong style="color:var(--lagoon);font-size:0.83rem">${safeIgn || safeUser}</strong>
             </div>
             ${uuid ? `<div style="font-size:0.68rem;color:var(--text-muted);font-family:var(--font-mono)">${escapeTicketHtml(uuid.slice(0, 14))}…</div>` : `<div style="font-size:0.68rem;color:#34d399">● Đã liên kết</div>`}
           </div>
         `;
       } else {
-        linkCell = `<span class="stock-toggle badge-muted">⚪ Chưa liên kết</span>`;
+        linkCell = `
+          <div class="mc-link-cell">
+            <span class="stock-toggle badge-muted">⚪ Chưa liên kết</span>
+            ${safeIgn ? `<div style="font-size:0.68rem;color:var(--text-muted);margin-top:2px">IGN: ${safeIgn}</div>` : ''}
+          </div>
+        `;
       }
 
       const roleBadge = u.role === 'admin'
@@ -1090,7 +1096,7 @@ async function loadUsers() {
           <td style="text-align:right">
             <div class="action-btns">
               <button class="btn-edit" onclick="openPasswordModal('${uid}', '${safeUser}')">🔑 Đổi MK</button>
-              ${ign ? `<button class="btn-del" onclick="adminUnlinkUser('${uid}', '${safeUser}', '${safeIgn}')">🔓 Gỡ link</button>` : ''}
+              ${isLinked ? `<button class="btn-del" onclick="adminUnlinkUser('${uid}', '${safeUser}', '${safeIgn}')">🔓 Gỡ link</button>` : ''}
             </div>
           </td>
         </tr>
