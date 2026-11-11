@@ -8,7 +8,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@600;700;800&family=Be+Vietnam+Pro:wght@300;400;500;700;800;900&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/css/global.css?v=2.6">
   <style>
-    .admin-wrap { max-width: 1100px; margin: 0 auto; padding: 2rem 1.25rem 3rem; }
+    .admin-wrap { max-width: 1280px; margin: 0 auto; padding: 2rem 1.25rem 3.5rem; }
     .admin-header {
       display: flex; align-items: center; justify-content: space-between;
       margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem;
@@ -19,13 +19,15 @@
     .tab-bar {
       display: flex; gap: 0.5rem; margin-bottom: 2rem;
       border-bottom: 1px solid var(--border); padding-bottom: 0;
+      overflow-x: auto; scrollbar-width: none; -webkit-overflow-scrolling: touch;
     }
+    .tab-bar::-webkit-scrollbar { display: none; }
     .tab-btn {
       padding: 0.65rem 1.4rem; border-radius: var(--radius) var(--radius) 0 0;
       font-size: 0.9rem; font-weight: 700; color: var(--text-muted);
       background: none; border-bottom: 3px solid transparent;
       transition: all var(--ease); margin-bottom: -1px; font-family: var(--font-heading);
-      cursor: pointer;
+      cursor: pointer; white-space: nowrap; flex-shrink: 0;
     }
     .tab-btn.active { color: var(--lagoon); border-bottom-color: var(--lagoon); }
 
@@ -70,19 +72,63 @@
     }
     .img-preview img { width: 100%; height: 100%; object-fit: cover; }
 
-    /* ── Tables ── */
+    /* ── Tables & Toolbars ── */
+    .table-card { padding: 0; overflow: hidden; }
+    .table-toolbar {
+      padding: 1.15rem 1.5rem;
+      border-bottom: 1px solid var(--border);
+      display: flex; justify-content: space-between; align-items: center;
+      flex-wrap: wrap; gap: 0.85rem;
+      background: linear-gradient(180deg, rgba(255,255,255,0.02), transparent);
+    }
+    .table-toolbar h2 { margin: 0; font-size: 1.05rem; display: flex; align-items: center; gap: 0.45rem; }
+    .toolbar-controls {
+      display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap;
+    }
+    .toolbar-controls .input {
+      width: auto; min-height: 36px; height: 36px;
+      padding: 0.35rem 0.8rem; font-size: 0.8rem;
+      background: rgba(15, 23, 42, 0.72);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 9px;
+    }
+    .toolbar-controls select.input {
+      padding-right: 2.1rem;
+      background-position: right 0.7rem center;
+      cursor: pointer;
+    }
+    .toolbar-controls .input:focus {
+      border-color: var(--lagoon);
+      box-shadow: 0 0 0 2px rgba(34,211,238,0.15);
+    }
+    .toolbar-btn {
+      min-height: 36px !important; height: 36px;
+      padding: 0.35rem 0.9rem !important;
+      font-size: 0.8rem !important;
+      border-radius: 9px !important;
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+    .table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+
     .product-table, .orders-table { width: 100%; border-collapse: collapse; }
+    .product-table thead tr, .orders-table thead tr {
+      background: rgba(255,255,255,0.025);
+    }
     .product-table th, .orders-table th {
-      text-align: left; font-size: 0.75rem; font-weight: 700;
-      color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px;
-      padding: 0.75rem 1rem; border-bottom: 1px solid var(--border);
+      text-align: left; font-size: 0.71rem; font-weight: 700;
+      color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.6px;
+      padding: 0.8rem 1rem; border-bottom: 1px solid var(--border);
+      white-space: nowrap;
     }
     .product-table td, .orders-table td {
-      padding: 0.875rem 1rem; border-bottom: 1px solid var(--border);
+      padding: 0.85rem 1rem; border-bottom: 1px solid rgba(255,255,255,0.06);
       font-size: 0.84rem; vertical-align: middle;
     }
-    .product-table tr:last-child td, .orders-table tr:last-child td { border-bottom: none; }
-    .product-table tr:hover td, .orders-table tr:hover td { background: rgba(255,255,255,0.02); }
+    .product-table tbody tr, .orders-table tbody tr {
+      transition: background var(--ease);
+    }
+    .product-table tbody tr:last-child td, .orders-table tbody tr:last-child td { border-bottom: none; }
+    .product-table tbody tr:hover td, .orders-table tbody tr:hover td { background: rgba(34, 211, 238, 0.03); }
 
     .product-table .prod-img {
       width: 44px; height: 44px; border-radius: 8px;
@@ -90,27 +136,112 @@
       border: 1px solid var(--border); padding: 4px;
     }
     .product-table .prod-name { font-weight: 700; }
-    .product-table .prod-price { color: var(--accent); font-weight: 800; font-family: var(--font-mono); }
+    .product-table .prod-price { color: var(--accent); font-weight: 800; font-family: var(--font-mono); white-space: nowrap; }
 
-    .action-btns { display: flex; gap: 0.4rem; flex-wrap: wrap; }
-    .btn-edit { padding: 0.35rem 0.75rem; border-radius: 6px; font-size: 0.75rem; font-weight: 700; background: rgba(108,99,255,0.15); color: #a78bfa; transition: all var(--ease); border:1px solid rgba(108,99,255,0.25); cursor:pointer; }
-    .btn-edit:hover { background: rgba(108,99,255,0.25); }
-    .btn-del  { padding: 0.35rem 0.75rem; border-radius: 6px; font-size: 0.75rem; font-weight: 700; background: rgba(239,68,68,0.12); color: #f87171; transition: all var(--ease); border:1px solid rgba(239,68,68,0.25); cursor:pointer; }
-    .btn-del:hover  { background: rgba(239,68,68,0.22); }
-    .btn-deliver {
-      padding: 0.35rem 0.75rem; border-radius: 6px; font-size: 0.75rem; font-weight: 700;
-      background: linear-gradient(135deg, #059669, #10b981); color: #fff;
-      border: none; cursor: pointer; transition: all var(--ease); display: inline-flex; align-items: center; gap: 4px;
+    .action-btns { display: inline-flex; gap: 0.4rem; flex-wrap: nowrap; align-items: center; }
+    .btn-edit, .btn-del, .btn-deliver, .btn-table {
+      display: inline-flex; align-items: center; justify-content: center; gap: 0.35rem;
+      min-height: 30px; height: 30px;
+      padding: 0 0.7rem; border-radius: 7px;
+      font-size: 0.74rem; font-weight: 700;
+      white-space: nowrap; cursor: pointer;
+      transition: all var(--ease);
     }
-    .btn-deliver:hover { filter: brightness(1.15); transform: translateY(-1px); }
+    .btn-edit { background: rgba(108,99,255,0.16); color: #a78bfa; border: 1px solid rgba(108,99,255,0.28); }
+    .btn-edit:hover { background: rgba(108,99,255,0.28); color: #ddd6fe; }
+    .btn-del  { background: rgba(239,68,68,0.12); color: #f87171; border: 1px solid rgba(239,68,68,0.26); }
+    .btn-del:hover  { background: rgba(239,68,68,0.24); color: #fecaca; }
+    .btn-table {
+      background: rgba(255,255,255,0.06); color: #cbd5e1;
+      border: 1px solid rgba(255,255,255,0.12);
+    }
+    .btn-table:hover { background: rgba(255,255,255,0.13); color: #fff; border-color: rgba(255,255,255,0.22); }
+    .btn-deliver {
+      background: linear-gradient(135deg, #059669, #10b981); color: #fff;
+      border: 1px solid rgba(16,185,129,0.4);
+    }
+    .btn-deliver:hover { filter: brightness(1.12); transform: translateY(-1px); }
 
     .stock-toggle {
-      display: inline-flex; align-items: center; gap: 0.4rem;
-      font-size: 0.75rem; font-weight: 700;
-      padding: 0.25rem 0.6rem; border-radius: 999px;
+      display: inline-flex; align-items: center; gap: 0.35rem;
+      font-size: 0.73rem; font-weight: 700; line-height: 1.2;
+      padding: 0.28rem 0.65rem; border-radius: 999px;
+      white-space: nowrap; flex-shrink: 0;
     }
-    .in-stock    { background: rgba(16,185,129,0.15); color: #34d399; }
-    .out-of-stock{ background: rgba(239,68,68,0.15);  color: #f87171; }
+    .in-stock    { background: rgba(16,185,129,0.14); color: #34d399; border: 1px solid rgba(16,185,129,0.24); }
+    .out-of-stock{ background: rgba(239,68,68,0.14);  color: #f87171; border: 1px solid rgba(239,68,68,0.24); }
+    .badge-amber { background: rgba(251,191,36,0.14); color: #fbbf24; border: 1px solid rgba(251,191,36,0.26); }
+    .badge-cyan  { background: rgba(34,211,238,0.12); color: var(--lagoon); border: 1px solid rgba(34,211,238,0.25); }
+    .badge-muted { background: rgba(148,163,184,0.1); color: var(--text-muted); border: 1px solid rgba(148,163,184,0.18); }
+
+    /* Compact table selects & cells */
+    .admin-select {
+      appearance: none;
+      background-color: rgba(15, 23, 42, 0.85);
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 12 12'%3E%3Cpath fill='%2394a3b8' d='M6 8.2 1.5 3.7h9z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 0.55rem center;
+      border: 1px solid rgba(255,255,255,0.14);
+      border-radius: 7px;
+      padding: 0 1.7rem 0 0.6rem;
+      height: 31px; min-height: 31px;
+      color: var(--text); font-size: 0.76rem; font-weight: 600;
+      font-family: inherit; white-space: nowrap; cursor: pointer;
+      transition: border-color var(--ease), background-color var(--ease);
+    }
+    .admin-select:hover, .admin-select:focus {
+      outline: none; border-color: var(--lagoon);
+      background-color: rgba(15, 23, 42, 1);
+    }
+    .admin-select option { background: #141a29; color: #f1f5f9; }
+
+    .order-code-chip {
+      display: inline-block;
+      font-family: var(--font-mono); font-size: 0.76rem; font-weight: 700;
+      color: #fff; white-space: nowrap;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.1);
+      padding: 0.18rem 0.48rem; border-radius: 6px;
+      letter-spacing: 0.2px;
+    }
+    .order-item-row {
+      display: flex; align-items: center; gap: 0.35rem;
+      font-size: 0.8rem; line-height: 1.45; white-space: nowrap;
+    }
+    .qty-chip {
+      font-family: var(--font-mono); font-size: 0.72rem; font-weight: 700;
+      color: var(--text-muted);
+      background: rgba(255,255,255,0.05);
+      padding: 0.05rem 0.35rem; border-radius: 4px;
+    }
+    .delivery-inline {
+      display: inline-flex; align-items: center; gap: 0.45rem;
+      white-space: nowrap;
+    }
+    .mc-link-cell { display: flex; flex-direction: column; gap: 2px; }
+    .mc-link-main {
+      display: inline-flex; align-items: center; gap: 6px;
+      white-space: nowrap;
+    }
+    .user-cell { display: flex; align-items: center; gap: 0.65rem; min-width: 155px; }
+    .user-avatar-sm {
+      width: 34px; height: 34px; border-radius: 8px;
+      object-fit: cover; flex-shrink: 0;
+      border: 1px solid rgba(255,255,255,0.14);
+      background: rgba(255,255,255,0.04);
+    }
+    .td-money {
+      font-weight: 800; color: var(--accent);
+      font-family: var(--font-mono); font-size: 0.88rem;
+      font-variant-numeric: tabular-nums; white-space: nowrap;
+    }
+    .td-date { font-size: 0.76rem; color: var(--text-muted); white-space: nowrap; font-variant-numeric: tabular-nums; }
+    @media (max-width: 768px) {
+      .table-toolbar { padding: 1rem; }
+      .toolbar-controls { width: 100%; }
+      .toolbar-controls input.input { flex: 1 1 100%; width: 100% !important; min-width: 0; }
+      .toolbar-controls select.input { flex: 1 1 150px; width: auto !important; min-width: 0; }
+    }
 
     .no-data { text-align:center; padding:3rem; color:var(--text-muted); font-size:0.875rem; }
 
@@ -236,12 +367,14 @@
         </div>
 
         <!-- Product list -->
-        <div class="form-card" style="padding:0;overflow:hidden">
-          <div style="padding:1.25rem 1.75rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center">
-            <h2 style="margin:0">📋 Danh sách sản phẩm</h2>
-            <button class="btn btn-ghost" style="font-size:.8rem;padding:.4rem .875rem" onclick="loadProducts()">🔄 Tải lại</button>
+        <div class="form-card table-card">
+          <div class="table-toolbar">
+            <h2>📋 Danh sách sản phẩm</h2>
+            <div class="toolbar-controls">
+              <button class="btn btn-ghost toolbar-btn" onclick="loadProducts()">🔄 Tải lại</button>
+            </div>
           </div>
-          <div style="overflow-x:auto">
+          <div class="table-scroll">
             <table class="product-table">
               <thead>
                 <tr>
@@ -263,15 +396,15 @@
 
       <!-- ORDERS TAB -->
       <div class="tab-panel" id="tab-orders">
-        <div class="form-card" style="padding:0;overflow:hidden">
-          <div style="padding:1.25rem 1.75rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.75rem">
+        <div class="form-card table-card">
+          <div class="table-toolbar">
             <div>
-              <h2 style="margin:0">🧾 Tất cả đơn hàng</h2>
-              <div id="admin-order-alert" style="margin-top:0.4rem"></div>
+              <h2>🧾 Tất cả đơn hàng</h2>
+              <div id="admin-order-alert" style="margin-top:0.3rem"></div>
             </div>
-            <div style="display:flex;gap:0.5rem;align-items:center;flex-wrap:wrap">
-              <input type="text" id="order-search-input" placeholder="Tìm theo mã đơn/user/MC..." class="input" style="padding:0.4rem 0.75rem;font-size:0.8rem;width:200px" onkeydown="if(event.key==='Enter')loadOrders()">
-              <select id="order-filter-status" class="input" style="padding:0.4rem 0.75rem;font-size:0.8rem;width:150px" onchange="loadOrders()">
+            <div class="toolbar-controls">
+              <input type="text" id="order-search-input" placeholder="Tìm theo mã đơn / user / MC..." class="input" style="width:220px" onkeydown="if(event.key==='Enter')loadOrders()">
+              <select id="order-filter-status" class="input" style="width:185px" onchange="loadOrders()">
                 <option value="">🎯 Tất cả trạng thái</option>
                 <option value="pending">⏳ Đơn chờ xử lý</option>
                 <option value="processing">⚙️ Đang xử lý</option>
@@ -279,17 +412,17 @@
                 <option value="cancelled">❌ Đã huỷ</option>
                 <option value="paid">✅ Đã thanh toán</option>
               </select>
-              <button class="btn btn-ghost" style="font-size:.8rem;padding:.4rem .875rem" onclick="loadOrders()">🔄 Tải lại</button>
+              <button class="btn btn-ghost toolbar-btn" onclick="loadOrders()">🔄 Tải lại</button>
             </div>
           </div>
-          <div style="overflow-x:auto">
+          <div class="table-scroll">
             <table class="orders-table">
               <thead>
                 <tr>
                   <th>Mã đơn</th>
                   <th>Khách hàng</th>
                   <th>Sản phẩm</th>
-                  <th>Tổng tiền</th>
+                  <th style="text-align:right">Tổng tiền</th>
                   <th>Trạng thái đơn</th>
                   <th>Thanh toán</th>
                   <th>Giao đồ game</th>
@@ -306,28 +439,28 @@
 
       <!-- USERS TAB -->
       <div class="tab-panel" id="tab-users">
-        <div class="form-card" style="padding:0;overflow:hidden">
-          <div style="padding:1.25rem 1.75rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.75rem">
+        <div class="form-card table-card">
+          <div class="table-toolbar">
             <div>
-              <h2 style="margin:0">👥 Quản lý tài khoản người dùng</h2>
-              <div id="admin-user-alert" style="margin-top:0.4rem"></div>
+              <h2>👥 Quản lý tài khoản người dùng</h2>
+              <div id="admin-user-alert" style="margin-top:0.3rem"></div>
             </div>
-            <div style="display:flex;gap:0.5rem;align-items:center;flex-wrap:wrap">
-              <input type="text" id="user-search-input" placeholder="Tìm username/email/MC IGN..." class="input" style="padding:0.4rem 0.75rem;font-size:0.8rem;width:220px" onkeydown="if(event.key==='Enter')loadUsers()">
-              <select id="user-filter-role" class="input" style="padding:0.4rem 0.75rem;font-size:0.8rem;width:130px" onchange="loadUsers()">
+            <div class="toolbar-controls">
+              <input type="text" id="user-search-input" placeholder="Tìm username / email / MC IGN..." class="input" style="width:240px" onkeydown="if(event.key==='Enter')loadUsers()">
+              <select id="user-filter-role" class="input" style="width:140px" onchange="loadUsers()">
                 <option value="all">👑 Mọi vai trò</option>
                 <option value="admin">Admin</option>
-                <option value="user">Member</option>
+                <option value="user">Thành viên</option>
               </select>
-              <select id="user-filter-linked" class="input" style="padding:0.4rem 0.75rem;font-size:0.8rem;width:150px" onchange="loadUsers()">
+              <select id="user-filter-linked" class="input" style="width:155px" onchange="loadUsers()">
                 <option value="">🔗 Mọi liên kết</option>
                 <option value="yes">✅ Đã link MC</option>
                 <option value="no">⚪ Chưa link MC</option>
               </select>
-              <button class="btn btn-ghost" style="font-size:.8rem;padding:.4rem .875rem" onclick="loadUsers()">🔄 Tải lại</button>
+              <button class="btn btn-ghost toolbar-btn" onclick="loadUsers()">🔄 Tải lại</button>
             </div>
           </div>
-          <div style="overflow-x:auto">
+          <div class="table-scroll">
             <table class="orders-table">
               <thead>
                 <tr>
@@ -335,9 +468,9 @@
                   <th>Email</th>
                   <th>Vai trò</th>
                   <th>Liên kết Minecraft</th>
-                  <th>Số dư</th>
+                  <th style="text-align:right">Số dư</th>
                   <th>Ngày tạo</th>
-                  <th>Hành động</th>
+                  <th style="text-align:right">Hành động</th>
                 </tr>
               </thead>
               <tbody id="users-tbody">
@@ -391,25 +524,25 @@
           </div>
         </div>
 
-        <div class="form-card" style="padding:0;overflow:hidden">
-          <div style="padding:1.25rem 1.75rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.75rem">
+        <div class="form-card table-card">
+          <div class="table-toolbar">
             <div>
-              <h2 style="margin:0">🎫 Danh sách Ticket từ người chơi</h2>
-              <div id="admin-ticket-alert" style="margin-top:0.4rem"></div>
+              <h2>🎫 Danh sách Ticket từ người chơi</h2>
+              <div id="admin-ticket-alert" style="margin-top:0.3rem"></div>
             </div>
-            <div style="display:flex;gap:0.5rem;align-items:center;flex-wrap:wrap">
-              <input type="text" id="ticket-search-input" placeholder="Tìm mã #TK / tiêu đề / MC..." class="input" style="padding:0.4rem 0.75rem;font-size:0.8rem;width:210px" onkeydown="if(event.key==='Enter')loadTickets()">
-              <select id="ticket-filter-status" class="input" style="padding:0.4rem 0.75rem;font-size:0.8rem;width:155px" onchange="loadTickets()">
+            <div class="toolbar-controls">
+              <input type="text" id="ticket-search-input" placeholder="Tìm mã #TK / tiêu đề / MC..." class="input" style="width:210px" onkeydown="if(event.key==='Enter')loadTickets()">
+              <select id="ticket-filter-status" class="input" style="width:185px" onchange="loadTickets()">
                 <option value="all">🎯 Tất cả trạng thái</option>
                 <option value="open">🟢 Mới gửi (open)</option>
                 <option value="in_progress">🟡 Đang xử lý</option>
                 <option value="resolved">✅ Đã giải quyết</option>
                 <option value="closed">🔒 Đã đóng</option>
               </select>
-              <button class="btn btn-ghost" style="font-size:.8rem;padding:.4rem .875rem" onclick="loadTickets()">🔄 Tải lại</button>
+              <button class="btn btn-ghost toolbar-btn" onclick="loadTickets()">🔄 Tải lại</button>
             </div>
           </div>
-          <div style="overflow-x:auto">
+          <div class="table-scroll">
             <table class="orders-table">
               <thead>
                 <tr>
@@ -751,7 +884,11 @@ async function loadOrders() {
       const pStat = o.paymentStatus || o.payment_status || (o.status === 'paid' ? 'paid' : 'pending');
       const dStat = o.deliveryStatus || o.delivery_status || 'not_queued';
       const itemsList = o.items || [];
-      const itemsSummary = itemsList.map(it => `${(it.product?.name || it.name || 'Vật phẩm')} (x${it.quantity || 1})`).join('<br>');
+      const itemsSummary = itemsList.map(it => {
+        const nm = escapeTicketHtml(it.product?.name || it.name || 'Vật phẩm');
+        const qty = it.quantity || 1;
+        return `<div class="order-item-row"><span>${nm}</span><span class="qty-chip">×${qty}</span></div>`;
+      }).join('');
       const mc = o.minecraftUsername || o.minecraft_username || o.user?.minecraftUsername || o.user?.minecraft_username || '—';
       const orderId = o._id || o.id;
 
@@ -759,23 +896,23 @@ async function loadOrders() {
       let deliveryUI = '';
       if (pStat === 'pending') {
         deliveryUI = `
-          <button class="btn-deliver" onclick="adminQuickApproveAndDeliver('${orderId}', '${code}', false)">
+          <button class="btn-deliver" onclick="adminQuickApproveAndDeliver('${orderId}', '${escapeTicketHtml(code)}', false)">
             ⚡ Duyệt & Giao đồ
           </button>
         `;
       } else if (pStat === 'paid') {
         if (dStat === 'completed' || oStat === 'delivered') {
           deliveryUI = `
-            <span class="stock-toggle in-stock" style="font-size:0.72rem">🎁 Đã giao game</span>
-            <div style="margin-top:4px">
-              <button class="btn btn-ghost" style="padding:0.2rem 0.45rem;font-size:0.68rem;border-radius:4px" onclick="adminQuickApproveAndDeliver('${orderId}', '${code}', true)">🚀 Giao lại</button>
+            <div class="delivery-inline">
+              <span class="stock-toggle in-stock">🎁 Đã giao</span>
+              <button class="btn-table" onclick="adminQuickApproveAndDeliver('${orderId}', '${escapeTicketHtml(code)}', true)" title="Đẩy lại lệnh giao vào server">🚀 Giao lại</button>
             </div>
           `;
         } else {
           deliveryUI = `
-            <span class="stock-toggle" style="background:rgba(251,191,36,0.15);color:#fbbf24;font-size:0.72rem">⏳ Chờ server kéo</span>
-            <div style="margin-top:4px">
-              <button class="btn btn-ghost" style="padding:0.2rem 0.45rem;font-size:0.68rem;border-radius:4px" onclick="adminQuickApproveAndDeliver('${orderId}', '${code}', true)">🚀 Giao lại</button>
+            <div class="delivery-inline">
+              <span class="stock-toggle badge-amber">⏳ Chờ kéo</span>
+              <button class="btn-table" onclick="adminQuickApproveAndDeliver('${orderId}', '${escapeTicketHtml(code)}', true)" title="Đẩy lại lệnh giao vào server">🚀 Giao lại</button>
             </div>
           `;
         }
@@ -783,21 +920,25 @@ async function loadOrders() {
         deliveryUI = `<span style="font-size:0.75rem;color:var(--text-muted)">—</span>`;
       }
 
+      const safeUsername = escapeTicketHtml(o.user?.username || '—');
+      const safeEmail = escapeTicketHtml(o.user?.email || '');
+      const safeMc = escapeTicketHtml(mc);
+
       return `
         <tr>
-          <td style="font-family:var(--font-mono);font-size:.78rem;font-weight:700">
-            ${code}
-            <div style="font-size:0.68rem;color:var(--text-muted)">ID: ${(o._id ? String(o._id).slice(-6) : o.id)}</div>
+          <td>
+            <span class="order-code-chip">${escapeTicketHtml(code)}</span>
+            <div style="font-size:0.68rem;color:var(--text-muted);margin-top:3px;font-family:var(--font-mono)">ID: ${(o._id ? String(o._id).slice(-6) : o.id)}</div>
           </td>
           <td>
-            <strong style="color:#fff">${o.user?.username || '—'}</strong><br>
-            <span style="font-size:.72rem;color:var(--text-muted)">${o.user?.email || ''}</span><br>
-            <span style="font-size:.72rem;color:var(--lagoon);font-weight:700">🎮 MC: ${mc}</span>
+            <div style="font-weight:700;color:#fff;white-space:nowrap">${safeUsername}</div>
+            ${safeEmail ? `<div style="font-size:.73rem;color:var(--text-muted);white-space:nowrap">${safeEmail}</div>` : ''}
+            <div style="font-size:.72rem;color:var(--lagoon);font-weight:700;white-space:nowrap;margin-top:1px">🎮 MC: ${safeMc}</div>
           </td>
-          <td style="font-size:.78rem;line-height:1.5">${itemsSummary || 'Vật phẩm'}</td>
-          <td style="font-weight:800;color:var(--accent);font-family:var(--font-mono);font-size:.95rem">${(o.total != null ? Number(o.total).toLocaleString('vi-VN') : (o.total_amount != null ? Number(o.total_amount).toLocaleString('vi-VN') : '0'))}đ</td>
+          <td>${itemsSummary || '<div class="order-item-row">Vật phẩm</div>'}</td>
+          <td class="td-money" style="text-align:right">${(o.total != null ? Number(o.total).toLocaleString('vi-VN') : (o.total_amount != null ? Number(o.total_amount).toLocaleString('vi-VN') : '0'))}đ</td>
           <td>
-            <select onchange="handleAdminStatusChange('${orderId}', 'orderStatus', this.value)" style="background:var(--bg-elevated);border:1px solid var(--border-strong);border-radius:6px;padding:.35rem .5rem;color:var(--text);font-size:.75rem;font-family:inherit">
+            <select class="admin-select" onchange="handleAdminStatusChange('${orderId}', 'orderStatus', this.value)">
               <option value="pending"    ${oStat==='pending'   ?'selected':''}>⏳ Chờ xử lý</option>
               <option value="processing" ${oStat==='processing'?'selected':''}>⚙️ Đang xử lý</option>
               <option value="delivered"  ${oStat==='delivered' ?'selected':''}>🎁 Đã giao</option>
@@ -805,21 +946,21 @@ async function loadOrders() {
             </select>
           </td>
           <td>
-            <select onchange="handleAdminStatusChange('${orderId}', 'paymentStatus', this.value)" style="background:var(--bg-elevated);border:1px solid var(--border-strong);border-radius:6px;padding:.35rem .5rem;color:var(--text);font-size:.75rem;font-family:inherit">
+            <select class="admin-select" onchange="handleAdminStatusChange('${orderId}', 'paymentStatus', this.value)">
               <option value="pending"  ${pStat==='pending' ?'selected':''}>💳 Chờ TT</option>
               <option value="paid"     ${pStat==='paid'    ?'selected':''}>✅ Đã TT</option>
               <option value="failed"   ${pStat==='failed'  ?'selected':''}>⚠️ Thất bại</option>
               <option value="refunded" ${pStat==='refunded'?'selected':''}>↩️ Hoàn tiền</option>
             </select>
             ${o.paymentProof ? `
-              <div style="margin-top:5px">
-                <button type="button" class="btn btn-ghost" style="padding:0.25rem 0.5rem;font-size:0.72rem;border-radius:6px;background:rgba(34,211,238,0.12);color:var(--lagoon);border:1px solid rgba(34,211,238,0.3)" onclick="openProofModal('${orderId}', '${code}', '${o.paymentProof}')">
-                  📸 Xem minh chứng
+              <div style="margin-top:4px">
+                <button type="button" class="btn-table" style="height:26px;min-height:26px;font-size:0.7rem;color:var(--lagoon);border-color:rgba(34,211,238,0.28);background:rgba(34,211,238,0.08)" onclick="openProofModal('${orderId}', '${escapeTicketHtml(code)}', '${escapeTicketHtml(o.paymentProof)}')">
+                  📸 Minh chứng
                 </button>
               </div>` : ''}
           </td>
           <td>${deliveryUI}</td>
-          <td style="font-size:.75rem;color:var(--text-muted)">${new Date(o.createdAt || o.created_at).toLocaleDateString('vi-VN')}</td>
+          <td class="td-date">${new Date(o.createdAt || o.created_at).toLocaleDateString('vi-VN')}</td>
         </tr>
       `;
     }).join('');
@@ -905,48 +1046,51 @@ async function loadUsers() {
       const uid = u.id || u._id;
       const ign = u.minecraftUsername || u.minecraft_username || '';
       const uuid = u.minecraftUuid || u.minecraft_uuid || '';
-      const avatarSrc = u.avatar || (ign ? `https://mc-heads.net/avatar/${ign}/32` : '/img/steve.png');
+      const avatarSrc = u.avatar || (ign ? `https://mc-heads.net/avatar/${encodeURIComponent(ign)}/32` : '/img/steve.png');
+      const safeUser = escapeTicketHtml(u.username || '');
+      const safeName = escapeTicketHtml(u.name || '');
+      const safeEmail = escapeTicketHtml(u.email || '');
+      const safeIgn = escapeTicketHtml(ign);
 
       let linkCell = '';
       if (ign) {
         linkCell = `
-          <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
-            <img src="https://mc-heads.net/avatar/${ign}/20" style="width:20px;height:20px;border-radius:3px;vertical-align:middle" onerror="this.style.display='none'">
-            <strong style="color:var(--lagoon);font-size:.82rem">${ign}</strong>
-            <button class="btn btn-ghost" style="padding:0.2rem 0.5rem;font-size:0.68rem;color:#f87171;border:1px solid rgba(239,68,68,0.25);background:rgba(239,68,68,0.1);border-radius:4px" onclick="adminUnlinkUser('${uid}', '${u.username}', '${ign}')">
-              🔓 Gỡ link
-            </button>
+          <div class="mc-link-cell">
+            <div class="mc-link-main">
+              <img src="https://mc-heads.net/avatar/${encodeURIComponent(ign)}/20" style="width:20px;height:20px;border-radius:4px;border:1px solid rgba(255,255,255,0.12)" onerror="this.style.display='none'">
+              <strong style="color:var(--lagoon);font-size:0.83rem">${safeIgn}</strong>
+            </div>
+            ${uuid ? `<div style="font-size:0.68rem;color:var(--text-muted);font-family:var(--font-mono)">${escapeTicketHtml(uuid.slice(0, 14))}…</div>` : `<div style="font-size:0.68rem;color:#34d399">● Đã liên kết</div>`}
           </div>
-          ${uuid ? `<div style="font-size:0.68rem;color:var(--text-muted);font-family:var(--font-mono)">${uuid.slice(0, 14)}...</div>` : ''}
         `;
       } else {
-        linkCell = `<span style="font-size:0.75rem;color:var(--text-muted)">⚪ Chưa liên kết</span>`;
+        linkCell = `<span class="stock-toggle badge-muted">⚪ Chưa liên kết</span>`;
       }
+
+      const roleBadge = u.role === 'admin'
+        ? `<span class="stock-toggle out-of-stock">👑 Admin</span>`
+        : `<span class="stock-toggle badge-cyan">👤 Thành viên</span>`;
 
       return `
         <tr>
           <td>
-            <div style="display:flex;align-items:center;gap:8px">
-              <img src="${avatarSrc}" style="width:32px;height:32px;border-radius:6px;object-fit:cover;border:1px solid var(--border)" onerror="this.src='/img/steve.png'">
+            <div class="user-cell">
+              <img class="user-avatar-sm" src="${escapeTicketHtml(avatarSrc)}" onerror="this.src='/img/steve.png'">
               <div>
-                <strong style="color:#fff">${u.username}</strong>
-                ${u.name ? `<div style="font-size:0.7rem;color:var(--text-muted)">${u.name}</div>` : ''}
+                <div style="font-weight:700;color:#fff;white-space:nowrap">${safeUser}</div>
+                ${safeName ? `<div style="font-size:0.71rem;color:var(--text-muted);white-space:nowrap">${safeName}</div>` : ''}
               </div>
             </div>
           </td>
-          <td style="font-size:.78rem;color:var(--text-muted)">${u.email}</td>
-          <td>
-            <span class="stock-toggle ${u.role === 'admin' ? 'out-of-stock' : 'in-stock'}" style="font-size:0.72rem">
-              ${u.role === 'admin' ? '👑 Admin' : '👤 Thành viên'}
-            </span>
-          </td>
+          <td style="font-size:.8rem;color:var(--text-muted);white-space:nowrap">${safeEmail}</td>
+          <td>${roleBadge}</td>
           <td>${linkCell}</td>
-          <td style="font-family:var(--font-mono);font-weight:700;color:var(--accent);font-size:.85rem">${(u.coins || 0).toLocaleString('vi-VN')} C</td>
-          <td style="font-size:.75rem;color:var(--text-muted)">${new Date(u.created_at || u.createdAt).toLocaleDateString('vi-VN')}</td>
-          <td>
+          <td class="td-money" style="text-align:right">${(u.coins || 0).toLocaleString('vi-VN')} C</td>
+          <td class="td-date">${new Date(u.created_at || u.createdAt).toLocaleDateString('vi-VN')}</td>
+          <td style="text-align:right">
             <div class="action-btns">
-              <button class="btn-edit" onclick="openPasswordModal('${uid}', '${u.username}')">🔑 Đổi MK</button>
-              ${ign ? `<button class="btn-del" onclick="adminUnlinkUser('${uid}', '${u.username}', '${ign}')">🔓 Gỡ</button>` : ''}
+              <button class="btn-edit" onclick="openPasswordModal('${uid}', '${safeUser}')">🔑 Đổi MK</button>
+              ${ign ? `<button class="btn-del" onclick="adminUnlinkUser('${uid}', '${safeUser}', '${safeIgn}')">🔓 Gỡ link</button>` : ''}
             </div>
           </td>
         </tr>
@@ -1120,7 +1264,7 @@ async function loadTickets() {
           </td>
           <td>${discordFlag}</td>
           <td>
-            <select class="input" style="padding:0.35rem 0.55rem;font-size:0.78rem;min-width:130px" onchange="handleTicketStatusChange(${tk.id}, this.value)">
+            <select class="admin-select" style="min-width:130px" onchange="handleTicketStatusChange(${tk.id}, this.value)">
               <option value="open" ${tk.status === 'open' ? 'selected' : ''}>🟢 Mới gửi</option>
               <option value="in_progress" ${tk.status === 'in_progress' ? 'selected' : ''}>🟡 Đang xử lý</option>
               <option value="resolved" ${tk.status === 'resolved' ? 'selected' : ''}>✅ Đã giải quyết</option>
