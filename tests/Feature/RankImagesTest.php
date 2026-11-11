@@ -47,4 +47,27 @@ class RankImagesTest extends TestCase
         $this->assertSame('/img/ranks/rank-knight.jpg', Product::where('slug', 'rank-knight')->value('image'));
         $this->assertSame('/img/ranks/rank-god.jpg', Product::where('slug', 'rank-god')->value('image'));
     }
+
+    public function test_api_replaces_legacy_placeholder_rank_images_but_preserves_custom_urls(): void
+    {
+        $this->seed();
+
+        Product::where('slug', 'rank-knight')->update([
+            'image' => 'https://placehold.co/800x800/png?text=Rank+Knight',
+            'images' => ['https://placehold.co/800x800/png?text=Rank+Knight+-+1'],
+        ]);
+        Product::where('slug', 'rank-god')->update([
+            'image' => 'https://cdn.example.com/custom-god.jpg',
+            'images' => ['https://cdn.example.com/custom-god.jpg'],
+        ]);
+
+        $knightRes = $this->getJson('/api/products/rank-knight');
+        $knightRes->assertStatus(200)
+            ->assertJsonPath('data.image', '/img/ranks/rank-knight.jpg')
+            ->assertJsonPath('data.images.0', '/img/ranks/rank-knight.jpg');
+
+        $godRes = $this->getJson('/api/products/rank-god');
+        $godRes->assertStatus(200)
+            ->assertJsonPath('data.image', 'https://cdn.example.com/custom-god.jpg');
+    }
 }

@@ -20,7 +20,7 @@ class SupportTicketController extends Controller
     }
 
     /**
-     * Public support config (Zalo URL, Tickets v2 channel link, ticket mode, webhook state).
+     * Public support config (Zalo URL, Discord ticket channel link, ticket mode, webhook state).
      */
     public function publicConfig(): JsonResponse
     {

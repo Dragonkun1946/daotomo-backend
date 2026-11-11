@@ -9,6 +9,22 @@ class Product extends Model
 {
     use HasFactory;
 
+    public const RANK_ARTWORK_BY_SLUG = [
+        'rank-knight'   => '/img/ranks/rank-knight.jpg',
+        'rank-legend'   => '/img/ranks/rank-legend.jpg',
+        'rank-master'   => '/img/ranks/rank-master.jpg',
+        'rank-overlord' => '/img/ranks/rank-overlord.jpg',
+        'rank-god'      => '/img/ranks/rank-god.jpg',
+    ];
+
+    public const RANK_ARTWORK_BY_REWARD = [
+        'rank_knight'   => '/img/ranks/rank-knight.jpg',
+        'rank_legend'   => '/img/ranks/rank-legend.jpg',
+        'rank_master'   => '/img/ranks/rank-master.jpg',
+        'rank_overlord' => '/img/ranks/rank-overlord.jpg',
+        'rank_god'      => '/img/ranks/rank-god.jpg',
+    ];
+
     protected $fillable = [
         'name',
         'slug',
@@ -95,6 +111,21 @@ class Product extends Model
         return (string) ($this->attributes['short_description'] ?? '');
     }
 
+    public function resolveRankArtwork(): ?string
+    {
+        $slug = strtolower(trim((string) ($this->slug ?? '')));
+        if ($slug !== '' && isset(self::RANK_ARTWORK_BY_SLUG[$slug])) {
+            return self::RANK_ARTWORK_BY_SLUG[$slug];
+        }
+
+        $reward = strtolower(trim((string) ($this->game_reward ?? ($this->metadata['gameReward'] ?? ''))));
+        if ($reward !== '' && isset(self::RANK_ARTWORK_BY_REWARD[$reward])) {
+            return self::RANK_ARTWORK_BY_REWARD[$reward];
+        }
+
+        return null;
+    }
+
     public function toArray(): array
     {
         $array = parent::toArray();
@@ -102,6 +133,24 @@ class Product extends Model
         $array['gameReward'] = (string) ($this->game_reward ?? ($this->metadata['gameReward'] ?? ''));
         $array['shortDescription'] = (string) ($this->short_description ?? ($this->metadata['shortDescription'] ?? ''));
         $array['originalPrice'] = (float) ($this->original_price ?? ($this->metadata['originalPrice'] ?? $this->price));
+
+        $rankArtwork = $this->resolveRankArtwork();
+        if ($rankArtwork !== null) {
+            $rawImage = trim((string) ($array['image'] ?? ''));
+            if ($rawImage === '' || str_contains($rawImage, 'placehold.co')) {
+                $array['image'] = $rankArtwork;
+            }
+
+            $rawImages = is_array($array['images'] ?? null) ? $array['images'] : [];
+            $hasCustomImages = !empty($rawImages) && collect($rawImages)->contains(function ($item) {
+                $url = trim((string) $item);
+                return $url !== '' && !str_contains($url, 'placehold.co');
+            });
+            if (!$hasCustomImages) {
+                $array['images'] = [$rankArtwork];
+            }
+        }
+
         return $array;
     }
 

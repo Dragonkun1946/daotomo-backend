@@ -106,7 +106,7 @@ class AdminSupportController extends Controller
     }
 
     /**
-     * Update Discord Tickets v2 channel link, click mode, webhook URL, and Zalo URL dynamically.
+     * Update Discord ticket channel link, click mode, webhook URL, and Zalo URL dynamically.
      */
     public function updateSettings(Request $request): JsonResponse
     {
@@ -127,7 +127,7 @@ class AdminSupportController extends Controller
             if (!$this->discordService->isValidDiscordChannelOrInviteUrl($channelInput)) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Link kênh Tickets v2 phải là link Discord hợp lệ (https://discord.com/channels/... hoặc https://discord.gg/...).',
+                    'message' => 'Link kênh Ticket phải là link Discord hợp lệ (https://discord.com/channels/... hoặc https://discord.gg/...).',
                 ], 422);
             }
             AppSetting::setValue('discord_ticket_channel_url', $channelInput);
@@ -169,7 +169,7 @@ class AdminSupportController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Đã lưu cấu hình Tickets v2 & Zalo thành công!',
+            'message' => 'Đã lưu cấu hình Ticket Discord & Zalo thành công!',
             'settings' => [
                 'webhook_configured' => $currentWebhook !== '' && $this->discordService->isValidDiscordWebhookUrl($currentWebhook),
                 'webhook_masked' => $this->discordService->maskWebhookUrl($currentWebhook),

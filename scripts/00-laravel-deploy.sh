@@ -59,7 +59,16 @@ chown -R www-data:www-data storage bootstrap/cache public/uploads database 2>/de
 chmod -R 775 storage bootstrap/cache public/uploads database 2>/dev/null || true
 
 echo "==> Running safe database migrations (php artisan migrate --force)..."
-php artisan migrate --force
+if ! php artisan migrate --force; then
+    echo "==> Primary migration exited non-zero."
+    if [ -n "$DATABASE_URL" ] && echo "$DATABASE_URL" | grep -q -- "-pooler\."; then
+        DIRECT_DB_URL="${DATABASE_URL//-pooler./.}"
+        echo "==> Retrying migrations against direct Neon PostgreSQL host..."
+        DATABASE_URL="$DIRECT_DB_URL" php artisan migrate --force || echo "==> WARNING: Direct migration retry also exited non-zero; continuing..."
+    else
+        echo "==> WARNING: Migration step exited non-zero; continuing with seeder..."
+    fi
+fi
 
 echo "==> Seeding initial products and data (idempotent seeder)..."
 php artisan db:seed --force || true

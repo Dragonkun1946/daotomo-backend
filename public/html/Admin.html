@@ -352,22 +352,22 @@
       <div class="tab-panel" id="tab-tickets">
         <div class="form-card">
           <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.75rem;margin-bottom:1rem">
-            <h2 style="margin:0">🎫 Cấu hình Bot Tickets v2 (Discord) & Zalo Hỗ Trợ</h2>
+            <h2 style="margin:0">🎫 Cấu hình Ticket Discord & Zalo Hỗ Trợ</h2>
             <span id="support-webhook-status" class="stock-toggle in-stock">⏳ Đang kiểm tra...</span>
           </div>
           <p style="font-size:0.82rem;color:var(--text-muted);margin-bottom:1rem;line-height:1.5">
-            Khi dùng bot <strong>Tickets v2</strong>, người chơi bấm icon Ticket trên web sẽ mở thẳng tới <strong>Kênh đặt bảng Panel Tickets v2</strong> trong Discord để tạo phòng hỗ trợ 1-1 ngay trên server của bạn.
+            Người chơi bấm icon Ticket trên web sẽ mở thẳng tới <strong>Kênh Tạo Ticket</strong> trong Discord để tạo phòng hỗ trợ 1-1 ngay trên server của bạn.
           </p>
           <div id="support-settings-msg" style="margin-bottom:0.85rem"></div>
           <div class="form-grid">
             <div class="form-group full">
-              <label>Link Kênh Panel Tickets v2 (Discord Channel URL hoặc Invite URL)</label>
+              <label>Link Kênh Tạo Ticket Discord (Discord Channel URL hoặc Invite URL)</label>
               <input class="input" type="url" id="support-ticket-channel-input" placeholder="https://discord.com/channels/1381315355317899314/1485265083918713063">
             </div>
             <div class="form-group">
               <label>Hành vi khi bấm nút tròn Discord Ticket</label>
               <select class="input" id="support-ticket-mode-select">
-                <option value="direct_channel">🔗 Mở thẳng kênh Tickets v2 trong Discord</option>
+                <option value="direct_channel">🔗 Mở thẳng kênh Ticket trong Discord</option>
                 <option value="modal">📋 Mở Form Ticket trên web (+ nút vào Discord)</option>
               </select>
             </div>
@@ -508,7 +508,7 @@
   <div class="footer-bottom">© 2026 Đảo Tò Mò</div>
 </footer>
 
-<script src="/js/api.js?v=2.4"></script>
+<script src="/js/api.js?v=2.5"></script>
 <script src="/js/skinview3d.bundle.js"></script>
 <script src="/js/skin-viewer.js"></script>
 <script>
@@ -1071,7 +1071,7 @@ async function loadTickets() {
     if (statusBadge) {
       if (settings.ticket_mode === 'direct_channel') {
         statusBadge.className = 'stock-toggle in-stock';
-        statusBadge.textContent = '🎫 Tickets v2: Mở thẳng kênh Discord';
+        statusBadge.textContent = '🎫 Ticket Discord: Mở thẳng kênh';
       } else if (settings.webhook_configured) {
         statusBadge.className = 'stock-toggle in-stock';
         statusBadge.textContent = '✅ Form Web + Webhook: ' + (settings.webhook_masked || '');
