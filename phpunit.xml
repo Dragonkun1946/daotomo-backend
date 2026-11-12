@@ -29,5 +29,8 @@
         <env name="QUEUE_CONNECTION" value="sync"/>
         <env name="SESSION_DRIVER" value="array"/>
         <env name="TELESCOPE_ENABLED" value="false"/>
+        <env name="MINECRAFT_BRIDGE_TOKEN" value="test_bridge_secret_token"/>
+        <env name="SUPPORT_ZALO_URL" value="https://zalo.me/0977364711"/>
+        <env name="DISCORD_TICKET_CHANNEL_URL" value="https://discord.com/channels/1381315355317899314/1485265083918713063"/>
     </php>
 </phpunit>

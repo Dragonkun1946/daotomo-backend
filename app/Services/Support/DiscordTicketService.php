@@ -35,7 +35,7 @@ class DiscordTicketService
             return $dbUrl;
         }
 
-        return trim((string) config('services.support.zalo_url', 'https://zalo.me/0977364711'));
+        return trim((string) config('services.support.zalo_url', ''));
     }
 
     public function resolveDiscordInviteUrl(): string

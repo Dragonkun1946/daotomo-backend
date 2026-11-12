@@ -21,8 +21,8 @@ class DiscordOAuthService
      */
     public function getAuthorizationRedirect(Request $request): RedirectResponse
     {
-        $clientId = config('services.discord.client_id', env('DISCORD_CLIENT_ID'));
-        $clientSecret = config('services.discord.client_secret', env('DISCORD_CLIENT_SECRET'));
+        $clientId = config('services.discord.client_id');
+        $clientSecret = config('services.discord.client_secret');
 
         if (!$clientId || !$clientSecret) {
             Log::warning('Discord OAuth attempted but client credentials are not configured.');
@@ -35,7 +35,7 @@ class DiscordOAuthService
             'created_at' => now()->timestamp,
         ], now()->addMinutes(15));
 
-        $redirectUri = config('services.discord.redirect', env('DISCORD_CALLBACK_URL'))
+        $redirectUri = config('services.discord.redirect')
             ?: url('/api/auth/discord/callback');
 
         $query = http_build_query([
@@ -75,9 +75,9 @@ class DiscordOAuthService
             return redirect($this->getSafeFrontendUrl('/html/Account.html?oauthError=missing_code'));
         }
 
-        $clientId = config('services.discord.client_id', env('DISCORD_CLIENT_ID'));
-        $clientSecret = config('services.discord.client_secret', env('DISCORD_CLIENT_SECRET'));
-        $redirectUri = config('services.discord.redirect', env('DISCORD_CALLBACK_URL'))
+        $clientId = config('services.discord.client_id');
+        $clientSecret = config('services.discord.client_secret');
+        $redirectUri = config('services.discord.redirect')
             ?: url('/api/auth/discord/callback');
 
         try {
@@ -187,7 +187,7 @@ class DiscordOAuthService
      */
     public function getSafeFrontendUrl(string $pathWithQuery = ''): string
     {
-        $frontendUrl = env('FRONTEND_URL');
+        $frontendUrl = config('app.frontend_url');
         if (!empty($frontendUrl)) {
             $parsed = parse_url($frontendUrl);
             $host = $parsed['host'] ?? '';

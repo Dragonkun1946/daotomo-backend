@@ -58,24 +58,26 @@ class CheckinService
         $user->increment('coins', $coinsAwarded);
 
         // Tự động đẩy phần thưởng 10 Chìa Khóa Rare và Xu vào hàng đợi thực thi in-game
-        $targetIgn = $user->minecraft_username ?: $user->username;
-        \App\Models\GameDeliveryQueue::create([
-            'user_id' => $user->id,
-            'game_username' => $targetIgn,
-            'game_uuid' => $user->minecraft_uuid,
-            'command' => "excellentcrates:crate key give {$targetIgn} rare 10",
-            'type' => 'checkin_reward',
-            'status' => 'pending',
-        ]);
+        $targetIgn = trim((string) ($user->minecraft_username ?: $user->username));
+        if (preg_match('/^[a-zA-Z0-9_]{3,16}$/', $targetIgn)) {
+            \App\Models\GameDeliveryQueue::create([
+                'user_id' => $user->id,
+                'game_username' => $targetIgn,
+                'game_uuid' => $user->minecraft_uuid,
+                'command' => "excellentcrates:crate key give {$targetIgn} rare 10",
+                'type' => 'checkin_reward',
+                'status' => 'pending',
+            ]);
 
-        \App\Models\GameDeliveryQueue::create([
-            'user_id' => $user->id,
-            'game_username' => $targetIgn,
-            'game_uuid' => $user->minecraft_uuid,
-            'command' => "coins give {$targetIgn} {$coinsAwarded}",
-            'type' => 'checkin_reward',
-            'status' => 'pending',
-        ]);
+            \App\Models\GameDeliveryQueue::create([
+                'user_id' => $user->id,
+                'game_username' => $targetIgn,
+                'game_uuid' => $user->minecraft_uuid,
+                'command' => "coins give {$targetIgn} {$coinsAwarded}",
+                'type' => 'checkin_reward',
+                'status' => 'pending',
+            ]);
+        }
 
         $payload = [
             'success' => true,

@@ -59,8 +59,8 @@ class PasswordResetService
 
         // Detect if real mail transport is configured (unless running in test suite)
         $isTesting = app()->runningUnitTests();
-        $resendKey = env('RESEND_API_KEY');
-        $brevoKey = env('BREVO_API_KEY');
+        $resendKey = config('services.resend.key');
+        $brevoKey = config('services.brevo.key');
         $defaultMailer = config('mail.default');
         $smtpHost = config('mail.mailers.smtp.host');
         $smtpUser = config('mail.mailers.smtp.username');
@@ -108,8 +108,8 @@ class PasswordResetService
                     'email' => $user->email,
                 ])->render();
 
-                $fromName = env('MAIL_FROM_NAME', 'Đảo Tò Mò');
-                $fromEmail = env('RESEND_FROM_EMAIL', env('MAIL_FROM_ADDRESS', 'onboarding@resend.dev'));
+                $fromName = config('mail.from.name', 'Đảo Tò Mò');
+                $fromEmail = config('services.resend.from_email') ?: config('mail.from.address', 'onboarding@resend.dev');
 
                 $resendRes = Http::withToken($resendKey)
                     ->timeout(10)
@@ -172,8 +172,8 @@ class PasswordResetService
                     'email' => $user->email,
                 ])->render();
 
-                $fromName = env('MAIL_FROM_NAME', 'Đảo Tò Mò');
-                $fromEmail = env('MAIL_FROM_ADDRESS', 'admin@daotomo.site');
+                $fromName = config('mail.from.name', 'Đảo Tò Mò');
+                $fromEmail = config('mail.from.address', 'admin@daotomo.site');
 
                 $brevoRes = Http::withHeaders([
                     'api-key' => $brevoKey,
@@ -319,7 +319,7 @@ class PasswordResetService
      */
     public function getSafeFrontendUrl(string $pathWithQuery = ''): string
     {
-        $frontendUrl = env('FRONTEND_URL');
+        $frontendUrl = config('app.frontend_url');
         if (!empty($frontendUrl)) {
             $parsed = parse_url($frontendUrl);
             $host = $parsed['host'] ?? '';

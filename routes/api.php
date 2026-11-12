@@ -46,10 +46,10 @@ Route::get('/health', function () {
 
 // ─── Public Auth Routes ───────────────────────────────────────────────────────
 Route::prefix('auth')->group(function () {
-    Route::post('/register', [AuthController::class, 'register']);
-    Route::post('/login', [AuthController::class, 'login']);
+    Route::middleware('throttle:10,1')->post('/register', [AuthController::class, 'register']);
+    Route::middleware('throttle:10,1')->post('/login', [AuthController::class, 'login']);
     Route::middleware('throttle:5,1')->post('/forgot-password', [PasswordResetController::class, 'forgotPassword']);
-    Route::post('/reset-password/{token}', [PasswordResetController::class, 'resetPassword']);
+    Route::middleware('throttle:10,1')->post('/reset-password/{token}', [PasswordResetController::class, 'resetPassword']);
 
     // OAuth: Discord
     Route::get('/discord', [DiscordOAuthController::class, 'redirect']);
@@ -61,9 +61,9 @@ Route::get('/products', [ProductController::class, 'index']);
 Route::get('/products/{id}', [ProductController::class, 'show']);
 
 // ─── Order Public Endpoints ───────────────────────────────────────────────────
-Route::get('/orders/check-status/{code}', [OrderController::class, 'showByCode']);
-Route::get('/orders/status/{code}', [OrderController::class, 'showByCode']);
-Route::post('/orders/guest', [OrderController::class, 'storeGuest']);
+Route::middleware('throttle:30,1')->get('/orders/check-status/{code}', [OrderController::class, 'showByCode']);
+Route::middleware('throttle:30,1')->get('/orders/status/{code}', [OrderController::class, 'showByCode']);
+Route::middleware('throttle:10,1')->post('/orders/guest', [OrderController::class, 'storeGuest']);
 
 // ─── Public Support & Discord Ticket Routes ──────────────────────────────────
 Route::get('/support/config', [SupportTicketController::class, 'publicConfig']);
@@ -95,7 +95,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/tickets/my', [SupportTicketController::class, 'myTickets']);
 
     // Game Account Linking (1-to-1 PIN Handshake)
-    Route::post('/user/game-link', [GameLinkController::class, 'linkGame']);
+    Route::middleware('throttle:10,1')->post('/user/game-link', [GameLinkController::class, 'linkGame']);
     Route::delete('/user/game-link', [GameLinkController::class, 'unlinkGame']);
 
     // ─── Admin Only Routes ────────────────────────────────────────────────────
@@ -127,7 +127,7 @@ Route::middleware('auth:sanctum')->group(function () {
 });
 
 // ─── Internal Minecraft Bridge Routes (Protected by Bridge Token) ─────────────
-Route::prefix('internal/minecraft')->group(function () {
+Route::middleware('throttle:30,1')->prefix('internal/minecraft')->group(function () {
     Route::post('/link/request-pin', [InternalMinecraftBridgeController::class, 'requestLinkPin']);
     Route::get('/deliveries/pending', [InternalMinecraftBridgeController::class, 'getPendingDeliveries']);
     Route::post('/deliveries/confirm', [InternalMinecraftBridgeController::class, 'confirmDeliveries']);

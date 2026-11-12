@@ -12,7 +12,7 @@ class RegisterRequest extends BaseApiRequest
             'username' => 'required|string|min:3|max:30|unique:users,username',
             'email' => 'required|email|max:100|unique:users,email',
             'password' => 'required|string|min:6|max:100',
-            'minecraftUsername' => 'nullable|string|max:30',
+            'minecraftUsername' => 'nullable|string|regex:/^[a-zA-Z0-9_]{3,16}$/',
         ];
     }
 

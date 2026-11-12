@@ -2,7 +2,7 @@
 
 [![PHP Version](https://img.shields.io/badge/PHP-8.2%2B-blue.svg)](https://php.net)
 [![Laravel Framework](https://img.shields.io/badge/Laravel-11.31-red.svg)](https://laravel.com)
-[![Tests Status](https://img.shields.io/badge/Tests-71%20Passed%20(243%20assertions)-brightgreen.svg)](#kiểm-thử-tests)
+[![Tests Status](https://img.shields.io/badge/Tests-85%20Passed%20(327%20assertions)-brightgreen.svg)](#kiểm-thử-tests)
 [![Architecture](https://img.shields.io/badge/Architecture-Domain--Oriented%20Clean-success.svg)](docs/ARCHITECTURE.md)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
@@ -61,20 +61,23 @@ app/
 │   ├── Controllers/
 │   │   ├── Api/
 │   │   │   ├── Auth/           # AuthController, PasswordResetController, DiscordOAuthController
-│   │   │   ├── User/           # ProfileController, SkinController
+│   │   │   ├── User/           # ProfileController, SkinController, GameLinkController
 │   │   │   ├── Order/          # OrderController
 │   │   │   ├── Product/        # ProductController
 │   │   │   ├── Checkin/        # CheckinController
-│   │   │   └── Payment/        # SepayWebhookController
-│   │   └── Admin/              # AdminOrderController, AdminProductController
-│   ├── Requests/               # BaseApiRequest & FormRequests chuẩn hóa validation lỗi 422
-│   └── Resources/              # UserResource, OrderResource (chuẩn hóa JSON serialization)
+│   │   │   ├── Payment/        # SepayWebhookController
+│   │   │   ├── Support/        # SupportTicketController
+│   │   │   ├── Internal/       # InternalMinecraftBridgeController
+│   │   │   └── Admin/          # AdminOrder, AdminProduct, AdminUser, AdminSupport
+│   ├── Requests/               # BaseApiRequest & 9 FormRequests chuẩn hóa validation lỗi 422
+│   └── Resources/              # UserResource, OrderResource, ProductResource
 └── Services/
     ├── Auth/                   # DiscordOAuthService, PasswordResetService
-    ├── User/                   # SkinService
-    ├── Order/                  # OrderService
+    ├── User/                   # SkinService (Data URI PNG + PHP GD 128x128 Avatar)
+    ├── Order/                  # OrderService, GameDeliveryService
     ├── Checkin/                # CheckinService
-    └── SepayService.php        # SepayService
+    ├── Support/                # DiscordTicketService (Anti-SSRF Webhook)
+    └── SepayService.php        # SepayService (HMAC-SHA256 + Anti-Replay)
 ```
 
 ---
@@ -136,10 +139,13 @@ PASS  Tests\Unit\PasswordResetServiceTest (3 tests)
 PASS  Tests\Unit\SkinServiceTest (4 tests)
 PASS  Tests\Feature\ApiTest (42 tests)
 PASS  Tests\Feature\ExampleTest (1 test)
+PASS  Tests\Feature\MinecraftBridgeTest (3 tests)
+PASS  Tests\Feature\OrderDeliveryTest (2 tests)
+PASS  Tests\Feature\RankImagesTest (3 tests)
 PASS  Tests\Feature\SepayWebhookTest (17 tests)
+PASS  Tests\Feature\SupportTicketTest (6 tests)
 
-Tests:    71 passed (243 assertions)
-Duration: ~2.6s
+Tests:    85 passed (327 assertions)
 ```
 
 ---

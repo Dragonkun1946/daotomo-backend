@@ -227,7 +227,7 @@ function showToast(message, type = 'info', duration = 3400) {
   toast.className = `toast-item ${type}`;
   toast.innerHTML = `
     <span class="toast-icon">${icons[type] || '✨'}</span>
-    <span class="toast-msg">${message}</span>
+    <span class="toast-msg">${api.escapeHtml(message)}</span>
     <div class="toast-timer-bar" style="transition: width ${duration}ms linear; width: 100%;"></div>
   `;
   container.appendChild(toast);
@@ -248,8 +248,53 @@ function showToast(message, type = 'info', duration = 3400) {
 const api = {
   getToken:   () => localStorage.getItem('dtm_token'),
   getUser:    () => JSON.parse(localStorage.getItem('dtm_user') || 'null'),
+  resolveAssetUrl(url) {
+    if (!url || typeof url !== 'string') return '';
+    const trimmed = url.trim();
+    if (!trimmed) return '';
+    if (trimmed.startsWith('data:') || trimmed.startsWith('blob:') || trimmed.startsWith('http://') || trimmed.startsWith('https://')) {
+      return trimmed;
+    }
+    if (trimmed.startsWith('/uploads/') && API.startsWith('http')) {
+      return API.replace(/\/api\/?$/, '') + trimmed;
+    }
+    return trimmed;
+  },
+  getSkinCacheKey(user) {
+    const uid = user && (user.id || user._id || user.username);
+    return uid ? `dtm_custom_skin_${uid}` : null;
+  },
+  getUserCustomSkin(user) {
+    const k = this.getSkinCacheKey(user);
+    return k ? (localStorage.getItem(k) || '') : '';
+  },
+  setUserCustomSkin(user, skinData) {
+    localStorage.removeItem('dtm_custom_skin');
+    const k = this.getSkinCacheKey(user);
+    if (k && skinData) {
+      try { localStorage.setItem(k, skinData); } catch (e) {}
+    }
+  },
+  clearUserCustomSkin(user) {
+    localStorage.removeItem('dtm_custom_skin');
+    const k = this.getSkinCacheKey(user);
+    if (k) localStorage.removeItem(k);
+  },
+  normalizeUserAssets(user) {
+    if (!user || typeof user !== 'object') return user;
+    const resolvedSkin = this.resolveAssetUrl(user.skinUrl || user.skin_url || '');
+    const resolvedAvatar = this.resolveAssetUrl(user.avatar || '');
+    user.skinUrl = resolvedSkin;
+    user.skin_url = resolvedSkin;
+    user.avatar = resolvedAvatar;
+    if (resolvedSkin && resolvedSkin.startsWith('data:image/')) {
+      this.setUserCustomSkin(user, resolvedSkin);
+    }
+    return user;
+  },
   setUser:    (user) => {
     if (user) {
+      api.normalizeUserAssets(user);
       localStorage.setItem('dtm_user', JSON.stringify(user));
       try { window.dispatchEvent(new CustomEvent('daotomo:auth-changed', { detail: { user } })); } catch (e) {}
     }
@@ -264,16 +309,15 @@ const api = {
     return !!(u && (u.role === 'admin' || u.is_admin || u.role === 'ADMIN'));
   },
   setSession(token, user) {
+    // Always wipe legacy unscoped key so switching accounts never leaks skins across users
+    localStorage.removeItem('dtm_custom_skin');
     if (token) localStorage.setItem('dtm_token', token);
     if (user) {
-      const customSkin = localStorage.getItem('dtm_custom_skin');
-      if (customSkin && !user.skinUrl) {
-        user.skinUrl = customSkin;
-      }
+      this.normalizeUserAssets(user);
       localStorage.setItem('dtm_user', JSON.stringify(user));
     }
     try {
-      const skinUrl = (user && user.skinUrl) || localStorage.getItem('dtm_custom_skin') || '/img/steve.png';
+      const skinUrl = this.getActiveSkinUrl(user || null);
       window.dispatchEvent(new CustomEvent('daotomo:skin-updated', { detail: { skinUrl } }));
       window.dispatchEvent(new CustomEvent('daotomo:auth-changed', { detail: { user } }));
     } catch (e) {}
@@ -432,12 +476,36 @@ const api = {
     api.request('/admin/support/settings', { method: 'PUT', body: JSON.stringify(payload) }),
   adminTestSupportWebhook: (discord_ticket_webhook_url = '') =>
     api.request('/admin/support/test-webhook', { method: 'POST', body: JSON.stringify({ discord_ticket_webhook_url }) }),
-  getActiveSkinUrl: () => {
-    const customSkin = localStorage.getItem('dtm_custom_skin');
-    if (customSkin) return customSkin;
-    const user = api.getUser();
-    if (api.isLoggedIn() && user && user.skinUrl) {
-      return user.skinUrl;
+  escapeHtml: (str) => String(str ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;'),
+  safeUrl: (url, fallback = '#') => {
+    const s = String(url ?? '').trim();
+    if (!s) return fallback;
+    if (s.startsWith('/') || s.startsWith('data:image/')) return s;
+    try {
+      const parsed = new URL(s);
+      if (parsed.protocol === 'https:' || parsed.protocol === 'http:') return s;
+    } catch (_) {}
+    return fallback;
+  },
+  getActiveSkinUrl: (userOverride = null) => {
+    if (!userOverride && !api.isLoggedIn()) return '/img/steve.png';
+    const user = userOverride || api.getUser();
+    if (!user) return '/img/steve.png';
+    const rawSkin = api.resolveAssetUrl(user.skinUrl || user.skin_url || '');
+    if (rawSkin.startsWith('data:image/')) {
+      return rawSkin;
+    }
+    const scoped = api.getUserCustomSkin(user);
+    if (scoped && (rawSkin.includes('/uploads/') || user._offlineSkin)) {
+      return scoped;
+    }
+    if (rawSkin && rawSkin !== '/img/steve.png') {
+      return rawSkin;
     }
     return '/img/steve.png';
   },
@@ -457,7 +525,7 @@ const COMMAND_ITEMS = [
   { icon: '🗺️', title: 'Bản Đồ Thế Giới & Tọa Độ Địa Danh', type: 'link', url: '/html/Map.html' },
   { icon: '💬', title: 'Cộng Đồng Discord — Voice, Chat & Event', type: 'link', url: '/html/Discord.html' },
   { icon: '🎫', title: 'Tạo Ticket Hỗ Trợ Discord — Gửi BQT xử lý', type: 'action', action: 'open_support_ticket' },
-  { icon: '📱', title: 'Nhắn Tin Hỗ Trợ Qua Zalo (0977364711)', type: 'action', action: 'open_zalo' },
+  { icon: '📱', title: 'Nhắn Tin Hỗ Trợ Qua Zalo Admin', type: 'action', action: 'open_zalo' },
   { icon: '📅', title: 'Điểm Danh Hằng Ngày — Tích chuỗi nhận quà', type: 'link', url: '/html/Checkin.html' },
   { icon: '📦', title: 'Lịch Sử Đơn Hàng & Tài Khoản Của Tôi', type: 'link', url: '/html/Account.html' },
   { icon: '🧍', title: 'Mô Hình Nhân Vật 3D — Xoay & tương tác skin Minecraft', type: 'action', action: 'open_skin_viewer' },
@@ -494,7 +562,7 @@ function initCommandPalette() {
     if (!filteredItems.length) {
       body.innerHTML = `
         <div style="text-align:center; padding:2rem 1rem; color:var(--text-muted); font-size:0.9rem;">
-          Không tìm thấy kết quả phù hợp cho "${input.value}"
+          Không tìm thấy kết quả phù hợp cho "${api.escapeHtml(input.value)}"
         </div>
       `;
       return;
@@ -568,7 +636,7 @@ function initCommandPalette() {
         window.open(ticketUrl, '_blank', 'noopener,noreferrer');
       }
     } else if (item.action === 'open_zalo') {
-      const zaloLink = document.getElementById('dtm-fab-zalo-btn')?.href || 'https://zalo.me/0977364711';
+      const zaloLink = DTM_SUPPORT_STATE.zaloUrl || document.getElementById('dtm-fab-zalo-btn')?.getAttribute('href') || '/html/Discord.html';
       window.open(zaloLink, '_blank', 'noopener,noreferrer');
     }
   }
@@ -621,7 +689,7 @@ function initCommandPalette() {
    NAVBAR & FLOATING ACTION DOCK (Sound, Skin 3D, Admin)
 ═══════════════════════════════════════════════════════════ */
 const DTM_SUPPORT_STATE = {
-  zaloUrl: 'https://zalo.me/0977364711',
+  zaloUrl: '',
   discordInviteUrl: 'https://discord.gg/rNQ6ytnSg',
   ticketChannelUrl: 'https://discord.com/channels/1381315355317899314/1485265083918713063',
   ticketMode: 'direct_channel',
@@ -845,7 +913,7 @@ function initFloatingActionWidget() {
       </button>
 
       <!-- Zalo Direct Support -->
-      <a href="${DTM_SUPPORT_STATE.zaloUrl}" target="_blank" rel="noopener noreferrer" class="dtm-fab-item zalo-item" id="dtm-fab-zalo-btn" data-tooltip="Chat Zalo (0977364711)" title="Chat Zalo (0977364711)" aria-label="Chat Zalo" role="menuitem">
+      <a href="${DTM_SUPPORT_STATE.zaloUrl || '/html/Discord.html'}" target="_blank" rel="noopener noreferrer" class="dtm-fab-item zalo-item" id="dtm-fab-zalo-btn" data-tooltip="Chat Zalo Admin" title="Chat Zalo Admin" aria-label="Chat Zalo" role="menuitem">
         <span class="dtm-fab-item-icon">
           <svg viewBox="0 0 24 24" width="24" height="24" fill="none">
             <path d="M12 2C6.2 2 1.5 6.18 1.5 11.34c0 2.82 1.4 5.36 3.6 7.06-.16 1.44-.7 2.8-1.56 3.82-.2.24 0 .62.32.56 1.74-.28 3.44-.94 4.76-1.86 1.08.28 2.22.44 3.38.44 5.8 0 10.5-4.18 10.5-9.34S17.8 2 12 2Z" fill="#ffffff"/>

@@ -30,8 +30,8 @@ class OrderDeliveryService
             ? $order->minecraft_username
             : ($order->user?->minecraft_username ?: $order->user?->username);
 
-        if (empty($player)) {
-            Log::warning("[OrderDelivery] Order {$order->order_code} has no Minecraft username or user IGN. Postponing delivery.");
+        if (empty($player) || !preg_match('/^[a-zA-Z0-9_]{3,16}$/', $player)) {
+            Log::warning("[OrderDelivery] Order {$order->order_code} has missing or unsafe player IGN. Postponing delivery.");
             return 0;
         }
 

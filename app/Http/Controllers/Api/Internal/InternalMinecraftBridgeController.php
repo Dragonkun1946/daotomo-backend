@@ -21,12 +21,12 @@ class InternalMinecraftBridgeController extends Controller
      */
     protected function authenticateBridge(Request $request): bool
     {
-        $configuredToken = config('services.minecraft.bridge_token', env('MINECRAFT_BRIDGE_TOKEN', 'daotomo_secret_bridge_key_2026'));
+        $configuredToken = (string) config('services.minecraft.bridge_token', '');
         $provided = $request->header('X-Bridge-Token')
             ?: $request->bearerToken()
             ?: $request->header('X-Api-Key');
 
-        return !empty($provided) && hash_equals($configuredToken, $provided);
+        return $configuredToken !== '' && !empty($provided) && hash_equals($configuredToken, $provided);
     }
 
     /**
@@ -45,26 +45,30 @@ class InternalMinecraftBridgeController extends Controller
             return response()->json(['success' => false, 'message' => 'Missing username or uuid.'], 400);
         }
 
+        if (!preg_match('/^[a-zA-Z0-9_]{3,16}$/', $username)) {
+            return response()->json(['success' => false, 'message' => 'Invalid Minecraft username format.'], 400);
+        }
+
         // Kiểm tra xem UUID này đã được liên kết với tài khoản web nào chưa
         $linkedUser = User::where('minecraft_uuid', $uuid)->first();
         if ($linkedUser) {
             return response()->json([
                 'success' => false,
                 'already_linked' => true,
-                'message' => "Nhân vật này đã được liên kết với tài khoản Web: {$linkedUser->username} ({$linkedUser->email}).",
+                'message' => "Nhân vật này đã được liên kết với tài khoản Web: {$linkedUser->username}.",
             ], 409);
         }
 
         // Xóa các mã PIN cũ của UUID này
         GameLinkPin::where('minecraft_uuid', $uuid)->delete();
 
-        // Sinh mã PIN ngẫu nhiên 4 số: DTM-XXXX
-        $codeNumber = sprintf('%04d', rand(1000, 9999));
+        // Sinh mã PIN ngẫu nhiên 6 chữ số an toàn mật mã: DTM-XXXXXX
+        $codeNumber = sprintf('%06d', random_int(100000, 999999));
         $pinCode = "DTM-{$codeNumber}";
 
         // Đảm bảo không trùng mã pin đang còn hạn
         while (GameLinkPin::where('pin_code', $pinCode)->where('expires_at', '>', now())->exists()) {
-            $codeNumber = sprintf('%04d', rand(1000, 9999));
+            $codeNumber = sprintf('%06d', random_int(100000, 999999));
             $pinCode = "DTM-{$codeNumber}";
         }
 

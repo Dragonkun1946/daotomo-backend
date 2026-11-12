@@ -506,7 +506,7 @@
             </div>
             <div class="form-group">
               <label>Link Zalo Hỗ Trợ (nút tròn Zalo)</label>
-              <input class="input" type="url" id="support-zalo-input" placeholder="https://zalo.me/0977364711">
+              <input class="input" type="url" id="support-zalo-input" placeholder="https://zalo.me/09xxxxxxxx">
             </div>
             <div class="form-group full">
               <details style="background:rgba(255,255,255,0.02);border:1px dashed var(--border);border-radius:10px;padding:0.75rem 1rem">
@@ -641,9 +641,9 @@
   <div class="footer-bottom">© 2026 Đảo Tò Mò</div>
 </footer>
 
-<script src="/js/api.js?v=2.8"></script>
+<script src="/js/api.js?v=2.9"></script>
 <script src="/js/skinview3d.bundle.js"></script>
-<script src="/js/skin-viewer.js"></script>
+<script src="/js/skin-viewer.js?v=2.9"></script>
 <script>
 const API_ADMIN = typeof API !== 'undefined' ? API : '/api';
 const catLabel = { crate:'📦 Hòm', cosmetic:'✨ Cosmetic', pet:'🐾 Pet', key:'🗝️ Key', bundle:'🎒 Bundle', vip:'👑 VIP' };
@@ -747,25 +747,46 @@ async function loadProducts() {
     const kpiProd = document.getElementById('kpi-products');
     if (kpiProd) kpiProd.textContent = data.length;
 
+    window.__adminProductsMap = {};
     if (!data.length) { tbody.innerHTML = '<tr><td colspan="6" class="no-data">Chưa có sản phẩm nào.</td></tr>'; return; }
-    tbody.innerHTML = data.map(p => `
+    tbody.innerHTML = data.map(p => {
+      const pid = String(p._id || p.id);
+      window.__adminProductsMap[pid] = p;
+      const safeId = escapeTicketHtml(pid);
+      const safeName = escapeTicketHtml(p.name || '');
+      const safeReward = escapeTicketHtml(p.gameReward || '');
+      const safeCat = escapeTicketHtml(catLabel[p.category] || p.category || '');
+      const safeImg = escapeTicketHtml(api.safeUrl(p.image, '/img/logo.jpg'));
+      return `
       <tr>
-        <td><img class="prod-img" src="${p.image}" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 40 40%22><rect fill=%22%23222%22 width=%2240%22 height=%2240%22/><text x=%2250%25%22 y=%2255%25%22 font-size=%2220%22 text-anchor=%22middle%22>🎁</text></svg>'"></td>
-        <td><div class="prod-name">${p.name}</div><div style="font-size:.72rem;color:var(--text-muted)">${p.gameReward || ''}</div></td>
-        <td class="prod-price">${p.price.toLocaleString('vi-VN')}đ</td>
-        <td>${catLabel[p.category] || p.category}</td>
+        <td><img class="prod-img" src="${safeImg}" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 40 40%22><rect fill=%22%23222%22 width=%2240%22 height=%2240%22/><text x=%2250%25%22 y=%2255%25%22 font-size=%2220%22 text-anchor=%22middle%22>🎁</text></svg>'"></td>
+        <td><div class="prod-name">${safeName}</div><div style="font-size:.72rem;color:var(--text-muted)">${safeReward}</div></td>
+        <td class="prod-price">${Number(p.price || 0).toLocaleString('vi-VN')}đ</td>
+        <td>${safeCat}</td>
         <td><span class="stock-toggle ${p.inStock ? 'in-stock' : 'out-of-stock'}">${p.inStock ? '✅ Còn hàng' : '❌ Hết hàng'}</span></td>
         <td>
           <div class="action-btns">
-            <button class="btn-edit" onclick="openEdit('${p._id || p.id}','${p.name}',${p.price},'${p.description}','${p.image}',${p.inStock})">✏️ Sửa</button>
-            <button class="btn-del"  onclick="deleteProduct('${p._id || p.id}','${p.name}')">🗑️ Xoá</button>
+            <button class="btn-edit" onclick="openEditById('${safeId}')">✏️ Sửa</button>
+            <button class="btn-del"  onclick="deleteProductById('${safeId}')">🗑️ Xoá</button>
           </div>
         </td>
       </tr>
-    `).join('');
+    `;
+    }).join('');
   } catch(e) {
-    tbody.innerHTML = `<tr><td colspan="6" class="no-data">❌ ${e.message}</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="6" class="no-data">❌ ${escapeTicketHtml(e.message)}</td></tr>`;
   }
+}
+
+function openEditById(id) {
+  const p = (window.__adminProductsMap || {})[id];
+  if (!p) return;
+  openEdit(id, p.name || '', p.price || 0, p.description || '', p.image || '', p.inStock);
+}
+
+function deleteProductById(id) {
+  const p = (window.__adminProductsMap || {})[id];
+  deleteProduct(id, p?.name || id);
 }
 
 /* ── Delete product ── */
@@ -816,7 +837,7 @@ async function saveEdit() {
     closeEdit();
     loadProducts();
   } catch(e) {
-    document.getElementById('edit-msg').innerHTML = `<div class="alert alert-error">❌ ${e.message}</div>`;
+    document.getElementById('edit-msg').innerHTML = `<div class="alert alert-error">❌ ${escapeTicketHtml(e.message)}</div>`;
   }
 }
 
@@ -982,7 +1003,7 @@ async function adminQuickApproveAndDeliver(orderId, orderCode, force = false) {
     if (window.SoundFX) SoundFX.playSuccess();
     if (typeof api.showToast === 'function') api.showToast(res.message || 'Giao đồ thành công!', 'success');
     if (alertEl) {
-      alertEl.innerHTML = `<span style="font-size:0.78rem;color:#34d399">✅ ${res.message || 'Thành công!'}</span>`;
+      alertEl.innerHTML = `<span style="font-size:0.78rem;color:#34d399">✅ ${escapeTicketHtml(res.message || 'Thành công!')}</span>`;
       setTimeout(() => { if (alertEl) alertEl.innerHTML = ''; }, 4000);
     }
     loadOrders();
@@ -990,7 +1011,7 @@ async function adminQuickApproveAndDeliver(orderId, orderCode, force = false) {
     if (window.SoundFX) SoundFX.playError();
     if (typeof api.showToast === 'function') api.showToast(e.message, 'error');
     else alert('❌ Lỗi: ' + e.message);
-    if (alertEl) alertEl.innerHTML = `<span style="font-size:0.78rem;color:#f87171">❌ ${e.message}</span>`;
+    if (alertEl) alertEl.innerHTML = `<span style="font-size:0.78rem;color:#f87171">❌ ${escapeTicketHtml(e.message)}</span>`;
   }
 }
 
@@ -1005,7 +1026,7 @@ async function handleAdminStatusChange(id, field, value) {
     if (window.SoundFX) SoundFX.playSuccess();
     if (typeof api.showToast === 'function') api.showToast(res.message || 'Cập nhật thành công!', 'success');
     if (alertEl) {
-      alertEl.innerHTML = `<span style="font-size:0.78rem;color:#34d399">✅ ${res.message || 'Cập nhật thành công!'}</span>`;
+      alertEl.innerHTML = `<span style="font-size:0.78rem;color:#34d399">✅ ${escapeTicketHtml(res.message || 'Cập nhật thành công!')}</span>`;
       setTimeout(() => { if (alertEl) alertEl.innerHTML = ''; }, 3000);
     }
     loadOrders();
@@ -1013,7 +1034,7 @@ async function handleAdminStatusChange(id, field, value) {
     if (window.SoundFX) SoundFX.playError();
     if (typeof api.showToast === 'function') api.showToast(e.message, 'error');
     else alert('❌ Không thể cập nhật: ' + e.message);
-    if (alertEl) alertEl.innerHTML = `<span style="font-size:0.78rem;color:#f87171">❌ ${e.message}</span>`;
+    if (alertEl) alertEl.innerHTML = `<span style="font-size:0.78rem;color:#f87171">❌ ${escapeTicketHtml(e.message)}</span>`;
   }
 }
 
@@ -1047,7 +1068,8 @@ async function loadUsers() {
       const ign = u.minecraftUsername || u.minecraft_username || '';
       const uuid = u.minecraftUuid || u.minecraft_uuid || '';
       const isLinked = Boolean(uuid || u.isGameLinked || u.is_game_linked);
-      const avatarSrc = u.avatar || (isLinked && ign ? `https://mc-heads.net/avatar/${encodeURIComponent(ign)}/32` : '/img/steve.png');
+      const resolvedAvatar = u.avatar && window.api && typeof api.resolveAssetUrl === 'function' ? api.resolveAssetUrl(u.avatar) : (u.avatar || '');
+      const avatarSrc = resolvedAvatar || (isLinked && ign ? `https://mc-heads.net/avatar/${encodeURIComponent(ign)}/32` : '/img/steve.png');
       const safeUser = escapeTicketHtml(u.username || '');
       const safeName = escapeTicketHtml(u.name || '');
       const safeEmail = escapeTicketHtml(u.email || '');

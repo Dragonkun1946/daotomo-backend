@@ -53,13 +53,10 @@ class ProductController extends Controller
      */
     public function show($id): JsonResponse
     {
-        $product = is_numeric($id)
-            ? Product::find($id)
-            : Product::where('slug', $id)->first();
-
-        if (!$product) {
-            $product = Product::find($id);
-        }
+        $idStr = trim((string) $id);
+        $product = ctype_digit($idStr)
+            ? Product::find((int) $idStr)
+            : Product::where('slug', $idStr)->first();
 
         if (!$product) {
             return response()->json([

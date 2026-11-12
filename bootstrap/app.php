@@ -33,11 +33,27 @@ return Application::configure(basePath: dirname(__DIR__))
 
             if ($request->is('api/*') || $request->expectsJson()) {
                 $status = method_exists($e, 'getStatusCode') ? $e->getStatusCode() : 500;
-                return response()->json([
+                $isDebug = (bool) config('app.debug', false);
+
+                if ($status >= 500) {
+                    \Illuminate\Support\Facades\Log::error('Unhandled API exception', [
+                        'exception' => class_basename($e),
+                        'message' => $e->getMessage(),
+                        'path' => $request->path(),
+                    ]);
+                }
+
+                $payload = [
                     'success' => false,
-                    'message' => $e->getMessage() ?: 'Đã xảy ra lỗi trên máy chủ.',
-                    'error_type' => class_basename($e),
-                ], $status);
+                    'message' => ($status >= 500 && !$isDebug)
+                        ? 'Đã xảy ra lỗi hệ thống trên máy chủ. Vui lòng thử lại sau.'
+                        : ($e->getMessage() ?: 'Đã xảy ra lỗi trên máy chủ.'),
+                ];
+                if ($isDebug) {
+                    $payload['error_type'] = class_basename($e);
+                }
+
+                return response()->json($payload, $status);
             }
         });
     })->create();

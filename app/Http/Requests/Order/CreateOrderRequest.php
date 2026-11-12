@@ -15,7 +15,7 @@ class CreateOrderRequest extends BaseApiRequest
             'items.*.productId' => 'required_without:items.*.product',
             'items.*.product' => 'required_without:items.*.productId',
             'items.*.quantity' => 'required',
-            'minecraftUsername' => 'nullable|string|max:30',
+            'minecraftUsername' => 'nullable|string|regex:/^[a-zA-Z0-9_]{3,16}$/',
             'note' => 'nullable|string|max:500',
             'paymentMethod' => 'nullable|string|max:50',
             'idempotencyKey' => 'nullable|string|max:100',

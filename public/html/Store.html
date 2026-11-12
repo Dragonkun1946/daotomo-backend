@@ -444,12 +444,12 @@
       
       <div style="background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:var(--radius);padding:0.85rem 1rem;margin:1rem 0;font-size:0.85rem;text-align:left">
         <div style="margin-bottom:0.5rem;display:flex;align-items:center;justify-content:space-between">
-          <span>Ngân hàng: <strong>MBBank (Quân Đội)</strong></span>
-          <span style="font-size:0.75rem;color:var(--text-muted)">Chủ TK: <strong>NGUYEN TRONG NGHIA</strong></span>
+          <span>Ngân hàng: <strong id="m-bank-name">MBBank (Quân Đội)</strong></span>
+          <span style="font-size:0.75rem;color:var(--text-muted)">Chủ TK: <strong id="m-acc-name">Đang tải...</strong></span>
         </div>
         <div style="margin-bottom:0.5rem;display:flex;align-items:center;justify-content:space-between">
-          <span>STK MBBank: <strong style="color:#fff;font-family:var(--font-mono)">0977364711</strong></span>
-          <button class="copy-badge-btn" onclick="copyText('0977364711', 'Đã chép STK MBBank!')">📋 Chép STK</button>
+          <span>STK nhận: <strong id="m-acc-number" style="color:#fff;font-family:var(--font-mono)">—</strong></span>
+          <button class="copy-badge-btn" onclick="copyAccountNumber()">📋 Chép STK</button>
         </div>
         <div style="margin-bottom:0.5rem;display:flex;align-items:center;justify-content:space-between">
           <span>Nội dung CK: <strong id="m-res-transfer" style="color:var(--lagoon);font-family:var(--font-mono)"></strong></span>
@@ -481,9 +481,9 @@
   <div class="footer-bottom">© 2026 Đảo Tò Mò. All rights reserved.</div>
 </footer>
 
-<script src="/js/api.js?v=2.8"></script>
+<script src="/js/api.js?v=2.9"></script>
 <script src="/js/skinview3d.bundle.js"></script>
-<script src="/js/skin-viewer.js"></script>
+<script src="/js/skin-viewer.js?v=2.9"></script>
 <script>
 let products = [];
 let selectedProduct = null;
@@ -497,7 +497,7 @@ async function loadProducts() {
     filterAndSortProducts();
   } catch (e) {
     document.getElementById('grid').innerHTML =
-      `<div class="state-box">⚠️ Không tải được danh sách sản phẩm: ${e.message}</div>`;
+      `<div class="state-box">⚠️ Không tải được danh sách sản phẩm: ${api.escapeHtml(e.message)}</div>`;
   }
 }
 
@@ -524,24 +524,30 @@ function render(list) {
     grid.innerHTML = '<div class="state-box">Không tìm thấy sản phẩm nào phù hợp với bộ lọc hiện tại.</div>';
     return;
   }
-  grid.innerHTML = list.map(p => `
+  grid.innerHTML = list.map(p => {
+    const safeName = api.escapeHtml(p.name);
+    const safeDesc = api.escapeHtml(p.description || '');
+    const safeImg = api.escapeHtml(api.safeUrl(p.image, '/img/logo.jpg'));
+    const safeId = api.escapeHtml(p._id);
+    return `
     <div class="product-card tilt-card">
       ${p.featured ? '<span class="badge badge-gold" style="position:absolute;top:0.6rem;left:0.6rem;z-index:2">⭐ Nổi bật</span>' : ''}
-      <div class="img-wrap" onclick="goDetail('${p._id}')">
-        <img src="${p.image}" alt="${p.name}" loading="lazy"
+      <div class="img-wrap" onclick="goDetail('${safeId}')">
+        <img src="${safeImg}" alt="${safeName}" loading="lazy"
           onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect fill=%22%23181f38%22 width=%22100%25%22 height=%22100%25%22/><text x=%2250%25%22 y=%2255%25%22 font-size=%2240%22 text-anchor=%22middle%22>🎁</text></svg>'">
       </div>
       <div class="info">
-        <div class="name">${p.name}</div>
-        <div class="desc">${p.description || ''}</div>
-        <div class="price">${p.price.toLocaleString('vi-VN')}đ</div>
+        <div class="name">${safeName}</div>
+        <div class="desc">${safeDesc}</div>
+        <div class="price">${Number(p.price || 0).toLocaleString('vi-VN')}đ</div>
         <div class="card-actions">
-          <button class="btn-detail" onclick="goDetail('${p._id}')">Chi tiết</button>
-          <button class="btn-buy" onclick="openBuyModal('${p._id}', event)">🛒 Mua ngay</button>
+          <button class="btn-detail" onclick="goDetail('${safeId}')">Chi tiết</button>
+          <button class="btn-buy" onclick="openBuyModal('${safeId}', event)">🛒 Mua ngay</button>
         </div>
       </div>
     </div>
-  `).join('');
+  `;
+  }).join('');
 
   if (window.init3DTilt) window.init3DTilt();
 }
@@ -581,7 +587,7 @@ function openBuyModal(productId, evt) {
   const userTip = document.getElementById('m-user-status-tip');
   if (userTip) {
     if (isLogged) {
-      userTip.innerHTML = `👤 Tài khoản: <strong style="color:var(--lagoon)">${u.username}</strong> <span style="color:var(--text-muted);font-size:0.75rem">(Đơn sẽ lưu vào hồ sơ)</span>`;
+      userTip.innerHTML = `👤 Tài khoản: <strong style="color:var(--lagoon)">${api.escapeHtml(u.username)}</strong> <span style="color:var(--text-muted);font-size:0.75rem">(Đơn sẽ lưu vào hồ sơ)</span>`;
     } else {
       userTip.innerHTML = `⚡ <em>Mua hàng nhanh với tư cách Khách. (Hoặc <a href="/html/Account.html?redirect=/html/Store.html" style="color:var(--lagoon);font-weight:600;text-decoration:underline">Đăng nhập</a> để tích xu)</em>`;
     }
@@ -653,14 +659,21 @@ async function submitCreateOrder() {
     document.getElementById('m-res-transfer').textContent = transfer;
     document.getElementById('m-view-order-link').href = `/html/Account.html?orderId=${order._id || order.id}`;
 
-    // Dynamic SePay / VietQR generator for MBBank 0977364711
-    const cleanTransfer = transfer.replace(/[\s-]/g, '');
-    const vietqrUrl = order.vietqrUrl || order.sepayQrUrl || `https://qr.sepay.vn/img?acc=0977364711&bank=MBBank&amount=${total}&des=${encodeURIComponent(cleanTransfer)}`;
+    const bankDetails = order.paymentDetails || {};
+    const bankNameEl = document.getElementById('m-bank-name');
+    const accNameEl  = document.getElementById('m-acc-name');
+    const accNumEl   = document.getElementById('m-acc-number');
+    if (bankNameEl) bankNameEl.textContent = bankDetails.bankName || 'MBBank';
+    if (accNameEl)  accNameEl.textContent  = bankDetails.accountName || 'Admin Đảo Tò Mò';
+    if (accNumEl)   accNumEl.textContent   = bankDetails.accountNumber || '—';
+
+    // Dynamic SePay / VietQR URL provided by backend
+    const vietqrUrl = order.vietqrUrl || order.sepayQrUrl || bankDetails.qrUrl || '/img/qr.png';
     const imgEl = document.getElementById('m-vietqr-img');
     if (imgEl) {
       imgEl.src = vietqrUrl;
       imgEl.onerror = () => {
-        imgEl.src = `https://img.vietqr.io/image/970422-0977364711-compact2.png?amount=${total}&addInfo=${encodeURIComponent(transfer)}&accountName=NGUYEN%20TRONG%20NGHIA`;
+        imgEl.src = order.qrOnlyUrl || order.sepayQrUrl || '/img/qr.png';
       };
     }
 
@@ -715,6 +728,11 @@ function startOrderPolling(orderCode) {
       }
     } catch (e) {}
   }, 3000);
+}
+
+function copyAccountNumber() {
+  const acc = document.getElementById('m-acc-number')?.textContent || '';
+  if (acc && acc !== '—') copyText(acc, 'Đã chép STK ngân hàng!');
 }
 
 function copyTransferContent() {

@@ -80,65 +80,20 @@ class SepayService
             return false;
         }
 
-        // 3. Official SePay test probe from SePay dashboard ("Gửi thử")
-        $code = (string) $request->input('code', '');
-        $content = (string) $request->input('content', '');
-        $description = (string) $request->input('description', '');
-        $isTestProbe = empty($request->input('id'))
-            || !empty($request->input('test'))
-            || !empty($request->input('is_test'))
-            || !empty($request->input('ping'))
-            || $request->input('event') === 'test'
-            || str_starts_with(strtoupper($code), 'SEVN')
-            || str_starts_with(strtoupper($code), 'TEST')
-            || str_contains(strtoupper($content), 'SEVN')
-            || str_contains(strtolower($description), 'test')
-            || str_contains(strtolower($content), 'test')
-            || $request->input('accountNumber') === '1017588888'
-            || (string) $request->input('id') === '92704';
-
-        if ($isTestProbe) {
-            Log::info('[SePay Webhook] SePay test probe accepted without auth header.');
-            return true;
-        }
-
-        // 4. Genuine incoming payment verification:
-        // Even if an HMAC secret / API key is configured, incoming notifications for an existing
-        // order in the database matching MBBank 0977364711 are accepted.
-        $accountNumber = (string) $request->input('accountNumber', '');
-        $expectedAccount = (string) config('services.sepay.account_number', '0977364711');
-        $transferType = strtolower((string) $request->input('transferType', ''));
-        $transferAmount = (float) $request->input('transferAmount', 0);
-
-        $cleanReceived = ltrim(preg_replace('/\s+/', '', $accountNumber), '0');
-        $cleanExpected = ltrim(preg_replace('/\s+/', '', $expectedAccount), '0');
-
-        if ($transferType === 'in' && $transferAmount > 0 && ($cleanReceived === $cleanExpected || empty($cleanReceived))) {
-            $extractedCode = $this->extractOrderCode($content, $code);
-            if (!empty($extractedCode)) {
-                $cleanSuffix = preg_replace('/^(?:DTM|DH)[-_\s]?/i', '', $extractedCode);
-                $orderExists = Order::where('order_code', $extractedCode)
-                    ->orWhere('order_code', str_replace(' ', '-', $extractedCode))
-                    ->orWhere('transfer_content', 'LIKE', "%{$cleanSuffix}%")
-                    ->exists();
-
-                if ($orderExists || $extractedCode === 'DTM-71D1E9') {
-                    Log::info("[SePay Webhook] Incoming MBBank payment for matching order {$extractedCode} accepted.");
-                    return true;
-                }
-            }
-        }
-
-        // If either key or secret was configured and we reached here, verification failed
+        // Fail closed if secrets are configured but neither API key nor valid HMAC signature matched
         if (!empty($configuredApiKey) || !empty($configuredSecret)) {
-            Log::warning('[SePay Webhook] Authentication failed: Credentials configured but request did not match.');
+            Log::warning('[SePay Webhook] Authentication failed: Missing or invalid webhook credentials.');
             return false;
         }
 
-        // When neither API Key nor Secret is configured in the environment,
-        // allow the webhook to proceed to strict payload validation
-        // (matching receiving account number, positive transfer amount, order code, and unique transaction ID).
-        Log::info('[SePay Webhook] Webhook allowed to proceed (no SEPAY_WEBHOOK_API_KEY set in environment).');
+        // Fail closed in production if webhook credentials are missing altogether
+        if (app()->isProduction()) {
+            Log::error('[SePay Webhook] Rejected webhook: SEPAY_WEBHOOK_API_KEY/SECRET not configured in production.');
+            return false;
+        }
+
+        // In local/dev only when no credentials are configured, allow proceeding to strict payload validation
+        Log::warning('[SePay Webhook] Webhook allowed in non-production without credentials configured.');
         return true;
     }
 
@@ -296,13 +251,18 @@ class SepayService
         $normalizedContentWithSpace = str_replace('-', ' ', $orderCode);
         $cleanSuffix = preg_replace('/^(?:DTM|DH)[-_\s]?/i', '', $orderCode);
 
-        $order = Order::where('order_code', $normalizedCodeWithHyphen)
-            ->orWhere('order_code', $orderCode)
-            ->orWhere('order_code', 'LIKE', "%{$cleanSuffix}")
-            ->orWhere('transfer_content', $normalizedContentWithSpace)
-            ->orWhere('transfer_content', $orderCode)
-            ->orWhere('transfer_content', 'LIKE', "%{$cleanSuffix}%")
-            ->first();
+        $order = Order::where(function ($q) use ($normalizedCodeWithHyphen, $orderCode, $normalizedContentWithSpace, $cleanSuffix) {
+            $q->where('order_code', $normalizedCodeWithHyphen)
+              ->orWhere('order_code', $orderCode)
+              ->orWhere('transfer_content', $normalizedContentWithSpace)
+              ->orWhere('transfer_content', $orderCode);
+
+            if (preg_match('/^[A-Z0-9]{4,12}$/i', $cleanSuffix)) {
+                $escaped = addcslashes($cleanSuffix, '%_\\');
+                $q->orWhere('order_code', 'LIKE', "%{$escaped}")
+                  ->orWhere('transfer_content', 'LIKE', "%{$escaped}%");
+            }
+        })->first();
 
         // Safe Auto-Recovery: if order was lost during container redeploy/restart,
         // reconstruct the order for the buyer so their payment is immediately credited!

@@ -14,19 +14,22 @@
    * Otherwise -> returns /img/steve.png
    */
   function resolveActiveSkin() {
-    const customSkin = localStorage.getItem('dtm_custom_skin');
-    if (customSkin) return customSkin;
-
     if (window.api && typeof window.api.getActiveSkinUrl === 'function') {
-      const u = window.api.getActiveSkinUrl();
-      if (u && u !== DEFAULT_STEVE_SKIN) return u;
+      return window.api.getActiveSkinUrl() || DEFAULT_STEVE_SKIN;
     }
     const rawUser = localStorage.getItem('dtm_user');
     const token = localStorage.getItem('dtm_token');
-    if (token && rawUser) {
+    if (token && rawUser && token !== 'null' && token !== 'undefined') {
       try {
         const u = JSON.parse(rawUser);
-        if (u && u.skinUrl) return u.skinUrl;
+        const uid = u && (u.id || u._id || u.username);
+        const rawSkin = (u && (u.skinUrl || u.skin_url)) || '';
+        if (rawSkin.startsWith('data:image/')) return rawSkin;
+        if (uid) {
+          const scoped = localStorage.getItem(`dtm_custom_skin_${uid}`);
+          if (scoped && (rawSkin.includes('/uploads/') || u._offlineSkin)) return scoped;
+        }
+        if (rawSkin && rawSkin !== DEFAULT_STEVE_SKIN) return rawSkin;
       } catch (e) {}
     }
     return DEFAULT_STEVE_SKIN;
@@ -93,15 +96,16 @@
       const height = options.height || this.canvas.clientHeight || 360;
       const skinUrl = options.skin || resolveActiveSkin();
 
+      this.onFallback = typeof options.onFallback === 'function' ? options.onFallback : null;
       this.currentSkinUrl = skinUrl;
 
       this.viewer = new window.skinview3d.SkinViewer({
         canvas: this.canvas,
         width: width,
         height: height,
-        skin: skinUrl,
         preserveDrawingBuffer: true
       });
+      this.loadSkin(skinUrl);
 
       // Lighting & camera
       this.viewer.camera.position.set(0, 0, 62);
@@ -186,35 +190,36 @@
       }
     }
 
-    loadSkin(url) {
+    loadSkin(url, onFallbackOverride = null) {
       if (!this.viewer) return;
-      const targetUrl = url || resolveActiveSkin() || DEFAULT_STEVE_SKIN;
-      const prevSkin = this.currentSkinUrl;
+      const rawTarget = url || resolveActiveSkin() || DEFAULT_STEVE_SKIN;
+      const targetUrl = (window.api && typeof window.api.resolveAssetUrl === 'function'
+        ? window.api.resolveAssetUrl(rawTarget)
+        : rawTarget) || DEFAULT_STEVE_SKIN;
+      const fallbackCb = typeof onFallbackOverride === 'function' ? onFallbackOverride : this.onFallback;
       this.currentSkinUrl = targetUrl;
+
+      const handleFailure = (err) => {
+        console.warn('Skin load failed for:', targetUrl, err);
+        if (targetUrl !== DEFAULT_STEVE_SKIN) {
+          this.currentSkinUrl = DEFAULT_STEVE_SKIN;
+          try {
+            const p = this.viewer.loadSkin(DEFAULT_STEVE_SKIN);
+            if (p && typeof p.catch === 'function') p.catch(() => {});
+          } catch (e) {}
+          if (fallbackCb) {
+            try { fallbackCb(targetUrl, DEFAULT_STEVE_SKIN); } catch (e) {}
+          }
+        }
+      };
+
       try {
         const res = this.viewer.loadSkin(targetUrl);
         if (res && typeof res.catch === 'function') {
-          res.catch((err) => {
-            console.warn('Skin load failed for:', targetUrl, err);
-            // If previous skin was a valid base64 or custom skin, restore it instead of Steve!
-            if (prevSkin && (prevSkin.startsWith('data:image/') || prevSkin.length > 100)) {
-              this.currentSkinUrl = prevSkin;
-              this.viewer.loadSkin(prevSkin);
-            } else if (this.currentSkinUrl !== DEFAULT_STEVE_SKIN) {
-              this.currentSkinUrl = DEFAULT_STEVE_SKIN;
-              this.viewer.loadSkin(DEFAULT_STEVE_SKIN);
-            }
-          });
+          res.catch(handleFailure);
         }
       } catch (err) {
-        console.warn('Skin load threw error for:', targetUrl, err);
-        if (prevSkin && (prevSkin.startsWith('data:image/') || prevSkin.length > 100)) {
-          this.currentSkinUrl = prevSkin;
-          this.viewer.loadSkin(prevSkin);
-        } else if (this.currentSkinUrl !== DEFAULT_STEVE_SKIN) {
-          this.currentSkinUrl = DEFAULT_STEVE_SKIN;
-          this.viewer.loadSkin(DEFAULT_STEVE_SKIN);
-        }
+        handleFailure(err);
       }
     }
 
@@ -289,7 +294,7 @@
       if (stagedSkinData || (stagedSkinUrl && stagedSkinUrl !== activeSkin)) {
         skinStatePill.innerHTML = `👁️ Đang xem trước (Chưa lưu vào tài khoản)`;
         skinStatePill.className = 'skin-status-pill preview';
-      } else if (isLoggedIn && user && user.skinUrl) {
+      } else if (isLoggedIn && user && activeSkin !== DEFAULT_STEVE_SKIN && viewingSkin !== DEFAULT_STEVE_SKIN) {
         skinStatePill.innerHTML = `✨ Skin cá nhân của bạn (Đã lưu)`;
         skinStatePill.className = 'skin-status-pill user-saved';
       } else {
@@ -493,7 +498,12 @@
       // Reset to Steve default
       document.getElementById('skin-modal-steve-btn').addEventListener('click', async () => {
         if (globalModalViewer) {
-          localStorage.removeItem('dtm_custom_skin');
+          const curUser = window.api ? window.api.getUser() : null;
+          if (window.api && typeof window.api.clearUserCustomSkin === 'function') {
+            window.api.clearUserCustomSkin(curUser);
+          } else {
+            localStorage.removeItem('dtm_custom_skin');
+          }
           globalModalViewer.loadSkin(DEFAULT_STEVE_SKIN);
           stagedSkinData = null;
           stagedSkinUrl = DEFAULT_STEVE_SKIN;
@@ -503,9 +513,11 @@
           if (window.api && window.api.isLoggedIn()) {
             try {
               const res = await window.api.updateSkin(null, '/img/steve.png');
-              const curUser = window.api.getUser();
               if (curUser) {
                 curUser.skinUrl = '';
+                curUser.skin_url = '';
+                if (res && res.avatar) curUser.avatar = res.avatar;
+                delete curUser._offlineSkin;
                 delete curUser.serverSkinUrl;
                 window.api.setSession(window.api.getToken(), curUser);
               }
@@ -548,8 +560,12 @@
           const localSkin = payloadData || payloadUrl;
           const curUser = window.api.getUser() || {};
           if (localSkin) {
-            localStorage.setItem('dtm_custom_skin', localSkin);
+            if (typeof window.api.setUserCustomSkin === 'function') {
+              window.api.setUserCustomSkin(curUser, localSkin);
+            }
             curUser.skinUrl = localSkin;
+            curUser.skin_url = localSkin;
+            curUser._offlineSkin = true;
             window.api.setSession(window.api.getToken(), curUser);
             window.dispatchEvent(new CustomEvent('daotomo:skin-updated', { detail: { skinUrl: localSkin } }));
           }
@@ -557,14 +573,14 @@
           try {
             const res = await window.api.updateSkin(payloadData, payloadUrl);
             const savedUrl = res && res.skinUrl ? res.skinUrl : payloadUrl;
+            delete curUser._offlineSkin;
             if (savedUrl) {
               curUser.serverSkinUrl = savedUrl;
-              // If not base64, update skinUrl to URL
-              if (!localSkin || !localSkin.startsWith('data:image/')) {
-                curUser.skinUrl = savedUrl;
-                window.api.setSession(window.api.getToken(), curUser);
-              }
+              curUser.skinUrl = savedUrl;
+              curUser.skin_url = savedUrl;
             }
+            if (res && res.avatar) curUser.avatar = res.avatar;
+            window.api.setSession(window.api.getToken(), curUser);
           } catch (serverErr) {
             console.warn('Server sync note (persisted locally):', serverErr);
           }

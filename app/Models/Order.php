@@ -66,10 +66,10 @@ class Order extends Model
     public function getPaymentDetailsAttribute(): array
     {
         return [
-            'accountNumber' => config('services.sepay.account_number', '0977364711'),
+            'accountNumber' => config('services.sepay.account_number', ''),
             'bankName' => config('services.sepay.bank_name', 'MBBank'),
             'bankBin' => config('services.sepay.bank_bin', '970422'),
-            'accountName' => config('services.sepay.account_name', 'NGUYEN TRONG NGHIA'),
+            'accountName' => config('services.sepay.account_name', ''),
             'transferContent' => $this->transfer_content ?: $this->order_code,
             'qrUrl' => $this->vietqr_url,
         ];
@@ -129,8 +129,8 @@ class Order extends Model
     public function getVietqrUrlAttribute(): string
     {
         $bin = config('services.sepay.bank_bin', '970422');
-        $acc = config('services.sepay.account_number', '0977364711');
-        $accName = urlencode(config('services.sepay.account_name', 'NGUYEN TRONG NGHIA'));
+        $acc = config('services.sepay.account_number', '');
+        $accName = urlencode((string) config('services.sepay.account_name', ''));
         $amount = (int) $this->total_amount;
         $content = urlencode($this->getCleanTransferContent());
         return "https://img.vietqr.io/image/{$bin}-{$acc}-compact2.png?amount={$amount}&addInfo={$content}&accountName={$accName}";
@@ -139,8 +139,8 @@ class Order extends Model
     public function getQrOnlyUrlAttribute(): string
     {
         $bin = config('services.sepay.bank_bin', '970422');
-        $acc = config('services.sepay.account_number', '0977364711');
-        $accName = urlencode(config('services.sepay.account_name', 'NGUYEN TRONG NGHIA'));
+        $acc = config('services.sepay.account_number', '');
+        $accName = urlencode((string) config('services.sepay.account_name', ''));
         $amount = (int) $this->total_amount;
         $content = urlencode($this->getCleanTransferContent());
         return "https://img.vietqr.io/image/{$bin}-{$acc}-qr_only.png?amount={$amount}&addInfo={$content}&accountName={$accName}";
@@ -149,7 +149,7 @@ class Order extends Model
     public function getSepayQrUrlAttribute(): string
     {
         $bank = config('services.sepay.bank_name', 'MBBank');
-        $acc = config('services.sepay.account_number', '0977364711');
+        $acc = config('services.sepay.account_number', '');
         $amount = (int) $this->total_amount;
         $content = urlencode($this->getCleanTransferContent());
         return "https://qr.sepay.vn/img?acc={$acc}&bank={$bank}&amount={$amount}&des={$content}";

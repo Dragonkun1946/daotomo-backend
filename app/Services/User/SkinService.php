@@ -54,7 +54,15 @@ class SkinService
                 ];
             }
 
-            $user->update(['skin_url' => $skinUrl]);
+            $updateData = ['skin_url' => $skinUrl];
+            if (preg_match('#^https?://minotar\.net/(?:skin|armor/body)/([^/?\#]+)#i', $skinUrl, $m)) {
+                $updateData['avatar'] = 'https://minotar.net/avatar/' . $m[1] . '/128';
+            } elseif (str_starts_with((string) $user->avatar, '/uploads/')) {
+                $updateData['avatar'] = '';
+            }
+
+            $user->update($updateData);
+            $freshUser = $user->fresh();
 
             return [
                 'status' => 200,
@@ -62,7 +70,8 @@ class SkinService
                     'success' => true,
                     'message' => 'Đã lưu skin nhân vật thành công! 🎮',
                     'skinUrl' => $skinUrl,
-                    'user' => $user->fresh(),
+                    'avatar' => $freshUser->avatar ?? '',
+                    'user' => $freshUser,
                 ],
             ];
         }
@@ -140,7 +149,7 @@ class SkinService
             }
         }
 
-        // Save file to public/uploads/skins/<userId>.png
+        // Save local backup file to public/uploads/skins/<userId>.png (when filesystem is writable)
         $uploadDir = public_path('uploads/skins');
         if (!File::exists($uploadDir)) {
             File::makeDirectory($uploadDir, 0755, true);
@@ -148,29 +157,55 @@ class SkinService
 
         $fileName = "{$user->id}.png";
         $filePath = $uploadDir . DIRECTORY_SEPARATOR . $fileName;
-        File::put($filePath, $binary);
+        @File::put($filePath, $binary);
 
-        $savedUrl = "/uploads/skins/{$fileName}?v=" . time();
+        // Persist canonical base64 data URI in Postgres so skins survive cross-origin & ephemeral container restarts
+        $skinDataUri = 'data:image/png;base64,' . base64_encode($binary);
 
         // Extract face avatar
         $avatarUrl = $this->extractFaceAvatar($user, $binary);
 
-        $updateData = ['skin_url' => $savedUrl];
+        $updateData = ['skin_url' => $skinDataUri];
         if ($avatarUrl) {
             $updateData['avatar'] = $avatarUrl;
         }
         $user->update($updateData);
+        $freshUser = $user->fresh();
 
         return [
             'status' => 200,
             'data' => [
                 'success' => true,
                 'message' => 'Đã lưu skin và cập nhật avatar khuôn mặt thành công! 🎮',
-                'skinUrl' => $savedUrl,
-                'avatar' => $avatarUrl,
-                'user' => $user->fresh(),
+                'skinUrl' => $skinDataUri,
+                'avatar' => $avatarUrl ?: ($freshUser->avatar ?? ''),
+                'user' => $freshUser,
             ],
         ];
+    }
+
+    /**
+     * Save cropped 128x128 GD image to disk backup and encode permanent data URI.
+     */
+    protected function persistAvatarImage(\GdImage $avatarImg, int $userId): string
+    {
+        $avatarDir = public_path('uploads/avatars');
+        if (!File::exists($avatarDir)) {
+            File::makeDirectory($avatarDir, 0755, true);
+        }
+
+        $avatarPath = $avatarDir . DIRECTORY_SEPARATOR . "{$userId}.png";
+        @imagepng($avatarImg, $avatarPath);
+
+        ob_start();
+        imagepng($avatarImg);
+        $pngBytes = ob_get_clean();
+
+        if ($pngBytes !== false && $pngBytes !== '') {
+            return 'data:image/png;base64,' . base64_encode($pngBytes);
+        }
+
+        return "/uploads/avatars/{$userId}.png?v=" . time();
     }
 
     /**
@@ -202,17 +237,11 @@ class SkinService
         // 2. Hat / Helmet layer: x=40*scale, y=8*scale, w=8*scale, h=8*scale
         imagecopyresampled($avatarImg, $srcImg, 0, 0, 40 * $scale, 8 * $scale, 128, 128, 8 * $scale, 8 * $scale);
 
-        $avatarDir = public_path('uploads/avatars');
-        if (!File::exists($avatarDir)) {
-            File::makeDirectory($avatarDir, 0755, true);
-        }
-
-        $avatarPath = $avatarDir . DIRECTORY_SEPARATOR . "{$user->id}.png";
-        imagepng($avatarImg, $avatarPath);
+        $dataUri = $this->persistAvatarImage($avatarImg, (int) $user->id);
         imagedestroy($avatarImg);
         imagedestroy($srcImg);
 
-        return "/uploads/avatars/{$user->id}.png?v=" . time();
+        return $dataUri;
     }
 
     /**
@@ -239,15 +268,10 @@ class SkinService
         imagecopyresampled($avatarImg, $srcImg, 0, 0, 8, 8, 128, 128, 8, 8);
         imagecopyresampled($avatarImg, $srcImg, 0, 0, 40, 8, 128, 128, 8, 8);
 
-        $avatarDir = public_path('uploads/avatars');
-        if (!File::exists($avatarDir)) {
-            File::makeDirectory($avatarDir, 0755, true);
-        }
-        $avatarPath = $avatarDir . DIRECTORY_SEPARATOR . "{$user->id}.png";
-        imagepng($avatarImg, $avatarPath);
+        $dataUri = $this->persistAvatarImage($avatarImg, (int) $user->id);
         imagedestroy($avatarImg);
         imagedestroy($srcImg);
 
-        return "/uploads/avatars/{$user->id}.png?v=" . time();
+        return $dataUri;
     }
 }

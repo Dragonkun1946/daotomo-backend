@@ -68,7 +68,7 @@ class GameLinkController extends Controller
         if ($existingLink) {
             return response()->json([
                 'success' => false,
-                'message' => "Nhân vật Minecraft [{$pinRecord->minecraft_username}] đã được liên kết với tài khoản web khác ({$existingLink->email})!",
+                'message' => "Nhân vật Minecraft [{$pinRecord->minecraft_username}] đã được liên kết với tài khoản web khác!",
             ], 400);
         }
 

@@ -25,7 +25,16 @@ return [
     ],
 
     'resend' => [
-        'key' => env('RESEND_KEY'),
+        'key' => env('RESEND_KEY', env('RESEND_API_KEY')),
+        'from_email' => env('RESEND_FROM_EMAIL', env('MAIL_FROM_ADDRESS', 'onboarding@resend.dev')),
+    ],
+
+    'brevo' => [
+        'key' => env('BREVO_API_KEY'),
+    ],
+
+    'minecraft' => [
+        'bridge_token' => env('MINECRAFT_BRIDGE_TOKEN'),
     ],
 
     'slack' => [
@@ -40,20 +49,20 @@ return [
         'client_secret' => env('DISCORD_CLIENT_SECRET'),
         'redirect' => env('DISCORD_CALLBACK_URL'),
         'ticket_webhook_url' => env('DISCORD_TICKET_WEBHOOK_URL'),
-        'ticket_channel_url' => env('DISCORD_TICKET_CHANNEL_URL', 'https://discord.com/channels/1381315355317899314/1485265083918713063'),
+        'ticket_channel_url' => env('DISCORD_TICKET_CHANNEL_URL', ''),
         'ticket_mode' => env('DISCORD_TICKET_MODE', 'direct_channel'),
         'invite_url' => env('DISCORD_INVITE_URL', 'https://discord.gg/rNQ6ytnSg'),
     ],
 
     'support' => [
-        'zalo_url' => env('SUPPORT_ZALO_URL', 'https://zalo.me/0977364711'),
+        'zalo_url' => env('SUPPORT_ZALO_URL', ''),
     ],
 
     'sepay' => [
         'webhook_api_key' => env('SEPAY_WEBHOOK_API_KEY'),
         'webhook_secret' => env('SEPAY_WEBHOOK_SECRET'),
-        'account_number' => env('SEPAY_ACCOUNT_NUMBER', '0977364711'),
-        'account_name' => env('SEPAY_ACCOUNT_NAME', 'NGUYEN TRONG NGHIA'),
+        'account_number' => env('SEPAY_ACCOUNT_NUMBER', ''),
+        'account_name' => env('SEPAY_ACCOUNT_NAME', ''),
         'bank_name' => env('SEPAY_BANK_NAME', 'MBBank'),
         'bank_brand' => env('SEPAY_BANK_BRAND', 'MBBank'),
         'bank_bin' => env('SEPAY_BANK_BIN', '970422'),

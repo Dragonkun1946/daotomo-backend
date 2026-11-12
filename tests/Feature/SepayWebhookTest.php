@@ -93,6 +93,19 @@ class SepayWebhookTest extends TestCase
         $resNoAuth->assertStatus(401)
                   ->assertJson(['success' => false]);
 
+        // 1A-2. Existing pending order must STILL reject unauthenticated or invalid-signature requests (fail-closed)
+        $existingOrder = $this->createTestOrder(50000, 'DTM-BYPASS1');
+        $bypassPayload = [
+            'id' => 1009,
+            'gateway' => 'MBBank',
+            'accountNumber' => '0977364711',
+            'transferType' => 'in',
+            'transferAmount' => 50000,
+            'content' => 'DTM BYPASS1 test',
+        ];
+        $this->postJson('/api/webhooks/sepay', $bypassPayload)->assertStatus(401);
+        $this->assertEquals('pending', $existingOrder->fresh()->payment_status);
+
         // 1B. Invalid API key
         $resWrongKey = $this->postJson('/api/webhooks/sepay', $payload, [
             'Authorization' => 'Apikey wrong_api_key',

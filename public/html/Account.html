@@ -1234,9 +1234,9 @@
   <div class="footer-bottom">© 2026 Đảo Tò Mò</div>
 </footer>
 
-<script src="/js/api.js?v=2.8"></script>
+<script src="/js/api.js?v=2.9"></script>
 <script src="/js/skinview3d.bundle.js"></script>
-<script src="/js/skin-viewer.js"></script>
+<script src="/js/skin-viewer.js?v=2.9"></script>
 <script>
 const TABS = ['login', 'register', 'forgot', 'reset'];
 function switchTab(tab) {
@@ -1399,33 +1399,78 @@ function extractMinecraftFace(skinSrc, size = 128) {
   });
 }
 
+let avatarRenderGen = 0;
+
+function probeAvatarImage(url) {
+  return new Promise((resolve) => {
+    if (!url) return resolve(false);
+    const img = new Image();
+    img.onload = () => resolve((img.naturalWidth || 0) > 0);
+    img.onerror = () => resolve(false);
+    img.src = url;
+  });
+}
+
 async function updateAccountAvatar(user, customSkinSrc = null) {
   const avatarEl = document.getElementById('p-avatar');
   if (!avatarEl) return;
 
-  const customSkin = customSkinSrc !== null ? customSkinSrc : (localStorage.getItem('dtm_custom_skin') || (user && user.skinUrl));
-  const activeSkin = customSkin || '/img/steve.png';
+  const gen = ++avatarRenderGen;
+  const u = user || (window.api && api.getUser()) || {};
+  const resolveUrl = (src) => (window.api && typeof api.resolveAssetUrl === 'function') ? api.resolveAssetUrl(src) : (src || '');
+  const resolvedSkin = customSkinSrc !== null
+    ? resolveUrl(customSkinSrc)
+    : ((window.api && typeof api.getActiveSkinUrl === 'function') ? api.getActiveSkinUrl(u) : resolveUrl(u.skinUrl || u.skin_url || ''));
 
-  // 1. Extract face directly from active skin (both custom skin and Steve fallback)
+  const setAvatarImg = (src, altLabel) => {
+    if (gen !== avatarRenderGen) return;
+    const fallbackEmoji = EMOJIS[((u && u.username) || 'Player').charCodeAt(0) % EMOJIS.length];
+    avatarEl.innerHTML = `<img src="${src}" alt="${altLabel}" class="minecraft-face-avatar" onerror="this.parentElement.textContent='${fallbackEmoji}'">`;
+  };
+
+  // 1. If a non-Steve custom skin is active, extract pixelated head face directly
+  if (resolvedSkin && resolvedSkin !== '/img/steve.png') {
+    try {
+      const faceDataUrl = await extractMinecraftFace(resolvedSkin, 128);
+      if (gen !== avatarRenderGen) return;
+      setAvatarImg(faceDataUrl, (u && u.username) || 'Player');
+      return;
+    } catch (err) {
+      console.warn('Custom skin face extraction failed, cascading fallback:', err);
+    }
+  }
+
+  // 2. Try user's saved backend avatar (only render if it actually loads!)
+  const resolvedAvatar = resolveUrl(u && u.avatar);
+  if (resolvedAvatar && customSkinSrc !== '/img/steve.png') {
+    const ok = await probeAvatarImage(resolvedAvatar);
+    if (gen !== avatarRenderGen) return;
+    if (ok) {
+      setAvatarImg(resolvedAvatar, u.username || 'Player');
+      return;
+    }
+  }
+
+  // 3. Fallback to Minecraft IGN avatar from mc-heads if linked & reachable
+  const mcName = (u && (u.minecraftUsername || u.minecraft_username) || '').trim();
+  if (mcName && customSkinSrc !== '/img/steve.png') {
+    const mcAvatarUrl = `https://mc-heads.net/avatar/${encodeURIComponent(mcName)}/128`;
+    const okMc = await probeAvatarImage(mcAvatarUrl);
+    if (gen !== avatarRenderGen) return;
+    if (okMc) {
+      setAvatarImg(mcAvatarUrl, mcName);
+      return;
+    }
+  }
+
+  // 4. Local guaranteed Steve face extraction -> Emoji ultimate fallback
   try {
-    const faceDataUrl = await extractMinecraftFace(activeSkin, 128);
-    avatarEl.innerHTML = `<img src="${faceDataUrl}" alt="${(user && user.username) || 'Player'}" class="minecraft-face-avatar">`;
-    return;
+    const steveFaceUrl = await extractMinecraftFace('/img/steve.png', 128);
+    if (gen !== avatarRenderGen) return;
+    setAvatarImg(steveFaceUrl, (u && u.username) || 'Steve');
   } catch (err) {
-    console.warn('Face extraction fallback:', err);
-  }
-
-  // 2. If user already has a generated avatar URL
-  if (user && user.avatar) {
-    avatarEl.innerHTML = `<img src="${user.avatar}" alt="${user.username}" class="minecraft-face-avatar">`;
-    return;
-  }
-
-  // 3. Fallback: mc-heads or emoji
-  if (user && user.minecraftUsername) {
-    avatarEl.innerHTML = `<img src="https://mc-heads.net/avatar/${encodeURIComponent(user.minecraftUsername)}/128" alt="${user.minecraftUsername}" onerror="this.parentElement.textContent='${EMOJIS[user.username.charCodeAt(0) % EMOJIS.length]}'">`;
-  } else {
-    avatarEl.textContent = EMOJIS[((user && user.username) || 'Player').charCodeAt(0) % EMOJIS.length];
+    if (gen !== avatarRenderGen) return;
+    avatarEl.textContent = EMOJIS[((u && u.username) || 'Player').charCodeAt(0) % EMOJIS.length];
   }
 }
 
@@ -1452,11 +1497,12 @@ function showProfile(user) {
   const copyBtnIcon = document.getElementById('copy-ign-icon');
 
   if (pMc) {
+    const safeMc = api.escapeHtml(mcUsername);
     if (isGameLinked) {
-      pMc.innerHTML = `${mcUsername} <span style="font-size:0.75rem; color:#34d399; font-weight:700">✓ Đã xác minh PIN</span>`;
+      pMc.innerHTML = `${safeMc} <span style="font-size:0.75rem; color:#34d399; font-weight:700">✓ Đã xác minh PIN</span>`;
       pMc.style.color = '#34d399';
     } else {
-      pMc.innerHTML = `${mcUsername ? mcUsername + ' ' : ''}<span style="font-size:0.75rem; color:#fbbf24; font-weight:700">⚠️ Chưa liên kết /link</span>`;
+      pMc.innerHTML = `${safeMc ? safeMc + ' ' : ''}<span style="font-size:0.75rem; color:#fbbf24; font-weight:700">⚠️ Chưa liên kết /link</span>`;
       pMc.style.color = '#fbbf24';
     }
   }
@@ -1556,7 +1602,7 @@ function showProfile(user) {
   badge.textContent = user.role === 'admin' ? '⭐ Admin VIP' : '🎮 Player';
   badge.className = 'badge ' + (user.role === 'admin' ? 'badge-gold' : 'badge-purple');
   const adminWrap = document.getElementById('admin-link-wrap');
-  if (adminWrap && user.role === 'admin') adminWrap.classList.remove('hidden');
+  if (adminWrap) adminWrap.classList.toggle('hidden', user.role !== 'admin');
   const nav = document.getElementById('nav-account-link');
   const navLabel = nav?.querySelector('span:last-child');
   if (navLabel) navLabel.textContent = displayName;
@@ -1837,38 +1883,52 @@ function initSkinStageDragDrop() {
 /* ── 3D Skin Viewer Controller ── */
 let accountSkinViewer = null;
 
+function syncAccountSkinBadge(skinUrl) {
+  const badgeEl = document.getElementById('p-skin-badge');
+  if (!badgeEl) return;
+  if (skinUrl && skinUrl !== '/img/steve.png') {
+    badgeEl.textContent = 'Skin cá nhân (Đã lưu)';
+    badgeEl.className = 'badge badge-green';
+  } else {
+    badgeEl.textContent = 'Skin mặc định (Steve)';
+    badgeEl.className = 'badge badge-purple';
+  }
+}
+
 function initAccountSkin(user) {
   const canvas = document.getElementById('account-skin-canvas');
   if (!canvas || !window.MinecraftSkinViewer) return;
 
-  const savedCustomSkin = localStorage.getItem('dtm_custom_skin');
-  const activeSkin = savedCustomSkin || (user && user.skinUrl) || '/img/steve.png';
-  const nameTag = (user && (user.minecraftUsername || user.username)) || 'Đảo Viên';
-  const badgeEl = document.getElementById('p-skin-badge');
+  const u = user || (window.api && api.getUser()) || {};
+  const activeSkin = (window.api && typeof api.getActiveSkinUrl === 'function')
+    ? api.getActiveSkinUrl(u)
+    : ((u && u.skinUrl) || '/img/steve.png');
+  const nameTag = (u && (u.minecraftUsername || u.minecraft_username || u.username)) || 'Đảo Viên';
+  const targetWidth = canvas.parentElement ? Math.min(Math.max(canvas.parentElement.clientWidth || 320, 260), 320) : 320;
 
-  if (badgeEl) {
-    if (activeSkin && activeSkin !== '/img/steve.png') {
-      badgeEl.textContent = 'Skin cá nhân (Đã lưu)';
-      badgeEl.className = 'badge badge-green';
-    } else {
-      badgeEl.textContent = 'Skin mặc định (Steve)';
-      badgeEl.className = 'badge badge-purple';
-    }
-  }
+  syncAccountSkinBadge(activeSkin);
+
+  const handleFallback = () => {
+    syncAccountSkinBadge('/img/steve.png');
+    updateAccountAvatar(u, '/img/steve.png');
+  };
 
   if (!accountSkinViewer) {
     accountSkinViewer = new MinecraftSkinViewer(canvas, {
       skin: activeSkin,
-      width: canvas.parentElement ? Math.min(canvas.parentElement.clientWidth, 320) : 320,
+      width: targetWidth,
       height: 380,
       autoRotate: true,
-      animation: 'walk'
+      animation: 'walk',
+      onFallback: handleFallback
     });
     if (accountSkinViewer && accountSkinViewer.viewer) {
       accountSkinViewer.viewer.nameTag = nameTag;
     }
   } else if (accountSkinViewer.viewer) {
-    accountSkinViewer.loadSkin(activeSkin);
+    accountSkinViewer.onFallback = handleFallback;
+    accountSkinViewer.viewer.setSize(targetWidth, 380);
+    accountSkinViewer.loadSkin(activeSkin, handleFallback);
     accountSkinViewer.viewer.nameTag = nameTag;
   }
 }
@@ -1891,27 +1951,31 @@ async function handleAccountSkinUpload(input) {
     // Instantly update profile avatar face from this uploaded skin!
     updateAccountAvatar(curUser, base64);
 
-    // 2. Persist in user session immediately with robust localStorage backup
-    localStorage.setItem('dtm_custom_skin', base64);
+    // 2. Persist scoped per-user cache immediately + update current session
+    if (window.api && typeof api.setUserCustomSkin === 'function') {
+      api.setUserCustomSkin(curUser, base64);
+    }
     curUser.skinUrl = base64;
+    curUser.skin_url = base64;
+    curUser._offlineSkin = true;
     if (window.api) api.setSession(api.getToken(), curUser);
 
-    const badgeEl = document.getElementById('p-skin-badge');
-    if (badgeEl) {
-      badgeEl.textContent = 'Skin cá nhân (Đã lưu)';
-      badgeEl.className = 'badge badge-green';
-    }
+    syncAccountSkinBadge(base64);
 
     if (typeof showToast === 'function') showToast('Đang đồng bộ skin lên hệ thống...', 'info');
 
-    // 3. Sync to backend API in background
+    // 3. Sync permanently to backend database
     try {
       const res = await api.updateSkin(base64);
+      delete curUser._offlineSkin;
       if (res && res.skinUrl) {
         curUser.serverSkinUrl = res.skinUrl;
-        if (res.avatar) curUser.avatar = res.avatar;
-        api.setSession(api.getToken(), curUser);
+        curUser.skinUrl = res.skinUrl;
+        curUser.skin_url = res.skinUrl;
+        api.setUserCustomSkin(curUser, res.skinUrl);
       }
+      if (res && res.avatar) curUser.avatar = res.avatar;
+      api.setSession(api.getToken(), curUser);
       if (typeof showToast === 'function') showToast(res.message || 'Đã lưu skin nhân vật thành công! 🎮', 'success');
       if (window.SoundFX) window.SoundFX.playSuccess();
     } catch (err) {
@@ -1926,13 +1990,19 @@ async function handleAccountSkinUpload(input) {
 }
 
 async function resetAccountSkinToSteve() {
-  localStorage.removeItem('dtm_custom_skin');
+  const curUser = api.getUser();
+  if (typeof api.clearUserCustomSkin === 'function') {
+    api.clearUserCustomSkin(curUser);
+  } else {
+    localStorage.removeItem('dtm_custom_skin');
+  }
   try {
     const res = await api.updateSkin(null, '/img/steve.png');
-    const curUser = api.getUser();
     if (curUser) {
       curUser.skinUrl = '';
+      curUser.skin_url = '';
       if (res && res.avatar) curUser.avatar = res.avatar;
+      delete curUser._offlineSkin;
       delete curUser.serverSkinUrl;
       api.setSession(api.getToken(), curUser);
     }
@@ -1942,11 +2012,7 @@ async function resetAccountSkinToSteve() {
     // Revert profile avatar face to Steve!
     updateAccountAvatar(curUser, '/img/steve.png');
 
-    const badgeEl = document.getElementById('p-skin-badge');
-    if (badgeEl) {
-      badgeEl.textContent = 'Skin mặc định (Steve)';
-      badgeEl.className = 'badge badge-purple';
-    }
+    syncAccountSkinBadge('/img/steve.png');
     if (typeof showToast === 'function') showToast('Đã khôi phục skin Steve mặc định!', 'info');
   } catch (err) {
     if (typeof showToast === 'function') showToast(err.message || 'Lỗi khi đặt lại skin', 'error');
@@ -2174,18 +2240,22 @@ async function openOrderDetail(orderId) {
     // Items list
     const itemsEl = document.getElementById('od-items');
     const itemsList = o.items || [];
-    itemsEl.innerHTML = itemsList.map(item => `
+    itemsEl.innerHTML = itemsList.map(item => {
+      const itemImg = api.escapeHtml(api.safeUrl(item.image || (item.product && item.product.image) || '/img/logo.jpg', '/img/logo.jpg'));
+      const itemName = api.escapeHtml(item.name || item.product_name || (item.product && item.product.name) || 'Vật phẩm');
+      return `
       <div class="order-detail-item">
-        <img class="order-detail-thumb" src="${item.image || (item.product && item.product.image) || '/img/logo.jpg'}" onerror="this.src='/img/logo.jpg'">
+        <img class="order-detail-thumb" src="${itemImg}" onerror="this.src='/img/logo.jpg'">
         <div style="flex:1">
-          <div style="font-weight:700;color:var(--text)">${item.name || (item.product && item.product.name) || 'Vật phẩm'}</div>
-          <div style="color:var(--text-muted);font-size:0.75rem">${(item.price != null ? Number(item.price).toLocaleString('vi-VN') : '0')}đ × ${item.quantity || 1}</div>
+          <div style="font-weight:700;color:var(--text)">${itemName}</div>
+          <div style="color:var(--text-muted);font-size:0.75rem">${(item.price != null ? Number(item.price).toLocaleString('vi-VN') : '0')}đ × ${Number(item.quantity || 1)}</div>
         </div>
         <div style="font-weight:700;color:var(--accent);font-family:var(--font-mono)">
-          ${((item.price || 0) * (item.quantity || 1)).toLocaleString('vi-VN')}đ
+          ${((Number(item.price) || 0) * (Number(item.quantity) || 1)).toLocaleString('vi-VN')}đ
         </div>
       </div>
-    `).join('');
+    `;
+    }).join('');
 
     // QR Payment section if payment pending and not cancelled
     const paySec = document.getElementById('od-payment-section');
@@ -2197,7 +2267,7 @@ async function openOrderDetail(orderId) {
       const transferContent = o.paymentDetails?.transferContent || o.transfer_content || code;
       document.getElementById('od-transfer-content').textContent = transferContent;
       
-      const vietqrUrl = `https://img.vietqr.io/image/970415-103870631688-compact2.png?amount=${o.total || 0}&addInfo=${encodeURIComponent(transferContent)}&accountName=DAO%20TO%20MO`;
+      const vietqrUrl = o.vietqrUrl || o.sepayQrUrl || o.paymentDetails?.qrUrl || '/img/qr.png';
       const qrImg = document.getElementById('od-vietqr-img');
       if (qrImg) {
         qrImg.src = vietqrUrl;
@@ -2274,10 +2344,20 @@ async function submitProof() {
 
 /* ── Logout ── */
 function doLogout() {
+  currentUserData = null;
+  avatarRenderGen++;
   api.clearSession();
+  const avatarEl = document.getElementById('p-avatar');
+  if (avatarEl) avatarEl.textContent = '👤';
+  const adminWrap = document.getElementById('admin-link-wrap');
+  if (adminWrap) adminWrap.classList.add('hidden');
   document.getElementById('profile-section').classList.add('hidden');
   document.getElementById('auth-section').classList.remove('hidden');
-  clearMsg();
+  ['l-pass', 'r-pass', 'reset-pass'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = '';
+  });
+  switchTab('login');
   const nav = document.getElementById('nav-account-link');
   const navLabel = nav?.querySelector('span:last-child');
   if (navLabel) navLabel.textContent = 'Tài khoản';
@@ -2320,12 +2400,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     try {
       const { user } = await api.getMe();
       if (user) {
-        const customSkin = localStorage.getItem('dtm_custom_skin');
-        if (customSkin && !user.skinUrl) {
-          user.skinUrl = customSkin;
-        }
         api.setSession(api.getToken(), user);
-        showProfile(user);
+        showProfile(api.getUser() || user);
       }
       if (params.has('orderId')) {
         setTimeout(() => openOrderDetail(params.get('orderId')), 500);

@@ -11,13 +11,13 @@ class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
-        // 1. Seed Admin User
-        User::updateOrCreate(
+        // 1. Seed Admin User (firstOrCreate ensures existing passwords/coins are never overwritten on redeploy)
+        User::firstOrCreate(
             ['email' => 'admin@daotomo.site'],
             [
                 'username' => 'admin',
                 'name' => 'Admin Đảo Tò Mò',
-                'password' => Hash::make('Admin@123456'),
+                'password' => Hash::make(env('SEED_ADMIN_PASSWORD', 'Admin@123456')),
                 'role' => 'admin',
                 'minecraft_username' => 'AdminDaoTomo',
                 'skin_url' => '/img/steve.png',
@@ -26,12 +26,12 @@ class DatabaseSeeder extends Seeder
         );
 
         // 2. Seed Test Player
-        User::updateOrCreate(
+        User::firstOrCreate(
             ['email' => 'player@daotomo.site'],
             [
                 'username' => 'DragonPlayer',
                 'name' => 'Dragon Player',
-                'password' => Hash::make('Player@123456'),
+                'password' => Hash::make(env('SEED_PLAYER_PASSWORD', 'Player@123456')),
                 'role' => 'user',
                 'minecraft_username' => 'TestDummyBot',
                 'minecraft_uuid' => '00000000-0000-0000-0000-000000000001',
@@ -42,12 +42,12 @@ class DatabaseSeeder extends Seeder
         );
 
         // 3. Seed Demo User
-        User::updateOrCreate(
+        User::firstOrCreate(
             ['email' => 'user@daotomo.site'],
             [
                 'username' => 'demouser',
                 'name' => 'Demo User',
-                'password' => Hash::make('User@123456'),
+                'password' => Hash::make(env('SEED_DEMO_PASSWORD', 'User@123456')),
                 'role' => 'user',
                 'minecraft_username' => 'DemoUser',
                 'skin_url' => '/img/steve.png',

@@ -216,12 +216,12 @@
     
     <div style="background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:var(--radius);padding:0.85rem 1rem;margin-bottom:1rem;font-size:0.85rem;text-align:left">
       <div style="margin-bottom:0.45rem;display:flex;align-items:center;justify-content:space-between">
-        <span>Ngân hàng: <strong>MBBank (Quân Đội)</strong></span>
-        <span style="font-size:0.75rem;color:var(--text-muted)">Chủ TK: <strong>NGUYEN TRONG NGHIA</strong></span>
+        <span>Ngân hàng: <strong id="m-bank-name">MBBank (Quân Đội)</strong></span>
+        <span style="font-size:0.75rem;color:var(--text-muted)">Chủ TK: <strong id="m-acc-name">Đang tải...</strong></span>
       </div>
       <div style="margin-bottom:0.45rem;display:flex;align-items:center;justify-content:space-between">
-        <span>STK MBBank: <strong style="color:#fff;font-family:var(--font-mono)">0977364711</strong></span>
-        <button class="copy-badge-btn" style="cursor:pointer;padding:0.2rem 0.6rem;border-radius:4px;background:rgba(34,211,238,0.15);border:1px solid rgba(34,211,238,0.3);color:var(--lagoon);font-size:0.75rem;font-family:var(--font-mono)" onclick="copyText('0977364711', 'Đã sao chép STK MBBank!')">📋 Chép STK</button>
+        <span>STK nhận: <strong id="m-acc-number" style="color:#fff;font-family:var(--font-mono)">—</strong></span>
+        <button id="m-copy-acc-btn" class="copy-badge-btn" style="cursor:pointer;padding:0.2rem 0.6rem;border-radius:4px;background:rgba(34,211,238,0.15);border:1px solid rgba(34,211,238,0.3);color:var(--lagoon);font-size:0.75rem;font-family:var(--font-mono)" onclick="copyAccountNumber()">📋 Chép STK</button>
       </div>
       <div style="margin-bottom:0.45rem;display:flex;align-items:center;justify-content:space-between">
         <span>Nội dung CK: <strong id="m-note" style="color:var(--lagoon);font-family:var(--font-mono)"></strong></span>
@@ -252,9 +252,9 @@
   <div class="footer-bottom">© 2026 Đảo Tò Mò. All rights reserved.</div>
 </footer>
 
-<script src="/js/api.js?v=2.8"></script>
+<script src="/js/api.js?v=2.9"></script>
 <script src="/js/skinview3d.bundle.js"></script>
-<script src="/js/skin-viewer.js"></script>
+<script src="/js/skin-viewer.js?v=2.9"></script>
 <script>
 const categoryLabel = {
   crate:'📦 Hòm', cosmetic:'✨ Cosmetic', pet:'🐾 Pet',
@@ -272,29 +272,35 @@ async function loadDetail() {
     currentProduct = p;
     document.title = p.name + ' — Đảo Tò Mò';
 
+    const safeName = api.escapeHtml(p.name);
+    const safeImg  = api.escapeHtml(api.safeUrl(p.image, '/img/logo.jpg'));
+    const safeCat  = api.escapeHtml(categoryLabel[p.category] || p.category);
+    const safeDesc = api.escapeHtml(p.description || '');
+    const safeRew  = api.escapeHtml(p.gameReward || 'Nhận trực tiếp trong game');
+
     document.getElementById('detail-wrap').innerHTML = `
       <div class="breadcrumb">
         <a href="/index.html">Trang chủ</a><span>›</span>
         <a href="/html/Store.html">Cửa hàng</a><span>›</span>
-        <span style="color:var(--text)">${p.name}</span>
+        <span style="color:var(--text)">${safeName}</span>
       </div>
       <div class="detail-grid">
         <div class="detail-img-wrap">
-          <img src="${p.image}" alt="${p.name}"
+          <img src="${safeImg}" alt="${safeName}"
             onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect fill=%22%23171e36%22 width=%22100%25%22 height=%22100%25%22/><text x=%2250%25%22 y=%2255%25%22 font-size=%2240%22 text-anchor=%22middle%22>🎁</text></svg>'">
         </div>
         <div class="detail-info">
-          <div class="detail-category">${categoryLabel[p.category] || p.category}</div>
-          <h1 class="detail-name">${p.name}</h1>
-          <div class="detail-price">${p.price.toLocaleString('vi-VN')}đ</div>
-          <div class="detail-desc">${p.description}</div>
+          <div class="detail-category">${safeCat}</div>
+          <h1 class="detail-name">${safeName}</h1>
+          <div class="detail-price">${Number(p.price || 0).toLocaleString('vi-VN')}đ</div>
+          <div class="detail-desc">${safeDesc}</div>
 
           <div class="feature-list">
             <h4>Đặc quyền & Quyền lợi</h4>
             <div class="feature-item">
               <span class="feature-icon">🎮</span>
               <span class="feature-label">Phần thưởng:</span>
-              <span class="feature-value">${p.gameReward || 'Nhận trực tiếp trong game'}</span>
+              <span class="feature-value">${safeRew}</span>
             </div>
             <div class="feature-item">
               <span class="feature-icon">🛡️</span>
@@ -366,19 +372,24 @@ async function loadRelated(currentId, category) {
     const section = document.getElementById('related');
     const track   = document.getElementById('related-track');
     
-    track.innerHTML = others.map(p => `
+    track.innerHTML = others.map(p => {
+      const rName = api.escapeHtml(p.name);
+      const rImg  = api.escapeHtml(api.safeUrl(p.image, '/img/logo.jpg'));
+      const rId   = api.escapeHtml(p._id);
+      return `
       <div class="carousel-slide" style="padding:0.5rem">
-        <div class="related-card" onclick="location.href='/html/ProductDetail.html?id=${p._id}'">
-          <img src="${p.image}" alt="${p.name}" loading="lazy"
+        <div class="related-card" onclick="location.href='/html/ProductDetail.html?id=${rId}'">
+          <img src="${rImg}" alt="${rName}" loading="lazy"
             onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect fill=%22%23171e36%22 width=%22100%25%22 height=%22100%25%22/><text x=%2250%25%22 y=%2255%25%22 font-size=%2230%22 text-anchor=%22middle%22>🎁</text></svg>'">
           <div class="rc-info">
-            <div class="rc-name">${p.name}</div>
-            <div class="rc-price">${p.price.toLocaleString('vi-VN')}đ</div>
+            <div class="rc-name">${rName}</div>
+            <div class="rc-price">${Number(p.price || 0).toLocaleString('vi-VN')}đ</div>
           </div>
           <span class="btn btn-ghost" style="padding:0.4rem 0.8rem;font-size:0.78rem">Xem</span>
         </div>
       </div>
-    `).join('');
+    `;
+    }).join('');
     section.style.display = 'block';
 
     if (window.initCarousels) {
@@ -429,14 +440,21 @@ async function handleBuy() {
     document.getElementById('m-note').textContent  = note;
     document.getElementById('m-acc-link').href     = `/html/Account.html?orderId=${order._id || order.id}`;
 
-    // Dynamic SePay / VietQR Generator for MBBank 0977364711
-    const cleanNote = note.replace(/[\s-]/g, '');
-    const vietqrUrl = order.vietqrUrl || order.sepayQrUrl || `https://qr.sepay.vn/img?acc=0977364711&bank=MBBank&amount=${total}&des=${encodeURIComponent(cleanNote)}`;
+    const bankDetails = order.paymentDetails || {};
+    const bankNameEl = document.getElementById('m-bank-name');
+    const accNameEl  = document.getElementById('m-acc-name');
+    const accNumEl   = document.getElementById('m-acc-number');
+    if (bankNameEl) bankNameEl.textContent = bankDetails.bankName || 'MBBank';
+    if (accNameEl)  accNameEl.textContent  = bankDetails.accountName || 'Admin Đảo Tò Mò';
+    if (accNumEl)   accNumEl.textContent   = bankDetails.accountNumber || '—';
+
+    // Dynamic SePay / VietQR image URL returned by backend
+    const vietqrUrl = order.vietqrUrl || order.sepayQrUrl || bankDetails.qrUrl || '/img/qr.png';
     const imgEl = document.getElementById('m-vietqr-img');
     if (imgEl) {
       imgEl.src = vietqrUrl;
       imgEl.onerror = () => {
-        imgEl.src = `https://img.vietqr.io/image/970422-0977364711-compact2.png?amount=${total}&addInfo=${encodeURIComponent(note)}&accountName=NGUYEN%20TRONG%20NGHIA`;
+        imgEl.src = order.qrOnlyUrl || order.sepayQrUrl || '/img/qr.png';
       };
     }
 
@@ -482,6 +500,11 @@ function startOrderPolling(orderCode) {
       }
     } catch (e) {}
   }, 3000);
+}
+
+function copyAccountNumber() {
+  const acc = document.getElementById('m-acc-number')?.textContent || '';
+  if (acc && acc !== '—') copyText(acc, 'Đã sao chép STK ngân hàng!');
 }
 
 function copyTransferNote() {

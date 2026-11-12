@@ -135,26 +135,34 @@ class OrderController extends Controller
      */
     public function showByCode($code): JsonResponse
     {
-        $cleanCode = trim($code);
-        $cleanSuffix = preg_replace('/^(?:DTM|DH)[-_\s]?/i', '', $cleanCode);
-        $order = Order::with('items')
-            ->where('order_code', $cleanCode)
-            ->orWhere('order_code', str_replace(' ', '-', $cleanCode))
-            ->orWhere('order_code', 'LIKE', "%{$cleanSuffix}")
-            ->orWhere('transfer_content', 'LIKE', "%{$cleanSuffix}%")
-            ->first();
+        $cleanCode = strtoupper(trim((string) $code));
+        if (!preg_match('/^(DTM|DH)[-\s_]?([A-Z0-9]{4,12})$/', $cleanCode, $m)) {
+            return response()->json(['success' => false, 'message' => 'Mã đơn hàng không hợp lệ.'], 400);
+        }
+
+        $prefix = strtoupper($m[1]);
+        $suffix = strtoupper($m[2]);
+        $hyphenCode = "{$prefix}-{$suffix}";
+        $spaceCode = "{$prefix} {$suffix}";
+
+        $order = Order::where(function ($q) use ($cleanCode, $hyphenCode, $spaceCode) {
+            $q->where('order_code', $hyphenCode)
+              ->orWhere('order_code', $cleanCode)
+              ->orWhere('transfer_content', $spaceCode)
+              ->orWhere('transfer_content', $hyphenCode);
+        })->first();
 
         if (!$order) {
             return response()->json(['success' => false, 'message' => 'Không tìm thấy đơn hàng.'], 404);
         }
 
         $summary = [
-            'id' => $order->id,
             'order_code' => $order->order_code,
+            'orderCode' => $order->order_code,
             'payment_status' => $order->payment_status,
             'order_status' => $order->order_status,
             'status' => $order->status,
-            'total_amount' => $order->total_amount,
+            'total_amount' => (float) $order->total_amount,
             'is_paid' => $order->payment_status === 'paid',
         ];
 
@@ -162,8 +170,8 @@ class OrderController extends Controller
             'success' => true,
             'order_code' => $order->order_code,
             'is_paid' => $order->payment_status === 'paid',
-            'order' => array_merge($order->toArray(), $summary),
-            'data' => array_merge($order->toArray(), $summary),
+            'order' => $summary,
+            'data' => $summary,
         ]);
     }
 

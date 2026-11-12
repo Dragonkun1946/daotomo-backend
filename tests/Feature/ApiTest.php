@@ -151,7 +151,11 @@ class ApiTest extends TestCase
 
         $avatarFile = public_path("uploads/avatars/{$user->id}.png");
         $this->assertFileExists($avatarFile);
-        $this->assertNotNull($user->fresh()->avatar);
+
+        $fresh = $user->fresh();
+        $this->assertNotNull($fresh->avatar);
+        $this->assertStringStartsWith('data:image/png;base64,', $fresh->skin_url);
+        $this->assertStringStartsWith('data:image/png;base64,', $fresh->avatar);
     }
 
     public function test_skin_reset_to_steve(): void
