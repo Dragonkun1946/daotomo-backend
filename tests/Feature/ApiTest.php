@@ -103,6 +103,13 @@ class ApiTest extends TestCase
                  ->assertJsonPath('user.email', 'player@daotomo.site');
     }
 
+    public function test_unauthenticated_api_request_without_json_accept_returns_401(): void
+    {
+        $response = $this->get('/api/auth/me');
+        $response->assertStatus(401)
+                 ->assertJson(['success' => false]);
+    }
+
     // ─── 3. Minecraft 3D Skin Engine Tests ────────────────────────────────────
     public function test_skin_upload_rejects_unauthenticated(): void
     {

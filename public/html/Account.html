@@ -1057,7 +1057,7 @@
       <h4 style="color:#fbbf24;margin-bottom:0.5rem;font-size:0.9rem">💳 Thông tin chuyển khoản VietQR</h4>
       <p style="font-size:0.78rem;color:var(--text-muted);margin-bottom:0.75rem">Quét mã QR và chuyển chính xác số tiền với nội dung dưới đây:</p>
       <div style="width:160px;height:160px;margin:0 auto 0.75rem;background:#fff;border-radius:12px;padding:6px;overflow:hidden;border:2px solid var(--lagoon)">
-        <img id="od-vietqr-img" src="/img/qr.png" alt="QR" style="width:100%;height:100%;object-fit:contain" onerror="this.parentElement.innerHTML='<div style=color:#333;font-size:.7rem;padding:2rem 0>QR sẽ cập nhật sớm</div>'">
+        <img id="od-vietqr-img" src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'><rect fill='%23ffffff' width='120' height='120' rx='10'/><text x='60' y='64' font-family='sans-serif' font-size='13' fill='%23475569' text-anchor='middle'>VietQR</text></svg>" alt="QR" style="width:100%;height:100%;object-fit:contain" onerror="this.parentElement.innerHTML='<div style=color:#333;font-size:.7rem;padding:2rem 0>QR sẽ cập nhật sớm</div>'">
       </div>
       <div style="font-size:0.82rem;color:var(--text-muted);display:flex;align-items:center;justify-content:center;gap:0.4rem;flex-wrap:wrap">
         <span>Nội dung CK: <strong id="od-transfer-content" style="color:var(--lagoon);font-family:var(--font-mono)"></strong></span>
@@ -1234,9 +1234,9 @@
   <div class="footer-bottom">© 2026 Đảo Tò Mò</div>
 </footer>
 
-<script src="/js/api.js?v=2.9"></script>
+<script src="/js/api.js?v=3.0"></script>
 <script src="/js/skinview3d.bundle.js"></script>
-<script src="/js/skin-viewer.js?v=2.9"></script>
+<script src="/js/skin-viewer.js?v=3.0"></script>
 <script>
 const TABS = ['login', 'register', 'forgot', 'reset'];
 function switchTab(tab) {
@@ -2267,11 +2267,11 @@ async function openOrderDetail(orderId) {
       const transferContent = o.paymentDetails?.transferContent || o.transfer_content || code;
       document.getElementById('od-transfer-content').textContent = transferContent;
       
-      const vietqrUrl = o.vietqrUrl || o.sepayQrUrl || o.paymentDetails?.qrUrl || '/img/qr.png';
+      const vietqrUrl = o.vietqrUrl || o.sepayQrUrl || o.paymentDetails?.qrUrl || '/img/logo.jpg';
       const qrImg = document.getElementById('od-vietqr-img');
       if (qrImg) {
         qrImg.src = vietqrUrl;
-        qrImg.onerror = () => { qrImg.src = '/img/qr.png'; };
+        qrImg.onerror = () => { qrImg.src = '/img/logo.jpg'; };
       }
       proofSec.style.display = 'block';
     } else {

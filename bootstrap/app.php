@@ -13,6 +13,9 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->trustProxies(at: '*');
+        $middleware->redirectGuestsTo(function (\Illuminate\Http\Request $request) {
+            return ($request->is('api/*') || $request->expectsJson()) ? null : '/html/Account.html';
+        });
         $middleware->validateCsrfTokens(except: [
             'api/*',
             'webhooks/*',
@@ -27,8 +30,18 @@ return Application::configure(basePath: dirname(__DIR__))
         });
 
         $exceptions->render(function (\Throwable $e, \Illuminate\Http\Request $request) {
-            if ($e instanceof \Illuminate\Auth\AuthenticationException || $e instanceof \Illuminate\Validation\ValidationException) {
-                return null; // Let Laravel handle 401 and 422 standard responses
+            if ($e instanceof \Illuminate\Auth\AuthenticationException) {
+                if ($request->is('api/*') || $request->expectsJson()) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Phiên đăng nhập không hợp lệ hoặc đã hết hạn.',
+                    ], 401);
+                }
+                return null;
+            }
+
+            if ($e instanceof \Illuminate\Validation\ValidationException) {
+                return null; // Let Laravel handle 422 standard responses
             }
 
             if ($request->is('api/*') || $request->expectsJson()) {

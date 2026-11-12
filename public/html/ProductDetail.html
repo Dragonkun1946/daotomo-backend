@@ -208,7 +208,7 @@
     </p>
     
     <div class="qr-box" style="width:200px;height:200px;margin:0.85rem auto;background:#fff;border-radius:14px;display:flex;align-items:center;justify-content:center;border:3px solid var(--lagoon);overflow:hidden;padding:6px;box-shadow:0 0 20px rgba(34,211,238,0.35)">
-      <img id="m-vietqr-img" src="/img/qr.png" alt="Mã VietQR Chuyển Khoản">
+      <img id="m-vietqr-img" src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'><rect fill='%23ffffff' width='120' height='120' rx='10'/><text x='60' y='64' font-family='sans-serif' font-size='13' fill='%23475569' text-anchor='middle'>VietQR</text></svg>" alt="Mã VietQR Chuyển Khoản">
     </div>
 
     <div style="font-size:1.6rem;font-weight:800;color:var(--accent);font-family:var(--font-mono);margin-top:0.4rem" id="m-total">0đ</div>
@@ -252,9 +252,9 @@
   <div class="footer-bottom">© 2026 Đảo Tò Mò. All rights reserved.</div>
 </footer>
 
-<script src="/js/api.js?v=2.9"></script>
+<script src="/js/api.js?v=3.0"></script>
 <script src="/js/skinview3d.bundle.js"></script>
-<script src="/js/skin-viewer.js?v=2.9"></script>
+<script src="/js/skin-viewer.js?v=3.0"></script>
 <script>
 const categoryLabel = {
   crate:'📦 Hòm', cosmetic:'✨ Cosmetic', pet:'🐾 Pet',
@@ -449,12 +449,12 @@ async function handleBuy() {
     if (accNumEl)   accNumEl.textContent   = bankDetails.accountNumber || '—';
 
     // Dynamic SePay / VietQR image URL returned by backend
-    const vietqrUrl = order.vietqrUrl || order.sepayQrUrl || bankDetails.qrUrl || '/img/qr.png';
+    const vietqrUrl = order.vietqrUrl || order.sepayQrUrl || bankDetails.qrUrl || '/img/logo.jpg';
     const imgEl = document.getElementById('m-vietqr-img');
     if (imgEl) {
       imgEl.src = vietqrUrl;
       imgEl.onerror = () => {
-        imgEl.src = order.qrOnlyUrl || order.sepayQrUrl || '/img/qr.png';
+        imgEl.src = order.qrOnlyUrl || order.sepayQrUrl || '/img/logo.jpg';
       };
     }
 
