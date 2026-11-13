@@ -25,6 +25,8 @@ class Product extends Model
         'rank_god'      => '/img/ranks/rank-god.jpg',
     ];
 
+    public const COIN_ARTWORK = '/img/coins.png';
+
     protected $fillable = [
         'name',
         'slug',
@@ -117,10 +119,16 @@ class Product extends Model
         if ($slug !== '' && isset(self::RANK_ARTWORK_BY_SLUG[$slug])) {
             return self::RANK_ARTWORK_BY_SLUG[$slug];
         }
+        if ($slug === 'goi-coin-minecraft-100k' || str_contains($slug, 'coin') || str_contains($slug, 'xu')) {
+            return self::COIN_ARTWORK;
+        }
 
         $reward = strtolower(trim((string) ($this->game_reward ?? ($this->metadata['gameReward'] ?? ''))));
         if ($reward !== '' && isset(self::RANK_ARTWORK_BY_REWARD[$reward])) {
             return self::RANK_ARTWORK_BY_REWARD[$reward];
+        }
+        if ($reward !== '' && (str_contains($reward, 'coin') || str_contains($reward, 'xu'))) {
+            return self::COIN_ARTWORK;
         }
 
         return null;

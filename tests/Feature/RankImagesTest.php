@@ -70,4 +70,16 @@ class RankImagesTest extends TestCase
         $godRes->assertStatus(200)
             ->assertJsonPath('data.image', 'https://cdn.example.com/custom-god.jpg');
     }
+
+    public function test_coin_product_has_assigned_local_image_and_file_exists(): void
+    {
+        $this->seed();
+
+        $coinRes = $this->getJson('/api/products/goi-coin-minecraft-100k');
+        $coinRes->assertStatus(200)
+            ->assertJsonPath('data.image', '/img/coins.png');
+
+        $this->assertFileExists(public_path('img/coins.png'));
+        $this->assertFileExists(public_path('img/coin.png'));
+    }
 }

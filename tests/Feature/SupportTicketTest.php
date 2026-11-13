@@ -21,7 +21,7 @@ class SupportTicketTest extends TestCase
             ->assertJson([
                 'success' => true,
                 'zaloUrl' => 'https://zalo.me/0977364711',
-                'discordInviteUrl' => 'https://discord.gg/rNQ6ytnSg',
+                'discordInviteUrl' => 'https://discord.gg/AQyTJ8Wu7',
                 'ticketChannelUrl' => 'https://discord.com/channels/1381315355317899314/1485265083918713063',
                 'ticketMode' => 'direct_channel',
                 'webhookConfigured' => false,

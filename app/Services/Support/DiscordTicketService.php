@@ -40,7 +40,7 @@ class DiscordTicketService
 
     public function resolveDiscordInviteUrl(): string
     {
-        return trim((string) config('services.discord.invite_url', 'https://discord.gg/rNQ6ytnSg'));
+        return trim((string) config('services.discord.invite_url', 'https://discord.gg/AQyTJ8Wu7'));
     }
 
     public function resolveTicketChannelUrl(): string
