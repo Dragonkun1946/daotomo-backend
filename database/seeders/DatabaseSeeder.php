@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\User;
 use App\Models\Product;
+use App\Models\SupportTicket;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 
@@ -318,6 +319,62 @@ class DatabaseSeeder extends Seeder
             Product::updateOrCreate(
                 ['slug' => $p['slug']],
                 $p
+            );
+        }
+
+        // 5. Seed Realistic Sample Support Tickets for Admin Management Demo
+        $player = User::where('email', 'player@daotomo.site')->first();
+        $demo = User::where('email', 'user@daotomo.site')->first();
+
+        $sampleTickets = [
+            [
+                'ticket_code' => 'TK-849201',
+                'user_id' => $player ? $player->id : null,
+                'minecraft_username' => 'DragonPlayer',
+                'discord_username' => 'dragonplayer#1234',
+                'contact' => 'Discord: dragonplayer#1234',
+                'category' => 'payment',
+                'subject' => 'Hỗ trợ nạp Xu đơn hàng #DTM-849201',
+                'message' => 'Em đã chuyển khoản đơn hàng nạp Rank Legend nhưng chưa thấy kích hoạt in-game, nhờ Admin hỗ trợ kiểm tra giúp em ạ!',
+                'status' => 'open',
+                'admin_note' => null,
+                'discord_dispatched' => false,
+                'discord_error' => 'Chế độ direct_channel (không dùng webhook bot)',
+            ],
+            [
+                'ticket_code' => 'TK-719342',
+                'user_id' => $demo ? $demo->id : null,
+                'minecraft_username' => 'DemoUser',
+                'discord_username' => 'demouser#5678',
+                'contact' => 'Zalo: 0912345678',
+                'category' => 'account',
+                'subject' => 'Hỗ trợ liên kết tài khoản web với Minecraft',
+                'message' => 'Em nhập mã PIN liên kết in-game /link thì báo mã đã hết hạn. Admin cấp lại mã mới hoặc hỗ trợ link giúp em nhé.',
+                'status' => 'in_progress',
+                'admin_note' => 'Đã hướng dẫn người chơi gõ lại /link trong game để lấy OTP 6 số mới.',
+                'discord_dispatched' => false,
+                'discord_error' => null,
+            ],
+            [
+                'ticket_code' => 'TK-612450',
+                'user_id' => null,
+                'minecraft_username' => 'CaroD1946',
+                'discord_username' => 'carod#1946',
+                'contact' => 'Discord: @carod1946',
+                'category' => 'bug',
+                'subject' => 'Báo lỗi nhận quà điểm danh hàng ngày',
+                'message' => 'Hôm qua em điểm danh ngày thứ 7 nhận 10 Rare Keys nhưng hòm đồ in-game bị đầy nên chưa rơi ra đất. Admin add lại giúp em.',
+                'status' => 'resolved',
+                'admin_note' => 'Đã add bù 10 Rare Keys vào hàng đợi giao đồ in-game, trạng thái DELIVERED.',
+                'discord_dispatched' => true,
+                'discord_error' => null,
+            ],
+        ];
+
+        foreach ($sampleTickets as $t) {
+            SupportTicket::firstOrCreate(
+                ['ticket_code' => $t['ticket_code']],
+                $t
             );
         }
     }
