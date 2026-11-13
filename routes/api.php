@@ -127,10 +127,12 @@ Route::middleware('auth:sanctum')->group(function () {
 });
 
 // ─── Internal Minecraft Bridge Routes (Protected by Bridge Token) ─────────────
-Route::middleware('throttle:30,1')->prefix('internal/minecraft')->group(function () {
+Route::middleware('throttle:60,1')->prefix('internal/minecraft')->group(function () {
     Route::post('/link/request-pin', [InternalMinecraftBridgeController::class, 'requestLinkPin']);
+    Route::post('/link/unlink-test', [InternalMinecraftBridgeController::class, 'unlinkTestPlayer']);
     Route::get('/deliveries/pending', [InternalMinecraftBridgeController::class, 'getPendingDeliveries']);
     Route::post('/deliveries/confirm', [InternalMinecraftBridgeController::class, 'confirmDeliveries']);
+    Route::post('/deliveries/mock-test', [InternalMinecraftBridgeController::class, 'createMockDelivery']);
     Route::get('/leaderboard/streaks', [InternalMinecraftBridgeController::class, 'getStreaksLeaderboard']);
     Route::get('/player/{identifier}/streak', [InternalMinecraftBridgeController::class, 'getPlayerStreak']);
     Route::post('/sync-coins', [InternalMinecraftBridgeController::class, 'syncCoins']);

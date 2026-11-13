@@ -163,4 +163,41 @@ class MinecraftBridgeTest extends TestCase
             'game_linked_at' => null,
         ]);
     }
+
+    public function test_bridge_mock_delivery_and_unlink_test(): void
+    {
+        $bridgeToken = config('services.minecraft.bridge_token', env('MINECRAFT_BRIDGE_TOKEN', 'daotomo_secret_bridge_key_2026'));
+
+        // 1. Create mock delivery
+        $res = $this->withHeaders(['X-Bridge-Token' => $bridgeToken])
+            ->postJson('/api/internal/minecraft/deliveries/mock-test', [
+                'username' => 'SteveTester',
+                'type' => 'rank',
+            ]);
+
+        $res->assertStatus(200)->assertJson(['success' => true]);
+        $this->assertDatabaseHas('game_delivery_queue', [
+            'game_username' => 'SteveTester',
+            'type' => 'rank',
+            'command' => 'lp user SteveTester parent add vip',
+        ]);
+
+        // 2. Unlink test player via bridge
+        $user = User::factory()->create([
+            'minecraft_username' => 'SteveTester',
+            'minecraft_uuid' => '44444444-4444-4444-4444-444444444444',
+        ]);
+
+        $unlinkRes = $this->withHeaders(['X-Bridge-Token' => $bridgeToken])
+            ->postJson('/api/internal/minecraft/link/unlink-test', [
+                'username' => 'SteveTester',
+            ]);
+
+        $unlinkRes->assertStatus(200)->assertJson(['success' => true]);
+        $this->assertDatabaseHas('users', [
+            'id' => $user->id,
+            'minecraft_username' => null,
+            'minecraft_uuid' => null,
+        ]);
+    }
 }

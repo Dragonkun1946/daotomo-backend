@@ -1,0 +1,1357 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DaoTomo - Bảng Điều Khiển Kiểm Tra Hệ Thống Bridge & In-Game</title>
+    <link rel="icon" href="../img/logo.png" type="image/png">
+    <style>
+        :root {
+            --bg-main: #0b101b;
+            --bg-card: #131c2e;
+            --bg-input: #1a263d;
+            --border: #233554;
+            --accent-gold: #f59e0b;
+            --accent-yellow: #fbbf24;
+            --accent-green: #10b981;
+            --accent-cyan: #06b6d4;
+            --accent-blue: #3b82f6;
+            --accent-purple: #8b5cf6;
+            --accent-red: #ef4444;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: var(--font-family);
+        }
+
+        body {
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            line-height: 1.5;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        /* Header */
+        header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 24px;
+            background: linear-gradient(135deg, #131c2e 0%, #1c2b45 100%);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+        }
+
+        .header-title {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .logo-box {
+            width: 48px;
+            height: 48px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 26px;
+            box-shadow: 0 0 15px rgba(245, 158, 11, 0.4);
+        }
+
+        .header-text h1 {
+            font-size: 20px;
+            font-weight: 700;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .header-text p {
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .server-status-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 14px;
+            border-radius: 9999px;
+            font-size: 13px;
+            font-weight: 600;
+            background: rgba(16, 185, 129, 0.15);
+            color: #34d399;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: #10b981;
+            box-shadow: 0 0 8px #10b981;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.4; transform: scale(0.9); }
+        }
+
+        /* Config Bar */
+        .config-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 16px 20px;
+            margin-bottom: 20px;
+            display: grid;
+            grid-template-columns: 1fr 1fr auto;
+            gap: 16px;
+            align-items: end;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .form-group label {
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-muted);
+        }
+
+        .input-box {
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 10px 14px;
+            color: #fff;
+            font-size: 14px;
+            outline: none;
+            transition: all 0.2s;
+        }
+
+        .input-box:focus {
+            border-color: var(--accent-gold);
+            box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.2);
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 8px;
+        }
+
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 10px 18px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s;
+            text-decoration: none;
+            white-space: nowrap;
+        }
+
+        .btn:hover {
+            transform: translateY(-1px);
+            filter: brightness(1.1);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-gold {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            color: #0b101b;
+            box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+        }
+
+        .btn-green {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: #fff;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+        }
+
+        .btn-blue {
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            color: #fff;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+
+        .btn-purple {
+            background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+            color: #fff;
+            box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+        }
+
+        .btn-outline:hover {
+            background: var(--bg-input);
+            color: #fff;
+            border-color: #475569;
+        }
+
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 12px;
+            border-radius: 6px;
+        }
+
+        /* Tabs Navigation */
+        .tabs-nav {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 8px;
+            overflow-x: auto;
+        }
+
+        .tab-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            padding: 10px 18px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+
+        .tab-btn:hover {
+            background: var(--bg-card);
+            color: #fff;
+        }
+
+        .tab-btn.active {
+            background: var(--bg-card);
+            color: var(--accent-yellow);
+            border: 1px solid var(--border);
+            border-bottom: 2px solid var(--accent-yellow);
+        }
+
+        /* Tab Content Panels */
+        .tab-panel {
+            display: none;
+        }
+
+        .tab-panel.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .card-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .info-banner {
+            background: rgba(59, 130, 246, 0.1);
+            border-left: 4px solid var(--accent-blue);
+            padding: 12px 16px;
+            border-radius: 0 8px 8px 0;
+            font-size: 13px;
+            color: #bfdbfe;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        /* Pin Display Hero */
+        .pin-hero {
+            background: radial-gradient(circle at center, #1e2d4a 0%, #111a2c 100%);
+            border: 2px dashed #3b82f6;
+            border-radius: 16px;
+            padding: 30px;
+            text-align: center;
+            margin: 20px 0;
+            position: relative;
+        }
+
+        .pin-number {
+            font-size: 48px;
+            font-weight: 800;
+            letter-spacing: 4px;
+            color: #38bdf8;
+            text-shadow: 0 0 20px rgba(56, 189, 248, 0.5);
+            font-family: "Courier New", Courier, monospace;
+            margin: 10px 0;
+        }
+
+        .pin-meta {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-bottom: 16px;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .badge-pending {
+            background: rgba(245, 158, 11, 0.2);
+            color: #fbbf24;
+            border: 1px solid rgba(245, 158, 11, 0.4);
+        }
+
+        .badge-completed {
+            background: rgba(16, 185, 129, 0.2);
+            color: #34d399;
+            border: 1px solid rgba(16, 185, 129, 0.4);
+        }
+
+        .badge-vip {
+            background: rgba(139, 92, 246, 0.2);
+            color: #c084fc;
+            border: 1px solid rgba(139, 92, 246, 0.4);
+        }
+
+        /* Table */
+        .table-responsive {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+
+        th {
+            background: var(--bg-input);
+            color: var(--text-muted);
+            text-align: left;
+            padding: 12px 14px;
+            font-weight: 600;
+            border-bottom: 2px solid var(--border);
+        }
+
+        td {
+            padding: 12px 14px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            color: #e2e8f0;
+        }
+
+        tr:hover td {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .code-pill {
+            font-family: "Courier New", monospace;
+            background: #090e17;
+            padding: 4px 8px;
+            border-radius: 4px;
+            color: #38bdf8;
+            border: 1px solid #1e293b;
+        }
+
+        /* Leaderboard Cards */
+        .leaderboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 16px;
+        }
+
+        .leader-card {
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 14px 18px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            transition: all 0.2s;
+        }
+
+        .leader-card:hover {
+            border-color: var(--accent-yellow);
+            transform: translateY(-2px);
+        }
+
+        .leader-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 8px;
+            background: #0f172a;
+            border: 1px solid var(--border);
+        }
+
+        .leader-info h4 {
+            font-size: 15px;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .leader-streak {
+            font-size: 12px;
+            color: #fbbf24;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        /* Terminal Console */
+        .terminal-card {
+            background: #080c14;
+            border: 1px solid #1e293b;
+            border-radius: 12px;
+            padding: 16px;
+            margin-top: 24px;
+            font-family: "Consolas", "Courier New", monospace;
+            font-size: 12px;
+        }
+
+        .terminal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #1e293b;
+            color: var(--text-muted);
+        }
+
+        .terminal-body {
+            max-height: 220px;
+            overflow-y: auto;
+            color: #cbd5e1;
+            line-height: 1.6;
+        }
+
+        .log-entry {
+            margin-bottom: 4px;
+        }
+
+        .log-time {
+            color: #64748b;
+        }
+
+        .log-ok {
+            color: #34d399;
+        }
+
+        .log-err {
+            color: #f87171;
+        }
+
+        .log-info {
+            color: #38bdf8;
+        }
+
+        /* Toast */
+        #toast {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background: #1e293b;
+            border: 1px solid #334155;
+            color: #fff;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+            display: none;
+            z-index: 9999;
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <!-- Header -->
+    <header>
+        <div class="header-title">
+            <div class="logo-box">🗡️</div>
+            <div class="header-text">
+                <h1>Đảo Tò Mò • Bảng Kiểm Tra Bridge & In-Game</h1>
+                <p>Kiểm tra Handshake Liên kết OTP • Hàng đợi Giao đồ Cửa Hàng • Nhận Quà Điểm Danh In-Game</p>
+            </div>
+        </div>
+        <div id="statusPill" class="server-status-pill">
+            <span class="status-dot"></span>
+            <span id="statusText">Đang kết nối...</span>
+        </div>
+    </header>
+
+    <!-- Config Bar -->
+    <div class="config-card">
+        <div class="form-group">
+            <label>Địa Chỉ Máy Chủ Backend (API URL)</label>
+            <input type="text" id="apiUrl" class="input-box" value="https://daotomo-backend.onrender.com">
+        </div>
+        <div class="form-group">
+            <label>Mã Khóa Bridge Bí Mật (X-Bridge-Token)</label>
+            <input type="password" id="bridgeToken" class="input-box" value="daotomo_secret_bridge_key_2026">
+        </div>
+        <div class="btn-group">
+            <button class="btn btn-gold" onclick="testConnection()">⚡ Kiểm Tra Kết Nối</button>
+            <button class="btn btn-outline" onclick="toggleEnv()" id="envToggleBtn">🌐 Render Live</button>
+        </div>
+    </div>
+
+    <!-- Tabs Navigation -->
+    <div class="tabs-nav">
+        <button class="tab-btn active" onclick="switchTab('tab-link')">🔑 1. Liên Kết Tài Khoản (OTP)</button>
+        <button class="tab-btn" onclick="switchTab('tab-deliveries')">📦 2. Hàng Đợi Giao Đồ (Store)</button>
+        <button class="tab-btn" onclick="switchTab('tab-checkin')">🎁 3. Kiểm Tra Điểm Danh & Quà</button>
+        <button class="tab-btn" onclick="switchTab('tab-leaderboard')">🏆 4. Bảng Xếp Hạng Streak</button>
+        <button class="tab-btn" onclick="switchTab('tab-sync')">🪙 5. Đồng Bộ Xu</button>
+    </div>
+
+    <!-- TAB 1: LIÊN KẾT TÀI KHOẢN -->
+    <div id="tab-link" class="tab-panel active">
+        <div class="card">
+            <div class="card-header">
+                <span class="card-title">🔑 Sinh Mã OTP / PIN Liên Kết (Giả Lập Lệnh /link Trong Game)</span>
+                <span class="badge badge-vip">1 Nick Game = 1 Nick Web</span>
+            </div>
+            <div class="info-banner">
+                💡 <strong>Nguyên lý bảo mật:</strong> Khi người chơi gõ <code>/link</code> trong server Minecraft, Server game gọi Bridge API để sinh mã PIN ngẫu nhiên 6 chữ số có tiền tố <code>DTM-XXXXXX</code> (hiệu lực 10 phút). Người chơi sao chép mã này vào trang Web Đảo Tò Mò để xác nhận liên kết 1-1 an toàn mà không cần nhập mật khẩu game.
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;">
+                <div class="form-group">
+                    <label>Tên Nhân Vật Minecraft (Username / IGN)</label>
+                    <input type="text" id="ignInput" class="input-box" value="CaroD1946" placeholder="Nhập tên nhân vật Minecraft...">
+                </div>
+                <div class="form-group">
+                    <label>Minecraft UUID (Định danh duy nhất)</label>
+                    <div style="display: flex; gap: 8px;">
+                        <input type="text" id="uuidInput" class="input-box" style="flex: 1;" value="3b1e6374-c560-4567-a363-96a11357b5fd">
+                        <button class="btn btn-outline btn-sm" onclick="randomizeUUID()">🎲 Đổi UUID</button>
+                    </div>
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 12px; margin-bottom: 20px;">
+                <button class="btn btn-green" onclick="generateLinkPin()">🎲 1. Bấm Để Sinh Mã PIN / OTP</button>
+                <button class="btn btn-outline" onclick="unlinkTestUser()">🔄 Hủy / Reset Liên Kết Nhân Vật Này</button>
+            </div>
+
+            <!-- PIN Display Box -->
+            <div id="pinBox" class="pin-hero" style="display: none;">
+                <div style="font-size: 14px; color: #94a3b8; font-weight: 600;">MÃ PIN XÁC THỰC CỦA BẠN:</div>
+                <div id="pinValue" class="pin-number">DTM-000000</div>
+                <div class="pin-meta">⏱️ Thời hạn sử dụng: <strong>10 Phút</strong> • Hãy nhập mã này vào trang Web Tài Khoản.</div>
+                <div style="display: flex; justify-content: center; gap: 12px;">
+                    <button class="btn btn-gold" onclick="copyPin()">📋 Sao Chép Mã PIN</button>
+                    <button class="btn btn-blue" onclick="openAccountWeb()">🌐 Mở Trang Web Liên Kết (Account.html)</button>
+                </div>
+            </div>
+
+            <!-- Quick Link Handshake Test -->
+            <div style="background: var(--bg-input); border-radius: 10px; padding: 18px; margin-top: 16px; border: 1px solid var(--border);">
+                <h4 style="font-size: 14px; margin-bottom: 10px; color: #f8fafc;">⚡ Thử Nghiệm Liên Kết Trực Tiếp (Web Handshake Quick Test)</h4>
+                <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 12px;">Nhập tài khoản Web để hệ thống tự động gọi API <code>/api/user/game-link</code> với mã PIN vừa tạo:</p>
+                <div style="display: grid; grid-template-columns: 1fr 1fr auto; gap: 12px; align-items: end;">
+                    <div class="form-group">
+                        <label>Tên Đăng Nhập Web</label>
+                        <input type="text" id="webUsername" class="input-box" value="carod1946" placeholder="Tài khoản web...">
+                    </div>
+                    <div class="form-group">
+                        <label>Mật Khẩu Web</label>
+                        <input type="password" id="webPassword" class="input-box" value="12345678" placeholder="Mật khẩu web...">
+                    </div>
+                    <button class="btn btn-purple" onclick="autoLinkHandshake()">🚀 Xác Nhận Liên Kết Ngay</button>
+                </div>
+                <div id="linkResultBox" style="margin-top: 12px; font-size: 13px;"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TAB 2: HÀNG ĐỢI GIAO ĐỒ CỬA HÀNG -->
+    <div id="tab-deliveries" class="tab-panel">
+        <div class="card">
+            <div class="card-header">
+                <span class="card-title">📦 Hàng Đợi Giao Đồ Cửa Hàng (Store Delivery Queue)</span>
+                <span id="pendingCountBadge" class="badge badge-pending">0 Lệnh Chờ</span>
+            </div>
+            <div class="info-banner">
+                🛒 <strong>Cơ chế tự động hóa:</strong> Khi khách hàng mua Rank hoặc Gói Xu trên Web, hệ thống tự động đưa các lệnh Minecraft (ví dụ <code>lp user {player} parent add vip</code>) vào hàng đợi. Server Minecraft định kỳ polling qua Bridge API để thực thi và cập nhật trạng thái đơn sang <code>delivered</code>.
+            </div>
+
+            <div style="display: flex; gap: 10px; margin-bottom: 16px; flex-wrap: wrap;">
+                <button class="btn btn-blue" onclick="fetchPendingDeliveries()">🔄 1. Quét Hàng Đợi Đang Chờ (Pending)</button>
+                <button class="btn btn-gold" onclick="createMockDelivery('rank')">🛒 2. Tạo Đơn Rank VIP Mẫu</button>
+                <button class="btn btn-gold" onclick="createMockDelivery('keys')">🗝️ 3. Tạo Đơn 10 Chìa Khóa Rare Mẫu</button>
+                <button class="btn btn-green" onclick="confirmAllDeliveries()">✅ 4. Xác Nhận Giao Đồ In-Game (Complete All)</button>
+            </div>
+
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Mã Đơn / Nguồn</th>
+                            <th>Tên In-Game</th>
+                            <th>Lệnh Minecraft Sẽ Chạy</th>
+                            <th>Loại</th>
+                            <th>Trạng Thái</th>
+                            <th>Thao Tác</th>
+                        </tr>
+                    </thead>
+                    <tbody id="deliveriesTableBody">
+                        <tr>
+                            <td colspan="7" style="text-align: center; color: var(--text-muted); padding: 24px;">Bấm "Quét Hàng Đợi" để tải danh sách lệnh in-game...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- TAB 3: KIỂM TRA ĐIỂM DANH & QUÀ -->
+    <div id="tab-checkin" class="tab-panel">
+        <div class="card">
+            <div class="card-header">
+                <span class="card-title">🎁 Kiểm Tra Điểm Danh & Nhận Quà In-Game Thật</span>
+                <span class="badge badge-vip">10 Rare Keys + Xu</span>
+            </div>
+            <div class="info-banner">
+                🎉 <strong>Phần thưởng thật:</strong> Khi tài khoản đã liên kết nick game điểm danh hàng ngày trên Web:
+                <br>• CSDL Web cộng chuỗi Streak và Xu Web.
+                <br>• Đồng thời Bridge tự động tạo lệnh: <code>excellentcrates:crate key give {player} rare 10</code> nạp thẳng vào hàng đợi giao đồ game!
+            </div>
+
+            <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 16px; margin-bottom: 20px;">
+                <div class="form-group">
+                    <label>Nhập Tên In-Game Hoặc UUID Tra Cứu</label>
+                    <input type="text" id="checkinTargetUser" class="input-box" value="CaroD1946">
+                </div>
+                <div style="display: flex; gap: 8px; align-items: end;">
+                    <button class="btn btn-blue" style="width: 100%;" onclick="lookupPlayerStreak()">🔍 Tra Cứu Chuỗi</button>
+                </div>
+            </div>
+
+            <div id="streakResultCard" style="display: none; background: var(--bg-input); border-radius: 12px; padding: 20px; border: 1px solid var(--border);">
+                <div style="display: flex; align-items: center; justify-content: space-between;">
+                    <div>
+                        <h3 id="streakPlayerName" style="font-size: 18px; color: #fff;">CaroD1946</h3>
+                        <p id="streakPlayerStatus" style="font-size: 13px; color: var(--text-muted);">Đã liên kết tài khoản</p>
+                    </div>
+                    <div style="text-align: right;">
+                        <span style="font-size: 12px; color: var(--text-muted);">Chuỗi Điểm Danh</span>
+                        <div id="streakCountNumber" style="font-size: 32px; font-weight: 800; color: #f59e0b;">🔥 3 Ngày</div>
+                    </div>
+                </div>
+            </div>
+
+            <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--border);">
+                <h4 style="font-size: 14px; margin-bottom: 12px;">🚀 Thử Nghiệm Điểm Danh Cho Tài Khoản Web Đã Liên Kết</h4>
+                <div style="display: flex; gap: 12px;">
+                    <button class="btn btn-green" onclick="testCheckinAction()">🎁 Thực Hiện Điểm Danh Hôm Nay</button>
+                    <button class="btn btn-outline" onclick="openCheckinWeb()">🌐 Mở Trang Web Điểm Danh (Checkin.html)</button>
+                </div>
+                <div id="checkinActionResult" style="margin-top: 14px; font-size: 13px;"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TAB 4: BẢNG XẾP HẠNG STREAK -->
+    <div id="tab-leaderboard" class="tab-panel">
+        <div class="card">
+            <div class="card-header">
+                <span class="card-title">🏆 Bảng Xếp Hạng Chuỗi Điểm Danh Server (Top Streaks Leaderboard)</span>
+                <button class="btn btn-outline btn-sm" onclick="fetchLeaderboard()">🔄 Tải Lại</button>
+            </div>
+            <div class="info-banner">
+                Bảng xếp hạng lấy dữ liệu trực tiếp từ endpoint <code>/api/internal/minecraft/leaderboard/streaks</code> để hiển thị trong server game và trên web.
+            </div>
+
+            <div id="leaderboardContainer" class="leaderboard-grid">
+                <div style="grid-column: 1 / -1; text-align: center; color: var(--text-muted); padding: 30px;">
+                    Đang tải bảng xếp hạng...
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TAB 5: ĐỒNG BỘ XU -->
+    <div id="tab-sync" class="tab-panel">
+        <div class="card">
+            <div class="card-header">
+                <span class="card-title">🪙 Đồng Bộ Xu Người Chơi Từ Minecraft Sang Web</span>
+                <span class="badge badge-completed">Bridge Auth</span>
+            </div>
+            <div class="info-banner">
+                Đồng bộ số dư xu từ plugin kinh tế Minecraft (Vault/PlayerPoints) về CSDL Web: <code>/api/internal/minecraft/sync-coins</code>.
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;">
+                <div class="form-group">
+                    <label>Tên Người Chơi Minecraft</label>
+                    <input type="text" id="syncUsername" class="input-box" value="CaroD1946">
+                </div>
+                <div class="form-group">
+                    <label>Số Xu Cần Đồng Bộ</label>
+                    <input type="number" id="syncCoinsAmount" class="input-box" value="50000">
+                </div>
+            </div>
+
+            <button class="btn btn-gold" onclick="submitSyncCoins()">🪙 Đồng Bộ Xu Vào CSDL Web</button>
+            <div id="syncResultBox" style="margin-top: 14px; font-size: 13px;"></div>
+        </div>
+    </div>
+
+    <!-- Terminal Activity Log -->
+    <div class="terminal-card">
+        <div class="terminal-header">
+            <span>📡 NHẬT KÝ HOẠT ĐỘNG API (LIVE NETWORK & BRIDGE AUDIT)</span>
+            <div style="display: flex; gap: 8px;">
+                <button class="btn btn-outline btn-sm" onclick="clearTerminal()">Xóa Log</button>
+            </div>
+        </div>
+        <div id="terminalBody" class="terminal-body">
+            <div class="log-entry"><span class="log-time">[HỆ THỐNG]</span> Sẵn sàng kết nối. Hãy bấm các nút kiểm tra ở trên.</div>
+        </div>
+    </div>
+</div>
+
+<div id="toast">Thông báo</div>
+
+<script>
+    // State
+    let currentEnv = 'render'; // 'render' or 'local'
+    let currentPin = '';
+    let pendingDeliveriesList = [];
+
+    // Initialize
+    window.addEventListener('DOMContentLoaded', () => {
+        // Auto test connection on startup
+        testConnection();
+        // Load leaderboard
+        fetchLeaderboard();
+        // Fetch deliveries
+        fetchPendingDeliveries();
+    });
+
+    // Log to terminal
+    function logMessage(msg, type = 'info') {
+        const term = document.getElementById('terminalBody');
+        const now = new Date().toTimeString().split(' ')[0];
+        const entry = document.createElement('div');
+        entry.className = 'log-entry';
+        
+        let colorClass = 'log-info';
+        if (type === 'ok') colorClass = 'log-ok';
+        if (type === 'err') colorClass = 'log-err';
+
+        entry.innerHTML = `<span class="log-time">[${now}]</span> <span class="${colorClass}">${msg}</span>`;
+        term.appendChild(entry);
+        term.scrollTop = term.scrollHeight;
+    }
+
+    function clearTerminal() {
+        document.getElementById('terminalBody').innerHTML = '';
+        logMessage('Đã xóa nhật ký hoạt động.');
+    }
+
+    // Show toast
+    function showToast(text) {
+        const toast = document.getElementById('toast');
+        toast.textContent = text;
+        toast.style.display = 'block';
+        setTimeout(() => {
+            toast.style.display = 'none';
+        }, 3000);
+    }
+
+    // Tab switching
+    function switchTab(tabId) {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+        
+        event.currentTarget.classList.add('active');
+        document.getElementById(tabId).classList.add('active');
+
+        if (tabId === 'tab-deliveries') fetchPendingDeliveries();
+        if (tabId === 'tab-leaderboard') fetchLeaderboard();
+    }
+
+    // Toggle Environment (Render Cloud vs Localhost)
+    function toggleEnv() {
+        const btn = document.getElementById('envToggleBtn');
+        const urlInput = document.getElementById('apiUrl');
+
+        if (currentEnv === 'render') {
+            currentEnv = 'local';
+            btn.textContent = '💻 Localhost:8000';
+            btn.classList.add('btn-gold');
+            btn.classList.remove('btn-outline');
+            urlInput.value = 'http://localhost:8000';
+            logMessage('Đã chuyển cấu hình sang máy chủ Localhost (http://localhost:8000)');
+        } else {
+            currentEnv = 'render';
+            btn.textContent = '🌐 Render Live';
+            btn.classList.remove('btn-gold');
+            btn.classList.add('btn-outline');
+            urlInput.value = 'https://daotomo-backend.onrender.com';
+            logMessage('Đã chuyển cấu hình sang máy chủ Cloud Render');
+        }
+        testConnection();
+    }
+
+    // Randomize UUID
+    function randomizeUUID() {
+        const uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+            const r = Math.random() * 16 | 0;
+            const v = c === 'x' ? r : (r & 0x3 | 0x8);
+            return v.toString(16);
+        });
+        document.getElementById('uuidInput').value = uuid;
+        showToast('Đã tạo UUID ngẫu nhiên mới!');
+    }
+
+    // Test Server Connection
+    async function testConnection() {
+        const baseUrl = document.getElementById('apiUrl').value.trim();
+        const statusPill = document.getElementById('statusPill');
+        const statusText = document.getElementById('statusText');
+
+        statusText.textContent = 'Đang kiểm tra...';
+        statusPill.style.borderColor = 'rgba(245, 158, 11, 0.4)';
+        statusPill.style.color = '#fbbf24';
+
+        logMessage(`GET ${baseUrl}/api/health ...`);
+
+        try {
+            const res = await fetch(`${baseUrl}/api/health`, {
+                headers: { 'Accept': 'application/json' }
+            });
+            const data = await res.json();
+            
+            if (res.ok && data.status === 'OK') {
+                statusText.textContent = `🟢 Online | DB: ${data.database || 'OK'}`;
+                statusPill.style.borderColor = 'rgba(16, 185, 129, 0.4)';
+                statusPill.style.color = '#34d399';
+                logMessage(`Kết nối thành công! CSDL: ${data.database}, Thời gian: ${data.time}`, 'ok');
+            } else {
+                throw new Error('Server không phản hồi mã 200 OK');
+            }
+        } catch (err) {
+            statusText.textContent = '🔴 Mất Kết Nối';
+            statusPill.style.borderColor = 'rgba(239, 68, 68, 0.4)';
+            statusPill.style.color = '#f87171';
+            logMessage(`Lỗi kết nối máy chủ: ${err.message}`, 'err');
+        }
+    }
+
+    // 1. Generate Link PIN
+    async function generateLinkPin() {
+        const baseUrl = document.getElementById('apiUrl').value.trim();
+        const token = document.getElementById('bridgeToken').value.trim();
+        const username = document.getElementById('ignInput').value.trim();
+        const uuid = document.getElementById('uuidInput').value.trim();
+
+        if (!username || !uuid) {
+            alert('Vui lòng nhập Username và UUID!');
+            return;
+        }
+
+        logMessage(`POST /api/internal/minecraft/link/request-pin [${username}]...`);
+
+        try {
+            const res = await fetch(`${baseUrl}/api/internal/minecraft/link/request-pin`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'X-Bridge-Token': token
+                },
+                body: JSON.stringify({ username, uuid })
+            });
+
+            const data = await res.json();
+
+            if (res.ok && data.success) {
+                currentPin = data.pin || data.pin_code;
+                document.getElementById('pinValue').textContent = currentPin;
+                document.getElementById('pinBox').style.display = 'block';
+                logMessage(`✅ Tạo mã PIN thành công: ${currentPin} (Hết hạn trong ${data.expires_in_minutes} phút)`, 'ok');
+                showToast(`Đã tạo mã PIN: ${currentPin}`);
+            } else {
+                logMessage(`❌ Không thể tạo mã PIN: ${data.message || 'Lỗi chưa xác định'}`, 'err');
+                alert(data.message || 'Không thể tạo mã PIN');
+            }
+        } catch (err) {
+            logMessage(`❌ Lỗi mạng: ${err.message}`, 'err');
+        }
+    }
+
+    // Copy PIN
+    function copyPin() {
+        if (!currentPin) return;
+        navigator.clipboard.writeText(currentPin);
+        showToast(`Đã sao chép ${currentPin} vào clipboard!`);
+    }
+
+    // Open Web Account Page
+    function openAccountWeb() {
+        const baseUrl = document.getElementById('apiUrl').value.trim();
+        window.open(`${baseUrl}/html/Account.html`, '_blank');
+    }
+
+    // Open Web Checkin Page
+    function openCheckinWeb() {
+        const baseUrl = document.getElementById('apiUrl').value.trim();
+        window.open(`${baseUrl}/html/Checkin.html`, '_blank');
+    }
+
+    // Unlink test user
+    async function unlinkTestUser() {
+        const baseUrl = document.getElementById('apiUrl').value.trim();
+        const token = document.getElementById('bridgeToken').value.trim();
+        const username = document.getElementById('ignInput').value.trim();
+        const uuid = document.getElementById('uuidInput').value.trim();
+
+        logMessage(`POST /api/internal/minecraft/link/unlink-test [${username}]...`);
+
+        try {
+            const res = await fetch(`${baseUrl}/api/internal/minecraft/link/unlink-test`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'X-Bridge-Token': token
+                },
+                body: JSON.stringify({ username, uuid })
+            });
+            const data = await res.json();
+            if (res.ok && data.success) {
+                logMessage(`✅ ${data.message}`, 'ok');
+                showToast(data.message);
+                document.getElementById('pinBox').style.display = 'none';
+            } else {
+                logMessage(`❌ ${data.message}`, 'err');
+            }
+        } catch (err) {
+            logMessage(`❌ Lỗi: ${err.message}`, 'err');
+        }
+    }
+
+    // Auto Link Handshake
+    async function autoLinkHandshake() {
+        if (!currentPin) {
+            alert('Vui lòng bấm nút "Sinh Mã PIN / OTP" ở trên trước!');
+            return;
+        }
+
+        const baseUrl = document.getElementById('apiUrl').value.trim();
+        const username = document.getElementById('webUsername').value.trim();
+        const password = document.getElementById('webPassword').value.trim();
+        const resultBox = document.getElementById('linkResultBox');
+
+        resultBox.innerHTML = '<span style="color:#fbbf24;">Đang xác thực tài khoản Web và gửi mã PIN...</span>';
+        logMessage(`Đăng nhập web [${username}] để gửi mã PIN [${currentPin}]...`);
+
+        try {
+            // 1. Login to get web token
+            const loginRes = await fetch(`${baseUrl}/api/login`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+                body: JSON.stringify({ username, password })
+            });
+            const loginData = await loginRes.json();
+
+            if (!loginRes.ok || !loginData.token) {
+                throw new Error(loginData.message || 'Đăng nhập Web thất bại. Hãy kiểm tra username/mật khẩu');
+            }
+
+            const webToken = loginData.token;
+            logMessage('Đăng nhập web thành công. Gửi mã PIN xác thực liên kết...');
+
+            // 2. Call link-game endpoint
+            const linkRes = await fetch(`${baseUrl}/api/user/game-link`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'Authorization': `Bearer ${webToken}`
+                },
+                body: JSON.stringify({ pin: currentPin })
+            });
+            const linkData = await linkRes.json();
+
+            if (linkRes.ok && linkData.success) {
+                resultBox.innerHTML = `<span style="color:#34d399; font-weight:600;">✅ ${linkData.message || 'Liên kết tài khoản thành công!'}</span>`;
+                logMessage(`✅ Liên kết thành công: Web ${username} <-> Minecraft ${linkData.user?.minecraftUsername || 'IGN'}`, 'ok');
+                showToast('Liên kết tài khoản thành công!');
+            } else {
+                throw new Error(linkData.message || 'Không thể liên kết mã PIN này');
+            }
+        } catch (err) {
+            resultBox.innerHTML = `<span style="color:#f87171;">❌ ${err.message}</span>`;
+            logMessage(`❌ Lỗi liên kết: ${err.message}`, 'err');
+        }
+    }
+
+    // 2. Fetch Pending Deliveries
+    async function fetchPendingDeliveries() {
+        const baseUrl = document.getElementById('apiUrl').value.trim();
+        const token = document.getElementById('bridgeToken').value.trim();
+        const tbody = document.getElementById('deliveriesTableBody');
+        const badge = document.getElementById('pendingCountBadge');
+
+        logMessage('GET /api/internal/minecraft/deliveries/pending ...');
+
+        try {
+            const res = await fetch(`${baseUrl}/api/internal/minecraft/deliveries/pending`, {
+                headers: {
+                    'Accept': 'application/json',
+                    'X-Bridge-Token': token
+                }
+            });
+            const data = await res.json();
+
+            if (res.ok && data.success) {
+                pendingDeliveriesList = data.deliveries || [];
+                badge.textContent = `${pendingDeliveriesList.length} Lệnh Chờ`;
+                badge.className = pendingDeliveriesList.length > 0 ? 'badge badge-pending' : 'badge badge-completed';
+
+                if (pendingDeliveriesList.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: var(--text-muted); padding: 24px;">Hiện không có lệnh nào đang chờ trong hàng đợi. Hãy bấm "Tạo Đơn Rank VIP Mẫu" để test!</td></tr>`;
+                    logMessage('Hàng đợi trống (0 lệnh pending).', 'ok');
+                    return;
+                }
+
+                tbody.innerHTML = pendingDeliveriesList.map(item => `
+                    <tr>
+                        <td><strong>#${item.id}</strong></td>
+                        <td>${item.order_id ? `Đơn hàng #${item.order_id}` : 'Lệnh Trực Tiếp'}</td>
+                        <td><span style="color:#fbbf24; font-weight:600;">${item.game_username}</span></td>
+                        <td><code class="code-pill">${item.command}</code></td>
+                        <td><span class="badge ${item.type === 'rank' ? 'badge-vip' : 'badge-pending'}">${item.type}</span></td>
+                        <td><span class="badge badge-pending">PENDING</span></td>
+                        <td>
+                            <button class="btn btn-green btn-sm" onclick="confirmSingleDelivery(${item.id})">✅ Giao Lệnh Này</button>
+                        </td>
+                    </tr>
+                `).join('');
+
+                logMessage(`Đã tải ${pendingDeliveriesList.length} lệnh giao đồ đang chờ.`, 'ok');
+            } else {
+                tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: #f87171; padding: 20px;">Lỗi: ${data.message || 'Unauthorized'}</td></tr>`;
+                logMessage(`❌ Lỗi tải deliveries: ${data.message}`, 'err');
+            }
+        } catch (err) {
+            tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: #f87171; padding: 20px;">Lỗi mạng: ${err.message}</td></tr>`;
+            logMessage(`❌ Lỗi mạng: ${err.message}`, 'err');
+        }
+    }
+
+    // Create Mock Delivery
+    async function createMockDelivery(type = 'rank') {
+        const baseUrl = document.getElementById('apiUrl').value.trim();
+        const token = document.getElementById('bridgeToken').value.trim();
+        const username = document.getElementById('ignInput').value.trim() || 'CaroD1946';
+
+        logMessage(`POST /api/internal/minecraft/deliveries/mock-test [${type}] cho ${username}...`);
+
+        try {
+            const res = await fetch(`${baseUrl}/api/internal/minecraft/deliveries/mock-test`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'X-Bridge-Token': token
+                },
+                body: JSON.stringify({ username, type })
+            });
+            const data = await res.json();
+
+            if (res.ok && data.success) {
+                logMessage(`✅ Đã tạo lệnh mẫu: ${data.delivery?.command}`, 'ok');
+                showToast('Đã tạo lệnh giao đồ mẫu vào hàng đợi!');
+                fetchPendingDeliveries();
+            } else {
+                logMessage(`❌ ${data.message}`, 'err');
+            }
+        } catch (err) {
+            logMessage(`❌ Lỗi: ${err.message}`, 'err');
+        }
+    }
+
+    // Confirm Single Delivery
+    async function confirmSingleDelivery(id) {
+        await executeConfirmDeliveries([id]);
+    }
+
+    // Confirm All Deliveries
+    async function confirmAllDeliveries() {
+        if (pendingDeliveriesList.length === 0) {
+            alert('Hàng đợi trống, không có lệnh nào để giao!');
+            return;
+        }
+        const ids = pendingDeliveriesList.map(d => d.id);
+        await executeConfirmDeliveries(ids);
+    }
+
+    // Internal Confirm Deliveries
+    async function executeConfirmDeliveries(ids) {
+        const baseUrl = document.getElementById('apiUrl').value.trim();
+        const token = document.getElementById('bridgeToken').value.trim();
+
+        logMessage(`POST /api/internal/minecraft/deliveries/confirm [IDs: ${ids.join(', ')}]...`);
+
+        try {
+            const res = await fetch(`${baseUrl}/api/internal/minecraft/deliveries/confirm`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'X-Bridge-Token': token
+                },
+                body: JSON.stringify({ ids })
+            });
+            const data = await res.json();
+
+            if (res.ok && data.success) {
+                logMessage(`✅ Xác nhận giao thành công ${ids.length} lệnh vào game! Đơn hàng đã chuyển sang DELIVERED.`, 'ok');
+                showToast(`Đã giao thành công ${ids.length} lệnh in-game!`);
+                fetchPendingDeliveries();
+            } else {
+                logMessage(`❌ ${data.message}`, 'err');
+            }
+        } catch (err) {
+            logMessage(`❌ Lỗi: ${err.message}`, 'err');
+        }
+    }
+
+    // 3. Lookup Player Streak
+    async function lookupPlayerStreak() {
+        const baseUrl = document.getElementById('apiUrl').value.trim();
+        const token = document.getElementById('bridgeToken').value.trim();
+        const target = document.getElementById('checkinTargetUser').value.trim();
+
+        if (!target) return;
+
+        logMessage(`GET /api/internal/minecraft/player/${target}/streak ...`);
+
+        try {
+            const res = await fetch(`${baseUrl}/api/internal/minecraft/player/${encodeURIComponent(target)}/streak`, {
+                headers: {
+                    'Accept': 'application/json',
+                    'X-Bridge-Token': token
+                }
+            });
+            const data = await res.json();
+
+            const card = document.getElementById('streakResultCard');
+            card.style.display = 'block';
+
+            if (res.ok && data.success) {
+                document.getElementById('streakPlayerName').textContent = data.username || target;
+                document.getElementById('streakPlayerStatus').textContent = data.is_linked ? '🟢 Đã liên kết tài khoản Web' : '⚪ Chưa liên kết';
+                document.getElementById('streakCountNumber').textContent = `🔥 ${data.streak || 0} Ngày`;
+                logMessage(`Tra cứu thành công: ${target} có chuỗi ${data.streak} ngày.`, 'ok');
+            } else {
+                document.getElementById('streakPlayerName').textContent = target;
+                document.getElementById('streakPlayerStatus').textContent = 'Chưa liên kết / Không tìm thấy';
+                document.getElementById('streakCountNumber').textContent = '🔥 0 Ngày';
+                logMessage(`Người chơi ${target} chưa liên kết nick game.`, 'info');
+            }
+        } catch (err) {
+            logMessage(`❌ Lỗi: ${err.message}`, 'err');
+        }
+    }
+
+    // Test Checkin Action
+    async function testCheckinAction() {
+        const baseUrl = document.getElementById('apiUrl').value.trim();
+        const username = document.getElementById('webUsername').value.trim();
+        const password = document.getElementById('webPassword').value.trim();
+        const resultBox = document.getElementById('checkinActionResult');
+
+        resultBox.innerHTML = '<span style="color:#fbbf24;">Đang điểm danh...</span>';
+
+        try {
+            // Login
+            const loginRes = await fetch(`${baseUrl}/api/login`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+                body: JSON.stringify({ username, password })
+            });
+            const loginData = await loginRes.json();
+            if (!loginRes.ok) throw new Error(loginData.message || 'Đăng nhập thất bại');
+
+            // Post Checkin
+            const checkinRes = await fetch(`${baseUrl}/api/checkin`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'Authorization': `Bearer ${loginData.token}`
+                }
+            });
+            const checkinData = await checkinRes.json();
+
+            if (checkinRes.ok && checkinData.success) {
+                resultBox.innerHTML = `<span style="color:#34d399; font-weight:600;">✅ Điểm danh thành công! Nhận ${checkinData.coinsAwarded || 0} Xu và 10 Chìa khóa Rare đã nạp vào hàng đợi in-game. Chuỗi: ${checkinData.streak || 1} ngày!</span>`;
+                logMessage(`✅ Điểm danh thành công! Quà in-game 10 Rare Keys đã nạp vào hàng đợi.`, 'ok');
+                showToast('Điểm danh thành công!');
+                lookupPlayerStreak();
+            } else {
+                resultBox.innerHTML = `<span style="color:#fbbf24;">ℹ️ ${checkinData.message || 'Hôm nay bạn đã điểm danh rồi!'}</span>`;
+                logMessage(`Thông báo điểm danh: ${checkinData.message}`, 'info');
+            }
+        } catch (err) {
+            resultBox.innerHTML = `<span style="color:#f87171;">❌ ${err.message}</span>`;
+            logMessage(`❌ Lỗi điểm danh: ${err.message}`, 'err');
+        }
+    }
+
+    // 4. Fetch Leaderboard
+    async function fetchLeaderboard() {
+        const baseUrl = document.getElementById('apiUrl').value.trim();
+        const token = document.getElementById('bridgeToken').value.trim();
+        const container = document.getElementById('leaderboardContainer');
+
+        logMessage('GET /api/internal/minecraft/leaderboard/streaks ...');
+
+        try {
+            const res = await fetch(`${baseUrl}/api/internal/minecraft/leaderboard/streaks`, {
+                headers: {
+                    'Accept': 'application/json',
+                    'X-Bridge-Token': token
+                }
+            });
+            const data = await res.json();
+
+            if (res.ok && data.success && data.leaderboard && data.leaderboard.length > 0) {
+                container.innerHTML = data.leaderboard.map((item, idx) => {
+                    const rankMedal = idx === 0 ? '🥇 #1' : idx === 1 ? '🥈 #2' : idx === 2 ? '🥉 #3' : `#${idx + 1}`;
+                    return `
+                        <div class="leader-card">
+                            <img class="leader-avatar" src="https://mc-heads.net/avatar/${item.minecraft_username || 'Steve'}/64" onerror="this.src='../img/logo.png'">
+                            <div class="leader-info" style="flex: 1;">
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <h4>${item.minecraft_username}</h4>
+                                    <span style="font-size: 12px; font-weight: 700; color: ${idx < 3 ? '#fbbf24' : '#94a3b8'};">${rankMedal}</span>
+                                </div>
+                                <div class="leader-streak">🔥 Chuỗi: <strong>${item.streak}</strong> ngày</div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+                logMessage(`Đã tải Top ${data.leaderboard.length} người chơi có chuỗi điểm danh cao nhất.`, 'ok');
+            } else {
+                container.innerHTML = `<div style="grid-column: 1 / -1; text-align: center; color: var(--text-muted); padding: 30px;">Chưa có dữ liệu chuỗi điểm danh nào trên hệ thống.</div>`;
+            }
+        } catch (err) {
+            container.innerHTML = `<div style="grid-column: 1 / -1; text-align: center; color: #f87171; padding: 20px;">Lỗi tải bảng xếp hạng: ${err.message}</div>`;
+        }
+    }
+
+    // 5. Submit Sync Coins
+    async function submitSyncCoins() {
+        const baseUrl = document.getElementById('apiUrl').value.trim();
+        const token = document.getElementById('bridgeToken').value.trim();
+        const username = document.getElementById('syncUsername').value.trim();
+        const coins = parseInt(document.getElementById('syncCoinsAmount').value, 10);
+        const resultBox = document.getElementById('syncResultBox');
+
+        logMessage(`POST /api/internal/minecraft/sync-coins [${username}: ${coins} xu]...`);
+
+        try {
+            const res = await fetch(`${baseUrl}/api/internal/minecraft/sync-coins`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'X-Bridge-Token': token
+                },
+                body: JSON.stringify({ username, coins })
+            });
+            const data = await res.json();
+
+            if (res.ok && data.success) {
+                resultBox.innerHTML = `<span style="color:#34d399; font-weight:600;">✅ ${data.message}</span>`;
+                logMessage(`✅ Đồng bộ thành công: ${username} hiện có ${coins} xu trên Web.`, 'ok');
+                showToast('Đồng bộ xu thành công!');
+            } else {
+                resultBox.innerHTML = `<span style="color:#f87171;">❌ ${data.message}</span>`;
+                logMessage(`❌ ${data.message}`, 'err');
+            }
+        } catch (err) {
+            resultBox.innerHTML = `<span style="color:#f87171;">❌ Lỗi: ${err.message}</span>`;
+        }
+    }
+</script>
+</body>
+</html>

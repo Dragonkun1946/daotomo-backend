@@ -260,4 +260,86 @@ class InternalMinecraftBridgeController extends Controller
             'message' => "Đã đồng bộ xu thành công cho {$updated} người chơi.",
         ]);
     }
+
+    /**
+     * Create a mock delivery command for grading / testing without payment.
+     */
+    public function createMockDelivery(Request $request): JsonResponse
+    {
+        if (!$this->authenticateBridge($request)) {
+            return response()->json(['success' => false, 'message' => 'Unauthorized bridge token.'], 401);
+        }
+
+        $username = trim((string) ($request->input('username', 'Steve_Tester')));
+        if (empty($username)) {
+            $username = 'Steve_Tester';
+        }
+        $type = (string) $request->input('type', 'rank');
+        $command = (string) $request->input('command', '');
+
+        if (empty($command)) {
+            if ($type === 'keys') {
+                $command = "excellentcrates:crate key give {$username} rare 10";
+            } elseif ($type === 'coins') {
+                $command = "coins give {$username} 50000";
+            } else {
+                $command = "lp user {$username} parent add vip";
+            }
+        }
+
+        $delivery = GameDeliveryQueue::create([
+            'order_id' => null,
+            'game_username' => $username,
+            'command' => $command,
+            'type' => $type,
+            'status' => 'pending',
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Đã tạo lệnh giao đồ mẫu vào hàng đợi.',
+            'delivery' => $delivery,
+        ]);
+    }
+
+    /**
+     * Unlink a test player to allow repeated link testing.
+     */
+    public function unlinkTestPlayer(Request $request): JsonResponse
+    {
+        if (!$this->authenticateBridge($request)) {
+            return response()->json(['success' => false, 'message' => 'Unauthorized bridge token.'], 401);
+        }
+
+        $username = trim((string) ($request->input('username', '')));
+        $uuid = trim((string) ($request->input('uuid', '')));
+
+        $query = User::query();
+        if (!empty($uuid)) {
+            $query->where('minecraft_uuid', $uuid);
+        } elseif (!empty($username)) {
+            $query->where('minecraft_username', $username);
+        } else {
+            return response()->json(['success' => false, 'message' => 'Missing username or uuid.'], 400);
+        }
+
+        $user = $query->first();
+        if ($user) {
+            $user->minecraft_username = null;
+            $user->minecraft_uuid = null;
+            $user->save();
+        }
+
+        if (!empty($uuid)) {
+            GameLinkPin::where('minecraft_uuid', $uuid)->delete();
+        }
+        if (!empty($username)) {
+            GameLinkPin::where('minecraft_username', $username)->delete();
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Đã reset hủy liên kết nhân vật test thành công.',
+        ]);
+    }
 }
