@@ -466,6 +466,7 @@ const api = {
   createSupportTicket: (payload) =>
     api.request('/tickets', { method: 'POST', body: JSON.stringify(payload) }),
   getMyTickets: () => api.request('/tickets/my'),
+  lookupTicket: (code) => api.request('/tickets/lookup?code=' + encodeURIComponent(code)),
   getAdminTickets: (params = {}) => {
     const qs = new URLSearchParams(params).toString();
     return api.request(`/admin/tickets${qs ? '?' + qs : ''}`);
@@ -1100,10 +1101,20 @@ function initSupportTicketModal() {
     <div class="dtm-ticket-card" role="dialog" aria-modal="true" aria-labelledby="dtm-ticket-title">
       <div class="dtm-ticket-header">
         <div>
-          <h2 id="dtm-ticket-title">🎫 Tạo Ticket Hỗ Trợ Web</h2>
-          <p>Nhập vấn đề bạn cần xử lý. BQT Đảo Tò Mò sẽ tiếp nhận và giải quyết.</p>
+          <h2 id="dtm-ticket-title">🎫 Hỗ Trợ & Ticket Đảo Tò Mò</h2>
+          <p>Tạo ticket hỗ trợ mới hoặc tra cứu lời đáp từ Ban Quản Trị.</p>
         </div>
         <button type="button" class="dtm-ticket-close" id="dtm-ticket-close-btn" aria-label="Đóng">✕</button>
+      </div>
+
+      <!-- Navigation Tabs -->
+      <div class="dtm-ticket-tabs" style="display:flex;gap:8px;margin-bottom:12px;border-bottom:1px solid rgba(255,255,255,0.1);padding-bottom:10px;">
+        <button type="button" class="dtm-tk-tab-btn active" id="dtm-tk-tab-create" style="flex:1;padding:7px 12px;background:rgba(245,158,11,0.18);border:1px solid #f59e0b;border-radius:8px;color:#fde68a;font-weight:700;font-size:0.8rem;cursor:pointer;">
+          ➕ Tạo Ticket Mới
+        </button>
+        <button type="button" class="dtm-tk-tab-btn" id="dtm-tk-tab-track" style="flex:1;padding:7px 12px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.15);border-radius:8px;color:#94a3b8;font-weight:700;font-size:0.8rem;cursor:pointer;">
+          📋 Lời Đáp BQT & Tra Cứu
+        </button>
       </div>
 
       <div id="dtm-ticket-form-wrap">
@@ -1163,6 +1174,20 @@ function initSupportTicketModal() {
         </div>
       </div>
 
+      <!-- Ticket History & BQT Reply Lookup Tab -->
+      <div id="dtm-ticket-track-wrap" style="display:none;">
+        <div style="display:flex;gap:0.5rem;margin-bottom:0.75rem;">
+          <input type="text" id="dtm-track-code-input" class="dtm-ticket-input" placeholder="Nhập mã #TK-XXXXXX tra cứu..." style="flex:1;font-family:var(--font-mono);text-transform:uppercase;">
+          <button type="button" id="dtm-track-search-btn" class="btn btn-primary" style="padding:0.45rem 0.85rem;white-space:nowrap;font-size:0.8rem;background:linear-gradient(135deg,#38bdf8,#0284c7);">🔍 Tra Cứu</button>
+        </div>
+        <div id="dtm-track-result-msg" style="margin-bottom:0.6rem;"></div>
+        <div id="dtm-track-tickets-list" style="max-height:310px;overflow-y:auto;display:flex;flex-direction:column;gap:8px;padding-right:2px;">
+          <div style="text-align:center;padding:1.5rem;color:var(--text-muted);font-size:0.82rem;">
+            Đang tải dữ liệu...
+          </div>
+        </div>
+      </div>
+
       <div id="dtm-ticket-success-wrap" style="display:none;text-align:center;padding:0.5rem 0;">
         <div style="font-size:2.6rem;margin-bottom:0.4rem;">🎫</div>
         <h3 style="color:#fff;font-family:var(--font-display);font-size:1.2rem;margin-bottom:0.35rem;">Đã Gửi Ticket Thành Công!</h3>
@@ -1210,9 +1235,136 @@ function initSupportTicketModal() {
 
   const closeBtn = document.getElementById('dtm-ticket-close-btn');
   const formWrap = document.getElementById('dtm-ticket-form-wrap');
+  const trackWrap = document.getElementById('dtm-ticket-track-wrap');
   const successWrap = document.getElementById('dtm-ticket-success-wrap');
   const submitBtn = document.getElementById('dtm-tk-submit-btn');
   const errBox = document.getElementById('dtm-tk-error');
+  const tabCreate = document.getElementById('dtm-tk-tab-create');
+  const tabTrack = document.getElementById('dtm-tk-tab-track');
+  const trackList = document.getElementById('dtm-track-tickets-list');
+  const trackInput = document.getElementById('dtm-track-code-input');
+  const trackSearchBtn = document.getElementById('dtm-track-search-btn');
+  const trackMsg = document.getElementById('dtm-track-result-msg');
+
+  function escapeTkHtml(str) {
+    return String(str ?? '')
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  }
+
+  const statusBadges = {
+    open: '<span style="background:rgba(16,185,129,0.15);color:#34d399;border:1px solid rgba(16,185,129,0.3);padding:2px 7px;border-radius:4px;font-size:0.72rem;font-weight:700">🟢 Mới gửi</span>',
+    in_progress: '<span style="background:rgba(245,158,11,0.15);color:#fbbf24;border:1px solid rgba(245,158,11,0.3);padding:2px 7px;border-radius:4px;font-size:0.72rem;font-weight:700">🟡 Đang xử lý</span>',
+    resolved: '<span style="background:rgba(56,189,248,0.15);color:#38bdf8;border:1px solid rgba(56,189,248,0.3);padding:2px 7px;border-radius:4px;font-size:0.72rem;font-weight:700">✅ Đã giải quyết</span>',
+    closed: '<span style="background:rgba(148,163,184,0.15);color:#94a3b8;border:1px solid rgba(148,163,184,0.3);padding:2px 7px;border-radius:4px;font-size:0.72rem;font-weight:700">🔒 Đã đóng</span>',
+  };
+
+  function renderSingleTicketCard(tk) {
+    const badge = statusBadges[tk.status] || `<span style="font-size:0.72rem;color:#cbd5e1">${escapeTkHtml(tk.status)}</span>`;
+    const replyHtml = tk.admin_note
+      ? `<div style="margin-top:8px;padding:8px 10px;background:rgba(56,189,248,0.12);border-left:3px solid #38bdf8;border-radius:4px;font-size:0.78rem;color:#f0f9ff;line-height:1.45;">
+           <strong style="color:#38bdf8;display:flex;align-items:center;gap:4px;">💬 Phản hồi của BQT:</strong>
+           <div style="margin-top:3px;white-space:pre-wrap;word-break:break-word">${escapeTkHtml(tk.admin_note)}</div>
+         </div>`
+      : `<div style="margin-top:6px;font-size:0.73rem;color:#94a3b8;font-style:italic">⏳ Đang chờ BQT tiếp nhận và phản hồi (thời gian dự kiến 3h–5h)</div>`;
+
+    return `
+      <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:10px 12px;text-align:left;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;flex-wrap:wrap;gap:4px">
+          <span style="font-family:var(--font-mono);font-weight:800;color:#f59e0b;font-size:0.82rem">#${escapeTkHtml(tk.ticket_code)}</span>
+          ${badge}
+        </div>
+        <div style="font-weight:700;color:#fff;font-size:0.84rem;margin-bottom:2px">${escapeTkHtml(tk.subject)}</div>
+        <div style="font-size:0.77rem;color:var(--text-muted);white-space:pre-wrap;word-break:break-word">${escapeTkHtml(tk.message)}</div>
+        ${replyHtml}
+        <div style="font-size:0.7rem;color:#64748b;margin-top:6px;text-align:right">${new Date(tk.created_at).toLocaleString('vi-VN')}</div>
+      </div>
+    `;
+  }
+
+  async function loadUserTickets() {
+    trackMsg.innerHTML = '';
+    trackList.innerHTML = '<div style="text-align:center;padding:1.5rem;color:var(--text-muted);font-size:0.82rem;"><div class="spinner"></div> Đang tải danh sách ticket...</div>';
+    try {
+      if (api.isLoggedIn()) {
+        const res = await api.getMyTickets();
+        const tickets = res.data || res.tickets || [];
+        if (!tickets.length) {
+          trackList.innerHTML = `
+            <div style="text-align:center;padding:1.5rem;color:var(--text-muted);font-size:0.82rem;">
+              Bạn chưa gửi ticket nào.<br>
+              <button type="button" class="btn btn-ghost" style="margin-top:8px;font-size:0.75rem;" onclick="document.getElementById('dtm-tk-tab-create').click()">➕ Gửi ticket đầu tiên</button>
+            </div>
+          `;
+          return;
+        }
+        trackList.innerHTML = tickets.map(renderSingleTicketCard).join('');
+      } else {
+        trackList.innerHTML = `
+          <div style="text-align:center;padding:1.5rem;color:var(--text-muted);font-size:0.82rem;">
+            💡 Nhập mã ticket ở trên để tra cứu phản hồi, hoặc <a href="/html/Account.html" style="color:var(--primary);font-weight:700">Đăng nhập</a> để xem tất cả ticket của bạn.
+          </div>
+        `;
+      }
+    } catch (e) {
+      trackList.innerHTML = `<div style="text-align:center;padding:1rem;color:#f87171;font-size:0.8rem">❌ ${escapeTkHtml(e.message)}</div>`;
+    }
+  }
+
+  function switchModalTab(tab) {
+    if (tab === 'create') {
+      tabCreate.style.background = 'rgba(245,158,11,0.18)';
+      tabCreate.style.borderColor = '#f59e0b';
+      tabCreate.style.color = '#fde68a';
+      tabTrack.style.background = 'rgba(255,255,255,0.04)';
+      tabTrack.style.borderColor = 'rgba(255,255,255,0.15)';
+      tabTrack.style.color = '#94a3b8';
+      formWrap.style.display = 'block';
+      trackWrap.style.display = 'none';
+      successWrap.style.display = 'none';
+    } else {
+      tabTrack.style.background = 'rgba(56,189,248,0.18)';
+      tabTrack.style.borderColor = '#38bdf8';
+      tabTrack.style.color = '#7dd3fc';
+      tabCreate.style.background = 'rgba(255,255,255,0.04)';
+      tabCreate.style.borderColor = 'rgba(255,255,255,0.15)';
+      tabCreate.style.color = '#94a3b8';
+      formWrap.style.display = 'none';
+      trackWrap.style.display = 'block';
+      successWrap.style.display = 'none';
+      loadUserTickets();
+    }
+    SoundFX.playClick();
+  }
+
+  tabCreate?.addEventListener('click', () => switchModalTab('create'));
+  tabTrack?.addEventListener('click', () => switchModalTab('track'));
+
+  trackSearchBtn?.addEventListener('click', async () => {
+    const code = trackInput.value.trim();
+    if (!code) {
+      trackMsg.innerHTML = '<span style="color:#f87171;font-size:0.78rem">⚠️ Vui lòng nhập mã ticket.</span>';
+      return;
+    }
+    trackMsg.innerHTML = '<span style="color:var(--lagoon);font-size:0.78rem">⏳ Đang tra cứu ticket...</span>';
+    try {
+      const res = await api.lookupTicket(code);
+      const tk = res.ticket || res.data;
+      trackMsg.innerHTML = `<span style="color:#34d399;font-size:0.78rem">✅ Đã tìm thấy Ticket #${escapeTkHtml(tk.ticket_code)}!</span>`;
+      trackList.innerHTML = renderSingleTicketCard(tk);
+      SoundFX.playSuccess();
+    } catch (e) {
+      SoundFX.playError();
+      trackMsg.innerHTML = `<span style="color:#f87171;font-size:0.78rem">❌ ${escapeTkHtml(e.message)}</span>`;
+    }
+  });
+
+  trackInput?.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') trackSearchBtn.click();
+  });
 
   function openModal(prefillCategory = null) {
     const user = api.getUser();
@@ -1227,8 +1379,7 @@ function initSupportTicketModal() {
     if (prefillCategory && catEl) catEl.value = prefillCategory;
 
     errBox.innerHTML = '';
-    formWrap.style.display = 'block';
-    successWrap.style.display = 'none';
+    switchModalTab('create');
     backdrop.classList.add('open');
     SoundFX.playPing();
     setTimeout(() => document.getElementById('dtm-tk-subject')?.focus(), 80);

@@ -68,6 +68,7 @@ Route::middleware('throttle:10,1')->post('/orders/guest', [OrderController::clas
 // ─── Public Support & Discord Ticket Routes ──────────────────────────────────
 Route::get('/support/config', [SupportTicketController::class, 'publicConfig']);
 Route::middleware('throttle:6,1')->post('/tickets', [SupportTicketController::class, 'store']);
+Route::get('/tickets/lookup', [SupportTicketController::class, 'lookup']);
 
 // ─── SePay Webhook Endpoints ──────────────────────────────────────────────────
 Route::match(['GET', 'POST'], '/webhooks/sepay', [SepayWebhookController::class, 'handleWebhook']);

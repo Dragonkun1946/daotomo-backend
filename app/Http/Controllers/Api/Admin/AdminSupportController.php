@@ -93,13 +93,17 @@ class AdminSupportController extends Controller
 
         $ticket->status = $validated['status'];
         if (array_key_exists('admin_note', $validated)) {
-            $ticket->admin_note = $validated['admin_note'];
+            $ticket->admin_note = $validated['admin_note'] !== null ? trim($validated['admin_note']) : null;
         }
         $ticket->save();
 
+        $msg = (!empty($ticket->admin_note))
+            ? "Đã lưu phản hồi và cập nhật Ticket #{$ticket->ticket_code} thành công!"
+            : "Đã cập nhật trạng thái Ticket #{$ticket->ticket_code}.";
+
         return response()->json([
             'success' => true,
-            'message' => "Đã cập nhật trạng thái Ticket #{$ticket->ticket_code}.",
+            'message' => $msg,
             'ticket' => $ticket,
             'data' => $ticket,
         ]);

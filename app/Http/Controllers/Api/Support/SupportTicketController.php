@@ -98,6 +98,36 @@ class SupportTicketController extends Controller
     }
 
     /**
+     * Look up a ticket by its ticket_code (public for guest & user tracking).
+     */
+    public function lookup(Request $request): JsonResponse
+    {
+        $code = strtoupper(trim((string) ($request->input('code') ?? $request->input('ticket_code') ?? '')));
+        if ($code === '') {
+            return response()->json([
+                'success' => false,
+                'message' => 'Vui lòng cung cấp mã ticket cần tra cứu (VD: TK-123456).',
+            ], 422);
+        }
+
+        $cleanCode = ltrim($code, '#');
+        $ticket = SupportTicket::where('ticket_code', $cleanCode)->first();
+
+        if (!$ticket) {
+            return response()->json([
+                'success' => false,
+                'message' => "Không tìm thấy ticket với mã #{$cleanCode}.",
+            ], 404);
+        }
+
+        return response()->json([
+            'success' => true,
+            'ticket' => $ticket,
+            'data' => $ticket,
+        ]);
+    }
+
+    /**
      * List authenticated user's submitted tickets.
      */
     public function myTickets(Request $request): JsonResponse

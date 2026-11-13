@@ -631,6 +631,70 @@
   </div>
 </div>
 
+<!-- Ticket Reply Modal for Admin -->
+<div class="modal-overlay" id="ticket-reply-modal">
+  <div class="modal" style="max-width:580px;text-align:left">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1rem">
+      <div>
+        <h2 style="margin:0;font-size:1.15rem;font-family:var(--font-heading)" id="rep-modal-title">💬 Phản Hồi Ticket</h2>
+        <div id="rep-modal-code" style="font-size:0.78rem;font-family:var(--font-mono);color:var(--lagoon);font-weight:800;margin-top:2px">#TK-000000</div>
+      </div>
+      <button onclick="closeTicketReplyModal()" style="background:none;border:none;color:var(--text-muted);font-size:1.3rem;cursor:pointer">✕</button>
+    </div>
+
+    <div id="ticket-reply-msg"></div>
+    <input type="hidden" id="rep-ticket-id">
+
+    <!-- Sender & Issue Info Card -->
+    <div style="background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:10px;padding:0.75rem 1rem;margin-bottom:1rem;font-size:0.8rem;line-height:1.5">
+      <div style="display:flex;justify-content:space-between;margin-bottom:4px">
+        <span style="color:var(--text-muted)">Người gửi:</span>
+        <strong id="rep-info-sender" style="color:#fff">—</strong>
+      </div>
+      <div style="display:flex;justify-content:space-between;margin-bottom:4px">
+        <span style="color:var(--text-muted)">Chủ đề:</span>
+        <strong id="rep-info-cat" style="color:#a5b4fc">—</strong>
+      </div>
+      <div style="margin-top:6px;padding-top:6px;border-top:1px dashed var(--border)">
+        <div style="font-weight:700;color:#fff;margin-bottom:2px" id="rep-info-subject">—</div>
+        <div style="color:var(--text-muted);white-space:pre-wrap;word-break:break-word;font-size:0.78rem" id="rep-info-msg">—</div>
+      </div>
+    </div>
+
+    <!-- Status selector -->
+    <div class="form-group" style="margin-bottom:0.75rem">
+      <label style="font-size:0.8rem;font-weight:700;color:var(--text)">Trạng thái ticket sau khi phản hồi</label>
+      <select class="input" id="rep-status-select">
+        <option value="in_progress">🟡 Đang xử lý</option>
+        <option value="resolved" selected>✅ Đã giải quyết</option>
+        <option value="closed">🔒 Đã đóng</option>
+        <option value="open">🟢 Mới gửi</option>
+      </select>
+    </div>
+
+    <!-- Admin Reply Textarea -->
+    <div class="form-group" style="margin-bottom:0.75rem">
+      <label style="font-size:0.8rem;font-weight:700;color:var(--text)">Nội dung phản hồi của BQT tới người chơi *</label>
+      <textarea class="input" id="rep-admin-note" rows="4" placeholder="Nhập lời giải thích, hướng dẫn hoặc xác nhận đã nạp đồ/xử lý sự cố..." style="resize:vertical;min-height:90px;line-height:1.45;font-size:0.82rem"></textarea>
+    </div>
+
+    <!-- Quick template buttons -->
+    <div style="margin-bottom:1rem">
+      <div style="font-size:0.74rem;color:var(--text-muted);margin-bottom:4px;font-weight:700">⚡ Câu trả lời mẫu nhanh:</div>
+      <div style="display:flex;gap:5px;flex-wrap:wrap">
+        <button type="button" class="btn btn-ghost" style="font-size:0.72rem;padding:3px 8px" onclick="setQuickReply('Đã nạp bù vật phẩm in-game vào tài khoản, bạn kiểm tra lại hòm đồ nhé!')">📦 Nạp bù đồ</button>
+        <button type="button" class="btn btn-ghost" style="font-size:0.72rem;padding:3px 8px" onclick="setQuickReply('Vấn đề đã được BQT xử lý thành công. Chúc bạn chơi game vui vẻ tại Đảo Tò Mò!')">✅ Đã giải quyết</button>
+        <button type="button" class="btn btn-ghost" style="font-size:0.72rem;padding:3px 8px" onclick="setQuickReply('Bạn vui lòng vào game gõ lệnh /link để lấy mã OTP mới và thử liên kết lại nhé.')">🎮 Hướng dẫn /link</button>
+      </div>
+    </div>
+
+    <div style="display:flex;gap:0.75rem">
+      <button class="btn btn-primary" id="btn-save-ticket-reply" style="flex:1" onclick="submitTicketReply()">💾 Lưu & Gửi Phản Hồi</button>
+      <button class="btn btn-ghost" onclick="closeTicketReplyModal()">Đóng</button>
+    </div>
+  </div>
+</div>
+
 <footer>
   <div class="footer-grid">
     <div class="footer-col"><h3>🏝️ Đảo Tò Mò</h3><p>Cộng đồng game thủ Việt chill nhất.</p></div>
@@ -1266,6 +1330,7 @@ async function loadTickets() {
     }
 
     const tickets = res.data || res.tickets || [];
+    window.currentLoadedTickets = tickets;
     if (!tickets.length) {
       tbody.innerHTML = '<tr><td colspan="6" class="no-data">Chưa có ticket hỗ trợ nào.</td></tr>';
       return;
@@ -1281,6 +1346,13 @@ async function loadTickets() {
         ? '<span class="stock-toggle in-stock">✅ Đã đẩy Discord</span>'
         : `<span class="stock-toggle out-of-stock" title="${escapeTicketHtml(tk.discord_error || 'Chưa cấu hình Webhook')}">⚠️ Lưu DB</span>`;
 
+      const adminReplyBox = tk.admin_note
+        ? `<div style="margin-top:7px;padding:6px 9px;background:rgba(56,189,248,0.12);border-left:3px solid var(--lagoon);border-radius:4px;font-size:0.75rem;color:#e0f2fe;line-height:1.45;">
+             <strong style="color:var(--lagoon);display:flex;align-items:center;gap:4px;">💬 Phản hồi của BQT:</strong>
+             <div style="margin-top:2px;white-space:pre-wrap;word-break:break-word;">${escapeTicketHtml(tk.admin_note)}</div>
+           </div>`
+        : `<div style="margin-top:5px;font-size:0.72rem;color:var(--text-muted);font-style:italic">⏳ Chưa có phản hồi của BQT</div>`;
+
       return `
         <tr>
           <td style="font-family:var(--font-mono);font-weight:800;color:var(--lagoon);white-space:nowrap">#${escapeTicketHtml(tk.ticket_code)}</td>
@@ -1289,15 +1361,21 @@ async function loadTickets() {
             <div style="font-size:0.72rem;font-weight:700;color:#a5b4fc;margin-bottom:2px">${escapeTicketHtml(cat)}</div>
             <div style="font-weight:700;color:#fff;margin-bottom:3px">${escapeTicketHtml(tk.subject)}</div>
             <div style="font-size:0.78rem;color:var(--text-muted);white-space:pre-wrap;word-break:break-word">${escapeTicketHtml(tk.message)}</div>
+            ${adminReplyBox}
           </td>
           <td>${discordFlag}</td>
           <td>
-            <select class="admin-select" style="min-width:130px" onchange="handleTicketStatusChange(${tk.id}, this.value)">
-              <option value="open" ${tk.status === 'open' ? 'selected' : ''}>🟢 Mới gửi</option>
-              <option value="in_progress" ${tk.status === 'in_progress' ? 'selected' : ''}>🟡 Đang xử lý</option>
-              <option value="resolved" ${tk.status === 'resolved' ? 'selected' : ''}>✅ Đã giải quyết</option>
-              <option value="closed" ${tk.status === 'closed' ? 'selected' : ''}>🔒 Đã đóng</option>
-            </select>
+            <div style="display:flex;flex-direction:column;gap:5px">
+              <select class="admin-select" style="min-width:130px" onchange="handleTicketStatusChange(${tk.id}, this.value)">
+                <option value="open" ${tk.status === 'open' ? 'selected' : ''}>🟢 Mới gửi</option>
+                <option value="in_progress" ${tk.status === 'in_progress' ? 'selected' : ''}>🟡 Đang xử lý</option>
+                <option value="resolved" ${tk.status === 'resolved' ? 'selected' : ''}>✅ Đã giải quyết</option>
+                <option value="closed" ${tk.status === 'closed' ? 'selected' : ''}>🔒 Đã đóng</option>
+              </select>
+              <button type="button" class="btn btn-primary" style="padding:4px 8px;font-size:0.74rem;display:inline-flex;align-items:center;justify-content:center;gap:4px;border-radius:6px;width:100%" onclick="openTicketReplyModal(${tk.id})">
+                💬 Phản hồi
+              </button>
+            </div>
           </td>
           <td style="font-size:0.75rem;color:var(--text-muted);white-space:nowrap">${new Date(tk.created_at).toLocaleString('vi-VN')}</td>
         </tr>
@@ -1305,6 +1383,67 @@ async function loadTickets() {
     }).join('');
   } catch (e) {
     tbody.innerHTML = `<tr><td colspan="6" class="no-data">❌ ${escapeTicketHtml(e.message)}</td></tr>`;
+  }
+}
+
+function openTicketReplyModal(id) {
+  const tk = (window.currentLoadedTickets || []).find(t => t.id === id);
+  if (!tk) return;
+  document.getElementById('rep-ticket-id').value = tk.id;
+  document.getElementById('rep-modal-title').textContent = '💬 Phản Hồi Ticket #' + tk.ticket_code;
+  document.getElementById('rep-modal-code').textContent = '#' + tk.ticket_code;
+
+  const webU = tk.user ? tk.user.username : 'Khách';
+  const mc = tk.minecraft_username ? ` | MC: ${tk.minecraft_username}` : '';
+  const dc = tk.discord_username ? ` | Discord: ${tk.discord_username}` : '';
+  document.getElementById('rep-info-sender').textContent = webU + mc + dc;
+  document.getElementById('rep-info-cat').textContent = ticketCatLabels[tk.category] || tk.category;
+  document.getElementById('rep-info-subject').textContent = tk.subject;
+  document.getElementById('rep-info-msg').textContent = tk.message;
+
+  document.getElementById('rep-status-select').value = tk.status === 'open' ? 'resolved' : tk.status;
+  document.getElementById('rep-admin-note').value = tk.admin_note || '';
+  document.getElementById('ticket-reply-msg').innerHTML = '';
+  document.getElementById('ticket-reply-modal').classList.add('open');
+  document.getElementById('rep-admin-note').focus();
+}
+
+function closeTicketReplyModal() {
+  document.getElementById('ticket-reply-modal').classList.remove('open');
+}
+
+function setQuickReply(text) {
+  const noteEl = document.getElementById('rep-admin-note');
+  if (noteEl) {
+    noteEl.value = text;
+    noteEl.focus();
+  }
+}
+
+async function submitTicketReply() {
+  const id = document.getElementById('rep-ticket-id').value;
+  const status = document.getElementById('rep-status-select').value;
+  const admin_note = document.getElementById('rep-admin-note').value.trim();
+  const btn = document.getElementById('btn-save-ticket-reply');
+  const msgBox = document.getElementById('ticket-reply-msg');
+
+  if (!id) return;
+  btn.disabled = true;
+  btn.textContent = 'Đang lưu...';
+  msgBox.innerHTML = '';
+
+  try {
+    const res = await api.adminUpdateTicket(id, { status, admin_note });
+    if (window.SoundFX) SoundFX.playSuccess();
+    if (typeof api.showToast === 'function') api.showToast(res.message || 'Đã gửi phản hồi thành công!', 'success');
+    closeTicketReplyModal();
+    loadTickets();
+  } catch (e) {
+    if (window.SoundFX) SoundFX.playError();
+    msgBox.innerHTML = `<div class="alert alert-error" style="margin-bottom:0.75rem;font-size:0.8rem">❌ ${escapeTicketHtml(e.message)}</div>`;
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '💾 Lưu & Gửi Phản Hồi';
   }
 }
 

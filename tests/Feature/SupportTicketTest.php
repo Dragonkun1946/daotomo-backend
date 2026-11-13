@@ -229,4 +229,45 @@ class SupportTicketTest extends TestCase
                 ],
             ]);
     }
+
+    public function test_guest_can_lookup_ticket_by_code(): void
+    {
+        $ticket = SupportTicket::create([
+            'ticket_code' => 'TK-123456',
+            'subject' => 'Hỗ trợ nạp Xu thẻ cào',
+            'message' => 'Em đã chuyển khoản nhưng chưa thấy cộng Xu web.',
+            'category' => 'payment',
+            'status' => 'resolved',
+            'admin_note' => 'BQT đã cộng 500 Xu vào tài khoản cho bạn rồi nhé!',
+        ]);
+
+        // Lookup with exact code
+        $res = $this->getJson('/api/tickets/lookup?code=TK-123456');
+        $res->assertStatus(200)
+            ->assertJson([
+                'success' => true,
+                'ticket' => [
+                    'ticket_code' => 'TK-123456',
+                    'status' => 'resolved',
+                    'admin_note' => 'BQT đã cộng 500 Xu vào tài khoản cho bạn rồi nhé!',
+                ],
+            ]);
+
+        // Lookup with hash symbol
+        $resHash = $this->getJson('/api/tickets/lookup?code=%23TK-123456');
+        $resHash->assertStatus(200)
+            ->assertJson([
+                'success' => true,
+                'ticket' => [
+                    'ticket_code' => 'TK-123456',
+                ],
+            ]);
+
+        // Lookup nonexistent code
+        $resFail = $this->getJson('/api/tickets/lookup?code=TK-NOTFOUND');
+        $resFail->assertStatus(404)
+            ->assertJson([
+                'success' => false,
+            ]);
+    }
 }
