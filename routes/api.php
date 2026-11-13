@@ -46,10 +46,10 @@ Route::get('/health', function () {
 
 // ─── Public Auth Routes ───────────────────────────────────────────────────────
 Route::prefix('auth')->group(function () {
-    Route::middleware('throttle:10,1')->post('/register', [AuthController::class, 'register']);
-    Route::middleware('throttle:10,1')->post('/login', [AuthController::class, 'login']);
-    Route::middleware('throttle:5,1')->post('/forgot-password', [PasswordResetController::class, 'forgotPassword']);
-    Route::middleware('throttle:10,1')->post('/reset-password/{token}', [PasswordResetController::class, 'resetPassword']);
+    Route::middleware('throttle:60,1')->post('/register', [AuthController::class, 'register']);
+    Route::middleware('throttle:60,1')->post('/login', [AuthController::class, 'login']);
+    Route::middleware('throttle:30,1')->post('/forgot-password', [PasswordResetController::class, 'forgotPassword']);
+    Route::middleware('throttle:30,1')->post('/reset-password/{token}', [PasswordResetController::class, 'resetPassword']);
 
     // OAuth: Discord
     Route::get('/discord', [DiscordOAuthController::class, 'redirect']);
@@ -98,7 +98,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/tickets/my', [SupportTicketController::class, 'myTickets']);
 
     // Game Account Linking (1-to-1 PIN Handshake)
-    Route::middleware('throttle:10,1')->post('/user/game-link', [GameLinkController::class, 'linkGame']);
+    Route::middleware('throttle:60,1')->post('/user/game-link', [GameLinkController::class, 'linkGame']);
     Route::delete('/user/game-link', [GameLinkController::class, 'unlinkGame']);
 
     // ─── Admin Only Routes ────────────────────────────────────────────────────

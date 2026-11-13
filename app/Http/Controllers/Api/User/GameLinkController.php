@@ -60,15 +60,18 @@ class GameLinkController extends Controller
             ], 400);
         }
 
-        // 3. Kiểm tra xem tài khoản game (UUID) này đã bị tài khoản web nào khác liên kết chưa
-        $existingLink = User::where('minecraft_uuid', $pinRecord->minecraft_uuid)
-            ->where('id', '!=', $user->id)
-            ->first();
+        // 3. Kiểm tra xem tài khoản game (UUID hoặc IGN) này đã bị tài khoản web nào khác liên kết chưa
+        $existingLink = User::where(function ($q) use ($pinRecord) {
+            $q->where('minecraft_uuid', $pinRecord->minecraft_uuid)
+              ->orWhere('minecraft_username', $pinRecord->minecraft_username);
+        })
+        ->where('id', '!=', $user->id)
+        ->first();
 
         if ($existingLink) {
             return response()->json([
                 'success' => false,
-                'message' => "Nhân vật Minecraft [{$pinRecord->minecraft_username}] đã được liên kết với tài khoản web khác!",
+                'message' => "Nhân vật Minecraft [{$pinRecord->minecraft_username}] đã được liên kết với tài khoản web khác ({$existingLink->username})!",
             ], 400);
         }
 
@@ -102,17 +105,28 @@ class GameLinkController extends Controller
     {
         $user = $request->user();
 
-        if (empty($user->minecraft_uuid)) {
+        if (empty($user->minecraft_uuid) && empty($user->minecraft_username)) {
             return response()->json([
                 'success' => false,
                 'message' => 'Tài khoản của bạn hiện chưa liên kết với bất kỳ nhân vật Minecraft nào.',
             ], 400);
         }
 
-        $oldName = $user->minecraft_username;
+        $oldName = $user->minecraft_username ?: 'Minecraft';
+        $oldUuid = $user->minecraft_uuid;
+
+        $user->minecraft_username = null;
         $user->minecraft_uuid = null;
         $user->game_linked_at = null;
         $user->save();
+
+        // Xóa mọi mã PIN liên quan còn sót lại
+        if (!empty($oldUuid)) {
+            GameLinkPin::where('minecraft_uuid', $oldUuid)->delete();
+        }
+        if (!empty($oldName)) {
+            GameLinkPin::where('minecraft_username', $oldName)->delete();
+        }
 
         return response()->json([
             'success' => true,

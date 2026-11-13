@@ -45,17 +45,19 @@ class AuthController extends Controller
      */
     public function login(Request $request): JsonResponse
     {
-        $email = $request->input('email');
-        $password = $request->input('password');
+        $loginId = trim((string) ($request->input('email') ?: $request->input('username', '')));
+        $password = (string) $request->input('password', '');
 
-        if (!$email || !$password) {
+        if (!$loginId || !$password) {
             return response()->json([
                 'success' => false,
-                'message' => 'Vui lòng điền đầy đủ email và mật khẩu.',
+                'message' => 'Vui lòng điền đầy đủ email hoặc tên đăng nhập và mật khẩu.',
             ], 400);
         }
 
-        $user = User::where('email', $email)->first();
+        $user = User::where('email', $loginId)
+            ->orWhere('username', $loginId)
+            ->first();
 
         if (!$user || !Hash::check($password, $user->password)) {
             return response()->json([

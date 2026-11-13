@@ -50,13 +50,15 @@ class InternalMinecraftBridgeController extends Controller
             return response()->json(['success' => false, 'message' => 'Invalid Minecraft username format.'], 400);
         }
 
-        // Kiểm tra xem UUID này đã được liên kết với tài khoản web nào chưa
-        $linkedUser = User::where('minecraft_uuid', $uuid)->first();
+        // Kiểm tra xem UUID hoặc tên nhân vật này đã được liên kết với tài khoản web nào chưa
+        $linkedUser = User::where('minecraft_uuid', $uuid)
+            ->orWhere('minecraft_username', $username)
+            ->first();
         if ($linkedUser) {
             return response()->json([
                 'success' => false,
                 'already_linked' => true,
-                'message' => "Nhân vật này đã được liên kết với tài khoản Web: {$linkedUser->username}.",
+                'message' => "Nhân vật [{$username}] đã được liên kết với tài khoản Web: {$linkedUser->username}.",
             ], 409);
         }
 
@@ -406,18 +408,20 @@ class InternalMinecraftBridgeController extends Controller
         $uuid = trim((string) ($request->input('uuid', '')));
 
         $query = User::query();
-        if (!empty($uuid)) {
-            $query->where('minecraft_uuid', $uuid);
-        } elseif (!empty($username)) {
-            $query->where('minecraft_username', $username);
-        } else {
-            return response()->json(['success' => false, 'message' => 'Missing username or uuid.'], 400);
-        }
+        $query->where(function ($q) use ($uuid, $username) {
+            if (!empty($uuid)) {
+                $q->where('minecraft_uuid', $uuid);
+            }
+            if (!empty($username)) {
+                $q->orWhere('minecraft_username', $username);
+            }
+        });
 
         $user = $query->first();
         if ($user) {
             $user->minecraft_username = null;
             $user->minecraft_uuid = null;
+            $user->game_linked_at = null;
             $user->save();
         }
 
