@@ -1388,10 +1388,10 @@
 
         try {
             // 1. Login to get web token
-            const loginRes = await fetch(`${baseUrl}/api/login`, {
+            const loginRes = await fetch(`${baseUrl}/api/auth/login`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-                body: JSON.stringify({ username, password })
+                body: JSON.stringify({ email: username, username, password })
             });
             const loginData = await loginRes.json();
 
@@ -1861,10 +1861,10 @@
 
         try {
             // Login
-            const loginRes = await fetch(`${baseUrl}/api/login`, {
+            const loginRes = await fetch(`${baseUrl}/api/auth/login`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-                body: JSON.stringify({ username, password })
+                body: JSON.stringify({ email: username, username, password })
             });
             const loginData = await loginRes.json();
             if (!loginRes.ok) throw new Error(loginData.message || 'Đăng nhập thất bại');

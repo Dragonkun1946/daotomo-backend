@@ -56,6 +56,10 @@ Route::prefix('auth')->group(function () {
     Route::get('/discord/callback', [DiscordOAuthController::class, 'callback']);
 });
 
+// Alias Auth Routes (Direct /api/login and /api/register compatibility)
+Route::middleware('throttle:60,1')->post('/login', [AuthController::class, 'login']);
+Route::middleware('throttle:60,1')->post('/register', [AuthController::class, 'register']);
+
 // ─── Public Product Routes ────────────────────────────────────────────────────
 Route::get('/products', [ProductController::class, 'index']);
 Route::get('/products/{id}', [ProductController::class, 'show']);
