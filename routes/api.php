@@ -133,6 +133,8 @@ Route::middleware('throttle:60,1')->prefix('internal/minecraft')->group(function
     Route::get('/deliveries/pending', [InternalMinecraftBridgeController::class, 'getPendingDeliveries']);
     Route::post('/deliveries/confirm', [InternalMinecraftBridgeController::class, 'confirmDeliveries']);
     Route::post('/deliveries/mock-test', [InternalMinecraftBridgeController::class, 'createMockDelivery']);
+    Route::get('/checkins/recent', [InternalMinecraftBridgeController::class, 'getRecentCheckins']);
+    Route::post('/checkins/reset-today', [InternalMinecraftBridgeController::class, 'resetTodayCheckin']);
     Route::get('/leaderboard/streaks', [InternalMinecraftBridgeController::class, 'getStreaksLeaderboard']);
     Route::get('/player/{identifier}/streak', [InternalMinecraftBridgeController::class, 'getPlayerStreak']);
     Route::post('/sync-coins', [InternalMinecraftBridgeController::class, 'syncCoins']);

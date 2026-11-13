@@ -213,6 +213,12 @@
             box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
         }
 
+        .btn-red {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: #fff;
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+        }
+
         .btn-outline {
             background: transparent;
             border: 1px solid var(--border);
@@ -234,7 +240,7 @@
         /* Tabs Navigation */
         .tabs-nav {
             display: flex;
-            gap: 8px;
+            gap: 12px;
             margin-bottom: 20px;
             border-bottom: 2px solid var(--border);
             padding-bottom: 8px;
@@ -245,10 +251,10 @@
             background: transparent;
             border: none;
             color: var(--text-muted);
-            padding: 10px 18px;
+            padding: 12px 22px;
             border-radius: 8px;
-            font-size: 14px;
-            font-weight: 600;
+            font-size: 15px;
+            font-weight: 700;
             cursor: pointer;
             display: flex;
             align-items: center;
@@ -266,7 +272,8 @@
             background: var(--bg-card);
             color: var(--accent-yellow);
             border: 1px solid var(--border);
-            border-bottom: 2px solid var(--accent-yellow);
+            border-bottom: 3px solid var(--accent-yellow);
+            box-shadow: 0 4px 15px rgba(251, 191, 36, 0.15);
         }
 
         /* Tab Content Panels */
@@ -375,6 +382,70 @@
             border: 1px solid rgba(139, 92, 246, 0.4);
         }
 
+        /* Checkin Hero Card */
+        .checkin-hero-card {
+            background: linear-gradient(135deg, #064e3b 0%, #065f46 50%, #131c2e 100%);
+            border: 2px solid #10b981;
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 0 25px rgba(16, 185, 129, 0.25);
+            position: relative;
+            overflow: hidden;
+            animation: glowPulse 3s infinite alternate;
+        }
+
+        @keyframes glowPulse {
+            0% { box-shadow: 0 0 15px rgba(16, 185, 129, 0.2); }
+            100% { box-shadow: 0 0 30px rgba(16, 185, 129, 0.45); }
+        }
+
+        .reward-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 14px;
+            margin-top: 16px;
+        }
+
+        .reward-box {
+            background: rgba(11, 16, 27, 0.7);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            border-radius: 10px;
+            padding: 14px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .reward-icon {
+            font-size: 30px;
+        }
+
+        .reward-title {
+            font-size: 12px;
+            color: #94a3b8;
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+
+        .reward-val {
+            font-size: 16px;
+            font-weight: 700;
+            color: #34d399;
+        }
+
+        .code-box {
+            background: #090e17;
+            border: 1px solid #1e293b;
+            border-radius: 8px;
+            padding: 10px 14px;
+            margin-top: 14px;
+            font-family: "Courier New", monospace;
+            font-size: 13px;
+            color: #38bdf8;
+            overflow-x: auto;
+        }
+
         /* Table */
         .table-responsive {
             overflow-x: auto;
@@ -412,51 +483,6 @@
             border-radius: 4px;
             color: #38bdf8;
             border: 1px solid #1e293b;
-        }
-
-        /* Leaderboard Cards */
-        .leaderboard-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 16px;
-        }
-
-        .leader-card {
-            background: var(--bg-input);
-            border: 1px solid var(--border);
-            border-radius: 10px;
-            padding: 14px 18px;
-            display: flex;
-            align-items: center;
-            gap: 14px;
-            transition: all 0.2s;
-        }
-
-        .leader-card:hover {
-            border-color: var(--accent-yellow);
-            transform: translateY(-2px);
-        }
-
-        .leader-avatar {
-            width: 48px;
-            height: 48px;
-            border-radius: 8px;
-            background: #0f172a;
-            border: 1px solid var(--border);
-        }
-
-        .leader-info h4 {
-            font-size: 15px;
-            font-weight: 700;
-            color: #fff;
-        }
-
-        .leader-streak {
-            font-size: 12px;
-            color: #fbbf24;
-            display: flex;
-            align-items: center;
-            gap: 4px;
         }
 
         /* Terminal Console */
@@ -540,7 +566,7 @@
             <div class="logo-box">🗡️</div>
             <div class="header-text">
                 <h1>Đảo Tò Mò • Bảng Kiểm Tra Bridge & In-Game</h1>
-                <p>Kiểm tra Handshake Liên kết OTP • Hàng đợi Giao đồ Cửa Hàng • Nhận Quà Điểm Danh In-Game</p>
+                <p>Kiểm tra Handshake Liên kết OTP • Hàng đợi Giao đồ Cửa Hàng • Giám Sát Điểm Danh & Nhận Quà Thật</p>
             </div>
         </div>
         <div id="statusPill" class="server-status-pill">
@@ -565,13 +591,11 @@
         </div>
     </div>
 
-    <!-- Tabs Navigation -->
+    <!-- Tabs Navigation (3 Core Tabs Only) -->
     <div class="tabs-nav">
         <button class="tab-btn active" onclick="switchTab('tab-link')">🔑 1. Liên Kết Tài Khoản (OTP)</button>
-        <button class="tab-btn" onclick="switchTab('tab-deliveries')">📦 2. Hàng Đợi Giao Đồ (Store)</button>
-        <button class="tab-btn" onclick="switchTab('tab-checkin')">🎁 3. Kiểm Tra Điểm Danh & Quà</button>
-        <button class="tab-btn" onclick="switchTab('tab-leaderboard')">🏆 4. Bảng Xếp Hạng Streak</button>
-        <button class="tab-btn" onclick="switchTab('tab-sync')">🪙 5. Đồng Bộ Xu</button>
+        <button class="tab-btn" onclick="switchTab('tab-deliveries')">📦 2. Hàng Đợi Giao Đồ Cửa Hàng</button>
+        <button class="tab-btn" onclick="switchTab('tab-checkin')">🎁 3. Giám Sát Điểm Danh & Nhận Quà In-Game</button>
     </div>
 
     <!-- TAB 1: LIÊN KẾT TÀI KHOẢN -->
@@ -676,96 +700,112 @@
         </div>
     </div>
 
-    <!-- TAB 3: KIỂM TRA ĐIỂM DANH & QUÀ -->
+    <!-- TAB 3: GIÁM SÁT ĐIỂM DANH & QUÀ IN-GAME -->
     <div id="tab-checkin" class="tab-panel">
         <div class="card">
             <div class="card-header">
-                <span class="card-title">🎁 Kiểm Tra Điểm Danh & Nhận Quà In-Game Thật</span>
-                <span class="badge badge-vip">10 Rare Keys + Xu</span>
+                <span class="card-title">🎁 Giám Sát Điểm Danh & Nhận Quà In-Game Thời Gian Thực</span>
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <span id="monitorStatusPill" class="badge badge-completed">
+                        <span class="status-dot"></span> Đang Lắng Nghe Trực Tiếp (Mỗi 2.5s)
+                    </span>
+                    <button class="btn btn-outline btn-sm" onclick="fetchRecentCheckins()">🔄 Quét Ngay</button>
+                </div>
             </div>
+
             <div class="info-banner">
-                🎉 <strong>Phần thưởng thật:</strong> Khi tài khoản đã liên kết nick game điểm danh hàng ngày trên Web:
-                <br>• CSDL Web cộng chuỗi Streak và Xu Web.
-                <br>• Đồng thời Bridge tự động tạo lệnh: <code>excellentcrates:crate key give {player} rare 10</code> nạp thẳng vào hàng đợi giao đồ game!
+                🎉 <strong>Cơ chế kiểm thử trực tiếp:</strong> Khi bạn hoặc Giảng viên mở website bài nộp và bấm nút <strong>"Điểm Danh Ngay"</strong> trên trang <a href="#" onclick="openCheckinWeb(); return false;" style="color:#fbbf24; text-decoration:underline;">Checkin.html</a>, hệ thống lập tức bắt tín hiệu và hiển thị chi tiết phần thưởng in-game (10 Crate Key Hiếm & Xu) ngay tại khung phát sáng bên dưới!
             </div>
 
-            <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 16px; margin-bottom: 20px;">
-                <div class="form-group">
-                    <label>Nhập Tên In-Game Hoặc UUID Tra Cứu</label>
-                    <input type="text" id="checkinTargetUser" class="input-box" value="CaroD1946">
-                </div>
-                <div style="display: flex; gap: 8px; align-items: end;">
-                    <button class="btn btn-blue" style="width: 100%;" onclick="lookupPlayerStreak()">🔍 Tra Cứu Chuỗi</button>
-                </div>
+            <!-- Toolbar Controls -->
+            <div style="display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap;">
+                <button class="btn btn-blue" onclick="openCheckinWeb()">🌐 1. Mở Trang Web Điểm Danh (Checkin.html)</button>
+                <button class="btn btn-red" onclick="resetTodayCheckin()">♻️ 2. Reset Lượt Điểm Danh Hôm Nay (Để Bấm Lại)</button>
+                <button class="btn btn-green" onclick="testDirectCheckin()">⚡ 3. Thử Bấm Điểm Danh Nhanh Tại Đây</button>
             </div>
 
-            <div id="streakResultCard" style="display: none; background: var(--bg-input); border-radius: 12px; padding: 20px; border: 1px solid var(--border);">
-                <div style="display: flex; align-items: center; justify-content: space-between;">
+            <!-- Latest Checkin Event (HERO CARD) -->
+            <div id="latestCheckinHero" class="checkin-hero-card">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 10px;">
                     <div>
-                        <h3 id="streakPlayerName" style="font-size: 18px; color: #fff;">CaroD1946</h3>
-                        <p id="streakPlayerStatus" style="font-size: 13px; color: var(--text-muted);">Đã liên kết tài khoản</p>
+                        <div style="font-size: 13px; text-transform: uppercase; letter-spacing: 1px; color: #6ee7b7; font-weight: 700;">
+                            ✨ KẾT QUẢ ĐIỂM DANH MỚI NHẤT TRÊN HỆ THỐNG
+                        </div>
+                        <h2 id="heroPlayerTitle" style="font-size: 24px; color: #ffffff; margin-top: 4px;">
+                            Đang đợi người chơi bấm Điểm Danh...
+                        </h2>
+                        <p id="heroPlayerSub" style="font-size: 13px; color: #a7f3d0;">
+                            Hãy mở trang Checkin.html trên website hoặc bấm nút số 3 ở trên để thử nghiệm!
+                        </p>
                     </div>
                     <div style="text-align: right;">
-                        <span style="font-size: 12px; color: var(--text-muted);">Chuỗi Điểm Danh</span>
-                        <div id="streakCountNumber" style="font-size: 32px; font-weight: 800; color: #f59e0b;">🔥 3 Ngày</div>
+                        <span class="badge badge-vip" id="heroStreakBadge" style="font-size: 14px; padding: 6px 14px;">
+                            🔥 Chuỗi: 0 Ngày
+                        </span>
+                        <div id="heroTimeAgo" style="font-size: 12px; color: #94a3b8; margin-top: 6px;">Vừa cập nhật</div>
+                    </div>
+                </div>
+
+                <!-- Reward Grid -->
+                <div class="reward-grid">
+                    <div class="reward-box">
+                        <div class="reward-icon">🗝️</div>
+                        <div>
+                            <div class="reward-title">Quà In-Game Minecraft</div>
+                            <div class="reward-val" id="heroKeysVal">10 Chìa Khóa Rare Crate</div>
+                        </div>
+                    </div>
+                    <div class="reward-box">
+                        <div class="reward-icon">🪙</div>
+                        <div>
+                            <div class="reward-title">Xu Thưởng Nhận Được</div>
+                            <div class="reward-val" id="heroCoinsVal">+100 Xu Đảo</div>
+                        </div>
+                    </div>
+                    <div class="reward-box">
+                        <div class="reward-icon">🎮</div>
+                        <div>
+                            <div class="reward-title">Trạng Thái Lệnh Game</div>
+                            <div class="reward-val" id="heroDeliveryStatus" style="color: #fbbf24;">Đã Nạp Hàng Đợi (Pending)</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Generated Minecraft Console Command -->
+                <div style="margin-top: 16px;">
+                    <div style="font-size: 12px; color: #94a3b8; font-weight: 600;">LỆNH MINECRAFT SERVER TỰ ĐỘNG THỰC THI TRAO ĐỒ:</div>
+                    <div id="heroConsoleCommand" class="code-box">
+                        excellentcrates:crate key give [IGN] rare 10
                     </div>
                 </div>
             </div>
 
-            <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--border);">
-                <h4 style="font-size: 14px; margin-bottom: 12px;">🚀 Thử Nghiệm Điểm Danh Cho Tài Khoản Web Đã Liên Kết</h4>
-                <div style="display: flex; gap: 12px;">
-                    <button class="btn btn-green" onclick="testCheckinAction()">🎁 Thực Hiện Điểm Danh Hôm Nay</button>
-                    <button class="btn btn-outline" onclick="openCheckinWeb()">🌐 Mở Trang Web Điểm Danh (Checkin.html)</button>
-                </div>
-                <div id="checkinActionResult" style="margin-top: 14px; font-size: 13px;"></div>
-            </div>
-        </div>
-    </div>
-
-    <!-- TAB 4: BẢNG XẾP HẠNG STREAK -->
-    <div id="tab-leaderboard" class="tab-panel">
-        <div class="card">
-            <div class="card-header">
-                <span class="card-title">🏆 Bảng Xếp Hạng Chuỗi Điểm Danh Server (Top Streaks Leaderboard)</span>
-                <button class="btn btn-outline btn-sm" onclick="fetchLeaderboard()">🔄 Tải Lại</button>
-            </div>
-            <div class="info-banner">
-                Bảng xếp hạng lấy dữ liệu trực tiếp từ endpoint <code>/api/internal/minecraft/leaderboard/streaks</code> để hiển thị trong server game và trên web.
-            </div>
-
-            <div id="leaderboardContainer" class="leaderboard-grid">
-                <div style="grid-column: 1 / -1; text-align: center; color: var(--text-muted); padding: 30px;">
-                    Đang tải bảng xếp hạng...
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- TAB 5: ĐỒNG BỘ XU -->
-    <div id="tab-sync" class="tab-panel">
-        <div class="card">
-            <div class="card-header">
-                <span class="card-title">🪙 Đồng Bộ Xu Người Chơi Từ Minecraft Sang Web</span>
-                <span class="badge badge-completed">Bridge Auth</span>
-            </div>
-            <div class="info-banner">
-                Đồng bộ số dư xu từ plugin kinh tế Minecraft (Vault/PlayerPoints) về CSDL Web: <code>/api/internal/minecraft/sync-coins</code>.
-            </div>
-
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;">
-                <div class="form-group">
-                    <label>Tên Người Chơi Minecraft</label>
-                    <input type="text" id="syncUsername" class="input-box" value="CaroD1946">
-                </div>
-                <div class="form-group">
-                    <label>Số Xu Cần Đồng Bộ</label>
-                    <input type="number" id="syncCoinsAmount" class="input-box" value="50000">
+            <!-- Recent Checkins History Table -->
+            <div style="margin-top: 24px;">
+                <h4 style="font-size: 15px; margin-bottom: 12px; color: #f8fafc; display: flex; align-items: center; gap: 8px;">
+                    📜 Lịch Sử Các Lần Điểm Danh & Quà Đã Trao Gần Đây
+                </h4>
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Tài Khoản Web</th>
+                                <th>Nhân Vật In-Game</th>
+                                <th>Chuỗi Ngày</th>
+                                <th>Quà Đã Trao</th>
+                                <th>Lệnh In-Game Sinh Ra</th>
+                                <th>Thời Gian</th>
+                            </tr>
+                        </thead>
+                        <tbody id="recentCheckinsTableBody">
+                            <tr>
+                                <td colspan="7" style="text-align: center; color: var(--text-muted); padding: 20px;">Đang tải danh sách điểm danh...</td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
-
-            <button class="btn btn-gold" onclick="submitSyncCoins()">🪙 Đồng Bộ Xu Vào CSDL Web</button>
-            <div id="syncResultBox" style="margin-top: 14px; font-size: 13px;"></div>
         </div>
     </div>
 
@@ -778,7 +818,7 @@
             </div>
         </div>
         <div id="terminalBody" class="terminal-body">
-            <div class="log-entry"><span class="log-time">[HỆ THỐNG]</span> Sẵn sàng kết nối. Hãy bấm các nút kiểm tra ở trên.</div>
+            <div class="log-entry"><span class="log-time">[HỆ THỐNG]</span> Sẵn sàng kết nối. Đang bật chế độ lắng nghe sự kiện điểm danh từ web...</div>
         </div>
     </div>
 </div>
@@ -790,15 +830,19 @@
     let currentEnv = 'render'; // 'render' or 'local'
     let currentPin = '';
     let pendingDeliveriesList = [];
+    let lastLatestCheckinId = null;
+    let checkinPollTimer = null;
 
     // Initialize
     window.addEventListener('DOMContentLoaded', () => {
         // Auto test connection on startup
         testConnection();
-        // Load leaderboard
-        fetchLeaderboard();
         // Fetch deliveries
         fetchPendingDeliveries();
+        // Fetch recent checkins
+        fetchRecentCheckins();
+        // Start live listener for checkins every 2.5 seconds
+        startCheckinPolling();
     });
 
     // Log to terminal
@@ -841,7 +885,7 @@
         document.getElementById(tabId).classList.add('active');
 
         if (tabId === 'tab-deliveries') fetchPendingDeliveries();
-        if (tabId === 'tab-leaderboard') fetchLeaderboard();
+        if (tabId === 'tab-checkin') fetchRecentCheckins();
     }
 
     // Toggle Environment (Render Cloud vs Localhost)
@@ -884,7 +928,7 @@
         const statusPill = document.getElementById('statusPill');
         const statusText = document.getElementById('statusText');
 
-        statusText.textContent = 'Đang kiểm tra...';
+        statusText.textContent = 'Đang kết nối...';
         statusPill.style.borderColor = 'rgba(245, 158, 11, 0.4)';
         statusPill.style.color = '#fbbf24';
 
@@ -1093,10 +1137,10 @@
                 tbody.innerHTML = pendingDeliveriesList.map(item => `
                     <tr>
                         <td><strong>#${item.id}</strong></td>
-                        <td>${item.order_id ? `Đơn hàng #${item.order_id}` : 'Lệnh Trực Tiếp'}</td>
+                        <td>${item.order_id ? `Đơn hàng #${item.order_id}` : (item.type === 'checkin_reward' ? '🎁 Thưởng Điểm Danh' : 'Lệnh Trực Tiếp')}</td>
                         <td><span style="color:#fbbf24; font-weight:600;">${item.game_username}</span></td>
                         <td><code class="code-pill">${item.command}</code></td>
-                        <td><span class="badge ${item.type === 'rank' ? 'badge-vip' : 'badge-pending'}">${item.type}</span></td>
+                        <td><span class="badge ${item.type === 'rank' ? 'badge-vip' : (item.type === 'checkin_reward' ? 'badge-completed' : 'badge-pending')}">${item.type}</span></td>
                         <td><span class="badge badge-pending">PENDING</span></td>
                         <td>
                             <button class="btn btn-green btn-sm" onclick="confirmSingleDelivery(${item.id})">✅ Giao Lệnh Này</button>
@@ -1193,52 +1237,138 @@
         }
     }
 
-    // 3. Lookup Player Streak
-    async function lookupPlayerStreak() {
+    // 3. TAB CHECK-IN: LIVE LISTENER & RECENT CHECKINS
+    async function fetchRecentCheckins(isBackgroundPoll = false) {
         const baseUrl = document.getElementById('apiUrl').value.trim();
-        const token = document.getElementById('bridgeToken').value.trim();
-        const target = document.getElementById('checkinTargetUser').value.trim();
+        const tbody = document.getElementById('recentCheckinsTableBody');
 
-        if (!target) return;
-
-        logMessage(`GET /api/internal/minecraft/player/${target}/streak ...`);
+        if (!isBackgroundPoll) {
+            logMessage('GET /api/internal/minecraft/checkins/recent ...');
+        }
 
         try {
-            const res = await fetch(`${baseUrl}/api/internal/minecraft/player/${encodeURIComponent(target)}/streak`, {
-                headers: {
-                    'Accept': 'application/json',
-                    'X-Bridge-Token': token
-                }
+            const res = await fetch(`${baseUrl}/api/internal/minecraft/checkins/recent`, {
+                headers: { 'Accept': 'application/json' }
             });
             const data = await res.json();
 
-            const card = document.getElementById('streakResultCard');
-            card.style.display = 'block';
+            if (res.ok && data.success) {
+                const list = data.recent_checkins || [];
+                const latest = data.latest;
+
+                // If new checkin detected during polling!
+                if (latest && latest.id !== lastLatestCheckinId) {
+                    if (lastLatestCheckinId !== null) {
+                        // Flash notification!
+                        showToast(`🎉 PHÁT HIỆN ĐIỂM DANH MỚI: ${latest.web_username}! Nhận 10 Rare Keys!`);
+                        logMessage(`🎉 [LIVE SỰ KIỆN] Người dùng [${latest.web_username}] vừa bấm ĐIỂM DANH trên Website! Nhận 10 Rare Keys + ${latest.coins_awarded} Xu! Lệnh Minecraft đã nạp vào hàng đợi.`, 'ok');
+                    }
+                    lastLatestCheckinId = latest.id;
+                    updateLatestCheckinHero(latest);
+                }
+
+                if (list.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: var(--text-muted); padding: 20px;">Chưa có dữ liệu điểm danh nào trong hệ thống.</td></tr>`;
+                    return;
+                }
+
+                tbody.innerHTML = list.map(item => `
+                    <tr>
+                        <td><strong>#${item.id}</strong></td>
+                        <td><span style="color:#60a5fa; font-weight:600;">${item.web_username}</span></td>
+                        <td><span style="color:#fbbf24; font-weight:600;">${item.minecraft_username || item.web_username}</span></td>
+                        <td><span class="badge badge-vip">🔥 Ngày ${item.streak}</span></td>
+                        <td>
+                            <div style="font-weight:600; color:#34d399;">🗝️ 10 Rare Keys</div>
+                            <div style="font-size:11px; color:#94a3b8;">+${item.coins_awarded} Xu Đảo</div>
+                        </td>
+                        <td><code class="code-pill">${item.in_game_commands[0]}</code></td>
+                        <td style="color:var(--text-muted); font-size:11px;">${item.created_at ? item.created_at.replace('T', ' ').substring(0, 19) : item.checkin_date}</td>
+                    </tr>
+                `).join('');
+
+                if (!isBackgroundPoll) {
+                    logMessage(`Đã cập nhật danh sách ${list.length} lượt điểm danh gần đây.`, 'ok');
+                }
+            }
+        } catch (err) {
+            if (!isBackgroundPoll) {
+                logMessage(`❌ Lỗi tải checkins: ${err.message}`, 'err');
+            }
+        }
+    }
+
+    // Update Hero Card with Latest Checkin Data
+    function updateLatestCheckinHero(item) {
+        if (!item) return;
+        document.getElementById('heroPlayerTitle').innerHTML = `
+            👤 Tài khoản: <span style="color:#fbbf24;">${item.web_username}</span> 
+            <span style="font-size:16px; color:#cbd5e1; font-weight:400;">(In-game: <strong>${item.minecraft_username || item.web_username}</strong>)</span>
+        `;
+        document.getElementById('heroPlayerSub').innerHTML = `
+            ✅ Đã điểm danh thành công trên Website! Hệ thống đã ghi nhận và tự động phát phần thưởng in-game.
+        `;
+        document.getElementById('heroStreakBadge').textContent = `🔥 Chuỗi: ${item.streak} Ngày`;
+        document.getElementById('heroCoinsVal').textContent = `+${item.coins_awarded} Xu Đảo`;
+        document.getElementById('heroKeysVal').textContent = `10 Chìa Khóa Hiếm (Rare Keys)`;
+        document.getElementById('heroDeliveryStatus').textContent = `🟢 Đã Sinh Lệnh In-Game Vào Hàng Đợi (Pending)`;
+        document.getElementById('heroConsoleCommand').textContent = `${item.in_game_commands[0]}\n${item.in_game_commands[1]}`;
+        document.getElementById('heroTimeAgo').textContent = `Ngày: ${item.checkin_date}`;
+    }
+
+    // Auto-polling for Checkin Events
+    function startCheckinPolling() {
+        if (checkinPollTimer) clearInterval(checkinPollTimer);
+        checkinPollTimer = setInterval(() => {
+            fetchRecentCheckins(true);
+        }, 2500); // Poll every 2.5 seconds
+    }
+
+    // Reset Today Checkin for Testing
+    async function resetTodayCheckin() {
+        const baseUrl = document.getElementById('apiUrl').value.trim();
+        const token = document.getElementById('bridgeToken').value.trim();
+        const username = document.getElementById('webUsername').value.trim();
+
+        if (!confirm(`Bạn có chắc chắn muốn RESET lượt điểm danh hôm nay của tài khoản [${username}] để bấm lại trên website không?`)) {
+            return;
+        }
+
+        logMessage(`POST /api/internal/minecraft/checkins/reset-today [${username}]...`);
+
+        try {
+            const res = await fetch(`${baseUrl}/api/internal/minecraft/checkins/reset-today`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'X-Bridge-Token': token
+                },
+                body: JSON.stringify({ username })
+            });
+            const data = await res.json();
 
             if (res.ok && data.success) {
-                document.getElementById('streakPlayerName').textContent = data.username || target;
-                document.getElementById('streakPlayerStatus').textContent = data.is_linked ? '🟢 Đã liên kết tài khoản Web' : '⚪ Chưa liên kết';
-                document.getElementById('streakCountNumber').textContent = `🔥 ${data.streak || 0} Ngày`;
-                logMessage(`Tra cứu thành công: ${target} có chuỗi ${data.streak} ngày.`, 'ok');
+                logMessage(`✅ ${data.message}`, 'ok');
+                showToast(data.message);
+                fetchRecentCheckins();
+                fetchPendingDeliveries();
             } else {
-                document.getElementById('streakPlayerName').textContent = target;
-                document.getElementById('streakPlayerStatus').textContent = 'Chưa liên kết / Không tìm thấy';
-                document.getElementById('streakCountNumber').textContent = '🔥 0 Ngày';
-                logMessage(`Người chơi ${target} chưa liên kết nick game.`, 'info');
+                logMessage(`❌ ${data.message}`, 'err');
+                alert(data.message);
             }
         } catch (err) {
             logMessage(`❌ Lỗi: ${err.message}`, 'err');
         }
     }
 
-    // Test Checkin Action
-    async function testCheckinAction() {
+    // Direct Checkin Quick Test
+    async function testDirectCheckin() {
         const baseUrl = document.getElementById('apiUrl').value.trim();
         const username = document.getElementById('webUsername').value.trim();
         const password = document.getElementById('webPassword').value.trim();
-        const resultBox = document.getElementById('checkinActionResult');
 
-        resultBox.innerHTML = '<span style="color:#fbbf24;">Đang điểm danh...</span>';
+        logMessage(`Đăng nhập web [${username}] để gửi yêu cầu điểm danh...`);
 
         try {
             // Login
@@ -1262,94 +1392,17 @@
             const checkinData = await checkinRes.json();
 
             if (checkinRes.ok && checkinData.success) {
-                resultBox.innerHTML = `<span style="color:#34d399; font-weight:600;">✅ Điểm danh thành công! Nhận ${checkinData.coinsAwarded || 0} Xu và 10 Chìa khóa Rare đã nạp vào hàng đợi in-game. Chuỗi: ${checkinData.streak || 1} ngày!</span>`;
-                logMessage(`✅ Điểm danh thành công! Quà in-game 10 Rare Keys đã nạp vào hàng đợi.`, 'ok');
+                logMessage(`✅ Điểm danh thành công! Nhận 10 Rare Keys in-game và ${checkinData.coinsAwarded || 100} Xu. Chuỗi: ${checkinData.streak || 1} ngày.`, 'ok');
                 showToast('Điểm danh thành công!');
-                lookupPlayerStreak();
+                fetchRecentCheckins();
+                fetchPendingDeliveries();
             } else {
-                resultBox.innerHTML = `<span style="color:#fbbf24;">ℹ️ ${checkinData.message || 'Hôm nay bạn đã điểm danh rồi!'}</span>`;
-                logMessage(`Thông báo điểm danh: ${checkinData.message}`, 'info');
+                logMessage(`ℹ️ Thông báo: ${checkinData.message || 'Hôm nay bạn đã điểm danh rồi! Hãy bấm Reset để test lại.'}`, 'info');
+                alert(checkinData.message || 'Hôm nay bạn đã điểm danh rồi!');
             }
         } catch (err) {
-            resultBox.innerHTML = `<span style="color:#f87171;">❌ ${err.message}</span>`;
-            logMessage(`❌ Lỗi điểm danh: ${err.message}`, 'err');
-        }
-    }
-
-    // 4. Fetch Leaderboard
-    async function fetchLeaderboard() {
-        const baseUrl = document.getElementById('apiUrl').value.trim();
-        const token = document.getElementById('bridgeToken').value.trim();
-        const container = document.getElementById('leaderboardContainer');
-
-        logMessage('GET /api/internal/minecraft/leaderboard/streaks ...');
-
-        try {
-            const res = await fetch(`${baseUrl}/api/internal/minecraft/leaderboard/streaks`, {
-                headers: {
-                    'Accept': 'application/json',
-                    'X-Bridge-Token': token
-                }
-            });
-            const data = await res.json();
-
-            if (res.ok && data.success && data.leaderboard && data.leaderboard.length > 0) {
-                container.innerHTML = data.leaderboard.map((item, idx) => {
-                    const rankMedal = idx === 0 ? '🥇 #1' : idx === 1 ? '🥈 #2' : idx === 2 ? '🥉 #3' : `#${idx + 1}`;
-                    return `
-                        <div class="leader-card">
-                            <img class="leader-avatar" src="https://mc-heads.net/avatar/${item.minecraft_username || 'Steve'}/64" onerror="this.src='../img/logo.png'">
-                            <div class="leader-info" style="flex: 1;">
-                                <div style="display: flex; justify-content: space-between; align-items: center;">
-                                    <h4>${item.minecraft_username}</h4>
-                                    <span style="font-size: 12px; font-weight: 700; color: ${idx < 3 ? '#fbbf24' : '#94a3b8'};">${rankMedal}</span>
-                                </div>
-                                <div class="leader-streak">🔥 Chuỗi: <strong>${item.streak}</strong> ngày</div>
-                            </div>
-                        </div>
-                    `;
-                }).join('');
-                logMessage(`Đã tải Top ${data.leaderboard.length} người chơi có chuỗi điểm danh cao nhất.`, 'ok');
-            } else {
-                container.innerHTML = `<div style="grid-column: 1 / -1; text-align: center; color: var(--text-muted); padding: 30px;">Chưa có dữ liệu chuỗi điểm danh nào trên hệ thống.</div>`;
-            }
-        } catch (err) {
-            container.innerHTML = `<div style="grid-column: 1 / -1; text-align: center; color: #f87171; padding: 20px;">Lỗi tải bảng xếp hạng: ${err.message}</div>`;
-        }
-    }
-
-    // 5. Submit Sync Coins
-    async function submitSyncCoins() {
-        const baseUrl = document.getElementById('apiUrl').value.trim();
-        const token = document.getElementById('bridgeToken').value.trim();
-        const username = document.getElementById('syncUsername').value.trim();
-        const coins = parseInt(document.getElementById('syncCoinsAmount').value, 10);
-        const resultBox = document.getElementById('syncResultBox');
-
-        logMessage(`POST /api/internal/minecraft/sync-coins [${username}: ${coins} xu]...`);
-
-        try {
-            const res = await fetch(`${baseUrl}/api/internal/minecraft/sync-coins`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json',
-                    'X-Bridge-Token': token
-                },
-                body: JSON.stringify({ username, coins })
-            });
-            const data = await res.json();
-
-            if (res.ok && data.success) {
-                resultBox.innerHTML = `<span style="color:#34d399; font-weight:600;">✅ ${data.message}</span>`;
-                logMessage(`✅ Đồng bộ thành công: ${username} hiện có ${coins} xu trên Web.`, 'ok');
-                showToast('Đồng bộ xu thành công!');
-            } else {
-                resultBox.innerHTML = `<span style="color:#f87171;">❌ ${data.message}</span>`;
-                logMessage(`❌ ${data.message}`, 'err');
-            }
-        } catch (err) {
-            resultBox.innerHTML = `<span style="color:#f87171;">❌ Lỗi: ${err.message}</span>`;
+            logMessage(`❌ Lỗi: ${err.message}`, 'err');
+            alert(err.message);
         }
     }
 </script>

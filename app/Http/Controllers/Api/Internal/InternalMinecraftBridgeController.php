@@ -342,4 +342,97 @@ class InternalMinecraftBridgeController extends Controller
             'message' => 'Đã reset hủy liên kết nhân vật test thành công.',
         ]);
     }
+
+    /**
+     * Get recent checkin events and rewards for real-time monitoring.
+     */
+    public function getRecentCheckins(Request $request): JsonResponse
+    {
+        $recent = DB::table('checkins')
+            ->join('users', 'checkins.user_id', '=', 'users.id')
+            ->select(
+                'checkins.id',
+                'checkins.user_id',
+                'users.username as web_username',
+                'users.minecraft_username',
+                'users.minecraft_uuid',
+                'checkins.checkin_date',
+                'checkins.coins_awarded',
+                'checkins.streak_day',
+                'checkins.created_at'
+            )
+            ->orderByDesc('checkins.id')
+            ->limit(20)
+            ->get();
+
+        $recentWithRewards = $recent->map(function ($item) {
+            $ign = $item->minecraft_username ?: $item->web_username;
+            return [
+                'id' => $item->id,
+                'web_username' => $item->web_username,
+                'minecraft_username' => $item->minecraft_username ?: $item->web_username,
+                'checkin_date' => $item->checkin_date,
+                'streak' => (int) $item->streak_day,
+                'coins_awarded' => (int) $item->coins_awarded,
+                'rare_keys' => 10,
+                'created_at' => $item->created_at,
+                'in_game_commands' => [
+                    "excellentcrates:crate key give {$ign} rare 10",
+                    "coins give {$ign} {$item->coins_awarded}",
+                ],
+            ];
+        });
+
+        return response()->json([
+            'success' => true,
+            'recent_checkins' => $recentWithRewards,
+            'latest' => $recentWithRewards->first(),
+            'total' => $recentWithRewards->count(),
+        ]);
+    }
+
+    /**
+     * Reset today's checkin for testing.
+     */
+    public function resetTodayCheckin(Request $request): JsonResponse
+    {
+        if (!$this->authenticateBridge($request)) {
+            return response()->json(['success' => false, 'message' => 'Unauthorized bridge token.'], 401);
+        }
+
+        $username = trim((string) ($request->input('username', '')));
+        $today = now()->toDateString();
+
+        if (!empty($username)) {
+            $user = User::where('username', $username)
+                ->orWhere('minecraft_username', $username)
+                ->first();
+
+            if ($user) {
+                Checkin::where('user_id', $user->id)
+                    ->where('checkin_date', $today)
+                    ->delete();
+
+                GameDeliveryQueue::where('user_id', $user->id)
+                    ->where('type', 'checkin_reward')
+                    ->whereDate('created_at', $today)
+                    ->delete();
+
+                return response()->json([
+                    'success' => true,
+                    'message' => "Đã reset lượt điểm danh hôm nay của [{$user->username}]. Bạn có thể lên web bấm điểm danh lại!",
+                ]);
+            }
+        }
+
+        Checkin::where('checkin_date', $today)->delete();
+        GameDeliveryQueue::where('type', 'checkin_reward')
+            ->whereDate('created_at', $today)
+            ->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Đã reset toàn bộ lượt điểm danh hôm nay để test.',
+        ]);
+    }
 }

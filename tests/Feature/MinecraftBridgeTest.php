@@ -199,5 +199,14 @@ class MinecraftBridgeTest extends TestCase
             'minecraft_username' => null,
             'minecraft_uuid' => null,
         ]);
+
+        // 3. Recent checkins endpoint
+        $recentRes = $this->getJson('/api/internal/minecraft/checkins/recent');
+        $recentRes->assertStatus(200)->assertJson(['success' => true]);
+
+        // 4. Reset today checkin
+        $resetRes = $this->withHeaders(['X-Bridge-Token' => $bridgeToken])
+            ->postJson('/api/internal/minecraft/checkins/reset-today');
+        $resetRes->assertStatus(200)->assertJson(['success' => true]);
     }
 }
