@@ -23,54 +23,94 @@ class AdminSupportController extends Controller
      */
     public function index(Request $request): JsonResponse
     {
-        $query = SupportTicket::with('user:id,username,email,minecraft_username,discord_username');
+        try {
+            $query = SupportTicket::with('user:id,username,email');
 
-        if ($status = $request->input('status')) {
-            if ($status !== 'all') {
-                $query->where('status', $status);
+            if ($status = $request->input('status')) {
+                if ($status !== 'all') {
+                    $query->where('status', $status);
+                }
             }
-        }
 
-        if ($category = $request->input('category')) {
-            if ($category !== 'all') {
-                $query->where('category', $category);
+            if ($category = $request->input('category')) {
+                if ($category !== 'all') {
+                    $query->where('category', $category);
+                }
             }
+
+            if ($search = trim((string) $request->input('search', ''))) {
+                $term = '%' . $search . '%';
+                $query->where(function ($q) use ($term) {
+                    $q->where('ticket_code', 'like', $term)
+                      ->orWhere('subject', 'like', $term)
+                      ->orWhere('minecraft_username', 'like', $term)
+                      ->orWhere('discord_username', 'like', $term);
+                });
+            }
+
+            $tickets = $query->orderBy('id', 'desc')->paginate(50);
+
+            $webhookUrl = '';
+            $zaloUrl = '';
+            $discordInviteUrl = '';
+            $ticketChannelUrl = '';
+            $ticketMode = 'direct_channel';
+
+            try {
+                $webhookUrl = $this->discordService->resolveWebhookUrl();
+                $zaloUrl = $this->discordService->resolveZaloUrl();
+                $discordInviteUrl = $this->discordService->resolveDiscordInviteUrl();
+                $ticketChannelUrl = $this->discordService->resolveTicketChannelUrl();
+                $ticketMode = $this->discordService->resolveTicketMode();
+            } catch (\Throwable $e) {
+                // Settings fallback
+            }
+
+            $totalCount = 0;
+            $openCount = 0;
+            $inProgressCount = 0;
+            $resolvedCount = 0;
+            try {
+                $totalCount = SupportTicket::count();
+                $openCount = SupportTicket::where('status', 'open')->count();
+                $inProgressCount = SupportTicket::where('status', 'in_progress')->count();
+                $resolvedCount = SupportTicket::whereIn('status', ['resolved', 'closed'])->count();
+            } catch (\Throwable $e) {
+                $totalCount = $tickets->total();
+            }
+
+            return response()->json([
+                'success' => true,
+                'count' => $tickets->count(),
+                'total' => $tickets->total(),
+                'tickets' => $tickets->items(),
+                'data' => $tickets->items(),
+                'stats' => [
+                    'total' => $totalCount,
+                    'open' => $openCount,
+                    'in_progress' => $inProgressCount,
+                    'resolved' => $resolvedCount,
+                ],
+                'settings' => [
+                    'webhook_configured' => $webhookUrl !== '' && $this->discordService->isValidDiscordWebhookUrl($webhookUrl),
+                    'webhook_masked' => $this->discordService->maskWebhookUrl($webhookUrl),
+                    'zalo_url' => $zaloUrl,
+                    'discord_invite_url' => $discordInviteUrl,
+                    'ticket_channel_url' => $ticketChannelUrl,
+                    'ticket_mode' => $ticketMode,
+                ],
+            ]);
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::error('AdminSupportController@index error: ' . $e->getMessage(), [
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Lỗi tải danh sách ticket: ' . $e->getMessage(),
+            ], 500);
         }
-
-        if ($search = trim((string) $request->input('search', ''))) {
-            $term = '%' . $search . '%';
-            $query->where(function ($q) use ($term) {
-                $q->where('ticket_code', 'like', $term)
-                  ->orWhere('subject', 'like', $term)
-                  ->orWhere('minecraft_username', 'like', $term)
-                  ->orWhere('discord_username', 'like', $term);
-            });
-        }
-
-        $tickets = $query->orderBy('id', 'desc')->paginate(50);
-        $webhookUrl = $this->discordService->resolveWebhookUrl();
-
-        return response()->json([
-            'success' => true,
-            'count' => $tickets->count(),
-            'total' => $tickets->total(),
-            'tickets' => $tickets->items(),
-            'data' => $tickets->items(),
-            'stats' => [
-                'total' => SupportTicket::count(),
-                'open' => SupportTicket::where('status', 'open')->count(),
-                'in_progress' => SupportTicket::where('status', 'in_progress')->count(),
-                'resolved' => SupportTicket::whereIn('status', ['resolved', 'closed'])->count(),
-            ],
-            'settings' => [
-                'webhook_configured' => $webhookUrl !== '' && $this->discordService->isValidDiscordWebhookUrl($webhookUrl),
-                'webhook_masked' => $this->discordService->maskWebhookUrl($webhookUrl),
-                'zalo_url' => $this->discordService->resolveZaloUrl(),
-                'discord_invite_url' => $this->discordService->resolveDiscordInviteUrl(),
-                'ticket_channel_url' => $this->discordService->resolveTicketChannelUrl(),
-                'ticket_mode' => $this->discordService->resolveTicketMode(),
-            ],
-        ]);
     }
 
     /**

@@ -50,12 +50,19 @@ class SupportTicket extends Model
         $items = [];
 
         // 1. Initial message from user
+        $createdAt = null;
+        if ($this->created_at instanceof \DateTimeInterface) {
+            $createdAt = $this->created_at->format('Y-m-d H:i:s');
+        } elseif (is_string($this->created_at)) {
+            $createdAt = $this->created_at;
+        }
+
         $items[] = [
             'id' => 1,
             'sender' => 'user',
             'sender_name' => $this->minecraft_username ?: ($this->user?->username ?? 'Người chơi'),
-            'message' => $this->message,
-            'created_at' => $this->created_at ? $this->created_at->format('Y-m-d H:i:s') : null,
+            'message' => (string) $this->message,
+            'created_at' => $createdAt,
         ];
 
         // 2. Subsequent replies or legacy admin_note
@@ -70,12 +77,18 @@ class SupportTicket extends Model
                 ];
             }
         } elseif (!empty($this->admin_note)) {
+            $updatedAt = null;
+            if ($this->updated_at instanceof \DateTimeInterface) {
+                $updatedAt = $this->updated_at->format('Y-m-d H:i:s');
+            } elseif (is_string($this->updated_at)) {
+                $updatedAt = $this->updated_at;
+            }
             $items[] = [
                 'id' => 2,
                 'sender' => 'admin',
                 'sender_name' => 'BQT Đảo Tò Mò',
-                'message' => $this->admin_note,
-                'created_at' => $this->updated_at ? $this->updated_at->format('Y-m-d H:i:s') : null,
+                'message' => (string) $this->admin_note,
+                'created_at' => $updatedAt,
             ];
         }
 

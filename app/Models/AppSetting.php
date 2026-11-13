@@ -14,6 +14,9 @@ class AppSetting extends Model
     public static function getValue(string $key, ?string $default = null): ?string
     {
         try {
+            if (!\Illuminate\Support\Facades\Schema::hasTable('app_settings')) {
+                return $default;
+            }
             $setting = static::where('key', $key)->first();
             if ($setting && $setting->value !== null && trim($setting->value) !== '') {
                 return $setting->value;
