@@ -524,7 +524,7 @@ const COMMAND_ITEMS = [
   { icon: '🎮', title: 'Sao Chép IP Server (play.daotomo.net)', type: 'action', action: 'copy_ip' },
   { icon: '🗺️', title: 'Bản Đồ Thế Giới & Tọa Độ Địa Danh', type: 'link', url: '/html/Map.html' },
   { icon: '💬', title: 'Cộng Đồng Discord — Voice, Chat & Event', type: 'link', url: '/html/Discord.html' },
-  { icon: '🎫', title: 'Tạo Ticket Hỗ Trợ Discord — Gửi BQT xử lý', type: 'action', action: 'open_support_ticket' },
+  { icon: '🎫', title: 'Tạo Ticket Hỗ Trợ Web — Gửi vấn đề cần BQT xử lý', type: 'action', action: 'open_support_ticket' },
   { icon: '📱', title: 'Nhắn Tin Hỗ Trợ Qua Zalo Admin', type: 'action', action: 'open_zalo' },
   { icon: '📅', title: 'Điểm Danh Hằng Ngày — Tích chuỗi nhận quà', type: 'link', url: '/html/Checkin.html' },
   { icon: '📦', title: 'Lịch Sử Đơn Hàng & Tài Khoản Của Tôi', type: 'link', url: '/html/Account.html' },
@@ -629,7 +629,7 @@ function initCommandPalette() {
     } else if (item.action === 'open_skin_viewer') {
       if (window.openSkinModal) window.openSkinModal();
     } else if (item.action === 'open_support_ticket') {
-      if (DTM_SUPPORT_STATE.ticketMode === 'modal' && window.openSupportTicketModal) {
+      if (typeof window.openSupportTicketModal === 'function') {
         window.openSupportTicketModal();
       } else {
         const ticketUrl = DTM_SUPPORT_STATE.ticketChannelUrl || DTM_SUPPORT_STATE.discordInviteUrl;
@@ -692,7 +692,7 @@ const DTM_SUPPORT_STATE = {
   zaloUrl: '',
   discordInviteUrl: 'https://discord.gg/rNQ6ytnSg',
   ticketChannelUrl: 'https://discord.com/channels/1381315355317899314/1485265083918713063',
-  ticketMode: 'direct_channel',
+  ticketMode: 'modal',
   webhookConfigured: false,
 };
 
@@ -922,14 +922,17 @@ function initFloatingActionWidget() {
         </span>
       </a>
 
-      <!-- Discord Support Ticket (Channel / Modal) -->
-      <a href="${DTM_SUPPORT_STATE.ticketChannelUrl}" target="_blank" rel="noopener noreferrer" class="dtm-fab-item discord-ticket-item" id="dtm-fab-ticket-btn" data-tooltip="Tạo Ticket Discord" title="Tạo Ticket Discord" aria-label="Tạo Ticket Discord" role="menuitem">
+      <!-- Support Ticket Trigger (Modal) -->
+      <button type="button" class="dtm-fab-item ticket-item" id="dtm-fab-ticket-btn" data-tooltip="Tạo Ticket Hỗ Trợ" title="Tạo Ticket Hỗ Trợ Trực Tuyến" aria-label="Tạo Ticket Hỗ Trợ" role="menuitem">
         <span class="dtm-fab-item-icon">
-          <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
-            <path d="M19.27 5.33C17.94 4.71 16.5 4.26 15 4a.09.09 0 0 0-.07.03c-.18.33-.39.76-.53 1.09a16.09 16.09 0 0 0-4.8 0c-.14-.34-.35-.76-.54-1.09-.01-.02-.04-.03-.07-.03-1.5.26-2.93.71-4.27 1.33-.01 0-.02.01-.03.02-2.72 4.07-3.47 8.03-3.1 11.95 0 .02.01.04.03.05 1.8 1.32 3.53 2.12 5.24 2.65.03.01.06 0 .07-.02.4-.55.76-1.13 1.07-1.74.02-.04 0-.08-.04-.09-.57-.22-1.11-.48-1.64-.78-.04-.02-.04-.08-.01-.11.11-.08.22-.17.33-.25.02-.02.05-.02.07-.01 3.44 1.57 7.15 1.57 10.55 0 .02-.01.05-.01.07.01.11.09.22.17.33.26.04.03.04.09-.01.11-.52.31-1.07.56-1.64.78-.04.01-.05.06-.04.09.32.61.68 1.19 1.07 1.74.03.01.06.02.09.01 1.72-.53 3.45-1.33 5.25-2.65.02-.01.03-.03.03-.05.44-4.53-.73-8.46-3.1-11.95-.01-.01-.02-.02-.04-.02ZM8.52 14.91c-1.03 0-1.89-.95-1.89-2.12s.84-2.12 1.89-2.12c1.06 0 1.9.96 1.89 2.12 0 1.17-.84 2.12-1.89 2.12Zm6.97 0c-1.03 0-1.89-.95-1.89-2.12s.84-2.12 1.89-2.12c1.06 0 1.9.96 1.89 2.12 0 1.17-.83 2.12-1.89 2.12Z"/>
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 8a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v2a2 2 0 0 0 0 4v2a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-2a2 2 0 0 0 0-4V8Z" />
+            <path d="M10 6v2" stroke-dasharray="1 2" />
+            <path d="M10 11v2" stroke-dasharray="1 2" />
+            <path d="M10 16v2" stroke-dasharray="1 2" />
           </svg>
         </span>
-      </a>
+      </button>
 
       <!-- Admin Dashboard (Strictly for user.role === 'admin') -->
       <a href="/html/Admin.html" class="dtm-fab-item admin-item" id="dtm-fab-admin-btn" style="display:none;" data-tooltip="Trang Quản Trị (Admin)" title="Trang Quản Trị Hệ Thống (Dành riêng cho Admin)" aria-label="Trang Quản Trị" role="menuitem">
@@ -1006,14 +1009,14 @@ function initFloatingActionWidget() {
     });
   }
 
-  // Discord Support Ticket click: opens Discord ticket channel directly, or web modal if configured
+  // Support Ticket click: always opens web ticket modal directly
   if (ticketBtn) {
     ticketBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
       SoundFX.playClick();
       toggleMenu(false);
-      if (DTM_SUPPORT_STATE.ticketMode === 'modal' && typeof window.openSupportTicketModal === 'function') {
-        e.preventDefault();
-        e.stopPropagation();
+      if (typeof window.openSupportTicketModal === 'function') {
         window.openSupportTicketModal();
       }
     });
@@ -1085,7 +1088,7 @@ function initFloatingActionWidget() {
 }
 
 /* ═══════════════════════════════════════════════════════════
-   DISCORD SUPPORT TICKET MODAL (Submit ticket -> Discord Webhook)
+   SUPPORT TICKET MODAL (Submit problem -> Backend & Discord)
 ═══════════════════════════════════════════════════════════ */
 function initSupportTicketModal() {
   if (document.getElementById('dtm-ticket-backdrop')) return;
@@ -1097,8 +1100,8 @@ function initSupportTicketModal() {
     <div class="dtm-ticket-card" role="dialog" aria-modal="true" aria-labelledby="dtm-ticket-title">
       <div class="dtm-ticket-header">
         <div>
-          <h2 id="dtm-ticket-title">🎫 Tạo Ticket Hỗ Trợ Discord</h2>
-          <p>Gửi yêu cầu trực tiếp tới kênh #ho-tro của Đội ngũ BQT Đảo Tò Mò</p>
+          <h2 id="dtm-ticket-title">🎫 Tạo Ticket Hỗ Trợ Web</h2>
+          <p>Nhập vấn đề bạn cần xử lý. BQT Đảo Tò Mò sẽ tiếp nhận và giải quyết.</p>
         </div>
         <button type="button" class="dtm-ticket-close" id="dtm-ticket-close-btn" aria-label="Đóng">✕</button>
       </div>
@@ -1109,7 +1112,7 @@ function initSupportTicketModal() {
           <select id="dtm-tk-category" class="dtm-ticket-select">
             <option value="payment">💳 Nạp Xu / Đơn Hàng / VietQR</option>
             <option value="bug">🐛 Báo Lỗi Game / Website</option>
-            <option value="report">⚖️ Tố Cáo Vi Phạm / Hack</option>
+            <option value="report">⚖️ Tố Cáo Vi Phạm / Hack / Phá Hoại</option>
             <option value="account">🔐 Tài Khoản / Liên Kết / Quên Mật Khẩu</option>
             <option value="other">💬 Thắc Mắc Khác / Góp Ý</option>
           </select>
@@ -1118,48 +1121,83 @@ function initSupportTicketModal() {
         <div class="dtm-ticket-grid-2">
           <div class="dtm-ticket-field">
             <label for="dtm-tk-mc">Tên Minecraft (IGN)</label>
-            <input type="text" id="dtm-tk-mc" class="dtm-ticket-input" placeholder="VD: SteveVN">
+            <input type="text" id="dtm-tk-mc" class="dtm-ticket-input" placeholder="VD: SteveVN (nếu có)">
           </div>
           <div class="dtm-ticket-field">
-            <label for="dtm-tk-discord">Discord của bạn (để BQT tag)</label>
-            <input type="text" id="dtm-tk-discord" class="dtm-ticket-input" placeholder="VD: @tenban">
+            <label for="dtm-tk-discord">Thông tin liên hệ (Discord / Zalo / SĐT)</label>
+            <input type="text" id="dtm-tk-discord" class="dtm-ticket-input" placeholder="VD: @tenban hoặc SĐT">
           </div>
         </div>
 
         <div class="dtm-ticket-field">
-          <label for="dtm-tk-subject">Tiêu đề ngắn *</label>
-          <input type="text" id="dtm-tk-subject" class="dtm-ticket-input" placeholder="VD: Đã chuyển khoản nhưng chưa nhận được Rank">
+          <label for="dtm-tk-subject">Tiêu đề vấn đề cần xử lý *</label>
+          <input type="text" id="dtm-tk-subject" class="dtm-ticket-input" placeholder="Tóm tắt ngắn gọn vấn đề (VD: Đã chuyển khoản chưa nhận rank)">
         </div>
 
         <div class="dtm-ticket-field">
-          <label for="dtm-tk-message">Nội dung chi tiết *</label>
-          <textarea id="dtm-tk-message" class="dtm-ticket-textarea" placeholder="Mô tả chi tiết sự cố, mã đơn hàng (#DTM-...) hoặc thời gian xảy ra để Admin xử lý nhanh nhất..."></textarea>
+          <label for="dtm-tk-message">Nội dung chi tiết vấn đề *</label>
+          <textarea id="dtm-tk-message" class="dtm-ticket-textarea" placeholder="Mô tả chi tiết sự cố cần xử lý, thời gian xảy ra, mã đơn hàng (#DTM-...) hoặc bằng chứng liên quan..."></textarea>
         </div>
 
         <div id="dtm-tk-error" style="margin-bottom:0.75rem;"></div>
 
-        <button type="button" id="dtm-tk-submit-btn" class="btn btn-primary btn-full" style="background:linear-gradient(135deg,#5865f2,#4752c4);box-shadow:0 6px 20px rgba(88,101,242,0.4);">
+        <button type="button" id="dtm-tk-submit-btn" class="btn btn-primary btn-full" style="background:linear-gradient(135deg,#f59e0b,#d97706);box-shadow:0 6px 20px rgba(245,158,11,0.35);font-weight:700;">
           📨 Gửi Ticket Hỗ Trợ Ngay
         </button>
+
+        <!-- Lưu ý thời gian xử lý & đề xuất Discord -->
+        <div class="dtm-ticket-notice">
+          <div class="dtm-ticket-notice-header">
+            <span class="dtm-ticket-notice-badge">⚡ Lưu ý hỗ trợ:</span>
+            <span class="dtm-ticket-notice-time">Web: 3h – 5h</span>
+          </div>
+          <p class="dtm-ticket-notice-text">
+            Tham gia Discord tạo ticket để được hỗ trợ nhanh hơn, các ticket tại web sẽ được hỗ trợ sau <strong>3h – 5h</strong>.
+          </p>
+          <a id="dtm-ticket-discord-cta" class="dtm-ticket-discord-cta" href="${DTM_SUPPORT_STATE.discordInviteUrl || 'https://discord.gg/rNQ6ytnSg'}" target="_blank" rel="noopener noreferrer">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+              <path d="M19.27 5.33C17.94 4.71 16.5 4.26 15 4a.09.09 0 0 0-.07.03c-.18.33-.39.76-.53 1.09a16.09 16.09 0 0 0-4.8 0c-.14-.34-.35-.76-.54-1.09-.01-.02-.04-.03-.07-.03-1.5.26-2.93.71-4.27 1.33-.01 0-.02.01-.03.02-2.72 4.07-3.47 8.03-3.1 11.95 0 .02.01.04.03.05 1.8 1.32 3.53 2.12 5.24 2.65.03.01.06 0 .07-.02.4-.55.76-1.13 1.07-1.74.02-.04 0-.08-.04-.09-.57-.22-1.11-.48-1.64-.78-.04-.02-.04-.08-.01-.11.11-.08.22-.17.33-.25.02-.02.05-.02.07-.01 3.44 1.57 7.15 1.57 10.55 0 .02-.01.05-.01.07.01.11.09.22.17.33.26.04.03.04.09-.01.11-.52.31-1.07.56-1.64.78-.04.01-.05.06-.04.09.32.61.68 1.19 1.07 1.74.03.01.06.02.09.01 1.72-.53 3.45-1.33 5.25-2.65.02-.01.03-.03.03-.05.44-4.53-.73-8.46-3.1-11.95-.01-.01-.02-.02-.04-.02ZM8.52 14.91c-1.03 0-1.89-.95-1.89-2.12s.84-2.12 1.89-2.12c1.06 0 1.9.96 1.89 2.12 0 1.17-.84 2.12-1.89 2.12Zm6.97 0c-1.03 0-1.89-.95-1.89-2.12s.84-2.12 1.89-2.12c1.06 0 1.9.96 1.89 2.12 0 1.17-.83 2.12-1.89 2.12Z"/>
+            </svg>
+            <span>Tham gia Discord Tạo Ticket (Hỗ Trợ Nhanh) ↗</span>
+          </a>
+        </div>
       </div>
 
       <div id="dtm-ticket-success-wrap" style="display:none;text-align:center;padding:0.5rem 0;">
         <div style="font-size:2.6rem;margin-bottom:0.4rem;">🎫</div>
         <h3 style="color:#fff;font-family:var(--font-display);font-size:1.2rem;margin-bottom:0.35rem;">Đã Gửi Ticket Thành Công!</h3>
-        <div style="display:inline-flex;align-items:center;gap:0.5rem;padding:0.4rem 0.9rem;border-radius:9999px;background:rgba(88,101,242,0.18);border:1px solid rgba(129,140,248,0.45);color:#c7d2fe;font-family:var(--font-mono);font-weight:800;margin:0.5rem 0;">
+        <div style="display:inline-flex;align-items:center;gap:0.5rem;padding:0.4rem 0.9rem;border-radius:9999px;background:rgba(245,158,11,0.18);border:1px solid rgba(245,158,11,0.45);color:#fde68a;font-family:var(--font-mono);font-weight:800;margin:0.5rem 0;">
           <span id="dtm-tk-res-code">#TK-000000</span>
           <button type="button" id="dtm-tk-copy-code" style="background:none;border:none;color:#38bdf8;cursor:pointer;font-size:0.8rem;font-weight:700;">📋 Chép</button>
         </div>
         <p id="dtm-tk-res-desc" style="font-size:0.86rem;color:#cbd5e1;line-height:1.55;margin:0.6rem 0 1rem;"></p>
+
+        <!-- Lưu ý cả trên màn hình kết quả -->
+        <div class="dtm-ticket-notice" style="margin-bottom:1.1rem;text-align:left;">
+          <div class="dtm-ticket-notice-header">
+            <span class="dtm-ticket-notice-badge">⚡ Nhắc nhở thời gian:</span>
+            <span class="dtm-ticket-notice-time">Web: 3h – 5h</span>
+          </div>
+          <p class="dtm-ticket-notice-text">
+            Các ticket gửi tại web sẽ được hỗ trợ sau <strong>3h – 5h</strong>. Nếu cần hỗ trợ khẩn cấp hơn, hãy tham gia Discord tạo ticket để BQT phản hồi ngay lập tức!
+          </p>
+          <a class="dtm-ticket-discord-cta" href="${DTM_SUPPORT_STATE.discordInviteUrl || 'https://discord.gg/rNQ6ytnSg'}" target="_blank" rel="noopener noreferrer">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+              <path d="M19.27 5.33C17.94 4.71 16.5 4.26 15 4a.09.09 0 0 0-.07.03c-.18.33-.39.76-.53 1.09a16.09 16.09 0 0 0-4.8 0c-.14-.34-.35-.76-.54-1.09-.01-.02-.04-.03-.07-.03-1.5.26-2.93.71-4.27 1.33-.01 0-.02.01-.03.02-2.72 4.07-3.47 8.03-3.1 11.95 0 .02.01.04.03.05 1.8 1.32 3.53 2.12 5.24 2.65.03.01.06 0 .07-.02.4-.55.76-1.13 1.07-1.74.02-.04 0-.08-.04-.09-.57-.22-1.11-.48-1.64-.78-.04-.02-.04-.08-.01-.11.11-.08.22-.17.33-.25.02-.02.05-.02.07-.01 3.44 1.57 7.15 1.57 10.55 0 .02-.01.05-.01.07.01.11.09.22.17.33.26.04.03.04.09-.01.11-.52.31-1.07.56-1.64.78-.04.01-.05.06-.04.09.32.61.68 1.19 1.07 1.74.03.01.06.02.09.01 1.72-.53 3.45-1.33 5.25-2.65.02-.01.03-.03.03-.05.44-4.53-.73-8.46-3.1-11.95-.01-.01-.02-.02-.04-.02ZM8.52 14.91c-1.03 0-1.89-.95-1.89-2.12s.84-2.12 1.89-2.12c1.06 0 1.9.96 1.89 2.12 0 1.17-.84 2.12-1.89 2.12Zm6.97 0c-1.03 0-1.89-.95-1.89-2.12s.84-2.12 1.89-2.12c1.06 0 1.9.96 1.89 2.12 0 1.17-.83 2.12-1.89 2.12Z"/>
+            </svg>
+            <span>Vào Discord Nhận Hỗ Trợ Nhanh ↗</span>
+          </a>
+        </div>
+
         <div style="display:flex;gap:0.65rem;justify-content:center;flex-wrap:wrap;">
-          <button type="button" id="dtm-tk-new-btn" class="btn btn-ghost" style="font-size:0.84rem;">➕ Gửi Ticket Khác</button>
+          <button type="button" id="dtm-tk-new-btn" class="btn btn-ghost" style="font-size:0.84rem;">➕ Gửi Vấn Đề Khác</button>
           <button type="button" id="dtm-tk-done-btn" class="btn btn-primary" style="font-size:0.84rem;">Đóng Lại</button>
         </div>
       </div>
 
       <div class="dtm-ticket-quick-links">
-        <a id="dtm-ticket-quick-discord" class="dtm-ticket-quick-btn discord" href="${DTM_SUPPORT_STATE.ticketChannelUrl}" target="_blank" rel="noopener noreferrer">
-          🎫 Mở Kênh Ticket Discord
+        <a id="dtm-ticket-quick-discord" class="dtm-ticket-quick-btn discord" href="${DTM_SUPPORT_STATE.discordInviteUrl}" target="_blank" rel="noopener noreferrer">
+          💬 Tham Gia Máy Chủ Discord
         </a>
         <a id="dtm-ticket-quick-zalo" class="dtm-ticket-quick-btn zalo" href="${DTM_SUPPORT_STATE.zaloUrl}" target="_blank" rel="noopener noreferrer">
           📱 Nhắn Zalo Admin
@@ -1259,8 +1297,8 @@ function initSupportTicketModal() {
       const code = res.ticket_code || res.data?.ticket_code || 'TK-NEW';
       document.getElementById('dtm-tk-res-code').textContent = '#' + code;
       document.getElementById('dtm-tk-res-desc').textContent = res.discord_dispatched
-        ? 'Thông tin Ticket của bạn đã được đẩy thẳng vào kênh hỗ trợ trên Discord của Admin! Bạn có thể tham gia Discord hoặc nhắn Zalo bên dưới để theo dõi trực tiếp.'
-        : 'Ticket của bạn đã được lưu lại trên hệ thống cho Admin xử lý. Bạn cũng có thể bấm vào Discord hoặc Zalo bên dưới để được hỗ trợ ngay lập tức.';
+        ? 'Thông tin Ticket của bạn đã được ghi nhận và đẩy vào hệ thống BQT! Các yêu cầu gửi qua web sẽ được hỗ trợ xử lý sau 3h – 5h. Bạn cũng có thể vào Discord tạo ticket để được BQT hỗ trợ nhanh nhất.'
+        : 'Ticket của bạn đã được ghi nhận trên hệ thống! Đội ngũ BQT sẽ tiếp nhận và xử lý sau 3h – 5h. Bạn có thể tham gia Discord để được hỗ trợ ngay lập tức.';
 
       formWrap.style.display = 'none';
       successWrap.style.display = 'block';

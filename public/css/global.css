@@ -1338,18 +1338,20 @@ footer::before {
   box-shadow: 0 10px 26px rgba(0, 104, 255, 0.55), 0 0 18px rgba(59, 130, 246, 0.5);
 }
 
-/* Discord Support Ticket Circle Accent */
+/* Support Ticket Circle Button in FAB Menu (Amber Gaming Glow) */
+.dtm-fab-item.ticket-item,
 .dtm-fab-item.discord-ticket-item {
-  background: linear-gradient(135deg, #5865f2 0%, #4752c4 100%);
-  border-color: rgba(165, 180, 252, 0.7);
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  border-color: rgba(251, 191, 36, 0.75);
   color: #ffffff;
-  box-shadow: 0 8px 22px rgba(88, 101, 242, 0.38);
+  box-shadow: 0 8px 22px rgba(245, 158, 11, 0.42);
 }
 
+.dtm-fab-item.ticket-item:hover,
 .dtm-fab-item.discord-ticket-item:hover {
-  border-color: #c7d2fe;
+  border-color: #fef08a;
   color: #ffffff;
-  box-shadow: 0 10px 26px rgba(88, 101, 242, 0.58), 0 0 18px rgba(129, 140, 248, 0.55);
+  box-shadow: 0 10px 26px rgba(245, 158, 11, 0.65), 0 0 20px rgba(251, 191, 36, 0.55);
 }
 
 /* Admin Item Distinctive Gold Glow */
@@ -1581,6 +1583,87 @@ footer::before {
 .dtm-ticket-quick-btn.discord:hover {
   background: #5865f2;
   color: #fff;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   SUPPORT TICKET NOTICE BOX (Discord 3h-5h alert)
+═══════════════════════════════════════════════════════════ */
+.dtm-ticket-notice {
+  margin-top: 0.9rem;
+  padding: 0.85rem 1rem;
+  border-radius: 12px;
+  background: rgba(245, 158, 11, 0.08);
+  border: 1px solid rgba(245, 158, 11, 0.35);
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.25);
+  text-align: left;
+}
+
+.dtm-ticket-notice-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 0.45rem;
+}
+
+.dtm-ticket-notice-badge {
+  font-weight: 800;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #fbbf24;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.dtm-ticket-notice-time {
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 0.15rem 0.55rem;
+  border-radius: 9999px;
+  background: rgba(245, 158, 11, 0.2);
+  color: #fde68a;
+  border: 1px solid rgba(245, 158, 11, 0.45);
+}
+
+.dtm-ticket-notice-text {
+  margin: 0 0 0.65rem;
+  color: #fef3c7;
+  font-size: 0.82rem;
+  line-height: 1.5;
+}
+
+.dtm-ticket-notice-text strong {
+  color: #ffffff;
+  font-weight: 700;
+}
+
+.dtm-ticket-discord-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0.6rem 0.9rem;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #5865f2 0%, #4752c4 100%);
+  border: 1px solid rgba(165, 180, 252, 0.6);
+  color: #ffffff;
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-decoration: none;
+  box-shadow: 0 4px 14px rgba(88, 101, 242, 0.38);
+  transition: all 0.2s ease;
+}
+
+.dtm-ticket-discord-cta:hover {
+  background: linear-gradient(135deg, #6875f5 0%, #5865f2 100%);
+  border-color: #c7d2fe;
+  color: #ffffff;
+  box-shadow: 0 6px 20px rgba(88, 101, 242, 0.6);
+  transform: translateY(-1px);
 }
 
 /* ═══════════════════════════════════════════════════════════
