@@ -646,7 +646,7 @@
     <input type="hidden" id="rep-ticket-id">
 
     <!-- Sender & Issue Info Card -->
-    <div style="background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:10px;padding:0.75rem 1rem;margin-bottom:1rem;font-size:0.8rem;line-height:1.5">
+    <div style="background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:10px;padding:0.75rem 1rem;margin-bottom:0.75rem;font-size:0.8rem;line-height:1.5">
       <div style="display:flex;justify-content:space-between;margin-bottom:4px">
         <span style="color:var(--text-muted)">Người gửi:</span>
         <strong id="rep-info-sender" style="color:#fff">—</strong>
@@ -657,7 +657,17 @@
       </div>
       <div style="margin-top:6px;padding-top:6px;border-top:1px dashed var(--border)">
         <div style="font-weight:700;color:#fff;margin-bottom:2px" id="rep-info-subject">—</div>
-        <div style="color:var(--text-muted);white-space:pre-wrap;word-break:break-word;font-size:0.78rem" id="rep-info-msg">—</div>
+      </div>
+    </div>
+
+    <!-- Conversation Thread Box -->
+    <div style="margin-bottom:0.75rem">
+      <label style="font-size:0.78rem;font-weight:700;color:var(--text-muted);display:flex;justify-content:space-between;margin-bottom:4px">
+        <span>📜 Lịch sử trao đổi (Hội thoại):</span>
+        <span style="font-size:0.7rem;color:#94a3b8">User ⇄ Admin</span>
+      </label>
+      <div id="rep-conversation-wrap" style="max-height:160px;overflow-y:auto;background:rgba(0,0,0,0.3);border:1px solid var(--border);border-radius:8px;padding:8px 10px;font-size:0.78rem;display:flex;flex-direction:column;gap:6px">
+        <!-- Rendered by openTicketReplyModal -->
       </div>
     </div>
 
@@ -1346,12 +1356,19 @@ async function loadTickets() {
         ? '<span class="stock-toggle in-stock">✅ Đã đẩy Discord</span>'
         : `<span class="stock-toggle out-of-stock" title="${escapeTicketHtml(tk.discord_error || 'Chưa cấu hình Webhook')}">⚠️ Lưu DB</span>`;
 
+      const conv = tk.conversation || [];
+      const lastMsg = conv.length > 1 ? conv[conv.length - 1] : null;
+      const userRepliedBadge = (lastMsg && lastMsg.sender === 'user')
+        ? `<div style="margin-top:4px"><span style="background:rgba(168,85,247,0.2);color:#d8b4fe;border:1px solid #c084fc;padding:2px 6px;border-radius:4px;font-size:0.7rem;font-weight:700">💬 Khách mới phản hồi: "${escapeTicketHtml(lastMsg.message).substring(0, 40)}..."</span></div>`
+        : '';
+
       const adminReplyBox = tk.admin_note
         ? `<div style="margin-top:7px;padding:6px 9px;background:rgba(56,189,248,0.12);border-left:3px solid var(--lagoon);border-radius:4px;font-size:0.75rem;color:#e0f2fe;line-height:1.45;">
              <strong style="color:var(--lagoon);display:flex;align-items:center;gap:4px;">💬 Phản hồi của BQT:</strong>
              <div style="margin-top:2px;white-space:pre-wrap;word-break:break-word;">${escapeTicketHtml(tk.admin_note)}</div>
+             ${userRepliedBadge}
            </div>`
-        : `<div style="margin-top:5px;font-size:0.72rem;color:var(--text-muted);font-style:italic">⏳ Chưa có phản hồi của BQT</div>`;
+        : `<div style="margin-top:5px;font-size:0.72rem;color:var(--text-muted);font-style:italic">⏳ Chưa có phản hồi của BQT ${userRepliedBadge}</div>`;
 
       return `
         <tr>
@@ -1399,10 +1416,48 @@ function openTicketReplyModal(id) {
   document.getElementById('rep-info-sender').textContent = webU + mc + dc;
   document.getElementById('rep-info-cat').textContent = ticketCatLabels[tk.category] || tk.category;
   document.getElementById('rep-info-subject').textContent = tk.subject;
-  document.getElementById('rep-info-msg').textContent = tk.message;
 
-  document.getElementById('rep-status-select').value = tk.status === 'open' ? 'resolved' : tk.status;
-  document.getElementById('rep-admin-note').value = tk.admin_note || '';
+  // Render full conversation thread
+  const convWrap = document.getElementById('rep-conversation-wrap');
+  const conv = (Array.isArray(tk.conversation) && tk.conversation.length > 0)
+    ? tk.conversation
+    : [
+        { sender: 'user', sender_name: tk.minecraft_username || (tk.user?.username ?? 'Người chơi'), message: tk.message, created_at: tk.created_at },
+        ...(tk.admin_note ? [{ sender: 'admin', sender_name: 'BQT Đảo Tò Mò', message: tk.admin_note, created_at: tk.updated_at }] : [])
+      ];
+
+  convWrap.innerHTML = conv.map((msg, idx) => {
+    if (msg.sender === 'admin') {
+      return `
+        <div style="background:rgba(56,189,248,0.12);border-left:3px solid #38bdf8;padding:6px 8px;border-radius:4px;color:#f0f9ff">
+          <div style="display:flex;justify-content:space-between;color:#38bdf8;font-weight:700;font-size:0.74rem">
+            <span>🛡️ ${escapeTicketHtml(msg.sender_name || 'BQT')}</span>
+            <span style="font-size:0.68rem;color:#7dd3fc">${msg.created_at || ''}</span>
+          </div>
+          <div style="margin-top:2px;white-space:pre-wrap;word-break:break-word">${escapeTicketHtml(msg.message)}</div>
+        </div>
+      `;
+    } else if (msg.sender === 'system') {
+      return `
+        <div style="background:rgba(148,163,184,0.1);padding:4px 8px;border-radius:4px;color:#94a3b8;text-align:center;font-size:0.72rem">
+          ℹ️ ${escapeTicketHtml(msg.message)} (${msg.created_at || ''})
+        </div>
+      `;
+    } else {
+      return `
+        <div style="background:rgba(255,255,255,0.05);border-left:3px solid #f59e0b;padding:6px 8px;border-radius:4px;color:#f1f5f9">
+          <div style="display:flex;justify-content:space-between;color:#f59e0b;font-weight:700;font-size:0.74rem">
+            <span>👤 ${escapeTicketHtml(msg.sender_name || 'Người chơi')} ${idx === 0 ? '(Gốc)' : '(Đáp lại)'}</span>
+            <span style="font-size:0.68rem;color:#94a3b8">${msg.created_at || ''}</span>
+          </div>
+          <div style="margin-top:2px;white-space:pre-wrap;word-break:break-word">${escapeTicketHtml(msg.message)}</div>
+        </div>
+      `;
+    }
+  }).join('');
+
+  document.getElementById('rep-status-select').value = (tk.status === 'open' || tk.status === 'closed') ? 'resolved' : tk.status;
+  document.getElementById('rep-admin-note').value = '';
   document.getElementById('ticket-reply-msg').innerHTML = '';
   document.getElementById('ticket-reply-modal').classList.add('open');
   document.getElementById('rep-admin-note').focus();

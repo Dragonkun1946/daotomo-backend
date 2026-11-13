@@ -69,6 +69,8 @@ Route::middleware('throttle:10,1')->post('/orders/guest', [OrderController::clas
 Route::get('/support/config', [SupportTicketController::class, 'publicConfig']);
 Route::middleware('throttle:6,1')->post('/tickets', [SupportTicketController::class, 'store']);
 Route::get('/tickets/lookup', [SupportTicketController::class, 'lookup']);
+Route::middleware('throttle:15,1')->post('/tickets/{codeOrId}/reply', [SupportTicketController::class, 'reply']);
+Route::middleware('throttle:15,1')->post('/tickets/{codeOrId}/close', [SupportTicketController::class, 'close']);
 
 // ─── SePay Webhook Endpoints ──────────────────────────────────────────────────
 Route::match(['GET', 'POST'], '/webhooks/sepay', [SepayWebhookController::class, 'handleWebhook']);

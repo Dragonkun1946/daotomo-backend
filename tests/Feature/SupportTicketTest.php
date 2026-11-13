@@ -270,4 +270,68 @@ class SupportTicketTest extends TestCase
                 'success' => false,
             ]);
     }
+
+    public function test_user_can_reply_to_ticket_and_admin_threads_conversation(): void
+    {
+        $ticket = SupportTicket::create([
+            'ticket_code' => 'TK-778899',
+            'subject' => 'Lỗi kết nối /link',
+            'message' => 'Em gõ /link nhưng mã bị báo hết hạn.',
+            'category' => 'account',
+            'status' => 'open',
+        ]);
+
+        // 1. Admin responds
+        $admin = User::factory()->create(['role' => 'admin']);
+        $adminToken = $admin->createToken('admin_test')->plainTextToken;
+
+        $this->withHeader('Authorization', 'Bearer ' . $adminToken)
+            ->putJson("/api/admin/tickets/{$ticket->id}", [
+                'status' => 'in_progress',
+                'admin_note' => 'Chào bạn, bạn gõ lại lệnh /link trong game để nhận mã mới nhé.',
+            ])
+            ->assertStatus(200);
+
+        // 2. User replies back
+        $replyRes = $this->postJson("/api/tickets/{$ticket->ticket_code}/reply", [
+            'message' => 'Dạ em vừa gõ lại nhưng vẫn báo timeout, admin xem lại với ạ!',
+        ]);
+
+        $replyRes->assertStatus(200)
+            ->assertJson([
+                'success' => true,
+                'ticket' => [
+                    'status' => 'open',
+                ],
+            ]);
+
+        $fresh = $ticket->fresh();
+        $this->assertCount(2, $fresh->replies);
+        $this->assertCount(3, $fresh->conversation);
+        $this->assertEquals('Dạ em vừa gõ lại nhưng vẫn báo timeout, admin xem lại với ạ!', $fresh->replies[1]['message']);
+    }
+
+    public function test_user_can_close_ticket_when_resolved(): void
+    {
+        $ticket = SupportTicket::create([
+            'ticket_code' => 'TK-334455',
+            'subject' => 'Đã nhận đủ quà',
+            'message' => 'Em hỏi về quà nạp thẻ.',
+            'category' => 'other',
+            'status' => 'in_progress',
+            'admin_note' => 'BQT đã gửi đủ quà cho bạn rồi nhé!',
+        ]);
+
+        $closeRes = $this->postJson("/api/tickets/{$ticket->ticket_code}/close");
+        $closeRes->assertStatus(200)
+            ->assertJson([
+                'success' => true,
+                'ticket' => [
+                    'status' => 'closed',
+                ],
+            ]);
+
+        $fresh = $ticket->fresh();
+        $this->assertEquals('closed', $fresh->status);
+    }
 }

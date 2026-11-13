@@ -93,7 +93,19 @@ class AdminSupportController extends Controller
 
         $ticket->status = $validated['status'];
         if (array_key_exists('admin_note', $validated)) {
-            $ticket->admin_note = $validated['admin_note'] !== null ? trim($validated['admin_note']) : null;
+            $note = $validated['admin_note'] !== null ? trim($validated['admin_note']) : null;
+            $ticket->admin_note = $note;
+
+            if (!empty($note)) {
+                $replies = is_array($ticket->replies) ? $ticket->replies : [];
+                $replies[] = [
+                    'sender' => 'admin',
+                    'sender_name' => 'BQT Đảo Tò Mò',
+                    'message' => $note,
+                    'created_at' => now()->format('Y-m-d H:i:s'),
+                ];
+                $ticket->replies = $replies;
+            }
         }
         $ticket->save();
 

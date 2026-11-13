@@ -467,6 +467,15 @@ const api = {
     api.request('/tickets', { method: 'POST', body: JSON.stringify(payload) }),
   getMyTickets: () => api.request('/tickets/my'),
   lookupTicket: (code) => api.request('/tickets/lookup?code=' + encodeURIComponent(code)),
+  replyTicket: (codeOrId, message) =>
+    api.request(`/tickets/${encodeURIComponent(codeOrId)}/reply`, {
+      method: 'POST',
+      body: JSON.stringify({ message }),
+    }),
+  closeTicket: (codeOrId) =>
+    api.request(`/tickets/${encodeURIComponent(codeOrId)}/close`, {
+      method: 'POST',
+    }),
   getAdminTickets: (params = {}) => {
     const qs = new URLSearchParams(params).toString();
     return api.request(`/admin/tickets${qs ? '?' + qs : ''}`);
@@ -1264,26 +1273,164 @@ function initSupportTicketModal() {
 
   function renderSingleTicketCard(tk) {
     const badge = statusBadges[tk.status] || `<span style="font-size:0.72rem;color:#cbd5e1">${escapeTkHtml(tk.status)}</span>`;
-    const replyHtml = tk.admin_note
-      ? `<div style="margin-top:8px;padding:8px 10px;background:rgba(56,189,248,0.12);border-left:3px solid #38bdf8;border-radius:4px;font-size:0.78rem;color:#f0f9ff;line-height:1.45;">
-           <strong style="color:#38bdf8;display:flex;align-items:center;gap:4px;">💬 Phản hồi của BQT:</strong>
-           <div style="margin-top:3px;white-space:pre-wrap;word-break:break-word">${escapeTkHtml(tk.admin_note)}</div>
-         </div>`
-      : `<div style="margin-top:6px;font-size:0.73rem;color:#94a3b8;font-style:italic">⏳ Đang chờ BQT tiếp nhận và phản hồi (thời gian dự kiến 3h–5h)</div>`;
+
+    // Build conversation thread
+    const conversation = (Array.isArray(tk.conversation) && tk.conversation.length > 0)
+      ? tk.conversation
+      : [
+          { sender: 'user', sender_name: tk.minecraft_username || 'Người chơi', message: tk.message, created_at: tk.created_at },
+          ...(tk.admin_note ? [{ sender: 'admin', sender_name: 'BQT Đảo Tò Mò', message: tk.admin_note, created_at: tk.updated_at }] : [])
+        ];
+
+    let threadHtml = '';
+    conversation.forEach((msg, idx) => {
+      if (idx === 0) {
+        // Initial user question
+        threadHtml += `
+          <div style="margin-top:6px;padding:8px 10px;background:rgba(255,255,255,0.03);border-left:3px solid #f59e0b;border-radius:4px;font-size:0.78rem;color:#f1f5f9;line-height:1.45;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:2px">
+              <strong style="color:#f59e0b">👤 ${escapeTkHtml(msg.sender_name || 'Người chơi')} (Yêu cầu ban đầu):</strong>
+              <span style="font-size:0.68rem;color:#94a3b8">${msg.created_at ? new Date(msg.created_at).toLocaleString('vi-VN') : ''}</span>
+            </div>
+            <div style="white-space:pre-wrap;word-break:break-word">${escapeTkHtml(msg.message)}</div>
+          </div>
+        `;
+      } else if (msg.sender === 'admin') {
+        threadHtml += `
+          <div style="margin-top:6px;padding:8px 10px;background:rgba(56,189,248,0.12);border-left:3px solid #38bdf8;border-radius:4px;font-size:0.78rem;color:#f0f9ff;line-height:1.45;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:2px">
+              <strong style="color:#38bdf8">🛡️ ${escapeTkHtml(msg.sender_name || 'BQT Đảo Tò Mò')}:</strong>
+              <span style="font-size:0.68rem;color:#7dd3fc">${msg.created_at ? new Date(msg.created_at).toLocaleString('vi-VN') : ''}</span>
+            </div>
+            <div style="white-space:pre-wrap;word-break:break-word">${escapeTkHtml(msg.message)}</div>
+          </div>
+        `;
+      } else if (msg.sender === 'system') {
+        threadHtml += `
+          <div style="margin-top:6px;padding:4px 8px;background:rgba(148,163,184,0.1);border-radius:4px;font-size:0.72rem;color:#94a3b8;text-align:center;">
+            ℹ️ ${escapeTkHtml(msg.message)} ${msg.created_at ? '(' + new Date(msg.created_at).toLocaleString('vi-VN') + ')' : ''}
+          </div>
+        `;
+      } else {
+        // User reply
+        threadHtml += `
+          <div style="margin-top:6px;padding:8px 10px;background:rgba(255,255,255,0.06);border-left:3px solid #a855f7;border-radius:4px;font-size:0.78rem;color:#f3e8ff;line-height:1.45;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:2px">
+              <strong style="color:#c084fc">💬 Bạn phản hồi lại:</strong>
+              <span style="font-size:0.68rem;color:#d8b4fe">${msg.created_at ? new Date(msg.created_at).toLocaleString('vi-VN') : ''}</span>
+            </div>
+            <div style="white-space:pre-wrap;word-break:break-word">${escapeTkHtml(msg.message)}</div>
+          </div>
+        `;
+      }
+    });
+
+    const isClosed = tk.status === 'closed';
+
+    let actionsHtml = '';
+    if (!isClosed) {
+      actionsHtml = `
+        <div style="margin-top:10px;padding-top:8px;border-top:1px dashed rgba(255,255,255,0.1);">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;flex-wrap:wrap;gap:6px">
+            <span style="font-size:0.73rem;color:#94a3b8">Đã xử lý xong vấn đề của bạn?</span>
+            <button type="button" class="btn" style="background:rgba(16,185,129,0.18);border:1px solid #10b981;color:#6ee7b7;padding:3px 10px;font-size:0.72rem;border-radius:6px;cursor:pointer;font-weight:700" onclick="window.dtmCloseTicket('${escapeTkHtml(tk.ticket_code)}')">
+              ✅ Đã giải quyết (Đóng Ticket)
+            </button>
+          </div>
+          <div style="font-size:0.74rem;color:#e2e8f0;font-weight:700;margin-bottom:4px">💬 Chưa giải quyết được? Phản hồi tiếp cho BQT:</div>
+          <div style="display:flex;gap:6px;">
+            <input type="text" id="dtm-rep-input-${escapeTkHtml(tk.ticket_code)}" placeholder="Nhập câu trả lời / thắc mắc tiếp theo..." style="flex:1;background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.18);border-radius:6px;padding:6px 10px;font-size:0.78rem;color:#fff;" onkeydown="if(event.key==='Enter') window.dtmSendReplyTicket('${escapeTkHtml(tk.ticket_code)}')">
+            <button type="button" class="btn btn-primary" style="padding:4px 12px;font-size:0.75rem;white-space:nowrap;" onclick="window.dtmSendReplyTicket('${escapeTkHtml(tk.ticket_code)}')">📤 Gửi Lại</button>
+          </div>
+        </div>
+      `;
+    } else {
+      actionsHtml = `
+        <div style="margin-top:8px;padding:6px 10px;background:rgba(148,163,184,0.08);border-radius:6px;font-size:0.73rem;color:#94a3b8;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px">
+          <span>🔒 Ticket này đã được đóng (Vấn đề đã giải quyết).</span>
+          <button type="button" class="btn btn-ghost" style="padding:2px 8px;font-size:0.72rem;color:#fbbf24;" onclick="window.dtmPromptReopen('${escapeTkHtml(tk.ticket_code)}')">💬 Cần hỏi thêm? Mở lại & Phản hồi</button>
+        </div>
+      `;
+    }
 
     return `
-      <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:10px 12px;text-align:left;">
+      <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:10px 12px;text-align:left;margin-bottom:8px">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;flex-wrap:wrap;gap:4px">
           <span style="font-family:var(--font-mono);font-weight:800;color:#f59e0b;font-size:0.82rem">#${escapeTkHtml(tk.ticket_code)}</span>
           ${badge}
         </div>
         <div style="font-weight:700;color:#fff;font-size:0.84rem;margin-bottom:2px">${escapeTkHtml(tk.subject)}</div>
-        <div style="font-size:0.77rem;color:var(--text-muted);white-space:pre-wrap;word-break:break-word">${escapeTkHtml(tk.message)}</div>
-        ${replyHtml}
-        <div style="font-size:0.7rem;color:#64748b;margin-top:6px;text-align:right">${new Date(tk.created_at).toLocaleString('vi-VN')}</div>
+        ${threadHtml}
+        ${actionsHtml}
       </div>
     `;
   }
+
+  window.dtmCloseTicket = async function(ticketCode) {
+    if (!confirm(`Bạn có chắc chắn vấn đề trên Ticket #${ticketCode} đã được giải quyết và muốn đóng ticket này không?`)) {
+      return;
+    }
+    try {
+      const res = await api.closeTicket(ticketCode);
+      if (window.SoundFX) SoundFX.playSuccess();
+      alert(res.message || `Đã đóng Ticket #${ticketCode} thành công!`);
+      loadUserTickets();
+      const trackInput = document.getElementById('dtm-track-code-input');
+      if (trackInput && trackInput.value.trim()) {
+        document.getElementById('dtm-track-search-btn')?.click();
+      }
+    } catch (e) {
+      if (window.SoundFX) SoundFX.playError();
+      alert('Lỗi: ' + (e.message || 'Không thể đóng ticket'));
+    }
+  };
+
+  window.dtmSendReplyTicket = async function(ticketCode) {
+    const input = document.getElementById('dtm-rep-input-' + ticketCode);
+    if (!input) return;
+    const msg = input.value.trim();
+    if (!msg) {
+      alert('Vui lòng nhập nội dung phản hồi.');
+      input.focus();
+      return;
+    }
+    input.disabled = true;
+    try {
+      const res = await api.replyTicket(ticketCode, msg);
+      if (window.SoundFX) SoundFX.playSuccess();
+      input.value = '';
+      input.disabled = false;
+      alert(res.message || 'Đã gửi phản hồi thành công!');
+      loadUserTickets();
+      const trackInput = document.getElementById('dtm-track-code-input');
+      if (trackInput && trackInput.value.trim()) {
+        document.getElementById('dtm-track-search-btn')?.click();
+      }
+    } catch (e) {
+      input.disabled = false;
+      if (window.SoundFX) SoundFX.playError();
+      alert('Lỗi: ' + (e.message || 'Không thể gửi phản hồi'));
+    }
+  };
+
+  window.dtmPromptReopen = function(ticketCode) {
+    const msg = prompt(`Nhập nội dung bạn cần hỏi thêm để mở lại Ticket #${ticketCode}:`);
+    if (!msg || !msg.trim()) return;
+    api.replyTicket(ticketCode, msg.trim())
+      .then(res => {
+        if (window.SoundFX) SoundFX.playSuccess();
+        alert(res.message || 'Đã mở lại ticket và gửi phản hồi thành công!');
+        loadUserTickets();
+        const trackInput = document.getElementById('dtm-track-code-input');
+        if (trackInput && trackInput.value.trim()) {
+          document.getElementById('dtm-track-search-btn')?.click();
+        }
+      })
+      .catch(e => {
+        if (window.SoundFX) SoundFX.playError();
+        alert('Lỗi: ' + (e.message || 'Không thể mở lại ticket'));
+      });
+  };
 
   async function loadUserTickets() {
     trackMsg.innerHTML = '';
