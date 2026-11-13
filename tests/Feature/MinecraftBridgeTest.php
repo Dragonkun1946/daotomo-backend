@@ -209,4 +209,72 @@ class MinecraftBridgeTest extends TestCase
             ->postJson('/api/internal/minecraft/checkins/reset-today');
         $resetRes->assertStatus(200)->assertJson(['success' => true]);
     }
+
+    public function test_bridge_pending_orders_and_mock_pay(): void
+    {
+        $bridgeToken = config('services.minecraft.bridge_token');
+        $user = User::factory()->create([
+            'minecraft_username' => 'StevePay',
+            'minecraft_uuid' => '55555555-5555-5555-5555-555555555555',
+        ]);
+
+        $rankProduct = \App\Models\Product::where('slug', 'rank-knight')->first()
+            ?: \App\Models\Product::create([
+                'slug' => 'rank-knight',
+                'name' => 'Rank Hiệp Sĩ (Knight)',
+                'category' => 'rank',
+                'game_reward' => 'rank:knight',
+                'price' => 39000,
+                'is_active' => true,
+            ]);
+
+        $order = \App\Models\Order::create([
+            'user_id' => $user->id,
+            'order_code' => 'DTM-TESTPAY1',
+            'minecraft_username' => 'StevePay',
+            'payment_status' => 'pending',
+            'order_status' => 'pending',
+            'total_amount' => 39000,
+        ]);
+
+        \App\Models\OrderItem::create([
+            'order_id' => $order->id,
+            'product_id' => $rankProduct->id,
+            'product_name' => $rankProduct->name,
+            'price' => $rankProduct->price,
+            'quantity' => 1,
+            'subtotal' => 39000,
+        ]);
+
+        // 1. Get pending orders via bridge
+        $pendingRes = $this->withHeaders(['X-Bridge-Token' => $bridgeToken])
+            ->getJson('/api/internal/minecraft/orders/pending');
+        $pendingRes->assertStatus(200)->assertJson(['success' => true]);
+
+        // 2. Mock pay order via bridge
+        $payRes = $this->withHeaders(['X-Bridge-Token' => $bridgeToken])
+            ->postJson('/api/internal/minecraft/orders/mock-pay', [
+                'order_code' => 'DTM-TESTPAY1',
+            ]);
+
+        $payRes->assertStatus(200)
+            ->assertJson([
+                'success' => true,
+                'order' => [
+                    'order_code' => 'DTM-TESTPAY1',
+                    'payment_status' => 'paid',
+                ],
+            ]);
+
+        $this->assertDatabaseHas('orders', [
+            'id' => $order->id,
+            'payment_status' => 'paid',
+        ]);
+
+        $this->assertDatabaseHas('game_delivery_queue', [
+            'order_id' => $order->id,
+            'game_username' => 'StevePay',
+            'status' => 'pending',
+        ]);
+    }
 }

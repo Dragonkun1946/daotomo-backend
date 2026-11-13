@@ -555,6 +555,138 @@
             from { transform: translateY(20px); opacity: 0; }
             to { transform: translateY(0); opacity: 1; }
         }
+
+        /* Live Environment Alert Header */
+        .live-env-banner {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: rgba(16, 185, 129, 0.12);
+            border: 1px solid rgba(16, 185, 129, 0.4);
+            border-radius: 12px;
+            padding: 12px 20px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+            gap: 10px;
+            transition: all 0.3s ease;
+        }
+        .live-env-banner.local-env {
+            background: rgba(245, 158, 11, 0.12);
+            border-color: rgba(245, 158, 11, 0.4);
+        }
+
+        /* Celebration Success Modal Dialog */
+        .celebration-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(10, 15, 29, 0.88);
+            backdrop-filter: blur(8px);
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+            animation: fadeIn 0.25s ease;
+        }
+        .celebration-card {
+            background: linear-gradient(145deg, #131c2e 0%, #1e293b 100%);
+            border: 2px solid #34d399;
+            border-radius: 20px;
+            padding: 32px 28px;
+            max-width: 560px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.75), 0 0 35px rgba(52, 211, 153, 0.35);
+            position: relative;
+            animation: popUp 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .celebration-card.is-delivery {
+            border-color: #38bdf8;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.75), 0 0 35px rgba(56, 189, 248, 0.35);
+        }
+        .celebration-card.is-checkin {
+            border-color: #fbbf24;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.75), 0 0 35px rgba(251, 191, 36, 0.35);
+        }
+        @keyframes popUp {
+            from { transform: scale(0.85); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        .celebration-close-btn {
+            position: absolute;
+            top: 14px;
+            right: 16px;
+            background: rgba(255, 255, 255, 0.08);
+            border: none;
+            color: #94a3b8;
+            font-size: 18px;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .celebration-close-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            color: #fff;
+        }
+        .celebration-icon {
+            font-size: 54px;
+            margin-bottom: 12px;
+            animation: celebBounce 1s infinite alternate;
+        }
+        @keyframes celebBounce {
+            from { transform: translateY(0); }
+            to { transform: translateY(-8px); }
+        }
+        .celebration-badge {
+            display: inline-block;
+            padding: 6px 16px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+            border-radius: 9999px;
+            background: rgba(52, 211, 153, 0.15);
+            color: #34d399;
+            border: 1px solid rgba(52, 211, 153, 0.4);
+            margin-bottom: 14px;
+        }
+        .celebration-title {
+            font-size: 22px;
+            font-weight: 800;
+            color: #ffffff;
+            margin-bottom: 8px;
+            line-height: 1.3;
+        }
+        .celebration-desc {
+            font-size: 14px;
+            color: #94a3b8;
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+        .celebration-details {
+            background: rgba(10, 15, 29, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 24px;
+            text-align: left;
+            font-size: 13px;
+        }
+        .celebration-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
     </style>
 </head>
 <body>
@@ -574,6 +706,25 @@
             <span id="statusText">Đang kết nối...</span>
         </div>
     </header>
+
+    <!-- Prominent Active Environment Banner -->
+    <div id="activeEnvBanner" class="live-env-banner">
+        <div style="display: flex; align-items: center; gap: 10px;">
+            <span id="activeEnvDot" style="font-size: 20px;">🟢</span>
+            <div>
+                <div style="font-size: 14px; font-weight: 700; color: #ffffff;" id="activeEnvTitle">
+                    MÔI TRƯỜNG HIỆN TẠI: CLOUD RENDER (https://daotomo-backend.onrender.com)
+                </div>
+                <div style="font-size: 12px; color: #94a3b8;" id="activeEnvSubtitle">
+                    Tất cả thao tác PIN, Thanh toán và Điểm danh đang kết nối trực tiếp CSDL Render Live.
+                </div>
+            </div>
+        </div>
+        <div style="display: flex; gap: 8px;">
+            <button class="btn btn-blue btn-sm" onclick="openMatchingWeb()">🌐 Mở Website Này</button>
+            <button class="btn btn-outline btn-sm" onclick="toggleEnv()" id="envQuickSwitchBtn">Chuyển sang Localhost:8000</button>
+        </div>
+    </div>
 
     <!-- Config Bar -->
     <div class="config-card">
@@ -607,6 +758,13 @@
             </div>
             <div class="info-banner">
                 💡 <strong>Nguyên lý bảo mật:</strong> Khi người chơi gõ <code>/link</code> trong server Minecraft, Server game gọi Bridge API để sinh mã PIN ngẫu nhiên 6 chữ số có tiền tố <code>DTM-XXXXXX</code> (hiệu lực 10 phút). Người chơi sao chép mã này vào trang Web Đảo Tò Mò để xác nhận liên kết 1-1 an toàn mà không cần nhập mật khẩu game.
+            </div>
+
+            <!-- Tab 1 Target Server Alert -->
+            <div id="tab1EnvBanner" class="info-banner" style="background: rgba(16, 185, 129, 0.12); border-left-color: #34d399; margin-bottom: 16px;">
+                ⚠️ <strong>Lưu ý đồng bộ môi trường:</strong> Mã PIN đang được tạo cho máy chủ: <strong id="tab1EnvName" style="color:#34d399;">Cloud Render (Live)</strong>.<br>
+                Vui lòng nhập mã PIN vào đúng website: 
+                <a href="#" id="tab1OpenWebLink" onclick="openAccountWeb(); return false;" style="color:#60a5fa; text-decoration:underline; font-weight:700;">👉 Bấm vào đây để mở trang Web Tài Khoản (Account.html) của máy chủ này</a>
             </div>
 
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;">
@@ -668,6 +826,34 @@
             </div>
             <div class="info-banner">
                 🛒 <strong>Cơ chế tự động hóa:</strong> Khi khách hàng mua Rank hoặc Gói Xu trên Web, hệ thống tự động đưa các lệnh Minecraft (ví dụ <code>lp user {player} parent add vip</code>) vào hàng đợi. Server Minecraft định kỳ polling qua Bridge API để thực thi và cập nhật trạng thái đơn sang <code>delivered</code>.
+            </div>
+
+            <!-- SePay Mock Payment Simulator Box -->
+            <div style="background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.35); border-radius: 12px; padding: 18px; margin-bottom: 20px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; flex-wrap: wrap; gap: 8px;">
+                    <span style="font-size: 15px; font-weight: 700; color: #34d399;">💳 Giả Lập Thanh Toán Tự Động SePay (VietQR Webhook Simulator)</span>
+                    <button class="btn btn-outline btn-sm" onclick="fetchPendingOrdersForMockPay()">🔄 Quét Đơn Web Chờ Thanh Toán</button>
+                </div>
+                <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 14px; line-height: 1.5;">
+                    Khi bạn hoặc Giảng viên tạo đơn mua Rank / Gói Xu trên Website Đảo Tò Mò, đơn sẽ ở trạng thái <code>Chờ thanh toán</code>. Hãy chọn hoặc nhập mã đơn hàng bên dưới rồi bấm <strong>"Thanh Toán Đơn Ngay"</strong> để giả lập khách chuyển khoản thành công qua SePay!
+                </p>
+                <div style="display: grid; grid-template-columns: 1fr 1fr auto; gap: 10px; align-items: flex-end;">
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label style="font-size: 12px;">Chọn Đơn Chờ Thanh Toán (Web)</label>
+                        <select id="mockPayOrderSelect" class="input-box" onchange="onOrderSelectChange(this.value)">
+                            <option value="">-- Bấm "Quét Đơn Web" để tải --</option>
+                        </select>
+                    </div>
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label style="font-size: 12px;">Hoặc Nhập Mã Đơn Hàng (Order Code)</label>
+                        <input type="text" id="mockPayOrderCodeInput" class="input-box" placeholder="Ví dụ: DTM-849201...">
+                    </div>
+                    <div>
+                        <button class="btn btn-green" onclick="executeMockPay()" style="height: 42px; font-weight: 700; white-space: nowrap;">
+                            💸 1. Giả Lập Thanh Toán Thành Công
+                        </button>
+                    </div>
+                </div>
             </div>
 
             <div style="display: flex; gap: 10px; margin-bottom: 16px; flex-wrap: wrap;">
@@ -823,6 +1009,24 @@
     </div>
 </div>
 
+<!-- Celebration Success Modal Dialog -->
+<div id="celebrationModal" class="celebration-overlay" style="display:none;" onclick="if(event.target===this) closeCelebrationModal()">
+    <div class="celebration-card" id="celebCardBox">
+        <button class="celebration-close-btn" onclick="closeCelebrationModal()">✕</button>
+        <div class="celebration-icon" id="celebIcon">🎉</div>
+        <div class="celebration-badge" id="celebBadge">XÁC NHẬN THÀNH CÔNG</div>
+        <h2 class="celebration-title" id="celebTitle">Thanh Toán Đơn Hàng Thành Công!</h2>
+        <p class="celebration-desc" id="celebDesc">Hệ thống SePay đã ghi nhận tiền và xếp lệnh giao đồ in-game vào hàng đợi.</p>
+        <div class="celebration-details" id="celebDetails">
+            <!-- Dynamic details -->
+        </div>
+        <div class="celebration-actions">
+            <button class="btn btn-green" id="celebPrimaryBtn" onclick="closeCelebrationModal()">✅ Tuyệt Vời (Đóng)</button>
+            <button class="btn btn-outline" id="celebSecondaryBtn" style="display:none;" onclick="switchTab('tab-deliveries'); closeCelebrationModal();">📦 Xem Hàng Đợi Giao Đồ</button>
+        </div>
+    </div>
+</div>
+
 <div id="toast">Thông báo</div>
 
 <script>
@@ -833,17 +1037,125 @@
     let lastLatestCheckinId = null;
     let checkinPollTimer = null;
 
+    // Web Audio Chime Sound FX
+    function playSuccessSound() {
+        try {
+            const AudioCtx = window.AudioContext || window.webkitAudioContext;
+            if (!AudioCtx) return;
+            const ctx = new AudioCtx();
+            const now = ctx.currentTime;
+            [523.25, 659.25, 783.99, 1046.50].forEach((freq, i) => {
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(freq, now + i * 0.08);
+                gain.gain.setValueAtTime(0.2, now + i * 0.08);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.08 + 0.55);
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start(now + i * 0.08);
+                osc.stop(now + i * 0.08 + 0.6);
+            });
+        } catch (e) {
+            console.log('Audio autoplay:', e);
+        }
+    }
+
+    // Celebration Modal Controller
+    function showCelebrationModal({ type = 'payment', icon = '🎉', badge = 'THÀNH CÔNG', title, desc, detailsHtml, primaryText = '✅ Đã Hiểu (Đóng)', secondaryText, onSecondary }) {
+        const modal = document.getElementById('celebrationModal');
+        const card = document.getElementById('celebCardBox');
+        const iconEl = document.getElementById('celebIcon');
+        const badgeEl = document.getElementById('celebBadge');
+        const titleEl = document.getElementById('celebTitle');
+        const descEl = document.getElementById('celebDesc');
+        const detailsEl = document.getElementById('celebDetails');
+        const priBtn = document.getElementById('celebPrimaryBtn');
+        const secBtn = document.getElementById('celebSecondaryBtn');
+
+        card.className = 'celebration-card';
+        if (type === 'delivery') card.classList.add('is-delivery');
+        if (type === 'checkin' || type === 'live_checkin') card.classList.add('is-checkin');
+
+        iconEl.textContent = icon;
+        badgeEl.textContent = badge;
+        titleEl.textContent = title;
+        descEl.innerHTML = desc;
+        detailsEl.innerHTML = detailsHtml;
+        priBtn.textContent = primaryText;
+
+        if (secondaryText && typeof onSecondary === 'function') {
+            secBtn.textContent = secondaryText;
+            secBtn.style.display = 'inline-block';
+            secBtn.onclick = () => { onSecondary(); closeCelebrationModal(); };
+        } else {
+            secBtn.style.display = 'none';
+        }
+
+        modal.style.display = 'flex';
+        playSuccessSound();
+    }
+
+    function closeCelebrationModal() {
+        const modal = document.getElementById('celebrationModal');
+        if (modal) modal.style.display = 'none';
+    }
+
     // Initialize
     window.addEventListener('DOMContentLoaded', () => {
-        // Auto test connection on startup
+        updateEnvBanner();
         testConnection();
-        // Fetch deliveries
         fetchPendingDeliveries();
-        // Fetch recent checkins
+        fetchPendingOrdersForMockPay();
         fetchRecentCheckins();
-        // Start live listener for checkins every 2.5 seconds
         startCheckinPolling();
     });
+
+    // Update Environment Banner UI
+    function updateEnvBanner() {
+        const banner = document.getElementById('activeEnvBanner');
+        const dot = document.getElementById('activeEnvDot');
+        const title = document.getElementById('activeEnvTitle');
+        const sub = document.getElementById('activeEnvSubtitle');
+        const quickBtn = document.getElementById('envQuickSwitchBtn');
+        const tab1Name = document.getElementById('tab1EnvName');
+        const tab1Banner = document.getElementById('tab1EnvBanner');
+
+        if (currentEnv === 'render') {
+            banner.className = 'live-env-banner';
+            dot.textContent = '🟢';
+            title.textContent = 'MÔI TRƯỜNG HIỆN TẠI: CLOUD RENDER (https://daotomo-backend.onrender.com)';
+            sub.textContent = 'Tất cả thao tác PIN, Thanh toán và Điểm danh đang kết nối trực tiếp CSDL Render Live.';
+            quickBtn.textContent = '💻 Đổi Sang Localhost:8000';
+            if (tab1Name) {
+                tab1Name.textContent = 'Cloud Render (Live)';
+                tab1Name.style.color = '#34d399';
+            }
+            if (tab1Banner) {
+                tab1Banner.style.background = 'rgba(16, 185, 129, 0.12)';
+                tab1Banner.style.borderLeftColor = '#34d399';
+            }
+        } else {
+            banner.className = 'live-env-banner local-env';
+            dot.textContent = '🟡';
+            title.textContent = 'MÔI TRƯỜNG HIỆN TẠI: LOCALHOST (http://localhost:8000)';
+            sub.textContent = 'Đang kết nối CSDL cục bộ máy tính bạn. Hãy mở website tại http://localhost:8000 để kiểm thử!';
+            quickBtn.textContent = '🌐 Đổi Sang Render Live';
+            if (tab1Name) {
+                tab1Name.textContent = 'Localhost:8000 (Nội Bộ)';
+                tab1Name.style.color = '#fbbf24';
+            }
+            if (tab1Banner) {
+                tab1Banner.style.background = 'rgba(245, 158, 11, 0.12)';
+                tab1Banner.style.borderLeftColor = '#fbbf24';
+            }
+        }
+    }
+
+    function openMatchingWeb() {
+        const baseUrl = document.getElementById('apiUrl').value.trim();
+        window.open(`${baseUrl}/html/Account.html`, '_blank');
+    }
 
     // Log to terminal
     function logMessage(msg, type = 'info') {
@@ -881,10 +1193,16 @@
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
         document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
         
-        event.currentTarget.classList.add('active');
-        document.getElementById(tabId).classList.add('active');
+        const targetBtn = Array.from(document.querySelectorAll('.tab-btn')).find(b => b.getAttribute('onclick')?.includes(tabId));
+        if (targetBtn) targetBtn.classList.add('active');
+        
+        const panel = document.getElementById(tabId);
+        if (panel) panel.classList.add('active');
 
-        if (tabId === 'tab-deliveries') fetchPendingDeliveries();
+        if (tabId === 'tab-deliveries') {
+            fetchPendingDeliveries();
+            fetchPendingOrdersForMockPay();
+        }
         if (tabId === 'tab-checkin') fetchRecentCheckins();
     }
 
@@ -908,7 +1226,11 @@
             urlInput.value = 'https://daotomo-backend.onrender.com';
             logMessage('Đã chuyển cấu hình sang máy chủ Cloud Render');
         }
+        updateEnvBanner();
         testConnection();
+        fetchPendingDeliveries();
+        fetchPendingOrdersForMockPay();
+        fetchRecentCheckins();
     }
 
     // Randomize UUID
@@ -1228,12 +1550,150 @@
             if (res.ok && data.success) {
                 logMessage(`✅ Xác nhận giao thành công ${ids.length} lệnh vào game! Đơn hàng đã chuyển sang DELIVERED.`, 'ok');
                 showToast(`Đã giao thành công ${ids.length} lệnh in-game!`);
+
+                showCelebrationModal({
+                    type: 'delivery',
+                    icon: '📦',
+                    badge: 'IN-GAME DELIVERED • GIAO ĐỒ THÀNH CÔNG',
+                    title: `Đã Giao Thành Công ${ids.length} Lệnh In-Game!`,
+                    desc: `Hệ thống Minecraft Bridge đã thực thi lệnh thành công qua RCON/Console server. Vật phẩm & Quyền lợi đã nạp trực tiếp vào tài khoản người chơi!`,
+                    detailsHtml: `
+                        <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+                            <span style="color:#94a3b8;">Số lượng lệnh đã chạy:</span>
+                            <strong style="color:#34d399;">${ids.length} Lệnh Minecraft</strong>
+                        </div>
+                        <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+                            <span style="color:#94a3b8;">Trạng thái hàng đợi:</span>
+                            <span class="badge badge-completed">COMPLETED / DELIVERED</span>
+                        </div>
+                        <div style="color:#94a3b8; font-size:12px; margin-top:8px;">
+                            Người chơi có thể vào server Minecraft gõ kiểm tra đồ hoặc nhận ngay trong túi đồ/hòm thưởng Crate.
+                        </div>
+                    `,
+                    primaryText: '✅ Hoàn Tất'
+                });
+
                 fetchPendingDeliveries();
             } else {
                 logMessage(`❌ ${data.message}`, 'err');
+                alert(data.message);
             }
         } catch (err) {
             logMessage(`❌ Lỗi: ${err.message}`, 'err');
+        }
+    }
+
+    // Fetch Pending Orders for Mock Pay
+    async function fetchPendingOrdersForMockPay() {
+        const baseUrl = document.getElementById('apiUrl').value.trim();
+        const token = document.getElementById('bridgeToken').value.trim();
+        const select = document.getElementById('mockPayOrderSelect');
+        if (!select) return;
+
+        try {
+            const res = await fetch(`${baseUrl}/api/internal/minecraft/orders/pending`, {
+                headers: { 'Accept': 'application/json', 'X-Bridge-Token': token }
+            });
+            const data = await res.json();
+            if (res.ok && data.success) {
+                const orders = data.orders || [];
+                if (orders.length === 0) {
+                    select.innerHTML = '<option value="">-- Không có đơn nào đang chờ (Hãy tạo đơn trên Web) --</option>';
+                    return;
+                }
+                select.innerHTML = '<option value="">-- Chọn một đơn hàng web chờ thanh toán --</option>' +
+                    orders.map(o => {
+                        const items = (o.items || []).map(i => i.product_name || i.product?.name || 'Sản phẩm').join(', ');
+                        const amount = Number(o.total_amount || 0).toLocaleString('vi-VN');
+                        const player = o.minecraft_username || o.user?.minecraft_username || o.user?.username || 'Khách';
+                        return `<option value="${o.order_code}">#${o.order_code} - ${player} - [${items}] (${amount}đ)</option>`;
+                    }).join('');
+            }
+        } catch (e) {
+            console.log('Error fetching pending orders:', e);
+        }
+    }
+
+    function onOrderSelectChange(code) {
+        if (code) {
+            document.getElementById('mockPayOrderCodeInput').value = code;
+        }
+    }
+
+    // Execute Mock Pay
+    async function executeMockPay() {
+        const baseUrl = document.getElementById('apiUrl').value.trim();
+        const token = document.getElementById('bridgeToken').value.trim();
+        const codeInput = document.getElementById('mockPayOrderCodeInput');
+        const select = document.getElementById('mockPayOrderSelect');
+        const code = (codeInput?.value || select?.value || '').trim();
+
+        if (!code) {
+            alert('Vui lòng chọn một đơn hàng từ danh sách hoặc nhập mã đơn hàng (ví dụ: DTM-XXXXXX)!');
+            return;
+        }
+
+        logMessage(`POST /api/internal/minecraft/orders/mock-pay [${code}]...`);
+
+        try {
+            const res = await fetch(`${baseUrl}/api/internal/minecraft/orders/mock-pay`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'X-Bridge-Token': token
+                },
+                body: JSON.stringify({ order_code: code })
+            });
+            const data = await res.json();
+
+            if (res.ok && data.success) {
+                const order = data.order || {};
+                const amount = Number(order.total_amount || 0).toLocaleString('vi-VN');
+                const player = data.player || order.minecraft_username || 'Người chơi';
+                const count = data.queued_count || 1;
+
+                logMessage(`🎉 [THANH TOÁN THÀNH CÔNG] Đơn [#${order.order_code}] đã chuyển sang PAID! Đã nạp ${count} lệnh in-game cho [${player}].`, 'ok');
+                showToast(`Đã thanh toán thành công đơn #${order.order_code}!`);
+
+                showCelebrationModal({
+                    type: 'payment',
+                    icon: '💳',
+                    badge: 'SEPAY WEBHOOK • THANH TOÁN THÀNH CÔNG',
+                    title: `Thanh Toán Thành Công Đơn #${order.order_code}!`,
+                    desc: `Hệ thống SePay đã tự động xác nhận chuyển khoản <strong>${amount}đ</strong> và lập tức chuyển trạng thái sang <code>PAID</code>!`,
+                    detailsHtml: `
+                        <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+                            <span style="color:#94a3b8;">Mã đơn hàng:</span>
+                            <strong style="color:#60a5fa;">#${order.order_code}</strong>
+                        </div>
+                        <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+                            <span style="color:#94a3b8;">Nhân vật nhận in-game:</span>
+                            <strong style="color:#fbbf24;">${player}</strong>
+                        </div>
+                        <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+                            <span style="color:#94a3b8;">Số tiền thanh toán:</span>
+                            <strong style="color:#34d399;">${amount} VNĐ</strong>
+                        </div>
+                        <div style="display:flex; justify-content:space-between;">
+                            <span style="color:#94a3b8;">Lệnh Minecraft đã xếp hàng:</span>
+                            <span class="badge badge-pending" style="font-size:12px;">${count} Lệnh Chờ Giao</span>
+                        </div>
+                    `,
+                    primaryText: '✅ Đã Hiểu',
+                    secondaryText: '📦 Xem Hàng Đợi Giao Đồ',
+                    onSecondary: () => { switchTab('tab-deliveries'); }
+                });
+
+                fetchPendingDeliveries();
+                fetchPendingOrdersForMockPay();
+            } else {
+                logMessage(`❌ ${data.message || 'Lỗi thanh toán'}`, 'err');
+                alert(data.message || 'Không thể thanh toán đơn hàng này');
+            }
+        } catch (err) {
+            logMessage(`❌ Lỗi mạng: ${err.message}`, 'err');
+            alert(err.message);
         }
     }
 
@@ -1262,6 +1722,35 @@
                         // Flash notification!
                         showToast(`🎉 PHÁT HIỆN ĐIỂM DANH MỚI: ${latest.web_username}! Nhận 10 Rare Keys!`);
                         logMessage(`🎉 [LIVE SỰ KIỆN] Người dùng [${latest.web_username}] vừa bấm ĐIỂM DANH trên Website! Nhận 10 Rare Keys + ${latest.coins_awarded} Xu! Lệnh Minecraft đã nạp vào hàng đợi.`, 'ok');
+
+                        showCelebrationModal({
+                            type: 'live_checkin',
+                            icon: '🎁',
+                            badge: 'SỰ KIỆN LIVE TỪ WEBSITE',
+                            title: `Phát Hiện Người Chơi Vừa Điểm Danh!`,
+                            desc: `Tài khoản <strong>${latest.web_username}</strong> vừa bấm Điểm Danh trên Website! Hệ thống Bridge đã nhận tín hiệu và tự động xếp phần thưởng in-game.`,
+                            detailsHtml: `
+                                <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+                                    <span style="color:#94a3b8;">Người chơi:</span>
+                                    <strong style="color:#60a5fa;">${latest.web_username} (IGN: ${latest.minecraft_username || latest.web_username})</strong>
+                                </div>
+                                <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+                                    <span style="color:#94a3b8;">Chuỗi điểm danh:</span>
+                                    <strong style="color:#fbbf24;">🔥 Ngày ${latest.streak}</strong>
+                                </div>
+                                <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+                                    <span style="color:#94a3b8;">Phần thưởng in-game:</span>
+                                    <strong style="color:#34d399;">🗝️ 10 Rare Crate Keys</strong>
+                                </div>
+                                <div style="display:flex; justify-content:space-between;">
+                                    <span style="color:#94a3b8;">Xu thưởng Web:</span>
+                                    <strong style="color:#fbbf24;">+${latest.coins_awarded} Xu Đảo</strong>
+                                </div>
+                            `,
+                            primaryText: '✅ Đã Bắt Tín Hiệu (Đóng)',
+                            secondaryText: '📦 Xem Hàng Đợi Giao Đồ',
+                            onSecondary: () => { switchTab('tab-deliveries'); }
+                        });
                     }
                     lastLatestCheckinId = latest.id;
                     updateLatestCheckinHero(latest);
@@ -1392,8 +1881,40 @@
             const checkinData = await checkinRes.json();
 
             if (checkinRes.ok && checkinData.success) {
-                logMessage(`✅ Điểm danh thành công! Nhận 10 Rare Keys in-game và ${checkinData.coinsAwarded || 100} Xu. Chuỗi: ${checkinData.streak || 1} ngày.`, 'ok');
+                const streak = checkinData.streak || 1;
+                const coins = checkinData.coinsAwarded || 100;
+                logMessage(`✅ Điểm danh thành công! Nhận 10 Rare Keys in-game và ${coins} Xu. Chuỗi: ${streak} ngày.`, 'ok');
                 showToast('Điểm danh thành công!');
+
+                showCelebrationModal({
+                    type: 'checkin',
+                    icon: '🎁',
+                    badge: 'ĐIỂM DANH THÀNH CÔNG • NHẬN QUÀ IN-GAME',
+                    title: `Chúc Mừng! Điểm Danh Ngày ${streak} Thành Công!`,
+                    desc: `Bạn đã duy trì chuỗi ghé thăm Đảo Tò Mò! Hệ thống đã tự động cộng Xu tài khoản web và phát 10 Chìa Khóa Rare Crate Keys in-game!`,
+                    detailsHtml: `
+                        <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+                            <span style="color:#94a3b8;">Tài khoản nhận:</span>
+                            <strong style="color:#60a5fa;">${username}</strong>
+                        </div>
+                        <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+                            <span style="color:#94a3b8;">Chuỗi đăng nhập:</span>
+                            <strong style="color:#fbbf24;">🔥 ${streak} Ngày Liên Tiếp</strong>
+                        </div>
+                        <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+                            <span style="color:#94a3b8;">Phần thưởng in-game:</span>
+                            <strong style="color:#34d399;">🗝️ 10 Rare Crate Keys</strong>
+                        </div>
+                        <div style="display:flex; justify-content:space-between;">
+                            <span style="color:#94a3b8;">Xu thưởng Web:</span>
+                            <strong style="color:#fbbf24;">+${coins} Xu Đảo</strong>
+                        </div>
+                    `,
+                    primaryText: '🎉 Quá Đã (Đóng)',
+                    secondaryText: '📦 Xem Lệnh Hàng Đợi',
+                    onSecondary: () => { switchTab('tab-deliveries'); }
+                });
+
                 fetchRecentCheckins();
                 fetchPendingDeliveries();
             } else {

@@ -9,6 +9,7 @@ use App\Models\GameLinkPin;
 use App\Models\Order;
 use App\Models\User;
 use App\Services\Checkin\CheckinService;
+use App\Services\Order\OrderDeliveryService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -299,6 +300,96 @@ class InternalMinecraftBridgeController extends Controller
             'success' => true,
             'message' => 'Đã tạo lệnh giao đồ mẫu vào hàng đợi.',
             'delivery' => $delivery,
+        ]);
+    }
+
+    /**
+     * Get pending orders awaiting payment for bridge tester / live testing.
+     */
+    public function getPendingOrders(Request $request): JsonResponse
+    {
+        if (!$this->authenticateBridge($request)) {
+            return response()->json(['success' => false, 'message' => 'Unauthorized bridge token.'], 401);
+        }
+
+        $orders = Order::with(['items.product', 'user'])
+            ->where('payment_status', 'pending')
+            ->where('order_status', '!=', 'cancelled')
+            ->latest()
+            ->limit(15)
+            ->get();
+
+        return response()->json([
+            'success' => true,
+            'orders' => $orders,
+        ]);
+    }
+
+    /**
+     * Mock pay an order by order_code or ID (authenticated via X-Bridge-Token).
+     */
+    public function mockPayOrder(Request $request, OrderDeliveryService $deliveryService): JsonResponse
+    {
+        if (!$this->authenticateBridge($request)) {
+            return response()->json(['success' => false, 'message' => 'Unauthorized bridge token.'], 401);
+        }
+
+        $code = trim((string) ($request->input('order_code', $request->input('code', ''))));
+        if (empty($code)) {
+            $order = Order::with(['items.product', 'user', 'deliveries'])
+                ->where('payment_status', 'pending')
+                ->where('order_status', '!=', 'cancelled')
+                ->latest()
+                ->first();
+        } else {
+            $order = Order::with(['items.product', 'user', 'deliveries'])
+                ->where(function ($q) use ($code) {
+                    $q->where('order_code', $code)
+                      ->orWhere('id', is_numeric($code) ? (int) $code : 0);
+                })
+                ->first();
+        }
+
+        if (!$order) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Không tìm thấy đơn hàng phù hợp để thanh toán.',
+            ], 404);
+        }
+
+        if ($order->order_status === 'cancelled') {
+            return response()->json([
+                'success' => false,
+                'message' => 'Không thể thanh toán đơn hàng đã bị huỷ.',
+            ], 400);
+        }
+
+        $order->payment_status = 'paid';
+        if ($order->order_status === 'pending' || empty($order->order_status)) {
+            $order->order_status = 'processing';
+        }
+        $order->status = 'paid';
+
+        $history = $order->status_history ?? [];
+        $history[] = [
+            'status' => 'paid',
+            'timestamp' => now()->toIso8601String(),
+            'note' => 'Giả lập thanh toán SePay thành công qua Bridge Tester Tool',
+        ];
+        $order->status_history = $history;
+        $order->save();
+
+        $force = true;
+        $queuedCount = $deliveryService->queueDeliveries($order, $force);
+        $fresh = $order->fresh(['items.product', 'user', 'deliveries']);
+        $player = $fresh->minecraft_username ?: ($fresh->user?->minecraft_username ?: 'Người chơi');
+
+        return response()->json([
+            'success' => true,
+            'message' => "Đã thanh toán thành công đơn [#{$fresh->order_code}]! Hệ thống đã xếp {$queuedCount} lệnh giao đồ in-game cho nhân vật [{$player}].",
+            'order' => $fresh,
+            'queued_count' => $queuedCount,
+            'player' => $player,
         ]);
     }
 
