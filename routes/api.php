@@ -115,11 +115,12 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/orders/{id}/deliver', [AdminOrderController::class, 'markPaidAndDeliver']);
         Route::post('/admin/orders/{id}/deliver', [AdminOrderController::class, 'markPaidAndDeliver']);
 
-        // Users Management (List, Change Password, Unlink Minecraft)
+        // Users Management (List, Change Password, Unlink Minecraft, Delete)
         Route::get('/admin/users', [AdminUserController::class, 'index']);
         Route::put('/admin/users/{id}/password', [AdminUserController::class, 'changePassword']);
         Route::post('/admin/users/{id}/unlink', [AdminUserController::class, 'unlinkGame']);
         Route::delete('/admin/users/{id}/link', [AdminUserController::class, 'unlinkGame']);
+        Route::delete('/admin/users/{id}', [AdminUserController::class, 'destroy']);
 
         // Support Tickets & Discord Webhook Management
         Route::get('/admin/tickets', [AdminSupportController::class, 'index']);

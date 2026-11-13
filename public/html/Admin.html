@@ -1190,9 +1190,10 @@ async function loadUsers() {
           <td class="td-money" style="text-align:right">${(u.coins || 0).toLocaleString('vi-VN')} C</td>
           <td class="td-date">${new Date(u.created_at || u.createdAt).toLocaleDateString('vi-VN')}</td>
           <td style="text-align:right">
-            <div class="action-btns">
+            <div class="action-btns" style="display:inline-flex;gap:4px;justify-content:flex-end">
               <button class="btn-edit" onclick="openPasswordModal('${uid}', '${safeUser}')">🔑 Đổi MK</button>
               ${isLinked ? `<button class="btn-del" onclick="adminUnlinkUser('${uid}', '${safeUser}', '${safeIgn}')">🔓 Gỡ link</button>` : ''}
+              <button class="btn-del" style="background:rgba(239,68,68,0.15);border:1px solid rgba(239,68,68,0.4);color:#fca5a5" onclick="adminDeleteUser('${uid}', '${safeUser}')">🗑️ Xóa</button>
             </div>
           </td>
         </tr>
@@ -1263,6 +1264,32 @@ async function adminUnlinkUser(userId, username, mcIgn) {
     if (typeof api.showToast === 'function') api.showToast(res.message || 'Đã gỡ liên kết thành công!', 'success');
     if (alertEl) {
       alertEl.innerHTML = `<span style="font-size:0.78rem;color:#34d399">✅ ${res.message || 'Đã gỡ liên kết!'}</span>`;
+      setTimeout(() => { if (alertEl) alertEl.innerHTML = ''; }, 3000);
+    }
+    loadUsers();
+  } catch (e) {
+    if (window.SoundFX) SoundFX.playError();
+    if (typeof api.showToast === 'function') api.showToast(e.message, 'error');
+    else alert('❌ Lỗi: ' + e.message);
+    if (alertEl) alertEl.innerHTML = `<span style="font-size:0.78rem;color:#f87171">❌ ${e.message}</span>`;
+  }
+}
+
+/* ── Delete User Account ── */
+async function adminDeleteUser(userId, username) {
+  if (!confirm(`⚠️ CẢNH BÁO: Bạn có chắc chắn muốn XÓA VĨNH VIỄN tài khoản [${username}] (ID: ${userId}) không?\n\nToàn bộ dữ liệu tài khoản, skin, lịch sử điểm danh sẽ bị xóa. Hành động này không thể hoàn tác!`)) {
+    return;
+  }
+
+  const alertEl = document.getElementById('admin-user-alert');
+  if (alertEl) alertEl.innerHTML = '<span style="font-size:0.75rem;color:var(--lagoon)">Đang xóa tài khoản...</span>';
+
+  try {
+    const res = await api.adminDeleteUser(userId);
+    if (window.SoundFX) SoundFX.playSuccess();
+    if (typeof api.showToast === 'function') api.showToast(res.message || 'Đã xóa tài khoản thành công!', 'success');
+    if (alertEl) {
+      alertEl.innerHTML = `<span style="font-size:0.78rem;color:#34d399">✅ ${res.message || 'Đã xóa tài khoản!'}</span>`;
       setTimeout(() => { if (alertEl) alertEl.innerHTML = ''; }, 3000);
     }
     loadUsers();

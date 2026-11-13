@@ -130,4 +130,57 @@ class AdminUserController extends Controller
             'user' => $user,
         ]);
     }
+
+    /**
+     * Delete a user account (Admin only).
+     */
+    public function destroy(Request $request, $id): JsonResponse
+    {
+        $admin = $request->user();
+        if ($admin && (int) $admin->id === (int) $id) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Bạn không thể tự xóa tài khoản quản trị của chính mình.',
+            ], 400);
+        }
+
+        $user = User::find($id);
+        if (!$user) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Không tìm thấy người dùng.',
+            ], 404);
+        }
+
+        if ($user->role === 'admin' && User::where('role', 'admin')->count() <= 1) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Không thể xóa tài khoản quản trị duy nhất của hệ thống.',
+            ], 400);
+        }
+
+        $username = $user->username;
+        $uuid = $user->minecraft_uuid;
+        $ign = $user->minecraft_username;
+
+        // Clean up pending PINs
+        if (!empty($uuid)) {
+            GameLinkPin::where('minecraft_uuid', $uuid)->delete();
+        }
+        if (!empty($ign)) {
+            GameLinkPin::where('minecraft_username', $ign)->delete();
+        }
+
+        // Unlink or clean up support tickets
+        \App\Models\SupportTicket::where('user_id', $user->id)->update(['user_id' => null]);
+
+        // Revoke tokens and delete user
+        $user->tokens()->delete();
+        $user->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => "Đã xóa vĩnh viễn tài khoản [{$username}] thành công.",
+        ]);
+    }
 }

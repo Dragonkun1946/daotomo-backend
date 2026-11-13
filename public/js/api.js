@@ -449,6 +449,8 @@ const api = {
     api.request(`/admin/users/${userId}/password`, { method: 'PUT', body: JSON.stringify({ password: newPassword, new_password: newPassword }) }),
   adminUnlinkGame: (userId) =>
     api.request(`/admin/users/${userId}/unlink`, { method: 'POST' }),
+  adminDeleteUser: (userId) =>
+    api.request(`/admin/users/${userId}`, { method: 'DELETE' }),
   cancelOrder: (id, reason='') =>
     api.request(`/orders/${id}/cancel`, { method: 'PUT', body: JSON.stringify({ reason }) }),
   submitPaymentProof: (id, paymentProof, note='') =>

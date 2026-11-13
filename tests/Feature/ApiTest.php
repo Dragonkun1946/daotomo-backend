@@ -745,4 +745,42 @@ class ApiTest extends TestCase
         // Custom display name must be preserved!
         $this->assertEquals('Custom Display Name', $user->name);
     }
+
+    public function test_admin_can_delete_user_account(): void
+    {
+        $admin = User::where('role', 'admin')->first();
+        $adminToken = $admin->createToken('admin_token')->plainTextToken;
+
+        $targetUser = User::factory()->create([
+            'username' => 'user_to_delete',
+            'email' => 'delete_me@daotomo.site',
+            'role' => 'user',
+        ]);
+
+        $res = $this->withHeader('Authorization', 'Bearer ' . $adminToken)
+            ->deleteJson("/api/admin/users/{$targetUser->id}");
+
+        $res->assertStatus(200)
+            ->assertJson([
+                'success' => true,
+            ]);
+
+        $this->assertDatabaseMissing('users', ['id' => $targetUser->id]);
+    }
+
+    public function test_admin_cannot_delete_themselves(): void
+    {
+        $admin = User::where('role', 'admin')->first();
+        $adminToken = $admin->createToken('admin_token')->plainTextToken;
+
+        $res = $this->withHeader('Authorization', 'Bearer ' . $adminToken)
+            ->deleteJson("/api/admin/users/{$admin->id}");
+
+        $res->assertStatus(400)
+            ->assertJson([
+                'success' => false,
+            ]);
+
+        $this->assertDatabaseHas('users', ['id' => $admin->id]);
+    }
 }
